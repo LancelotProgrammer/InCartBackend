@@ -81,4 +81,7 @@ return [
         'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     ],
 
+    'x-api-key' => env('API_KEY', 'key'),
+    'x-app-version' => env('APP_VERSION', '1.0.0'),
+    'x-app-signature' => env('APP_SIGNATURE', 'sign'),
 ];

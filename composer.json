@@ -14,7 +14,9 @@
         "laravel/sanctum": "^4.0",
         "laravel/telescope": "^5.10",
         "laravel/tinker": "^2.10.1",
-        "pxlrbt/filament-environment-indicator": "^2.2"
+        "propaganistas/laravel-phone": "^5.3",
+        "pxlrbt/filament-environment-indicator": "^2.2",
+        "twilio/sdk": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

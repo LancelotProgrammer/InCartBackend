@@ -14,16 +14,34 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
+            $table->string('phone')->unique()->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
+        Schema::create('password_reset_requests', function (Blueprint $table) {
+            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('code');
+            $table->string('token')->nullable();
+            $table->integer('attempts')->default(0);
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('email_verification_requests', function (Blueprint $table) {
+            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('email');
             $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('phone_verification_requests', function (Blueprint $table) {
+            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('phone');
+            $table->string('code');
             $table->timestamp('created_at')->nullable();
         });
 
@@ -42,8 +60,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('password_reset_requests');
+        Schema::dropIfExists('email_verification_requests');
+        Schema::dropIfExists('phone_verification_requests');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('users');
     }
 };
