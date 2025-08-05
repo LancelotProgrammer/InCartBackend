@@ -228,8 +228,7 @@ class AuthenticationController extends Controller
         }
 
         $user = $refreshToken->tokenable;
-        if ($user === null)
-        {
+        if ($user === null) {
             throw new AuthenticationException('User not found');
         }
 

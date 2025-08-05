@@ -38,7 +38,6 @@ class Optimize extends Command
         $this->commandFormat('vendor\bin\phpstan analyse --memory-limit=2G', 'shell');
         $this->commandFormat('composer dump-autoload', 'shell');
         $this->commandFormat('optimize:clear', 'artisan');
-        $this->commandFormat('test', 'artisan');
     }
 
     private function commandFormat(string $command, string $type): void

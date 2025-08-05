@@ -2431,7 +2431,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"password\": \"|]|{+-\",
     \"token\": \"architecto\",
-    \"logoutFromAll\": true
+    \"logoutFromAll\": false
 }"
 </code></pre></div>
 
@@ -2449,7 +2449,7 @@ const headers = {
 let body = {
     "password": "|]|{+-",
     "token": "architecto",
-    "logoutFromAll": true
+    "logoutFromAll": false
 };
 
 fetch(url, {
@@ -2573,7 +2573,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 

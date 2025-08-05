@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 class AuthenticationExceptionWithErrors extends Exception
 {
     /**
-     * @param array<string, mixed> $errors
+     * @param  array<string, mixed>  $errors
      */
     public function __construct(
         private string $errorMessage = 'Authentication failed',

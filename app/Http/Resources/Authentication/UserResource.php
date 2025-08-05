@@ -5,16 +5,16 @@ namespace App\Http\Resources\Authentication;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** 
- * @property-read int $id 
- * @property-read string $name 
- * @property-read string $email 
- * @property-read string $phone 
+/**
+ * @property-read int $id
+ * @property-read string $name
+ * @property-read string $email
+ * @property-read string $phone
  */
 class UserResource extends JsonResource
 {
     /**
-     * @param array<string, string> $session
+     * @param  array<string, string>  $session
      */
     public function __construct(mixed $resource, private array $session)
     {

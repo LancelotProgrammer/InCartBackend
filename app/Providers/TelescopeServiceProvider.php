@@ -75,6 +75,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             if ($user->email === null) {
                 return false;
             }
+
             return str_ends_with($user->email, '@admin.com');
         });
     }
