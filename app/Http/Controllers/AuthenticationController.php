@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\AuthenticationException;
+
 use App\Http\Resources\Authentication\UserInfoResource;
 use App\Http\Resources\Authentication\UserResource;
 use App\Http\Resources\EmptySuccessfulResponseResource;
@@ -19,14 +20,19 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use InvalidArgumentException;
 use Laravel\Sanctum\PersonalAccessToken;
 
 // TODO:
-// test refresh token, update user info, middleware for optional auth, middleware for blocked users, where return null|T
+
+// test refresh token, update user info, middleware for optional auth, middleware for blocked users
+// null edge case at model::where
+// improve phone number validation
 
 // authorization
 // refactor code to use services
@@ -35,8 +41,7 @@ use Laravel\Sanctum\PersonalAccessToken;
 class AuthenticationController extends Controller
 {
     /**
-     * @unauthenticatedd
-     *
+     * @unauthenticated
      * @group Authentication Actions
      */
     public function emailRegister(Request $request): SuccessfulResponseResource
@@ -62,7 +67,6 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
-     *
      * @group Authentication Actions
      */
     public function emailLogin(Request $request): SuccessfulResponseResource
@@ -75,15 +79,24 @@ class AuthenticationController extends Controller
         $ip = $request->ip();
         $user = User::where('email', $request->input('email'))->first();
         if (! $user) {
-            throw new AuthenticationException('not found');
+            throw new AuthenticationException(
+                trans('auth.credentials_are_incorrect'),
+                'The user email is not found'
+            );
         }
         if (RateLimiter::tooManyAttempts("Login|$user->email|$ip", 5)) {
             RateLimiter::increment("Login|$user->email|$ip");
-            throw new AuthenticationException('Too many login attempts, please try again later');
+            throw new AuthenticationException(
+                trans('auth.credentials_are_incorrect'),
+                'Too many login attempts'
+            );
         }
         if (! Hash::check($request->input('password'), $user->password)) {
             RateLimiter::increment("Login|$user->email|$ip");
-            throw new AuthenticationException('The provided credentials are incorrect.');
+            throw new AuthenticationException(
+                trans('auth.credentials_are_incorrect'),
+                'Password is wrong'
+            );
         }
         $user->tokens()->delete();
 
@@ -94,12 +107,10 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
-     *
      * @group Authentication Actions
      */
     public function phoneRegister(Request $request): EmptySuccessfulResponseResource
     {
-        // TODO: validate the phone number and make sure it is a phone number
         $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|unique:users,phone',
@@ -117,7 +128,6 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
-     *
      * @group Authentication Actions
      */
     public function phoneLogin(Request $request): EmptySuccessfulResponseResource
@@ -128,7 +138,10 @@ class AuthenticationController extends Controller
 
         $user = User::where('phone', $request->input('phone'))->first();
         if (! $user) {
-            throw new AuthenticationException('not found');
+            throw new AuthenticationException(
+                trans('auth.credentials_are_incorrect'),
+                'The user phone is not found'
+            );
         }
 
         $this->requestVerifyPhone($user->id, $request->input('phone'));
@@ -148,7 +161,6 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
-     *
      * @group Verify OTP
      */
     public function verifyOtp(Request $request): SuccessfulResponseResource
@@ -162,20 +174,29 @@ class AuthenticationController extends Controller
         $code = $request->input('code');
 
         if (RateLimiter::tooManyAttempts("VerifyPhone|$phone", 10)) {
-            throw new AuthenticationException('Phone verification request failed. too many attempts');
+            throw new AuthenticationException(
+                trans('auth.opt_verification_error'),
+                'Too many attempts'
+            );
         }
 
         $phoneVerificationRequest = PhoneVerificationRequest::where('code', $code)->first();
         if (! $phoneVerificationRequest || $phoneVerificationRequest->phone !== $phone) {
             RateLimiter::increment("VerifyPhone|$phone");
-            throw new AuthenticationException('Phone verification code is invalid');
+            throw new AuthenticationException(
+                trans('auth.opt_verification_error'),
+                'Code is invalid'
+            );
         }
 
         $requestDate = Carbon::parse($phoneVerificationRequest->created_at);
         if (Carbon::now()->diffInMinutes($requestDate) > 1) {
             PhoneVerificationRequest::where('user_id', $phoneVerificationRequest->user_id)->delete();
             RateLimiter::increment("VerifyPhone|$phone");
-            throw new AuthenticationException('Phone verification code has expired');
+            throw new AuthenticationException(
+                trans('auth.opt_verification_error'),
+                'Code has expired'
+            );
         }
 
         User::where('id', $phoneVerificationRequest->user_id)
@@ -190,7 +211,10 @@ class AuthenticationController extends Controller
         $user = User::where('phone', $phone)->first();
 
         if ($user === null) {
-            throw new AuthenticationException('user phone not found');
+            throw new AuthenticationException(
+                trans('auth.opt_verification_error'),
+                'User phone not found'
+            );
         }
 
         return new SuccessfulResponseResource(
@@ -215,7 +239,6 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
-     *
      * @group Session Management
      */
     public function refreshTokenRequest(Request $request): SuccessfulResponseResource
@@ -224,12 +247,18 @@ class AuthenticationController extends Controller
         $refreshToken = PersonalAccessToken::findToken($currentRefreshToken);
 
         if (! $refreshToken || ! $refreshToken->can('refresh') || $refreshToken->expires_at->isPast()) {
-            throw new AuthenticationException('Invalid or expired refresh token');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Invalid or expired refresh token'
+            );
         }
 
         $user = $refreshToken->tokenable;
         if ($user === null) {
-            throw new AuthenticationException('User not found');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'No user connected to token'
+            );
         }
 
         $refreshToken->delete();
@@ -281,9 +310,8 @@ class AuthenticationController extends Controller
      */
     public function updateUserPhone(Request $request): EmptySuccessfulResponseResource
     {
-        // TODO: validate the phone number and make sure it is a phone number
         $request->validate([
-            'phone' => 'required|string|unique:users,phone,'.$request->user()->id,
+            'phone' => 'required|string|unique:users,phone,' . $request->user()->id,
         ]);
 
         $user = $request->user();
@@ -300,7 +328,7 @@ class AuthenticationController extends Controller
     public function updateUserEmail(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email,'.$request->user()->id,
+            'email' => 'required|email|unique:users,email,' . $request->user()->id,
         ]);
 
         $user = $request->user();
@@ -338,7 +366,10 @@ class AuthenticationController extends Controller
 
         $user = $request->user();
         if (! Hash::check($request->input('current_password'), $user->password)) {
-            throw new AuthenticationException('The provided current password is incorrect.');
+            throw new AuthenticationException(
+                trans('auth.current_password_is_incorrect'),
+                'The provided current password is incorrect.'
+            );
         }
 
         $user->update(['password' => Hash::make($request->input('new_password'))]);
@@ -363,8 +394,11 @@ class AuthenticationController extends Controller
         try {
             Otp::send($phone, $verifyPhone->code);
         } catch (Exception $e) {
-            $message = $e->getMessage();
-            throw new AuthenticationException("phone verification request failed. $message");
+            Log::channel('error')->error('OTP Error' . $e->getMessage());
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'OTP verification request failed. look for OTP Error in error logs for more details'
+            );
         }
     }
 
@@ -413,7 +447,6 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
-     *
      * @group Request Verify Email
      */
     public function getVerifyEmail(Request $request): EmptySuccessfulResponseResource
@@ -428,7 +461,10 @@ class AuthenticationController extends Controller
         $user = User::find($userId);
         if ($email === null) {
             if ($user->email_verified_at !== null) {
-                throw new AuthenticationException('User is verified');
+                throw new AuthenticationException(
+                    trans('auth.user_is_verified'),
+                    'User is verified'
+                );
             }
             $this->sendVerifyEmailToEmail($user, $user->email);
         } else {
@@ -452,15 +488,18 @@ class AuthenticationController extends Controller
 
         try {
             Mail::to($email)->send(new VerifyEmail($user->name, $verifyEmail->email, $verifyEmail->token));
-        } catch (Exception) {
-            throw new AuthenticationException('Email verification request failed');
+        } catch (Exception $e) {
+            Log::channel('error')->error('Email Error' . $e->getMessage());
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Email verification request failed. look for Email Error in error logs for more details'
+            );
         }
     }
 
     /**
      * @unauthenticated
-     *
-     * @group forgot password
+     * @group Forgot password
      */
     public function forgotPasswordRequest(Request $request): EmptySuccessfulResponseResource
     {
@@ -473,17 +512,26 @@ class AuthenticationController extends Controller
         $rateLimitKey = "ForgotPasswordRequest|$email";
 
         if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
-            throw new AuthenticationException('Too many requests, please try again later');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Too many requests'
+            );
         }
 
         $user = User::where('email', $email)->first();
         if (! $user) {
             RateLimiter::increment($rateLimitKey);
-            throw new AuthenticationException('User not found');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'User not found'
+            );
         }
         if ($user->email_verified_at === null) {
             RateLimiter::increment($rateLimitKey);
-            throw new AuthenticationException('Email is not verified');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Email is not verified'
+            );
         }
 
         $this->validateUserStatus($user);
@@ -515,15 +563,18 @@ class AuthenticationController extends Controller
     {
         try {
             Mail::to($email)->send(new ForgotPassword($userName, $code));
-        } catch (Exception) {
-            throw new AuthenticationException('Reset password request failed');
+        } catch (Exception $e) {
+            Log::channel('error')->error('Email Error' . $e->getMessage());
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Email verification request failed. look for Email Error in error logs for more details'
+            );
         }
     }
 
     /**
      * @unauthenticated
-     *
-     * @group forgot password
+     * @group Forgot password
      */
     public function verifyForgetPasswordRequest(Request $request): SuccessfulResponseResource
     {
@@ -539,22 +590,34 @@ class AuthenticationController extends Controller
         $PasswordResetRequest = PasswordResetRequest::where('user_id', $user->id)->first();
 
         if (! $PasswordResetRequest) {
-            throw new AuthenticationException('Password reset request not found');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Password reset request not found'
+            );
         }
 
         if ($PasswordResetRequest->attempts >= 10) {
             PasswordResetRequest::where('user_id', $user->id)->delete();
-            throw new AuthenticationException('Password reset request has been deleted because of too many attempts');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Password reset request has been deleted because of too many attempts'
+            );
         }
 
         $passwordReset = PasswordResetRequest::where('user_id', $user->id)->where('code', $code)->first();
         if (! $passwordReset) {
             PasswordResetRequest::where('user_id', $user->id)->increment('attempts');
-            throw new AuthenticationException('Password reset code is invalid');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Password reset code is invalid'
+            );
         }
 
         if (Carbon::now()->diffInMinutes(Carbon::parse($passwordReset->created_at)) >= 30) {
-            throw new AuthenticationException('Password reset code expired');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Password reset code expired'
+            );
         }
         do {
             $token = Str::random(16);
@@ -571,8 +634,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
-     *
-     * @group forgot password
+     * @group Forgot password
      */
     public function resetPasswordRequest(Request $request): EmptySuccessfulResponseResource
     {
@@ -588,17 +650,26 @@ class AuthenticationController extends Controller
 
         $PasswordReset = PasswordResetRequest::where('token', $token)->first();
         if (! $PasswordReset) {
-            throw new AuthenticationException('Token or code invalid');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Token or code are invalid'
+            );
         }
 
         if (Carbon::now()->diffInMinutes(Carbon::parse($PasswordReset->created_at)) >= 30) {
-            throw new AuthenticationException('Reset password code has expired');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Reset password code has expired'
+            );
         }
 
         $user = User::find($PasswordReset->user_id);
 
         if (Hash::check($password, $user->password)) {
-            throw new AuthenticationException('New password must be different from old password');
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'New password must be different from old password'
+            );
         }
 
         $user->update(['password' => Hash::make($password)]);
@@ -627,22 +698,21 @@ class AuthenticationController extends Controller
 
     public function generateSecurePINCode(int $keyLength = 4): string
     {
-        try {
-            $key = '';
-            for ($x = 1; $x <= $keyLength; $x++) {
-                $key .= random_int(0, 9);
-            }
-
-            return $key;
-        } catch (Exception $e) {
-            throw new AuthenticationException($e->getMessage());
+        if ($keyLength <= 0) {
+            throw new InvalidArgumentException('PIN code length must be positive.');
         }
+
+        $key = '';
+        for ($x = 1; $x <= $keyLength; $x++) {
+            $key .= random_int(0, 9);
+        }
+        return $key;
     }
 
     private function isWeakNumber(string $number): bool
     {
         $length = strlen($number);
-        if (preg_match('/^(\d)\1{'.($length - 1).'}$/', $number)) {
+        if (preg_match('/^(\d)\1{' . ($length - 1) . '}$/', $number)) {
             return true;
         }
         for ($patternLength = 1; $patternLength <= $length / 2; $patternLength++) {
@@ -664,8 +734,11 @@ class AuthenticationController extends Controller
 
     public function validateUserStatus(User $user): void
     {
-        // if ($user->blocked_at !== null) {
-        //     throw new AuthenticationException('User is blocked');
-        // }
+        if ($user->blocked_at !== null) {
+            throw new AuthenticationException(
+                trans('auth.user_is_blocked'),
+                'User is blocked'
+            );
+        }
     }
 }

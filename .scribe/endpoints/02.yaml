@@ -1,4 +1,4 @@
-name: 'forgot password'
+name: 'Forgot password'
 description: ''
 endpoints:
   -
@@ -6,7 +6,7 @@ endpoints:
       - POST
     uri: api/v1/auth/request-forget-password
     metadata:
-      groupName: 'forgot password'
+      groupName: 'Forgot password'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
@@ -25,7 +25,7 @@ endpoints:
     bodyParameters:
       email:
         name: email
-        description: 'Must be a valid email address. The <code>email</code> of an existing record in the users table.'
+        description: 'value يجب أن يكون بريد إلكتروني صالح. The <code>email</code> of an existing record in the users table.'
         required: true
         example: gbailey@example.net
         type: string
@@ -48,7 +48,7 @@ endpoints:
       - POST
     uri: api/v1/auth/verify-forget-password
     metadata:
-      groupName: 'forgot password'
+      groupName: 'Forgot password'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
@@ -67,7 +67,7 @@ endpoints:
     bodyParameters:
       email:
         name: email
-        description: 'Must be a valid email address. The <code>email</code> of an existing record in the users table.'
+        description: 'value يجب أن يكون بريد إلكتروني صالح. The <code>email</code> of an existing record in the users table.'
         required: true
         example: gbailey@example.net
         type: string
@@ -101,7 +101,7 @@ endpoints:
       - POST
     uri: api/v1/auth/reset-forget-password
     metadata:
-      groupName: 'forgot password'
+      groupName: 'Forgot password'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
@@ -120,7 +120,7 @@ endpoints:
     bodyParameters:
       password:
         name: password
-        description: 'Must be at least 8 characters.'
+        description: 'value يجب أن يكون على الأقل 8 حرفاً.'
         required: true
         example: '|]|{+-'
         type: string
@@ -142,7 +142,7 @@ endpoints:
         name: logoutFromAll
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -151,7 +151,7 @@ endpoints:
     cleanBodyParameters:
       password: '|]|{+-'
       token: architecto
-      logoutFromAll: false
+      logoutFromAll: true
     fileParameters: []
     responses: []
     responseFields: []

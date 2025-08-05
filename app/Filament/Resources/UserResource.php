@@ -22,6 +22,15 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label(trans('dashboard.users.name'))
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->label(trans('dashboard.users.email'))
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('phone')
+                    ->label(trans('dashboard.users.phone'))
                     ->required()
                     ->maxLength(255),
             ]);
@@ -32,8 +41,13 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(trans('dashboard.users.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->label(trans('dashboard.users.email'))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('phone')
+                    ->label(trans('dashboard.users.phone'))
                     ->searchable(),
             ])
             ->filters([
@@ -61,5 +75,15 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('dashboard.users.user');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('dashboard.users.users');
     }
 }

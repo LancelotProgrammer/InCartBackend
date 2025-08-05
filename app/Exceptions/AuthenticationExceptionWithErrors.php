@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Traits\DebugPosition;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -9,6 +10,9 @@ use Illuminate\Support\Facades\Log;
 
 class AuthenticationExceptionWithErrors extends Exception
 {
+    use DebugPosition;
+    private string $context;
+
     /**
      * @param  array<string, mixed>  $errors
      */
@@ -19,6 +23,7 @@ class AuthenticationExceptionWithErrors extends Exception
         private array $errors = []
     ) {
         parent::__construct($errorMessage, $statusCode);
+        $this->context = $this->getDebugPosition();
     }
 
     public function render(Request $request): Response
@@ -31,6 +36,9 @@ class AuthenticationExceptionWithErrors extends Exception
 
     public function report(): void
     {
-        Log::debug("$this->details. $this->errorMessage.", [$this->statusCode, $this->errors]);
+        Log::channel('debug')->debug("{$this->errorMessage}. {$this->details}.", [
+            'status' => $this->statusCode,
+            'location' => $this->context,
+        ]);
     }
 }

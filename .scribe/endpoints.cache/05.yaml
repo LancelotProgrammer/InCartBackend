@@ -208,7 +208,7 @@ endpoints:
     bodyParameters:
       name:
         name: name
-        description: 'Must not be greater than 255 characters.'
+        description: 'value لا يجب أن يتجاوز 255 حرفاً.'
         required: true
         example: b
         type: string
@@ -264,7 +264,7 @@ endpoints:
         custom: []
       new_password:
         name: new_password
-        description: 'Must be at least 8 characters.'
+        description: 'value يجب أن يكون على الأقل 8 حرفاً.'
         required: true
         example: ngzmiyvdljnikhwaykcmyuwpwl
         type: string

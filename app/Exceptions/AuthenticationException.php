@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Traits\DebugPosition;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -9,12 +10,16 @@ use Illuminate\Support\Facades\Log;
 
 class AuthenticationException extends Exception
 {
+    use DebugPosition;
+    private string $context;
+
     public function __construct(
         private string $errorMessage = 'Authentication failed',
         private string $details = 'Authentication failed',
         private int $statusCode = 401
     ) {
         parent::__construct($errorMessage, $statusCode);
+        $this->context = $this->getDebugPosition();
     }
 
     public function render(Request $request): Response
@@ -26,6 +31,9 @@ class AuthenticationException extends Exception
 
     public function report(): void
     {
-        Log::debug("$this->details. $this->errorMessage.", [$this->statusCode]);
+        Log::channel('debug')->debug("{$this->errorMessage}. {$this->details}.", [
+            'status' => $this->statusCode,
+            'location' => $this->context,
+        ]);
     }
 }
