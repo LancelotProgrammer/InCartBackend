@@ -9,12 +9,10 @@ class EmptySuccessfulResponseResource extends JsonResource
 {
     /**
      * Create a new resource instance.
-     *
-     * @param mixed $resource
      */
     public function __construct(
-        private ?string $message = 'Operation successful',
-        private ?int $statusCode = 200
+        private string $message = 'Operation successful',
+        private int $statusCode = 200
     ) {
         $this->message = $message;
     }

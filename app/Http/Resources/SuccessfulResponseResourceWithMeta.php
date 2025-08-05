@@ -9,14 +9,12 @@ class SuccessfulResponseResourceWithMeta extends JsonResource
 {
     /**
      * Create a new resource instance.
-     *
-     * @param mixed $resource
      */
     public function __construct(
         mixed $resource = [],
         private mixed $meta = [],
-        private ?string $message = 'Operation successful',
-        private ?int $statusCode = 200
+        private string $message = 'Operation successful',
+        private int $statusCode = 200
     ) {
         parent::__construct($resource);
         $this->message = $message;
@@ -35,5 +33,10 @@ class SuccessfulResponseResourceWithMeta extends JsonResource
             'data' => $this->resource,
             'meta' => $this->meta,
         ];
+    }
+
+    public function withResponse($request, $response)
+    {
+        $response->setStatusCode($this->statusCode);
     }
 }

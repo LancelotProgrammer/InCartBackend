@@ -5,23 +5,32 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticationExceptionWithErrors extends Exception
 {
+    /**
+     * @param array<string, mixed> $errors
+     */
     public function __construct(
-        string $message = 'Authentication failed',
-        public string $details = 'Authentication failed',
-        int $code = 401,
-        public ?array $errors = null
+        private string $errorMessage = 'Authentication failed',
+        private string $details = 'Authentication failed',
+        private int $statusCode = 401,
+        private array $errors = []
     ) {
-        parent::__construct($message, $code);
+        parent::__construct($errorMessage, $statusCode);
     }
 
     public function render(Request $request): Response
     {
         return response([
-            'message' => $this->message,
+            'message' => $this->errorMessage,
             'errors' => $this->errors,
-        ])->setStatusCode($this->code);
+        ])->setStatusCode($this->statusCode);
+    }
+
+    public function report(): void
+    {
+        Log::debug("$this->details. $this->errorMessage.", [$this->statusCode, $this->errors]);
     }
 }

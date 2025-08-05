@@ -168,7 +168,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: August 4, 2025</li>
+        <li>Last updated: August 5, 2025</li>
     </ul>
 </div>
 
@@ -1050,6 +1050,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                                 <h2 id="authentication-actions-POSTapi-v1-auth-email-register">POST api/v1/auth/email/register</h2>
 
 <p>
+<small class="badge badge-darkred">requires authentication</small>
 </p>
 
 
@@ -1061,6 +1062,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
     "http://localhost:8000/api/v1/auth/email/register" \
+    --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -1077,6 +1079,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
+    "Authorization": "Bearer {YOUR_AUTH_KEY}",
     "Content-Type": "application/json",
     "Accept": "application/json",
 };
@@ -1114,7 +1117,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 </span>
 <form id="form-POSTapi-v1-auth-email-register" data-method="POST"
       data-path="api/v1/auth/email/register"
-      data-authed="0"
+      data-authed="1"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
@@ -1144,6 +1147,17 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <b><code>api/v1/auth/email/register</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-auth-email-register"
+               value="Bearer {YOUR_AUTH_KEY}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_AUTH_KEY}</code></p>
+            </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
 &nbsp;
@@ -2417,7 +2431,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"password\": \"|]|{+-\",
     \"token\": \"architecto\",
-    \"logoutFromAll\": false
+    \"logoutFromAll\": true
 }"
 </code></pre></div>
 
@@ -2435,7 +2449,7 @@ const headers = {
 let body = {
     "password": "|]|{+-",
     "token": "architecto",
-    "logoutFromAll": false
+    "logoutFromAll": true
 };
 
 fetch(url, {
@@ -2559,7 +2573,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 

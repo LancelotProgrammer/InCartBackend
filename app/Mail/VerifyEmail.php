@@ -2,9 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -23,6 +21,7 @@ class VerifyEmail extends Mailable
     {
         $encodedEmail = urlencode($this->email);
         $encodedToken = urlencode($this->token);
+        /** @var string $appUrl */
         $appUrl = config('app.url');
         $this->url = "$appUrl/auth/verify-email?email=$encodedEmail&token=$encodedToken";
     }

@@ -17,21 +17,21 @@ class EnsureHeaderValidation
     {
         // TODO
 
-        if (
-            !$request->hasHeader('X-API-KEY') ||
-            !$request->hasHeader('X-APP-VERSION') ||
-            !$request->hasHeader('X-APP-SIGNATURE')
-        ) {
-            return response()->json(['error' => 'Missing required headers'], 403);
-        }
+        // if (
+        //     ! $request->hasHeader('X-API-KEY') ||
+        //     ! $request->hasHeader('X-APP-VERSION') ||
+        //     ! $request->hasHeader('X-APP-SIGNATURE')
+        // ) {
+        //     return response()->json(['error' => 'Missing required headers'], 403);
+        // }
 
-        if (
-            $request->header('X-API-KEY') !== config('sanctum.x-api-key') ||
-            $request->header('X-APP-VERSION') !== config('sanctum.x-app-version') ||
-            $request->header('X-APP-SIGNATURE') !== config('sanctum.x-app-signature')
-        ) {
-            return response()->json(['error' => 'Invalid headers'], 403);
-        }
+        // if (
+        //     $request->header('X-API-KEY') !== config('sanctum.x-api-key') ||
+        //     $request->header('X-APP-VERSION') !== config('sanctum.x-app-version') ||
+        //     $request->header('X-APP-SIGNATURE') !== config('sanctum.x-app-signature')
+        // ) {
+        //     return response()->json(['error' => 'Invalid headers'], 403);
+        // }
 
         return $next($request);
     }

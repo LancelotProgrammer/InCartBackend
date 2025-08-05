@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\AuthenticationException;
-use App\Http\Controllers\Controller;
 use App\Http\Resources\Authentication\UserInfoResource;
 use App\Http\Resources\Authentication\UserResource;
 use App\Http\Resources\EmptySuccessfulResponseResource;
@@ -23,11 +22,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 use Laravel\Sanctum\PersonalAccessToken;
 
 // TODO:
-// test refresh token, update user info, middleware for optional auth, middleware for blocked users
+// test refresh token, update user info, middleware for optional auth, middleware for blocked users, where return null|T
 
 // authorization
 // refactor code to use services
@@ -37,9 +36,10 @@ class AuthenticationController extends Controller
 {
     /**
      * @unauthenticatedd
+     *
      * @group Authentication Actions
      */
-    public function emailRegister(Request $request)
+    public function emailRegister(Request $request): SuccessfulResponseResource
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -53,7 +53,7 @@ class AuthenticationController extends Controller
             'password' => Hash::make($request->input('password')),
         ]);
 
-        $this->requestVerifyEmail($user->id, $request->email);
+        $this->requestVerifyEmail($user->id, $request->input('email'));
 
         return new SuccessfulResponseResource(
             $this->createUserResponse($user)
@@ -62,9 +62,10 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Authentication Actions
      */
-    public function emailLogin(Request $request)
+    public function emailLogin(Request $request): SuccessfulResponseResource
     {
         $request->validate([
             'email' => 'required|email',
@@ -93,9 +94,10 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Authentication Actions
      */
-    public function phoneRegister(Request $request)
+    public function phoneRegister(Request $request): EmptySuccessfulResponseResource
     {
         // TODO: validate the phone number and make sure it is a phone number
         $request->validate([
@@ -108,16 +110,17 @@ class AuthenticationController extends Controller
             'phone' => $request->input('phone'),
         ]);
 
-        $this->requestVerifyPhone($user->id, $request->phone);
+        $this->requestVerifyPhone($user->id, $request->input('phone'));
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @unauthenticated
+     *
      * @group Authentication Actions
      */
-    public function phoneLogin(Request $request)
+    public function phoneLogin(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
             'phone' => 'required|string',
@@ -128,25 +131,27 @@ class AuthenticationController extends Controller
             throw new AuthenticationException('not found');
         }
 
-        $this->requestVerifyPhone($user->id, $request->phone);
+        $this->requestVerifyPhone($user->id, $request->input('phone'));
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @group Authentication Actions
      */
-    public function logout(Request $request)
+    public function logout(Request $request): EmptySuccessfulResponseResource
     {
         $request->user()->currentAccessToken()->delete();
-        return new EmptySuccessfulResponseResource();
+
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @unauthenticated
+     *
      * @group Verify OTP
      */
-    public function verifyOtp(Request $request)
+    public function verifyOtp(Request $request): SuccessfulResponseResource
     {
         $request->validate([
             'phone' => 'required|string',
@@ -193,7 +198,7 @@ class AuthenticationController extends Controller
         );
     }
 
-    private function createUserResponse(User $user)
+    private function createUserResponse(User $user): UserResource
     {
         $accessTokenExpiresAt = Carbon::now()->addDays(1);
         $refreshTokenExpiresAt = Carbon::now()->addDays(7);
@@ -210,18 +215,24 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Session Management
      */
-    public function refreshTokenRequest(Request $request)
+    public function refreshTokenRequest(Request $request): SuccessfulResponseResource
     {
         $currentRefreshToken = $request->bearerToken();
         $refreshToken = PersonalAccessToken::findToken($currentRefreshToken);
 
-        if (!$refreshToken || !$refreshToken->can('refresh') || $refreshToken->expires_at->isPast()) {
-            return response()->json(['error' => 'Invalid or expired refresh token'], 401);
+        if (! $refreshToken || ! $refreshToken->can('refresh') || $refreshToken->expires_at->isPast()) {
+            throw new AuthenticationException('Invalid or expired refresh token');
         }
 
         $user = $refreshToken->tokenable;
+        if ($user === null)
+        {
+            throw new AuthenticationException('User not found');
+        }
+
         $refreshToken->delete();
 
         $accessTokenExpiresAt = Carbon::now()->addDays(1);
@@ -242,7 +253,7 @@ class AuthenticationController extends Controller
     /**
      * @group Account Management
      */
-    public function getUser(Request $request)
+    public function getUser(Request $request): SuccessfulResponseResource
     {
         return new SuccessfulResponseResource(
             new UserInfoResource($request->user())
@@ -252,7 +263,7 @@ class AuthenticationController extends Controller
     /**
      * @group Account Management
      */
-    public function createFirebaseToken(Request $request)
+    public function createFirebaseToken(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
             'token' => 'required|string',
@@ -263,17 +274,17 @@ class AuthenticationController extends Controller
             ['token' => $request->input('token')]
         );
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @group Account Management
      */
-    public function updateUserPhone(Request $request)
+    public function updateUserPhone(Request $request): EmptySuccessfulResponseResource
     {
         // TODO: validate the phone number and make sure it is a phone number
         $request->validate([
-            'phone' => 'required|string|unique:users,phone,' . $request->user()->id,
+            'phone' => 'required|string|unique:users,phone,'.$request->user()->id,
         ]);
 
         $user = $request->user();
@@ -281,16 +292,16 @@ class AuthenticationController extends Controller
 
         $this->requestVerifyPhone($user->id, $request->input('phone'));
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @group Account Management
      */
-    public function updateUserEmail(Request $request)
+    public function updateUserEmail(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email,' . $request->user()->id,
+            'email' => 'required|email|unique:users,email,'.$request->user()->id,
         ]);
 
         $user = $request->user();
@@ -298,13 +309,13 @@ class AuthenticationController extends Controller
 
         $this->requestVerifyEmail($user->id, $request->input('email'));
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @group Account Management
      */
-    public function updateUserName(Request $request)
+    public function updateUserName(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -313,13 +324,13 @@ class AuthenticationController extends Controller
         $user = $request->user();
         $user->update(['name' => $request->input('name')]);
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @group Account Management
      */
-    public function updateUserPassword(Request $request)
+    public function updateUserPassword(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
             'current_password' => 'required|string',
@@ -327,15 +338,13 @@ class AuthenticationController extends Controller
         ]);
 
         $user = $request->user();
-        if (!Hash::check($request->input('current_password'), $user->password)) {
-            throw ValidationException::withMessages([
-                'current_password' => ['The provided current password is incorrect.'],
-            ]);
+        if (! Hash::check($request->input('current_password'), $user->password)) {
+            throw new AuthenticationException('The provided current password is incorrect.');
         }
 
         $user->update(['password' => Hash::make($request->input('new_password'))]);
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     private function requestVerifyPhone(int $userId, string $phone): void
@@ -360,7 +369,7 @@ class AuthenticationController extends Controller
         }
     }
 
-    public function verifyEmail(Request $request)
+    public function verifyEmail(Request $request): View
     {
         $request->validate([
             'email' => 'required|email',
@@ -372,12 +381,14 @@ class AuthenticationController extends Controller
 
         if (RateLimiter::tooManyAttempts("VerifyEmail|$email", 10)) {
             RateLimiter::increment("VerifyEmail|$email");
+
             return view('pages.email-verification-failure');
         }
 
         $emailVerificationRequest = EmailVerificationRequest::where('token', $token)->first();
         if (! $emailVerificationRequest || $emailVerificationRequest->email !== $email) {
             RateLimiter::increment("VerifyEmail|$email");
+
             return view('pages.email-verification-failure');
         }
 
@@ -385,6 +396,7 @@ class AuthenticationController extends Controller
         if (Carbon::now()->diffInDays($requestDate) > 30) {
             EmailVerificationRequest::where('user_id', $emailVerificationRequest->user_id)->delete();
             RateLimiter::increment("VerifyEmail|$email");
+
             return view('pages.email-verification-failure');
         }
 
@@ -402,14 +414,14 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Request Verify Email
      */
-
-    public function getVerifyEmail(Request $request)
+    public function getVerifyEmail(Request $request): EmptySuccessfulResponseResource
     {
         $this->requestVerifyEmail($request->user()->id);
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     public function requestVerifyEmail(int $userId, ?string $email = null): void
@@ -448,9 +460,10 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group forgot password
      */
-    public function forgotPasswordRequest(Request $request)
+    public function forgotPasswordRequest(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
@@ -481,10 +494,10 @@ class AuthenticationController extends Controller
         $code = $this->createAndStoreForgotPasswordCode($user->id);
         $this->sendEmailForResetPassword($user->email, $user->name, $code);
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
-    private function createAndStoreForgotPasswordCode(int $userId)
+    private function createAndStoreForgotPasswordCode(int $userId): string
     {
         $code = $this->generateRandomNumber();
         PasswordResetRequest::updateOrInsert(
@@ -495,6 +508,7 @@ class AuthenticationController extends Controller
                 'created_at' => now(),
             ]
         );
+
         return $code;
     }
 
@@ -509,9 +523,10 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group forgot password
      */
-    public function verifyForgetPasswordRequest(Request $request)
+    public function verifyForgetPasswordRequest(Request $request): SuccessfulResponseResource
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
@@ -557,9 +572,10 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group forgot password
      */
-    public function resetPasswordRequest(Request $request)
+    public function resetPasswordRequest(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
             'password' => 'required|string|min:8',
@@ -593,7 +609,7 @@ class AuthenticationController extends Controller
         }
         PasswordResetRequest::where('user_id', $user->id)->where('token', $token)->delete();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     private function logoutFromAll(int $userId): void
@@ -617,6 +633,7 @@ class AuthenticationController extends Controller
             for ($x = 1; $x <= $keyLength; $x++) {
                 $key .= random_int(0, 9);
             }
+
             return $key;
         } catch (Exception $e) {
             throw new AuthenticationException($e->getMessage());
@@ -626,7 +643,7 @@ class AuthenticationController extends Controller
     private function isWeakNumber(string $number): bool
     {
         $length = strlen($number);
-        if (preg_match('/^(\d)\1{' . ($length - 1) . '}$/', $number)) {
+        if (preg_match('/^(\d)\1{'.($length - 1).'}$/', $number)) {
             return true;
         }
         for ($patternLength = 1; $patternLength <= $length / 2; $patternLength++) {
@@ -642,10 +659,11 @@ class AuthenticationController extends Controller
                 return true;
             }
         }
+
         return false;
     }
 
-    public function validateUserStatus(User $user)
+    public function validateUserStatus(User $user): void
     {
         // if ($user->blocked_at !== null) {
         //     throw new AuthenticationException('User is blocked');
