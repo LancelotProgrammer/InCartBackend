@@ -22,6 +22,13 @@ return new class extends Migration
             $table->dateTime('expires_at');
             $table->dateTime('published_at')->nullable();
 
+            $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('product_id');
+
+            $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('restrict');
+            $table->unique(['product_id', 'product_id']);
+
             $table->timestamps();
         });
     }
