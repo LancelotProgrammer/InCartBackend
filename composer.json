@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.10.1",
         "propaganistas/laravel-phone": "^5.3",
         "pxlrbt/filament-environment-indicator": "^2.2",
+        "spatie/laravel-translatable": "^6.11",
         "twilio/sdk": "*"
     },
     "require-dev": {

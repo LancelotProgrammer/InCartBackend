@@ -28,15 +28,15 @@ use Illuminate\View\View;
 use InvalidArgumentException;
 use Laravel\Sanctum\PersonalAccessToken;
 
-// TODO:
-
-// test refresh token, update user info, middleware for optional auth, middleware for blocked users
-// null edge case at model::where
-// improve phone number validation
-
-// authorization
-// refactor code to use services
-// refactor code to use repositories
+/*
+    TODO:
+        - test refresh token, update user info, middleware for optional auth, middleware for blocked users
+        - null edge case at model::where
+        - improve phone number validation
+        - write tests for all functions
+        - refactor code to use services
+        - refactor code to use repositories
+*/
 
 class AuthenticationController extends Controller
 {
