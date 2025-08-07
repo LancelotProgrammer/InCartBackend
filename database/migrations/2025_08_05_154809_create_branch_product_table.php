@@ -16,9 +16,10 @@ return new class extends Migration
 
             $table->decimal('price');
             $table->integer('unit');
+            $table->integer('discount');
             $table->integer('maximum_order_quantity');
             $table->integer('minimum_order_quantity');
-            $table->integer('quantity');
+            $table->double('quantity');
             $table->dateTime('expires_at');
             $table->dateTime('published_at')->nullable();
 

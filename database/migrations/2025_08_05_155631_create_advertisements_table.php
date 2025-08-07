@@ -20,8 +20,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unsignedBigInteger('branch_id');
-            $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('category_id')->nullable();
 
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('restrict');

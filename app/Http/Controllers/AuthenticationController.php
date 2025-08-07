@@ -30,6 +30,8 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 /*
     TODO:
+        - role_id should be applied from database
+        - move hardcode values to const
         - test refresh token, update user info, middleware for optional auth, middleware for blocked users
         - null edge case at model::where
         - improve phone number validation
@@ -50,12 +52,15 @@ class AuthenticationController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
+            'cityId' => 'required|int|exists:cities,id',
         ]);
 
         $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
+            'city_id' => $request->input('cityId'),
+            'role_id' => 1,
         ]);
 
         $this->requestVerifyEmail($user->id, $request->input('email'));
@@ -114,11 +119,14 @@ class AuthenticationController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|unique:users,phone',
+            'cityId' => 'required|int|exists:cities,id',
         ]);
 
         $user = User::create([
             'name' => $request->input('name'),
             'phone' => $request->input('phone'),
+            'city_id' => $request->input('cityId'),
+            'role_id' => 1,
         ]);
 
         $this->requestVerifyPhone($user->id, $request->input('phone'));
