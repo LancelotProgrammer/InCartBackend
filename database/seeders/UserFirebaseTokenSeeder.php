@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class BranchAdvertisementSeeder extends Seeder
+class UserFirebaseTokenSeeder extends Seeder
 {
     /**
      * Run the database seeds.

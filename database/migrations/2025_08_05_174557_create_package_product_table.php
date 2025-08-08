@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('packages', function (Blueprint $table) {
+        Schema::create('package_product', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
             $table->timestamps();
 
+            $table->unsignedBigInteger('package_id');
             $table->unsignedBigInteger('user_id');
 
+            $table->foreign('package_id')->references('id')->on('packages')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
+            $table->unique(['package_id', 'user_id']);
         });
     }
 
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('packages');
+        Schema::dropIfExists('package_product');
     }
 };

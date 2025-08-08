@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BranchAdvertisement>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserFirebaseToken>
  */
-class BranchAdvertisementFactory extends Factory
+class UserFirebaseTokenFactory extends Factory
 {
     /**
      * Define the model's default state.
