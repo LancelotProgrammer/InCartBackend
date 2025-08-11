@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('files', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('type');
+            $table->integer('type');
             $table->string('mime');
-            $table->string('size');
+            $table->integer('size');
             $table->string('url');
             $table->timestamps();
         });

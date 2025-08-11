@@ -28,7 +28,7 @@ return new class extends Migration
 
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('restrict');
-            $table->unique(['product_id', 'product_id']);
+            $table->unique(['branch_id', 'product_id']);
 
             $table->timestamps();
         });

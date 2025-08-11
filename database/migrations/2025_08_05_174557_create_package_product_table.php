@@ -16,11 +16,11 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unsignedBigInteger('package_id');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('product_id');
 
             $table->foreign('package_id')->references('id')->on('packages')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
-            $table->unique(['package_id', 'user_id']);
+            $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('restrict');
+            $table->unique(['package_id', 'product_id']);
         });
     }
 
