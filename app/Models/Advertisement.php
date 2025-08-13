@@ -13,11 +13,15 @@ class Advertisement extends Model
 {
     use HasFactory, HasTranslations;
 
-    protected $fillable = ['title', 'order', 'description', 'type', 'published_at', 'branch_id', 'product_id', 'category_id'];
+    protected $fillable = ['title', 'description', 'order', 'type', 'published_at', 'branch_id', 'product_id', 'category_id'];
+
     protected $casts = [
+        'title' => 'array',
+        'description' => 'array',
         'type' => AdvertisementType::class,
-        'published_at' => 'datetime'
+        'published_at' => 'datetime',
     ];
+
     public array $translatable = ['title', 'description'];
 
     public function files(): BelongsToMany

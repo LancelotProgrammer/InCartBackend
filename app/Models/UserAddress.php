@@ -10,7 +10,7 @@ class UserAddress extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'longitude', 'latitude', 'city_id'];
+    protected $fillable = ['title', 'description', 'longitude', 'latitude', 'city_id'];
 
     public function city(): BelongsTo
     {

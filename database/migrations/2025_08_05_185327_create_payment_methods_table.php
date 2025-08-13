@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->json('title');
             $table->integer('order');
             $table->dateTime('published_at')->nullable();
-            $table->json('translatable')->nullable();
 
             $table->unsignedBigInteger('branch_id');
 

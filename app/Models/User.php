@@ -42,6 +42,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->belongsTo(City::class);
     }
 
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
     public function addresses(): HasMany
     {
         return $this->hasMany(UserAddress::class);

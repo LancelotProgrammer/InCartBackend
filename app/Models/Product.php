@@ -13,6 +13,11 @@ class Product extends Model
 
     protected $fillable = ['title', 'description', 'brand', 'sku'];
 
+    protected $casts = [
+        'title' => 'array',
+        'description' => 'array',
+    ];
+
     public array $translatable = ['title', 'description'];
 
     public function files(): BelongsToMany

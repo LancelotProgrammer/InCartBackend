@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
+            $table->json('title');
+            $table->json('description')->nullable();
             $table->double('longitude');
             $table->double('latitude');
-            $table->json('translatable')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('city_id');

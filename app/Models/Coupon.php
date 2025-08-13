@@ -12,15 +12,18 @@ class Coupon extends Model
 {
     use HasFactory, HasTranslations;
 
-    protected $fillable = ['name', 'description', 'code', 'type', 'config', 'published_at', 'branch_id'];
+    protected $fillable = ['title', 'description', 'code', 'type', 'config', 'published_at', 'branch_id'];
 
     protected $casts = [
+        'title' => 'array',
+        'description' => 'array',
         'type' => CouponType::class,
         'config' => 'array',
-        'published_at', 'datetime'
+        'published_at' => 'datetime',
+        'datetime' => 'datetime',
     ];
 
-    public array $translatable = ['name'];
+    public array $translatable = ['title'];
 
     public function branch(): BelongsTo
     {

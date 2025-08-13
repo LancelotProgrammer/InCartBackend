@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Collection;
+use Tests\Mocks\SimpleCoupon;
+use Tests\Mocks\TestCoupon;
+use Tests\Mocks\TestCouponUser;
+use Tests\Mocks\TimeBasedCoupon;
 
 beforeEach(function () {
     $this->user = (object) [
@@ -35,116 +39,6 @@ beforeEach(function () {
         ],
     ]);
 });
-
-// Create a simple Coupon class for testing
-class TestCoupon
-{
-    public $type;
-
-    public $value;
-
-    public $max_discount;
-
-    public $is_active = true;
-
-    public $user_id = null;
-
-    public $min_cart_value = null;
-
-    public $products = [];
-
-    public $categories = [];
-
-    public $start_date = null;
-
-    public $end_date = null;
-
-    public function apply(float $subtotal, $user, Collection $cartItems): float
-    {
-        if (! $this->is_active) {
-            return 0;
-        }
-
-        $now = new DateTimeImmutable;
-        if ($this->start_date && $now < $this->start_date) {
-            return 0;
-        }
-        if ($this->end_date && $now > $this->end_date) {
-            return 0;
-        }
-
-        if ($this->user_id && $this->user_id !== $user->id) {
-            return 0;
-        }
-
-        if ($this->min_cart_value && $subtotal < $this->min_cart_value) {
-            return 0;
-        }
-
-        switch ($this->type) {
-            case 'fixed':
-                return min($this->value, $subtotal);
-
-            case 'percent':
-                $discount = $subtotal * ($this->value / 100);
-
-                return min($discount, $this->max_discount ?? $discount);
-
-            case 'product':
-                return $this->calculateProductDiscount($cartItems);
-
-            case 'category':
-                return $this->calculateCategoryDiscount($cartItems);
-
-            case 'bogo':
-                return $this->calculateBOGO($cartItems);
-
-            case 'free_shipping':
-            case 'free_item':
-                return 0;
-
-            default:
-                return 0;
-        }
-    }
-
-    protected function calculateProductDiscount(Collection $cartItems): float
-    {
-        $eligibleItems = $cartItems->filter(fn ($item) => in_array($item->product_id, $this->products)
-        );
-
-        $discountBase = $eligibleItems->sum(fn ($item) => $item->price * $item->quantity
-        );
-
-        return $discountBase * ($this->value / 100);
-    }
-
-    protected function calculateCategoryDiscount(Collection $cartItems): float
-    {
-        $eligibleItems = $cartItems->filter(fn ($item) => in_array($item->product->category_id, $this->categories)
-        );
-
-        $discountBase = $eligibleItems->sum(fn ($item) => $item->price * $item->quantity
-        );
-
-        return $discountBase * ($this->value / 100);
-    }
-
-    protected function calculateBOGO(Collection $cartItems): float
-    {
-        $eligibleItems = $cartItems->filter(fn ($item) => in_array($item->product_id, $this->products)
-        );
-
-        $discount = 0;
-
-        foreach ($eligibleItems as $item) {
-            $freeQty = intdiv($item->quantity, 2);
-            $discount += $freeQty * $item->price;
-        }
-
-        return $discount;
-    }
-}
 
 it('applies fixed discount correctly', function () {
     $coupon = new TestCoupon;
@@ -199,34 +93,6 @@ it('applies BOGO discount correctly', function () {
     expect($discount)->toBe(50); // floor(3/2) = 1 free * 50 = 50
 });
 
-class TestCouponUser
-{
-    public $type;
-
-    public $value;
-
-    public $is_active = true;
-
-    public $user_id = null; // Specific user allowed
-
-    public function apply(float $subtotal, object $user, Collection $cartItems): float
-    {
-        if (! $this->is_active) {
-            return 0;
-        }
-
-        if ($this->user_id !== null && $this->user_id !== $user->id) {
-            return 0;
-        }
-
-        if ($this->type === 'fixed') {
-            return min($this->value, $subtotal);
-        }
-
-        return 0;
-    }
-}
-
 beforeEach(function () {
     $this->user1 = (object) ['id' => 1];
     $this->user2 = (object) ['id' => 2];
@@ -257,57 +123,6 @@ it('does not apply user-specific coupon to other users', function () {
 
     expect($discount)->toBe(0); // Not allowed
 });
-
-class TimeBasedCoupon
-{
-    public $type;
-
-    public $value;
-
-    public $is_active = true;
-
-    public ?DateTimeImmutable $start_date = null;
-
-    public ?DateTimeImmutable $end_date = null;
-
-    public ?DateTimeImmutable $fixed_date = null;
-
-    public bool $weekends_only = false;
-
-    public ?int $only_weekday = null; // 0 (Sun) to 6 (Sat)
-
-    public function apply(float $subtotal, object $user, Collection $cartItems, DateTimeImmutable $now): float
-    {
-        if (! $this->is_active) {
-            return 0;
-        }
-
-        if ($this->start_date && $now < $this->start_date) {
-            return 0;
-        }
-        if ($this->end_date && $now > $this->end_date) {
-            return 0;
-        }
-
-        if ($this->fixed_date && $now->format('Y-m-d') !== $this->fixed_date->format('Y-m-d')) {
-            return 0;
-        }
-
-        if ($this->weekends_only && ! in_array($now->format('N'), [6, 7])) {
-            return 0;
-        } // Sat=6, Sun=7
-
-        if (! is_null($this->only_weekday) && intval($now->format('w')) !== $this->only_weekday) {
-            return 0;
-        }
-
-        if ($this->type === 'fixed') {
-            return min($this->value, $subtotal);
-        }
-
-        return 0;
-    }
-}
 
 beforeEach(function () {
     $this->user = (object) ['id' => 1];
@@ -376,39 +191,6 @@ it('applies coupon only on specific weekday', function () {
     expect($coupon->apply(100, $this->user, $this->cartItems, $monday))->toBe(12);
     expect($coupon->apply(100, $this->user, $this->cartItems, $tuesday))->toBe(0);
 });
-
-class SimpleCoupon
-{
-    public $type;
-
-    public $value; // not used in these cases
-
-    public $is_active = true;
-
-    public $free_product_id = null;
-
-    public function apply(float $subtotal, object $user, Collection $cartItems, array &$order): float
-    {
-        if (! $this->is_active) {
-            return 0;
-        }
-
-        switch ($this->type) {
-            case 'free_item':
-                $order['free_items'][] = $this->free_product_id;
-
-                return 0;
-
-            case 'free_shipping':
-                $order['delivery_fee'] = 0;
-
-                return 0;
-
-            default:
-                return 0;
-        }
-    }
-}
 
 beforeEach(function () {
     $this->user = (object) ['id' => 1];

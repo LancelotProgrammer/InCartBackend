@@ -17,8 +17,8 @@ class BranchFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->company(),
-            'description' => $this->faker->optional()->sentence(),
+            'title' => $this->translations('en', $this->faker->sentence(3)),
+            'description' => $this->translations('en', $this->faker->optional()->paragraph()),
             'longitude' => $this->faker->randomFloat(6, 34.0, 56.5),  // Saudi Arabia longitude range
             'latitude' => $this->faker->randomFloat(6, 16.0, 32.0),   // Saudi Arabia latitude range
         ];

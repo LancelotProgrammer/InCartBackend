@@ -13,10 +13,12 @@ class PaymentMethod extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['title', 'order', 'branch_id', 'published_at'];
+    protected $fillable = ['title', 'description', 'order', 'branch_id', 'published_at'];
 
     protected $casts = [
-        'published_at' => 'datetime'
+        'title' => 'array',
+        'description' => 'array',
+        'published_at' => 'datetime',
     ];
 
     public array $translatable = ['title'];

@@ -40,10 +40,15 @@ use InvalidArgumentException;
 class AuthenticationController extends Controller
 {
     private const PASSWORD_ATTEMPTS = 5;
+
     private const OTP_ATTEMPTS = 10;
+
     private const EMAIL_VERIFICATION_ATTEMPTS = 10;
+
     private const EMAIL_VERIFICATION_DAYS = 30;
+
     private const FORGOT_PASSWORD_ATTEMPTS = 10;
+
     private const FORGOT_PASSWORD_DAYS = 30;
 
     /**

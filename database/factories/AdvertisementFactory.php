@@ -26,9 +26,9 @@ class AdvertisementFactory extends Factory
         $linkCategory = ! $linkProduct && $this->faker->boolean(50);
 
         return [
-            'title' => $this->faker->sentence(3),
+            'title' => $this->translations('en', $this->faker->sentence(3)),
+            'description' => $this->translations('en', $this->faker->optional()->paragraph()),
             'order' => $this->faker->numberBetween(1, 100),
-            'description' => $this->faker->optional()->paragraph(),
             'type' => $type->value,
             'product_id' => $linkProduct ? Product::inRandomOrder()->first()?->id : null,
             'category_id' => $linkCategory ? Category::inRandomOrder()->first()?->id : null,

@@ -13,7 +13,13 @@ class Branch extends Model
 {
     use HasFactory, HasTranslations;
 
-    protected $fillable = ['name', 'description', 'longitude', 'latitude', 'city_id'];
+    protected $fillable = ['title', 'description', 'longitude', 'latitude', 'city_id'];
+
+    protected $casts = [
+        'title' => 'array',
+        'description' => 'array',
+    ];
+
     public array $translatable = ['title', 'description'];
 
     public function city(): BelongsTo

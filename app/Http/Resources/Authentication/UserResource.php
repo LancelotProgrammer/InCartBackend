@@ -13,9 +13,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class UserResource extends JsonResource
 {
-    /**
-     * @param  array<string, string>  $session
-     */
     public function __construct(mixed $resource, private string $token)
     {
         parent::__construct($resource);

@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description')->nullable();
+            $table->json('title');
+            $table->json('description')->nullable();
             $table->dateTime('published_at')->nullable();
-            $table->json('translatable')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('parent_id')->nullable();

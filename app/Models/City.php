@@ -14,6 +14,11 @@ class City extends Model
     public $timestamps = false;
 
     protected $fillable = ['name'];
+
+    public $casts = [
+        'name' => 'array',
+    ];
+
     public array $translatable = ['name'];
 
     public function userAddresses(): HasMany

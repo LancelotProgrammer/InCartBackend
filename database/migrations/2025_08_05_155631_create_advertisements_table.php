@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('advertisements', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->json('title');
+            $table->json('description')->nullable();
             $table->integer('order');
-            $table->text('description')->nullable();
             $table->integer('type');
             $table->dateTime('published_at')->nullable();
-            $table->json('translatable')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('branch_id');

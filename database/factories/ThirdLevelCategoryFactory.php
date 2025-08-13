@@ -5,9 +5,6 @@ namespace Database\Factories;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
- */
 class ThirdLevelCategoryFactory extends Factory
 {
     protected $model = Category::class;
@@ -25,8 +22,8 @@ class ThirdLevelCategoryFactory extends Factory
         })->inRandomOrder()->first();
 
         return [
-            'title' => $this->faker->words(2, true),
-            'description' => $this->faker->optional()->sentence(),
+            'title' => $this->translations('en', $this->faker->sentence(3)),
+            'description' => $this->translations('en', $this->faker->optional()->paragraph()),
             'published_at' => $this->faker->optional()->dateTimeBetween('-1 years', 'now'),
             'parent_id' => $parent?->id,
         ];

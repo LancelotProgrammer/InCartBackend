@@ -20,6 +20,8 @@ class Category extends Model
     protected $fillable = ['title', 'description', 'published_at', 'parent_id'];
 
     protected $casts = [
+        'title' => 'array',
+        'description' => 'array',
         'published_at' => 'datetime',
     ];
 

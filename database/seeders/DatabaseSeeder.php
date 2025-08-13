@@ -24,6 +24,7 @@ use Database\Factories\PackageFactory;
 use Database\Factories\RootCategoryFactory;
 use Database\Factories\SecondLevelCategoryFactory;
 use Database\Factories\ThirdLevelCategoryFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends BaseSeeder
@@ -60,9 +61,9 @@ class DatabaseSeeder extends BaseSeeder
 
         $this->command->info('seeding cities');
         City::insert([
-            ['name' => 'Jeddah'],
-            ['name' => 'Riyadh'],
-            ['name' => 'Makkah'],
+            ['name' => json_encode(Factory::translations(['en', 'ar'], ['Jeddah', 'جدة']), JSON_UNESCAPED_UNICODE)],
+            ['name' => json_encode(Factory::translations(['en', 'ar'], ['Riyadh', 'رياض']), JSON_UNESCAPED_UNICODE)],
+            ['name' => json_encode(Factory::translations(['en', 'ar'], ['Makkah', 'مكة']), JSON_UNESCAPED_UNICODE)],
         ]);
 
         $this->command->info('seeding roles');
@@ -92,7 +93,7 @@ class DatabaseSeeder extends BaseSeeder
             'email' => 'admin@admin.com',
             'password' => Hash::make('admin123'),
             'role_id' => Role::where('title', '=', 'admin')->value('id'),
-            'city_id' => City::where('name', '=', 'Makkah')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
         ]);
 
         $this->command->info('seeding categories');
@@ -146,58 +147,68 @@ class DatabaseSeeder extends BaseSeeder
         $this->command->info('seeding coupons');
         Coupon::insert(
             [
-                'name' => 'test coupon',
-                'description' => 'test coupon',
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                 'code' => '123456',
                 'type' => CouponType::FIXED->value,
                 'config' => '{"discount_amount":15,"start_date":"2025-06-01","end_date":"2026-06-30","use_limit":5,"user_limit":100}',
-                'branch_id' => Branch::all()->first()->id
+                'branch_id' => Branch::all()->first()->id,
             ],
             [
-                'name' => 'test coupon',
-                'description' => 'test coupon',
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                 'code' => '123456',
                 'type' => CouponType::FIXED->value,
                 'config' => '{"discount_amount":10,"start_date":"2025-09-01","end_date":"2026-06-30","use_limit":3,"user_limit":50}',
-                'branch_id' => Branch::all()->first()->id
+                'branch_id' => Branch::all()->first()->id,
             ],
             [
-                'name' => 'test coupon',
-                'description' => 'test coupon',
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                 'code' => '123456',
                 'type' => CouponType::FIXED->value,
                 'config' => '{"discount_amount":5,"start_date":"2025-10-01","end_date":"2026-06-30","use_limit":2,"user_limit":25}',
-                'branch_id' => Branch::all()->first()->id
+                'branch_id' => Branch::all()->first()->id,
             ]
         );
 
         $this->command->info('seeding payment methods');
-        PaymentMethod::insert(
-            [
-                'title' => 'Pay on Delivery',
-                'order' => '1',
-            ],
-            [
-                'title' => 'Apple Pay',
-                'order' => '2',
-            ],
-            [
-                'title' => 'Google Pay',
-                'order' => '3',
-            ],
-            [
-                'title' => 'Mada Pay',
-                'order' => '3',
-            ],
-            [
-                'title' => 'STC Pay',
-                'order' => '3',
-            ],
-            [
-                'title' => 'Credit Card',
-                'order' => '3',
-            ],
-        );
+        $branches = Branch::all(); // or Branch::pluck('id')
+
+        foreach ($branches as $branch) {
+            PaymentMethod::insert(
+                [
+                    'branch_id' => $branch->id,
+                    'title' => json_encode(Factory::translations(['en', 'ar'], ['Pay on Delivery', 'الدفع عند الاستلام']), JSON_UNESCAPED_UNICODE),
+                    'order' => '1',
+                ],
+                [
+                    'branch_id' => $branch->id,
+                    'title' => json_encode(Factory::translations(['en', 'ar'], ['Apple Pay', 'Apple Pay']), JSON_UNESCAPED_UNICODE),
+                    'order' => '2',
+                ],
+                [
+                    'branch_id' => $branch->id,
+                    'title' => json_encode(Factory::translations(['en', 'ar'], ['Google Pay', 'Google Pay']), JSON_UNESCAPED_UNICODE),
+                    'order' => '3',
+                ],
+                [
+                    'branch_id' => $branch->id,
+                    'title' => json_encode(Factory::translations(['en', 'ar'], ['Mada Pay', 'Mada Pay']), JSON_UNESCAPED_UNICODE),
+                    'order' => '3',
+                ],
+                [
+                    'branch_id' => $branch->id,
+                    'title' => json_encode(Factory::translations(['en', 'ar'], ['STC Pay', 'STC Pay']), JSON_UNESCAPED_UNICODE),
+                    'order' => '3',
+                ],
+                [
+                    'branch_id' => $branch->id,
+                    'title' => json_encode(Factory::translations(['en', 'ar'], ['Credit Card', 'بطاقة ائتمانيه']), JSON_UNESCAPED_UNICODE),
+                    'order' => '3',
+                ],
+            );
+        }
 
         $this->command->info('seeding users');
         User::factory($userCount)
@@ -206,7 +217,7 @@ class DatabaseSeeder extends BaseSeeder
             ->has(
                 FavoriteFactory::new()
                     ->count($favoriteCount)
-                    ->sequence(fn($seq) => [
+                    ->sequence(fn ($seq) => [
                         'product_id' => $products[$seq->index % count($products)]->id,
                     ]),
                 'favorites'

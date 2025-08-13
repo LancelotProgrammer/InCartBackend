@@ -60,8 +60,7 @@ class OrderFactory extends Factory
         if ($applyCoupon) {
             $coupon = Coupon::inRandomOrder()->first();
             if ($coupon) {
-                $config = json_decode($coupon->config, true);
-                $couponDiscount = $config['discount_amount'] ?? 0;
+                $couponDiscount = $coupon->config['discount_amount'] ?? 0;
             }
         }
 
