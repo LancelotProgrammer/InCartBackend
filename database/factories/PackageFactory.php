@@ -18,6 +18,7 @@ class PackageFactory extends Factory
     {
         return [
             'title' => $this->faker->words(2, true),
+            'description' => $this->faker->optional()->paragraph(),
         ];
     }
 }

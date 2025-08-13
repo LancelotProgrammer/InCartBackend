@@ -28,4 +28,14 @@ class Branch extends Model
     {
         return $this->hasMany(Advertisement::class);
     }
+
+    public function coupons(): HasMany
+    {
+        return $this->hasMany(Coupon::class);
+    }
+
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
 }

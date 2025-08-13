@@ -49,59 +49,6 @@ class DatabaseSeeder extends BaseSeeder
         $this->command->info(PHP_EOL);
         $this->command->info('seeding static data');
 
-        $this->command->info('seeding coupons');
-        Coupon::insert(
-            [
-                'name' => 'test coupon',
-                'description' => 'test coupon',
-                'code' => '123456',
-                'type' => CouponType::FIXED->value,
-                'config' => '{"discount_amount":15,"start_date":"2025-06-01","end_date":"2026-06-30","use_limit":5,"user_limit":100}',
-            ],
-            [
-                'name' => 'test coupon',
-                'description' => 'test coupon',
-                'code' => '123456',
-                'type' => CouponType::FIXED->value,
-                'config' => '{"discount_amount":10,"start_date":"2025-09-01","end_date":"2026-06-30","use_limit":3,"user_limit":50}',
-            ],
-            [
-                'name' => 'test coupon',
-                'description' => 'test coupon',
-                'code' => '123456',
-                'type' => CouponType::FIXED->value,
-                'config' => '{"discount_amount":5,"start_date":"2025-10-01","end_date":"2026-06-30","use_limit":2,"user_limit":25}',
-            ]
-        );
-
-        $this->command->info('seeding payment methods');
-        PaymentMethod::insert(
-            [
-                'title' => 'Pay on Delivery',
-                'order' => '1',
-            ],
-            [
-                'title' => 'Apple Pay',
-                'order' => '2',
-            ],
-            [
-                'title' => 'Google Pay',
-                'order' => '3',
-            ],
-            [
-                'title' => 'Mada Pay',
-                'order' => '3',
-            ],
-            [
-                'title' => 'STC Pay',
-                'order' => '3',
-            ],
-            [
-                'title' => 'Credit Card',
-                'order' => '3',
-            ],
-        );
-
         $this->command->info('seeding settings');
         Setting::create([
             'key' => 'test value',
@@ -196,6 +143,62 @@ class DatabaseSeeder extends BaseSeeder
             )
             ->create();
 
+        $this->command->info('seeding coupons');
+        Coupon::insert(
+            [
+                'name' => 'test coupon',
+                'description' => 'test coupon',
+                'code' => '123456',
+                'type' => CouponType::FIXED->value,
+                'config' => '{"discount_amount":15,"start_date":"2025-06-01","end_date":"2026-06-30","use_limit":5,"user_limit":100}',
+                'branch_id' => Branch::all()->first()->id
+            ],
+            [
+                'name' => 'test coupon',
+                'description' => 'test coupon',
+                'code' => '123456',
+                'type' => CouponType::FIXED->value,
+                'config' => '{"discount_amount":10,"start_date":"2025-09-01","end_date":"2026-06-30","use_limit":3,"user_limit":50}',
+                'branch_id' => Branch::all()->first()->id
+            ],
+            [
+                'name' => 'test coupon',
+                'description' => 'test coupon',
+                'code' => '123456',
+                'type' => CouponType::FIXED->value,
+                'config' => '{"discount_amount":5,"start_date":"2025-10-01","end_date":"2026-06-30","use_limit":2,"user_limit":25}',
+                'branch_id' => Branch::all()->first()->id
+            ]
+        );
+
+        $this->command->info('seeding payment methods');
+        PaymentMethod::insert(
+            [
+                'title' => 'Pay on Delivery',
+                'order' => '1',
+            ],
+            [
+                'title' => 'Apple Pay',
+                'order' => '2',
+            ],
+            [
+                'title' => 'Google Pay',
+                'order' => '3',
+            ],
+            [
+                'title' => 'Mada Pay',
+                'order' => '3',
+            ],
+            [
+                'title' => 'STC Pay',
+                'order' => '3',
+            ],
+            [
+                'title' => 'Credit Card',
+                'order' => '3',
+            ],
+        );
+
         $this->command->info('seeding users');
         User::factory($userCount)
             ->has(UserAddress::factory()->count($userAddressCount), 'addresses')
@@ -203,7 +206,7 @@ class DatabaseSeeder extends BaseSeeder
             ->has(
                 FavoriteFactory::new()
                     ->count($favoriteCount)
-                    ->sequence(fn ($seq) => [
+                    ->sequence(fn($seq) => [
                         'product_id' => $products[$seq->index % count($products)]->id,
                     ]),
                 'favorites'

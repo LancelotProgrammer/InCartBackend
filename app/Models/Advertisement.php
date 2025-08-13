@@ -12,10 +12,11 @@ class Advertisement extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'order', 'description', 'type', 'branch_id', 'product_id', 'category_id'];
+    protected $fillable = ['title', 'order', 'description', 'type', 'published_at', 'branch_id', 'product_id', 'category_id'];
 
     protected $casts = [
         'type' => AdvertisementType::class,
+        'published_at' => 'datetime'
     ];
 
     public function files(): BelongsToMany
