@@ -12,6 +12,7 @@ use App\Mail\VerifyEmail;
 use App\Models\EmailVerificationRequest;
 use App\Models\PasswordResetRequest;
 use App\Models\PhoneVerificationRequest;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserFirebaseToken;
 use App\Services\Otp;
@@ -25,22 +26,26 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use InvalidArgumentException;
-use Laravel\Sanctum\PersonalAccessToken;
 
 /*
     TODO:
-        - role_id should be applied from database
-        - move hardcode values to const
-        - test refresh token, update user info, middleware for optional auth, middleware for blocked users
+        - test update user info, middleware for optional auth, middleware for blocked users
         - null edge case at model::where
         - improve phone number validation
-        - write tests for all functions
         - refactor code to use services
         - refactor code to use repositories
+        - write tests for all functions
 */
 
 class AuthenticationController extends Controller
 {
+    private const PASSWORD_ATTEMPTS = 5;
+    private const OTP_ATTEMPTS = 10;
+    private const EMAIL_VERIFICATION_ATTEMPTS = 10;
+    private const EMAIL_VERIFICATION_DAYS = 30;
+    private const FORGOT_PASSWORD_ATTEMPTS = 10;
+    private const FORGOT_PASSWORD_DAYS = 30;
+
     /**
      * @unauthenticated
      *
@@ -60,7 +65,7 @@ class AuthenticationController extends Controller
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
             'city_id' => $request->input('cityId'),
-            'role_id' => 1,
+            'role_id' => Role::where('title', '=', 'user')->value('id'),
         ]);
 
         $this->requestVerifyEmail($user->id, $request->input('email'));
@@ -90,7 +95,7 @@ class AuthenticationController extends Controller
                 'The user email is not found'
             );
         }
-        if (RateLimiter::tooManyAttempts("Login|$user->email|$ip", 5)) {
+        if (RateLimiter::tooManyAttempts("Login|$user->email|$ip", self::PASSWORD_ATTEMPTS)) {
             RateLimiter::increment("Login|$user->email|$ip");
             throw new AuthenticationException(
                 trans('auth.credentials_are_incorrect'),
@@ -128,7 +133,7 @@ class AuthenticationController extends Controller
             'name' => $request->input('name'),
             'phone' => $request->input('phone'),
             'city_id' => $request->input('cityId'),
-            'role_id' => 1,
+            'role_id' => Role::where('title', '=', 'user')->value('id'),
         ]);
 
         $this->requestVerifyPhone($user->id, $request->input('phone'));
@@ -185,7 +190,7 @@ class AuthenticationController extends Controller
         $phone = $request->input('phone');
         $code = $request->input('code');
 
-        if (RateLimiter::tooManyAttempts("VerifyPhone|$phone", 10)) {
+        if (RateLimiter::tooManyAttempts("VerifyPhone|$phone", self::OTP_ATTEMPTS)) {
             throw new AuthenticationException(
                 trans('auth.opt_verification_error'),
                 'Too many attempts'
@@ -236,59 +241,9 @@ class AuthenticationController extends Controller
 
     private function createUserResponse(User $user): UserResource
     {
-        $accessTokenExpiresAt = Carbon::now()->addDays(1);
-        $refreshTokenExpiresAt = Carbon::now()->addDays(7);
-        $accessToken = $user->createToken('access_token', ['*'], $accessTokenExpiresAt)->plainTextToken;
-        $refreshToken = $user->createToken('refresh_token', ['refresh'], $refreshTokenExpiresAt)->plainTextToken;
+        $accessToken = $user->createToken('access_token', ['*'])->plainTextToken;
 
-        return new UserResource($user, [
-            'accessToken' => $accessToken,
-            'accessTokenExpiresAt' => $accessTokenExpiresAt,
-            'refreshToken' => $refreshToken,
-            'refreshTokenExpiresAt' => $refreshTokenExpiresAt,
-        ]);
-    }
-
-    /**
-     * @unauthenticated
-     *
-     * @group Session Management
-     */
-    public function refreshTokenRequest(Request $request): SuccessfulResponseResource
-    {
-        $currentRefreshToken = $request->bearerToken();
-        $refreshToken = PersonalAccessToken::findToken($currentRefreshToken);
-
-        if (! $refreshToken || ! $refreshToken->can('refresh') || $refreshToken->expires_at->isPast()) {
-            throw new AuthenticationException(
-                trans('auth.something_went_wrong'),
-                'Invalid or expired refresh token'
-            );
-        }
-
-        $user = $refreshToken->tokenable;
-        if ($user === null) {
-            throw new AuthenticationException(
-                trans('auth.something_went_wrong'),
-                'No user connected to token'
-            );
-        }
-
-        $refreshToken->delete();
-
-        $accessTokenExpiresAt = Carbon::now()->addDays(1);
-        $refreshTokenExpiresAt = Carbon::now()->addDays(7);
-
-        $newAccessToken = $user->createToken('access_token', ['*'], $accessTokenExpiresAt)->plainTextToken;
-        $newRefreshToken = $user->createToken('refresh_token', ['refresh'], $refreshTokenExpiresAt)->plainTextToken;
-
-        return new SuccessfulResponseResource([
-            'access_token' => $newAccessToken,
-            'access_token_expires_at' => $accessTokenExpiresAt,
-            'refresh_token' => $newRefreshToken,
-            'refresh_token_expires_at' => $refreshTokenExpiresAt,
-            'token_type' => 'Bearer',
-        ]);
+        return new UserResource($user, $accessToken);
     }
 
     /**
@@ -425,7 +380,7 @@ class AuthenticationController extends Controller
         $email = $request->input('email');
         $token = $request->input('token');
 
-        if (RateLimiter::tooManyAttempts("VerifyEmail|$email", 10)) {
+        if (RateLimiter::tooManyAttempts("VerifyEmail|$email", self::EMAIL_VERIFICATION_ATTEMPTS)) {
             RateLimiter::increment("VerifyEmail|$email");
 
             return view('pages.email-verification-failure');
@@ -439,7 +394,7 @@ class AuthenticationController extends Controller
         }
 
         $requestDate = Carbon::parse($emailVerificationRequest->created_at);
-        if (Carbon::now()->diffInDays($requestDate) > 30) {
+        if (Carbon::now()->diffInDays($requestDate) > self::EMAIL_VERIFICATION_DAYS) {
             EmailVerificationRequest::where('user_id', $emailVerificationRequest->user_id)->delete();
             RateLimiter::increment("VerifyEmail|$email");
 
@@ -526,7 +481,7 @@ class AuthenticationController extends Controller
 
         $rateLimitKey = "ForgotPasswordRequest|$email";
 
-        if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
+        if (RateLimiter::tooManyAttempts($rateLimitKey, self::FORGOT_PASSWORD_ATTEMPTS)) {
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Too many requests'
@@ -612,7 +567,7 @@ class AuthenticationController extends Controller
             );
         }
 
-        if ($PasswordResetRequest->attempts >= 10) {
+        if ($PasswordResetRequest->attempts >= self::FORGOT_PASSWORD_ATTEMPTS) {
             PasswordResetRequest::where('user_id', $user->id)->delete();
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
@@ -629,7 +584,7 @@ class AuthenticationController extends Controller
             );
         }
 
-        if (Carbon::now()->diffInMinutes(Carbon::parse($passwordReset->created_at)) >= 30) {
+        if (Carbon::now()->diffInMinutes(Carbon::parse($passwordReset->created_at)) >= self::FORGOT_PASSWORD_DAYS) {
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Password reset code expired'
@@ -673,7 +628,7 @@ class AuthenticationController extends Controller
             );
         }
 
-        if (Carbon::now()->diffInMinutes(Carbon::parse($PasswordReset->created_at)) >= 30) {
+        if (Carbon::now()->diffInMinutes(Carbon::parse($PasswordReset->created_at)) >= self::FORGOT_PASSWORD_DAYS) {
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Reset password code has expired'

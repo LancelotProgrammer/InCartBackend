@@ -16,7 +16,7 @@ class UserResource extends JsonResource
     /**
      * @param  array<string, string>  $session
      */
-    public function __construct(mixed $resource, private array $session)
+    public function __construct(mixed $resource, private string $token)
     {
         parent::__construct($resource);
     }
@@ -33,7 +33,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email ?? null,
             'phone' => $this->phone ?? null,
-            'session' => $this->session,
+            'token' => $this->token,
         ];
     }
 }

@@ -25,8 +25,6 @@ Route::middleware(EnsureHeaderValidation::class)->group(function () {
         Route::post('/request-forget-password', [AuthenticationController::class, 'forgotPasswordRequest']);
         Route::post('/verify-forget-password', [AuthenticationController::class, 'verifyForgetPasswordRequest']);
         Route::post('/reset-forget-password', [AuthenticationController::class, 'resetPasswordRequest']);
-
-        Route::post('/refresh/token', [AuthenticationController::class, 'refreshTokenRequest']);
     });
 
     Route::middleware(['auth:sanctum', UserStateValidation::class])->prefix('/auth')->group(function () {
