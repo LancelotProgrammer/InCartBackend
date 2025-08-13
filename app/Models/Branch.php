@@ -24,7 +24,7 @@ class Branch extends Model
 
     public function city(): BelongsTo
     {
-        return $this->belongsTo(City::class, 'branch_product');
+        return $this->belongsTo(City::class);
     }
 
     public function products(): BelongsToMany

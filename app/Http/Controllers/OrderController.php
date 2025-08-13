@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    public function getUserPreviousOrders(Request $request): SuccessfulResponseResource
+    {
+        return new SuccessfulResponseResource;
+    }
+
     public function order(Request $request): SuccessfulResponseResource
     {
         return new SuccessfulResponseResource;

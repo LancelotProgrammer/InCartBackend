@@ -5,9 +5,14 @@ use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserAddressController;
+use App\Http\Controllers\UserNotificationController;
 use App\Http\Middleware\EnsureHeaderValidation;
 use App\Http\Middleware\UserStateValidation;
 use Illuminate\Support\Facades\Route;
@@ -44,13 +49,31 @@ Route::middleware(EnsureHeaderValidation::class)->group(function () {
 
     Route::middleware(['auth:sanctum', UserStateValidation::class])->prefix('/auth')->group(function () {
         Route::get('/home', [HomeController::class, 'getHome']);
+
         Route::get('/cities', [CityController::class, 'getCities']);
         Route::get('/branches', [BranchController::class, 'getBranches']);
         Route::get('/products', [ProductController::class, 'getProducts']);
         Route::get('/Categories', [CategoryController::class, 'getCategories']);
         Route::get('/Advertisements', [AdvertisementController::class, 'getAdvertisements']);
+        Route::get('/payment-methods', [PaymentMethodController::class, 'getPaymentMethods']);
+
+        Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);
+        Route::get('/users/notifications', [UserNotificationController::class, 'getUserNotifications']);
 
         Route::post('/order', [OrderController::class, 'order']);
         Route::post('/checkout', [OrderController::class, 'checkout']);
+
+        Route::get('/packages', [PackageController::class, 'getPackages']);
+        Route::get('/packages/products/{id}', [PackageController::class, 'getPackageProducts']);
+        Route::post('/packages/{package_id}/products/{product_id}', [PackageController::class, 'addProduct']);
+        Route::delete('/packages/{package_id}/products/{product_id}', [PackageController::class, 'deleteProduct']);
+
+        Route::get('/favorites/products', [FavoriteController::class, 'getFavoriteProducts']);
+        Route::post('/favorites/products/{id}', [FavoriteController::class, 'addProduct']);
+        Route::delete('/favorites/products/{id}', [FavoriteController::class, 'deleteProduct']);
+
+        Route::get('/users/addresses', [UserAddressController::class, 'getUserAddresses']);
+        Route::post('/users/addresses/{id}', [UserAddressController::class, 'addAddress']);
+        Route::delete('/users/addresses/{id}', [UserAddressController::class, 'deleteAddress']);
     });
 });
