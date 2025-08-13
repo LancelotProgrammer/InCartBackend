@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->double('longitude');
             $table->double('latitude');
+            $table->json('translatable')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('city_id');

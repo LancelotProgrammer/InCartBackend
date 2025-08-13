@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->dateTime('published_at')->nullable();
+            $table->json('translatable')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('parent_id')->nullable();

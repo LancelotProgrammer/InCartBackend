@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('type'); // fixed
             $table->json('config'); // discount, start_date, end_date, use_limit, user_limit
             $table->dateTime('published_at')->nullable();
+            $table->json('translatable')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('branch_id');

@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
     public static int $maxDepth = 3;
 
@@ -21,6 +22,8 @@ class Category extends Model
     protected $casts = [
         'published_at' => 'datetime',
     ];
+
+    public array $translatable = ['title', 'description'];
 
     public function parent(): BelongsTo
     {

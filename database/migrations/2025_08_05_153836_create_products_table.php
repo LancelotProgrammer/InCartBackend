@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('brand')->nullable();
             $table->text('sku')->nullable();
+            $table->json('translatable')->nullable();
             $table->timestamps();
         });
     }

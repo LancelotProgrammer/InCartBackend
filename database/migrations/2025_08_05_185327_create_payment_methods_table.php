@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->integer('order');
             $table->dateTime('published_at')->nullable();
+            $table->json('translatable')->nullable();
 
             $table->unsignedBigInteger('branch_id');
 

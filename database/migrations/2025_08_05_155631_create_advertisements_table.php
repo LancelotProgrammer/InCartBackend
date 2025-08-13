@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('type');
             $table->dateTime('published_at')->nullable();
+            $table->json('translatable')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('branch_id');

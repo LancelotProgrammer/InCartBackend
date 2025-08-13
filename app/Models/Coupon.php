@@ -6,10 +6,11 @@ use App\Enums\CouponType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Translatable\HasTranslations;
 
 class Coupon extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
     protected $fillable = ['name', 'description', 'code', 'type', 'config', 'published_at', 'branch_id'];
 
@@ -18,6 +19,8 @@ class Coupon extends Model
         'config' => 'array',
         'published_at', 'datetime'
     ];
+
+    public array $translatable = ['name'];
 
     public function branch(): BelongsTo
     {
