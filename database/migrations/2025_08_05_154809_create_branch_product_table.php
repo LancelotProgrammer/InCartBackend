@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('branch_product', function (Blueprint $table) {
             $table->id();
 
-            $table->decimal('price');
+            $table->decimal('price', 10, 2);
             $table->integer('unit');
             $table->integer('discount');
-            $table->integer('maximum_order_quantity');
-            $table->integer('minimum_order_quantity');
+            $table->double('maximum_order_quantity');
+            $table->double('minimum_order_quantity');
             $table->double('quantity');
             $table->dateTime('expires_at');
             $table->dateTime('published_at')->nullable();

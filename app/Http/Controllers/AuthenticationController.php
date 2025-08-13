@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\AuthenticationException;
-
 use App\Http\Resources\Authentication\UserInfoResource;
 use App\Http\Resources\Authentication\UserResource;
 use App\Http\Resources\EmptySuccessfulResponseResource;
@@ -44,6 +43,7 @@ class AuthenticationController extends Controller
 {
     /**
      * @unauthenticated
+     *
      * @group Authentication Actions
      */
     public function emailRegister(Request $request): SuccessfulResponseResource
@@ -72,6 +72,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Authentication Actions
      */
     public function emailLogin(Request $request): SuccessfulResponseResource
@@ -112,6 +113,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Authentication Actions
      */
     public function phoneRegister(Request $request): EmptySuccessfulResponseResource
@@ -136,6 +138,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Authentication Actions
      */
     public function phoneLogin(Request $request): EmptySuccessfulResponseResource
@@ -169,6 +172,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Verify OTP
      */
     public function verifyOtp(Request $request): SuccessfulResponseResource
@@ -247,6 +251,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Session Management
      */
     public function refreshTokenRequest(Request $request): SuccessfulResponseResource
@@ -319,7 +324,7 @@ class AuthenticationController extends Controller
     public function updateUserPhone(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'phone' => 'required|string|unique:users,phone,' . $request->user()->id,
+            'phone' => 'required|string|unique:users,phone,'.$request->user()->id,
         ]);
 
         $user = $request->user();
@@ -336,7 +341,7 @@ class AuthenticationController extends Controller
     public function updateUserEmail(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email,' . $request->user()->id,
+            'email' => 'required|email|unique:users,email,'.$request->user()->id,
         ]);
 
         $user = $request->user();
@@ -402,7 +407,7 @@ class AuthenticationController extends Controller
         try {
             Otp::send($phone, $verifyPhone->code);
         } catch (Exception $e) {
-            Log::channel('error')->error('OTP Error' . $e->getMessage());
+            Log::channel('error')->error('OTP Error'.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'OTP verification request failed. look for OTP Error in error logs for more details'
@@ -455,6 +460,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Request Verify Email
      */
     public function getVerifyEmail(Request $request): EmptySuccessfulResponseResource
@@ -497,7 +503,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new VerifyEmail($user->name, $verifyEmail->email, $verifyEmail->token));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error' . $e->getMessage());
+            Log::channel('error')->error('Email Error'.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -507,6 +513,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Forgot password
      */
     public function forgotPasswordRequest(Request $request): EmptySuccessfulResponseResource
@@ -572,7 +579,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new ForgotPassword($userName, $code));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error' . $e->getMessage());
+            Log::channel('error')->error('Email Error'.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -582,6 +589,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Forgot password
      */
     public function verifyForgetPasswordRequest(Request $request): SuccessfulResponseResource
@@ -642,6 +650,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Forgot password
      */
     public function resetPasswordRequest(Request $request): EmptySuccessfulResponseResource
@@ -714,13 +723,14 @@ class AuthenticationController extends Controller
         for ($x = 1; $x <= $keyLength; $x++) {
             $key .= random_int(0, 9);
         }
+
         return $key;
     }
 
     private function isWeakNumber(string $number): bool
     {
         $length = strlen($number);
-        if (preg_match('/^(\d)\1{' . ($length - 1) . '}$/', $number)) {
+        if (preg_match('/^(\d)\1{'.($length - 1).'}$/', $number)) {
             return true;
         }
         for ($patternLength = 1; $patternLength <= $length / 2; $patternLength++) {

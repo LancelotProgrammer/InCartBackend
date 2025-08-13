@@ -3,31 +3,31 @@
 use Illuminate\Support\Collection;
 
 beforeEach(function () {
-    $this->user = (object)[
+    $this->user = (object) [
         'id' => 1,
     ];
 
-    $this->categoryA = (object)['id' => 10];
-    $this->categoryB = (object)['id' => 20];
+    $this->categoryA = (object) ['id' => 10];
+    $this->categoryB = (object) ['id' => 20];
 
-    $this->product1 = (object)[
+    $this->product1 = (object) [
         'id' => 100,
         'category_id' => $this->categoryA->id,
     ];
-    $this->product2 = (object)[
+    $this->product2 = (object) [
         'id' => 200,
         'category_id' => $this->categoryB->id,
     ];
 
     // Cart items as simple objects
     $this->cartItems = new Collection([
-        (object)[
+        (object) [
             'product_id' => $this->product1->id,
             'price' => 100,
             'quantity' => 2,
             'product' => $this->product1,
         ],
-        (object)[
+        (object) [
             'product_id' => $this->product2->id,
             'price' => 50,
             'quantity' => 3,
@@ -40,23 +40,32 @@ beforeEach(function () {
 class TestCoupon
 {
     public $type;
+
     public $value;
+
     public $max_discount;
+
     public $is_active = true;
+
     public $user_id = null;
+
     public $min_cart_value = null;
+
     public $products = [];
+
     public $categories = [];
+
     public $start_date = null;
+
     public $end_date = null;
 
     public function apply(float $subtotal, $user, Collection $cartItems): float
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return 0;
         }
 
-        $now = new DateTimeImmutable();
+        $now = new DateTimeImmutable;
         if ($this->start_date && $now < $this->start_date) {
             return 0;
         }
@@ -78,6 +87,7 @@ class TestCoupon
 
             case 'percent':
                 $discount = $subtotal * ($this->value / 100);
+
                 return min($discount, $this->max_discount ?? $discount);
 
             case 'product':
@@ -100,12 +110,10 @@ class TestCoupon
 
     protected function calculateProductDiscount(Collection $cartItems): float
     {
-        $eligibleItems = $cartItems->filter(fn($item) =>
-            in_array($item->product_id, $this->products)
+        $eligibleItems = $cartItems->filter(fn ($item) => in_array($item->product_id, $this->products)
         );
 
-        $discountBase = $eligibleItems->sum(fn($item) =>
-            $item->price * $item->quantity
+        $discountBase = $eligibleItems->sum(fn ($item) => $item->price * $item->quantity
         );
 
         return $discountBase * ($this->value / 100);
@@ -113,12 +121,10 @@ class TestCoupon
 
     protected function calculateCategoryDiscount(Collection $cartItems): float
     {
-        $eligibleItems = $cartItems->filter(fn($item) =>
-            in_array($item->product->category_id, $this->categories)
+        $eligibleItems = $cartItems->filter(fn ($item) => in_array($item->product->category_id, $this->categories)
         );
 
-        $discountBase = $eligibleItems->sum(fn($item) =>
-            $item->price * $item->quantity
+        $discountBase = $eligibleItems->sum(fn ($item) => $item->price * $item->quantity
         );
 
         return $discountBase * ($this->value / 100);
@@ -126,8 +132,7 @@ class TestCoupon
 
     protected function calculateBOGO(Collection $cartItems): float
     {
-        $eligibleItems = $cartItems->filter(fn($item) =>
-            in_array($item->product_id, $this->products)
+        $eligibleItems = $cartItems->filter(fn ($item) => in_array($item->product_id, $this->products)
         );
 
         $discount = 0;
@@ -142,7 +147,7 @@ class TestCoupon
 }
 
 it('applies fixed discount correctly', function () {
-    $coupon = new TestCoupon();
+    $coupon = new TestCoupon;
     $coupon->type = 'fixed';
     $coupon->value = 50;
     $coupon->is_active = true;
@@ -152,7 +157,7 @@ it('applies fixed discount correctly', function () {
 });
 
 it('applies percentage discount correctly', function () {
-    $coupon = new TestCoupon();
+    $coupon = new TestCoupon;
     $coupon->type = 'percent';
     $coupon->value = 10;
     $coupon->max_discount = 40;
@@ -163,7 +168,7 @@ it('applies percentage discount correctly', function () {
 });
 
 it('applies product-based discount correctly', function () {
-    $coupon = new TestCoupon();
+    $coupon = new TestCoupon;
     $coupon->type = 'product';
     $coupon->value = 20; // 20%
     $coupon->products = [$this->product1->id];
@@ -174,7 +179,7 @@ it('applies product-based discount correctly', function () {
 });
 
 it('applies category-based discount correctly', function () {
-    $coupon = new TestCoupon();
+    $coupon = new TestCoupon;
     $coupon->type = 'category';
     $coupon->value = 10; // 10%
     $coupon->categories = [$this->categoryB->id];
@@ -185,7 +190,7 @@ it('applies category-based discount correctly', function () {
 });
 
 it('applies BOGO discount correctly', function () {
-    $coupon = new TestCoupon();
+    $coupon = new TestCoupon;
     $coupon->type = 'bogo';
     $coupon->products = [$this->product2->id];
     $coupon->is_active = true;
@@ -194,31 +199,19 @@ it('applies BOGO discount correctly', function () {
     expect($discount)->toBe(50); // floor(3/2) = 1 free * 50 = 50
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class TestCouponUser
 {
     public $type;
+
     public $value;
+
     public $is_active = true;
+
     public $user_id = null; // Specific user allowed
 
     public function apply(float $subtotal, object $user, Collection $cartItems): float
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return 0;
         }
 
@@ -235,16 +228,16 @@ class TestCouponUser
 }
 
 beforeEach(function () {
-    $this->user1 = (object)['id' => 1];
-    $this->user2 = (object)['id' => 2];
+    $this->user1 = (object) ['id' => 1];
+    $this->user2 = (object) ['id' => 2];
 
     $this->cartItems = new Collection([
-        (object)['product_id' => 1, 'price' => 50, 'quantity' => 2], // total = 100
+        (object) ['product_id' => 1, 'price' => 50, 'quantity' => 2], // total = 100
     ]);
 });
 
 it('applies user-specific coupon to allowed user', function () {
-    $coupon = new TestCouponUser();
+    $coupon = new TestCouponUser;
     $coupon->type = 'fixed';
     $coupon->value = 20;
     $coupon->user_id = 1; // Only user 1 can use it
@@ -255,7 +248,7 @@ it('applies user-specific coupon to allowed user', function () {
 });
 
 it('does not apply user-specific coupon to other users', function () {
-    $coupon = new TestCouponUser();
+    $coupon = new TestCouponUser;
     $coupon->type = 'fixed';
     $coupon->value = 20;
     $coupon->user_id = 1; // Only user 1 can use it
@@ -265,38 +258,48 @@ it('does not apply user-specific coupon to other users', function () {
     expect($discount)->toBe(0); // Not allowed
 });
 
-
-
-
-
-
-
-
-
 class TimeBasedCoupon
 {
     public $type;
+
     public $value;
+
     public $is_active = true;
 
     public ?DateTimeImmutable $start_date = null;
+
     public ?DateTimeImmutable $end_date = null;
+
     public ?DateTimeImmutable $fixed_date = null;
+
     public bool $weekends_only = false;
+
     public ?int $only_weekday = null; // 0 (Sun) to 6 (Sat)
 
     public function apply(float $subtotal, object $user, Collection $cartItems, DateTimeImmutable $now): float
     {
-        if (!$this->is_active) return 0;
+        if (! $this->is_active) {
+            return 0;
+        }
 
-        if ($this->start_date && $now < $this->start_date) return 0;
-        if ($this->end_date && $now > $this->end_date) return 0;
+        if ($this->start_date && $now < $this->start_date) {
+            return 0;
+        }
+        if ($this->end_date && $now > $this->end_date) {
+            return 0;
+        }
 
-        if ($this->fixed_date && $now->format('Y-m-d') !== $this->fixed_date->format('Y-m-d')) return 0;
+        if ($this->fixed_date && $now->format('Y-m-d') !== $this->fixed_date->format('Y-m-d')) {
+            return 0;
+        }
 
-        if ($this->weekends_only && !in_array($now->format('N'), [6, 7])) return 0; // Sat=6, Sun=7
+        if ($this->weekends_only && ! in_array($now->format('N'), [6, 7])) {
+            return 0;
+        } // Sat=6, Sun=7
 
-        if (!is_null($this->only_weekday) && intval($now->format('w')) !== $this->only_weekday) return 0;
+        if (! is_null($this->only_weekday) && intval($now->format('w')) !== $this->only_weekday) {
+            return 0;
+        }
 
         if ($this->type === 'fixed') {
             return min($this->value, $subtotal);
@@ -307,14 +310,14 @@ class TimeBasedCoupon
 }
 
 beforeEach(function () {
-    $this->user = (object)['id' => 1];
+    $this->user = (object) ['id' => 1];
     $this->cartItems = new Collection([
-        (object)['product_id' => 1, 'price' => 50, 'quantity' => 2], // total 100
+        (object) ['product_id' => 1, 'price' => 50, 'quantity' => 2], // total 100
     ]);
 });
 
 it('applies coupon only during date range', function () {
-    $coupon = new TimeBasedCoupon();
+    $coupon = new TimeBasedCoupon;
     $coupon->type = 'fixed';
     $coupon->value = 10;
     $coupon->start_date = new DateTimeImmutable('2025-08-01');
@@ -334,7 +337,7 @@ it('applies coupon only during date range', function () {
 });
 
 it('applies coupon only on a fixed date', function () {
-    $coupon = new TimeBasedCoupon();
+    $coupon = new TimeBasedCoupon;
     $coupon->type = 'fixed';
     $coupon->value = 15;
     $coupon->fixed_date = new DateTimeImmutable('2025-08-10');
@@ -347,7 +350,7 @@ it('applies coupon only on a fixed date', function () {
 });
 
 it('applies coupon only on weekends', function () {
-    $coupon = new TimeBasedCoupon();
+    $coupon = new TimeBasedCoupon;
     $coupon->type = 'fixed';
     $coupon->value = 20;
     $coupon->weekends_only = true;
@@ -362,7 +365,7 @@ it('applies coupon only on weekends', function () {
 });
 
 it('applies coupon only on specific weekday', function () {
-    $coupon = new TimeBasedCoupon();
+    $coupon = new TimeBasedCoupon;
     $coupon->type = 'fixed';
     $coupon->value = 12;
     $coupon->only_weekday = 1; // Monday (0=Sun, 1=Mon...)
@@ -374,36 +377,31 @@ it('applies coupon only on specific weekday', function () {
     expect($coupon->apply(100, $this->user, $this->cartItems, $tuesday))->toBe(0);
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
 class SimpleCoupon
 {
     public $type;
+
     public $value; // not used in these cases
+
     public $is_active = true;
+
     public $free_product_id = null;
 
     public function apply(float $subtotal, object $user, Collection $cartItems, array &$order): float
     {
-        if (!$this->is_active) return 0;
+        if (! $this->is_active) {
+            return 0;
+        }
 
         switch ($this->type) {
             case 'free_item':
                 $order['free_items'][] = $this->free_product_id;
+
                 return 0;
 
             case 'free_shipping':
                 $order['delivery_fee'] = 0;
+
                 return 0;
 
             default:
@@ -413,9 +411,9 @@ class SimpleCoupon
 }
 
 beforeEach(function () {
-    $this->user = (object)['id' => 1];
+    $this->user = (object) ['id' => 1];
     $this->cartItems = new Collection([
-        (object)['product_id' => 1, 'price' => 100, 'quantity' => 1],
+        (object) ['product_id' => 1, 'price' => 100, 'quantity' => 1],
     ]);
 
     // Basic order template
@@ -426,7 +424,7 @@ beforeEach(function () {
 });
 
 it('adds free item to order', function () {
-    $coupon = new SimpleCoupon();
+    $coupon = new SimpleCoupon;
     $coupon->type = 'free_item';
     $coupon->free_product_id = 999;
 
@@ -437,7 +435,7 @@ it('adds free item to order', function () {
 });
 
 it('sets delivery fee to zero for free shipping', function () {
-    $coupon = new SimpleCoupon();
+    $coupon = new SimpleCoupon;
     $coupon->type = 'free_shipping';
 
     $discount = $coupon->apply(100, $this->user, $this->cartItems, $this->order);

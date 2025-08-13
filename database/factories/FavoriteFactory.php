@@ -17,7 +17,7 @@ class FavoriteFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            // note: this class is used in seeder
         ];
     }
 }

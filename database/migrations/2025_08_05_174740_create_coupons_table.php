@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('code');
             $table->integer('type'); // fixed
-            $table->json('config'); // discount, start_date, end_date, use_limit, user_limit 
+            $table->json('config'); // discount, start_date, end_date, use_limit, user_limit
             $table->timestamps();
         });
     }

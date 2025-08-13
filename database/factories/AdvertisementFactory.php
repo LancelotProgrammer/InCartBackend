@@ -2,6 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Enums\AdvertisementType;
+use App\Models\Branch;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +20,19 @@ class AdvertisementFactory extends Factory
      */
     public function definition(): array
     {
+        // choose between a category advertisement or product advertisement
+        $type = $this->faker->randomElement(AdvertisementType::cases());
+        $linkProduct = $this->faker->boolean(50);
+        $linkCategory = ! $linkProduct && $this->faker->boolean(50);
+
         return [
-            //
+            'title' => $this->faker->sentence(3),
+            'order' => $this->faker->numberBetween(1, 100),
+            'description' => $this->faker->optional()->paragraph(),
+            'type' => $type->value,
+            'product_id' => $linkProduct ? Product::inRandomOrder()->first()?->id : null,
+            'category_id' => $linkCategory ? Category::inRandomOrder()->first()?->id : null,
+            'branch_id' => Branch::inRandomOrder()->first()->id,
         ];
     }
 }

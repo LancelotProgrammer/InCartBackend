@@ -4,12 +4,36 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
-    use HasTranslations;
-
-    /** @use HasFactory<\Database\Factories\ProductFactory> */
     use HasFactory;
+
+    protected $fillable = ['title', 'description', 'brand', 'sku'];
+
+    public function files(): BelongsToMany
+    {
+        return $this->belongsToMany(File::class, 'product_file')->using(ProductFile::class);
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'product_category');
+    }
+
+    public function branches(): BelongsToMany
+    {
+        return $this->belongsToMany(Branch::class, 'branch_product')->using(BranchProduct::class);
+    }
+
+    public function packages(): BelongsToMany
+    {
+        return $this->belongsToMany(Package::class, 'package_product')->using(PackageProduct::class);
+    }
+
+    public function carts(): BelongsToMany
+    {
+        return $this->belongsToMany(Cart::class, 'cart_product')->using(CartProduct::class);
+    }
 }

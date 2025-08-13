@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-
             $table->string('order_number');
             $table->text('notes')->nullable();
             $table->integer('order_status');
             $table->integer('payment_status');
             $table->integer('delivery_status');
-
             $table->decimal('subtotal_price', 10, 2)->default(0);  // Before discounts, taxes, fees
             $table->decimal('coupon_discount', 10, 2)->default(0); // Discount from coupon
             $table->decimal('delivery_fee', 10, 2)->default(0);    // Calculated by zone/distance
@@ -27,16 +25,14 @@ return new class extends Migration
             $table->decimal('tax_amount', 10, 2)->default(0);      // VAT or other tax
             $table->decimal('total_price', 10, 2)->default(0);     // What the customer pays
             $table->decimal('detail_price', 10, 2)->default(0);    // Price before coupon discount
-
             $table->timestamp('delivery_date')->nullable();
-
             $table->timestamps();
             $table->softDeletes();
 
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('cart_id');
-            $table->unsignedBigInteger('coupon_id');
+            $table->unsignedBigInteger('coupon_id')->nullable();
             $table->unsignedBigInteger('payment_method_id');
             $table->unsignedBigInteger('user_address_id');
 

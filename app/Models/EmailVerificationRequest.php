@@ -9,4 +9,6 @@ class EmailVerificationRequest extends Model
     public $timestamps = false;
 
     protected $fillable = ['email', 'token', 'created_at'];
+
+    protected $casts = ['created_at' => 'datetime'];
 }

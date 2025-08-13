@@ -57,7 +57,7 @@ endpoints:
         custom: []
       cityId:
         name: cityId
-        description: ''
+        description: 'The <code>id</code> of an existing record in the cities table.'
         required: true
         example: 16
         type: integer
@@ -175,7 +175,7 @@ endpoints:
         custom: []
       cityId:
         name: cityId
-        description: ''
+        description: 'The <code>id</code> of an existing record in the cities table.'
         required: true
         example: 16
         type: integer

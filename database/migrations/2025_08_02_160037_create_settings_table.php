@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('key');
             $table->string('value');
+            $table->string('type');
             $table->string('group');
             $table->boolean('is_locked');
-            $table->timestamps();
         });
     }
 

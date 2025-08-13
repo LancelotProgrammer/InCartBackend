@@ -4,17 +4,17 @@ use Illuminate\Support\Collection;
 
 beforeEach(function () {
     // Fake user
-    $this->user = (object)[
+    $this->user = (object) [
         'id' => 1,
     ];
 
     // Fake products
     $this->cartItems = new Collection([
-        (object)[
+        (object) [
             'price' => 100,
             'quantity' => 2,
         ],
-        (object)[
+        (object) [
             'price' => 50,
             'quantity' => 3,
         ],
@@ -35,7 +35,7 @@ beforeEach(function () {
 
 function calculateOrderPrice(Collection $cartItems, float $couponDiscount, float $deliveryFee, float $serviceFee, float $taxRate): array
 {
-    $subtotal = $cartItems->sum(fn($item) => $item->price * $item->quantity);
+    $subtotal = $cartItems->sum(fn ($item) => $item->price * $item->quantity);
 
     $detailPrice = $subtotal + $deliveryFee + $serviceFee;
 
@@ -56,7 +56,7 @@ function calculateOrderPrice(Collection $cartItems, float $couponDiscount, float
 it('calculates order price correctly', function () {
     $result = calculateOrderPrice($this->cartItems, $this->couponDiscount, $this->deliveryFee, $this->serviceFee, $this->taxRate);
 
-    expect($result['subtotal'])->toBe(2*100 + 3*50); // 200 + 150 = 350
+    expect($result['subtotal'])->toBe(2 * 100 + 3 * 50); // 200 + 150 = 350
     expect($result['coupon_discount'])->toBe(20);
     expect($result['delivery_fee'])->toBe(5);
     expect($result['service_fee'])->toBe(2);

@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class PaymentMethod extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentMethodFactory> */
     use HasFactory;
+
+    public $timestamps = false;
+
+    protected $fillable = ['title', 'order'];
 }

@@ -2,12 +2,15 @@
 
 use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Middleware\EnsureHeaderValidation;
 use App\Http\Middleware\UserStateValidation;
 use Illuminate\Support\Facades\Route;
-use Laravel\Telescope\Http\Controllers\HomeController;
 
 Route::middleware(EnsureHeaderValidation::class)->group(function () {
     Route::prefix('/auth')->group(function () {
@@ -41,12 +44,15 @@ Route::middleware(EnsureHeaderValidation::class)->group(function () {
         Route::post('/logout', [AuthenticationController::class, 'logout']);
     });
 
-    Route::get('/home', [HomeController::class, 'home']);
-    Route::get('/products', [ProductController::class, 'getProducts']);
-    Route::get('/Categories', [CategoryController::class, 'getCategories']);
-    Route::get('/Advertisements', [AdvertisementController::class, 'getAdvertisements']);
+    Route::middleware(['auth:sanctum', UserStateValidation::class])->prefix('/auth')->group(function () {
+        Route::get('/home', [HomeController::class, 'getHome']);
+        Route::get('/cities', [CityController::class, 'getCities']);
+        Route::get('/branches', [BranchController::class, 'getBranches']);
+        Route::get('/products', [ProductController::class, 'getProducts']);
+        Route::get('/Categories', [CategoryController::class, 'getCategories']);
+        Route::get('/Advertisements', [AdvertisementController::class, 'getAdvertisements']);
 
-    // Route::middleware(['auth:sanctum', UserStateValidation::class])->group(function () {
-    //     Route::get('/order', [AuthenticationController::class, 'order']);
-    // });
+        Route::post('/order', [OrderController::class, 'order']);
+        Route::post('/checkout', [OrderController::class, 'checkout']);
+    });
 });

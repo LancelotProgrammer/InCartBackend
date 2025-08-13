@@ -30,12 +30,12 @@ function calculateDeliveryFee(object $userLocation, object $branchLocation): flo
 }
 
 it('calculates delivery fee based on distance', function () {
-    $branchLocation = (object)[
+    $branchLocation = (object) [
         'lat' => 40.7128,
         'lng' => -74.0060, // New York
     ];
 
-    $userLocation = (object)[
+    $userLocation = (object) [
         'lat' => 40.730610,
         'lng' => -73.935242, // NYC nearby
     ];
@@ -47,12 +47,12 @@ it('calculates delivery fee based on distance', function () {
 });
 
 it('calculates minimum delivery fee when distance is zero', function () {
-    $branchLocation = (object)[
+    $branchLocation = (object) [
         'lat' => 40.7128,
         'lng' => -74.0060,
     ];
 
-    $userLocation = (object)[
+    $userLocation = (object) [
         'lat' => 40.7128,
         'lng' => -74.0060,
     ];

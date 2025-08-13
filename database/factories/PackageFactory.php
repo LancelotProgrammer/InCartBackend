@@ -17,7 +17,7 @@ class PackageFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => $this->faker->words(2, true),
         ];
     }
 }

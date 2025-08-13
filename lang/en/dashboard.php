@@ -18,6 +18,6 @@ return [
         'user' => 'User',
         'name' => 'Name',
         'email' => 'Email',
-        'phone' => 'Phone'
-    ]
+        'phone' => 'Phone',
+    ],
 ];

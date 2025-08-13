@@ -17,7 +17,10 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => $this->faker->words(3, true),
+            'description' => $this->faker->optional()->paragraph(),
+            'brand' => $this->faker->optional()->company(),
+            'sku' => $this->faker->unique()->bothify('SKU-####-???'), // e.g. SKU-1234-ABC
         ];
     }
 }

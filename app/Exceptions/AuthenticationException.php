@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 class AuthenticationException extends Exception
 {
     use DebugPosition;
+
     private string $context;
 
     public function __construct(
