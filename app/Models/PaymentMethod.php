@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\BranchScope;
+use App\Traits\HasPublishAttribute;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
+#[ScopedBy([BranchScope::class])]
 class PaymentMethod extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasPublishAttribute, HasTranslations;
 
     public $timestamps = false;
 

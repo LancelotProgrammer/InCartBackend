@@ -10,7 +10,7 @@ enum NotificationType: int implements HasLabel
     case SECURITY = 2;
     case ORDER = 3;
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::GENERAL => 'General',

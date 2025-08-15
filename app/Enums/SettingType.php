@@ -12,7 +12,7 @@ enum SettingType: string implements HasLabel
     case STR = 'str';
     case JSON = 'json';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::INT => 'Integer',

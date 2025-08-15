@@ -8,7 +8,7 @@ enum CouponType: int implements HasLabel
 {
     case FIXED = 1;
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::FIXED => 'Fixed',

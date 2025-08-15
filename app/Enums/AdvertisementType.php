@@ -11,7 +11,7 @@ enum AdvertisementType: int implements HasLabel
     case OFFER = 3;
     case CARD = 4;
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::STATUS => 'Status',

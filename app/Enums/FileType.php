@@ -9,7 +9,7 @@ enum FileType: int implements HasLabel
     case IMAGE = 1;
     case VIDEO = 2;
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::IMAGE => 'Image',

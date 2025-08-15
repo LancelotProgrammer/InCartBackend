@@ -12,6 +12,16 @@ class PackageController extends Controller
         return new SuccessfulResponseResource;
     }
 
+    public function updatePackage(Request $request): SuccessfulResponseResource
+    {
+        return new SuccessfulResponseResource;
+    }
+
+    public function deletePackage(Request $request): SuccessfulResponseResource
+    {
+        return new SuccessfulResponseResource;
+    }
+
     public function getPackageProducts(Request $request): SuccessfulResponseResource
     {
         return new SuccessfulResponseResource;

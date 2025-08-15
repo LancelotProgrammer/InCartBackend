@@ -12,7 +12,7 @@ class EmptySuccessfulResponseResource extends JsonResource
      */
     public function __construct(
         private string $message = 'Operation successful',
-        private int $statusCode = 200
+        private int $statusCode = 204
     ) {
         $this->message = $message;
     }

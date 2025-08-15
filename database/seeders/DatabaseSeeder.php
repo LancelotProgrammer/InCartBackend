@@ -44,6 +44,7 @@ class DatabaseSeeder extends BaseSeeder
         $favoriteCount = 3;
         $packageProductCount = 10;
         $productFileCount = 3;
+        $categoryFileCount = 1;
         $advertisementFileCount = 1;
         $orderCount = 200;
 
@@ -97,9 +98,15 @@ class DatabaseSeeder extends BaseSeeder
         ]);
 
         $this->command->info('seeding categories');
-        RootCategoryFactory::new()->count($rootCategoryCount)->create();
-        $secondLevelCategories = SecondLevelCategoryFactory::new()->count($rootCategoryCount * 5)->create();
-        $thirdLevelCategories = ThirdLevelCategoryFactory::new()->count($rootCategoryCount * 5 * 2)->create();
+        RootCategoryFactory::new()
+            ->has(File::factory()->count($categoryFileCount), 'files')
+            ->count($rootCategoryCount)->create();
+        $secondLevelCategories = SecondLevelCategoryFactory::new()
+            ->has(File::factory()->count($categoryFileCount), 'files')
+            ->count($rootCategoryCount * 5)->create();
+        $thirdLevelCategories = ThirdLevelCategoryFactory::new()
+            ->has(File::factory()->count($categoryFileCount), 'files')
+            ->count($rootCategoryCount * 5 * 2)->create();
         $allCategoriesToAttach = $secondLevelCategories->concat($thirdLevelCategories);
 
         $this->command->info('seeding products');
@@ -108,13 +115,13 @@ class DatabaseSeeder extends BaseSeeder
             ->has(File::factory()->count($productFileCount), 'files')
             ->count($productCount)->create();
 
-        $this->command->info('seeding branches');
         $cities = City::all();
         $citySequence = [];
         foreach ($cities as $city) {
             $citySequence[] = ['city_id' => $city->id];
         }
 
+        $this->command->info('seeding branches');
         Branch::factory()
             ->sequence(...$citySequence)
             ->count($branchCount)
@@ -144,39 +151,42 @@ class DatabaseSeeder extends BaseSeeder
             )
             ->create();
 
+        $branches = Branch::all();
+
         $this->command->info('seeding coupons');
-        Coupon::insert(
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
-                'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
-                'code' => '123456',
-                'type' => CouponType::FIXED->value,
-                'config' => '{"discount_amount":15,"start_date":"2025-06-01","end_date":"2026-06-30","use_limit":5,"user_limit":100}',
-                'branch_id' => Branch::all()->first()->id,
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
-                'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
-                'code' => '123456',
-                'type' => CouponType::FIXED->value,
-                'config' => '{"discount_amount":10,"start_date":"2025-09-01","end_date":"2026-06-30","use_limit":3,"user_limit":50}',
-                'branch_id' => Branch::all()->first()->id,
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
-                'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
-                'code' => '123456',
-                'type' => CouponType::FIXED->value,
-                'config' => '{"discount_amount":5,"start_date":"2025-10-01","end_date":"2026-06-30","use_limit":2,"user_limit":25}',
-                'branch_id' => Branch::all()->first()->id,
-            ]
-        );
+        foreach ($branches as $branch) {
+            $this->command->info('seeding coupons'.$branch->id);
+            Coupon::insert([
+                [
+                    'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
+                    'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
+                    'code' => '123456',
+                    'type' => CouponType::FIXED->value,
+                    'config' => '{"discount_amount":15,"start_date":"2025-06-01","end_date":"2026-06-30","use_limit":5,"user_limit":100}',
+                    'branch_id' => $branch->id,
+                ],
+                [
+                    'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
+                    'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
+                    'code' => '123456',
+                    'type' => CouponType::FIXED->value,
+                    'config' => '{"discount_amount":10,"start_date":"2025-09-01","end_date":"2026-06-30","use_limit":3,"user_limit":50}',
+                    'branch_id' => $branch->id,
+                ],
+                [
+                    'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
+                    'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
+                    'code' => '123456',
+                    'type' => CouponType::FIXED->value,
+                    'config' => '{"discount_amount":5,"start_date":"2025-10-01","end_date":"2026-06-30","use_limit":2,"user_limit":25}',
+                    'branch_id' => $branch->id,
+                ],
+            ]);
+        }
 
         $this->command->info('seeding payment methods');
-        $branches = Branch::all(); // or Branch::pluck('id')
-
         foreach ($branches as $branch) {
-            PaymentMethod::insert(
+            PaymentMethod::insert([
                 [
                     'branch_id' => $branch->id,
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Pay on Delivery', 'الدفع عند الاستلام']), JSON_UNESCAPED_UNICODE),
@@ -190,7 +200,7 @@ class DatabaseSeeder extends BaseSeeder
                 [
                     'branch_id' => $branch->id,
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Google Pay', 'Google Pay']), JSON_UNESCAPED_UNICODE),
-                    'order' => '3',
+                    'order' => '2',
                 ],
                 [
                     'branch_id' => $branch->id,
@@ -202,12 +212,7 @@ class DatabaseSeeder extends BaseSeeder
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['STC Pay', 'STC Pay']), JSON_UNESCAPED_UNICODE),
                     'order' => '3',
                 ],
-                [
-                    'branch_id' => $branch->id,
-                    'title' => json_encode(Factory::translations(['en', 'ar'], ['Credit Card', 'بطاقة ائتمانيه']), JSON_UNESCAPED_UNICODE),
-                    'order' => '3',
-                ],
-            );
+            ]);
         }
 
         $this->command->info('seeding users');

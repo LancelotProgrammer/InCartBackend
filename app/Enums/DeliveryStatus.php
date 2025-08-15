@@ -11,7 +11,7 @@ enum DeliveryStatus: int implements HasLabel
     case DELIVERED = 3;
     case RETURNED = 4;
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::NOT_SHIPPED => 'Not Shipped',

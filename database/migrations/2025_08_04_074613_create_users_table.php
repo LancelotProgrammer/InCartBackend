@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->string('phone')->unique()->nullable();
             $table->timestamp('phone_verified_at')->nullable();
+            $table->timestamp('blocked_at')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('role_id');

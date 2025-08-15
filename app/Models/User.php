@@ -23,6 +23,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'password',
         'email_verified_at',
         'phone_verified_at',
+        'blocked_at',
         'role_id',
         'city_id',
     ];
@@ -34,6 +35,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
+        'blocked_at' => 'datetime',
         'password' => 'hashed',
     ];
 

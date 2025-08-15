@@ -5,20 +5,20 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SuccessfulResponseResourceWithMeta extends JsonResource
+class SuccessfulResponseResourceWithMetadata extends JsonResource
 {
     /**
      * Create a new resource instance.
      */
     public function __construct(
         mixed $resource = [],
-        private mixed $meta = [],
+        private mixed $metadata = [],
         private string $message = 'Operation successful',
         private int $statusCode = 200
     ) {
         parent::__construct($resource);
         $this->message = $message;
-        $this->meta = $meta;
+        $this->metadata = $metadata;
     }
 
     /**
@@ -31,7 +31,7 @@ class SuccessfulResponseResourceWithMeta extends JsonResource
         return [
             'message' => $this->message,
             'data' => $this->resource,
-            'meta' => $this->meta,
+            'metadata' => $this->metadata,
         ];
     }
 

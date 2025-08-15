@@ -11,7 +11,7 @@ enum UnitType: int implements HasLabel
     case LITER = 3;
     case METER = 4;
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::PIECE => 'Piece',

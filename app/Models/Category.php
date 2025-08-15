@@ -52,6 +52,11 @@ class Category extends Model
         return $this->belongsToMany(Product::class, 'product_category');
     }
 
+    public function files(): BelongsToMany
+    {
+        return $this->belongsToMany(File::class, 'category_file')->using(CategoryFile::class);
+    }
+
     public static function boot(): void
     {
         parent::boot();
@@ -90,10 +95,11 @@ class Category extends Model
     public function getDepthAttribute(): int
     {
         $depth = 1;
-        $parent = $this->parent;
+        $parent = $this->relationLoaded('parent') ? $this->parent : null;
+
         while ($parent) {
             $depth++;
-            $parent = $parent->parent;
+            $parent = $parent->relationLoaded('parent') ? $parent->parent : null;
         }
 
         return $depth;

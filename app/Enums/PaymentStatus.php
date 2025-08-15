@@ -10,7 +10,7 @@ enum PaymentStatus: int implements HasLabel
     case PAID = 2;
     case REFUNDED = 3;
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::UNPAID => 'Unpaid',

@@ -12,7 +12,7 @@ enum OrderStatus: int implements HasLabel
     case FINISHED = 4;
     case CANCELLED = 5;
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::PENDING => 'Pending',

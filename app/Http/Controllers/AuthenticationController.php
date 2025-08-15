@@ -448,7 +448,7 @@ class AuthenticationController extends Controller
 
     public function sendVerifyEmailToEmail(User $user, string $email): void
     {
-        $token = Str::random('16');
+        $token = Str::random();
 
         EmailVerificationRequest::updateOrInsert(
             ['user_id' => $user->id],

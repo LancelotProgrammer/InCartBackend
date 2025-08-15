@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Constants\CountryLongitudeLatitude;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,8 +20,9 @@ class BranchFactory extends Factory
         return [
             'title' => $this->translations('en', $this->faker->sentence(3)),
             'description' => $this->translations('en', $this->faker->optional()->paragraph()),
-            'longitude' => $this->faker->randomFloat(6, 34.0, 56.5),  // Saudi Arabia longitude range
-            'latitude' => $this->faker->randomFloat(6, 16.0, 32.0),   // Saudi Arabia latitude range
+            'longitude' => $this->faker->randomFloat(6, CountryLongitudeLatitude::MIN_LONGITUDE, CountryLongitudeLatitude::MAX_LONGITUDE),
+            'latitude' => $this->faker->randomFloat(6, CountryLongitudeLatitude::MIN_LONGITUDE, CountryLongitudeLatitude::MAX_LATITUDE),
+            'is_default' => true,
         ];
     }
 }

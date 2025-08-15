@@ -3,15 +3,19 @@
 namespace App\Models;
 
 use App\Enums\AdvertisementType;
+use App\Models\Scopes\BranchScope;
+use App\Traits\HasPublishAttribute;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Translatable\HasTranslations;
 
+#[ScopedBy([BranchScope::class])]
 class Advertisement extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasPublishAttribute, HasTranslations;
 
     protected $fillable = ['title', 'description', 'order', 'type', 'published_at', 'branch_id', 'product_id', 'category_id'];
 

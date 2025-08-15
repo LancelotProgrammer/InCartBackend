@@ -14,10 +14,17 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\UserNotificationController;
 use App\Http\Middleware\EnsureHeaderValidation;
+use App\Http\Middleware\SetCurrentBranch;
+use App\Http\Middleware\SetLocal;
 use App\Http\Middleware\UserStateValidation;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(EnsureHeaderValidation::class)->group(function () {
+Route::middleware([
+    SetLocal::class,
+    // EnsureHeaderValidation::class,
+    SetCurrentBranch::class,
+])->group(function () {
+
     Route::prefix('/auth')->group(function () {
         Route::post('/email/register', [AuthenticationController::class, 'emailRegister']);
         Route::post('/email/login', [AuthenticationController::class, 'emailLogin']);
@@ -47,14 +54,16 @@ Route::middleware(EnsureHeaderValidation::class)->group(function () {
         Route::post('/logout', [AuthenticationController::class, 'logout']);
     });
 
-    Route::middleware(['auth:sanctum', UserStateValidation::class])->prefix('/auth')->group(function () {
-        Route::get('/home', [HomeController::class, 'getHome']);
-
+    Route::middleware(['auth:sanctum', UserStateValidation::class])->group(function () {
         Route::get('/cities', [CityController::class, 'getCities']);
         Route::get('/branches', [BranchController::class, 'getBranches']);
+
+        Route::get('/home', [HomeController::class, 'getHome']);
+
         Route::get('/products', [ProductController::class, 'getProducts']);
-        Route::get('/Categories', [CategoryController::class, 'getCategories']);
-        Route::get('/Advertisements', [AdvertisementController::class, 'getAdvertisements']);
+        Route::get('/products/{id}', [ProductController::class, 'getProductDetails']);
+        Route::get('/categories', [CategoryController::class, 'getCategories']);
+        Route::get('/advertisements', [AdvertisementController::class, 'getAdvertisements']);
         Route::get('/payment-methods', [PaymentMethodController::class, 'getPaymentMethods']);
 
         Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);
@@ -64,7 +73,9 @@ Route::middleware(EnsureHeaderValidation::class)->group(function () {
         Route::post('/checkout', [OrderController::class, 'checkout']);
 
         Route::get('/packages', [PackageController::class, 'getPackages']);
-        Route::get('/packages/products/{id}', [PackageController::class, 'getPackageProducts']);
+        Route::put('/packages/{id}', [PackageController::class, 'updatePackage']);
+        Route::delete('/packages/{id}', [PackageController::class, 'deletePackage']);
+        Route::get('/packages/{id}/products', [PackageController::class, 'getPackageProducts']);
         Route::post('/packages/{package_id}/products/{product_id}', [PackageController::class, 'addProduct']);
         Route::delete('/packages/{package_id}/products/{product_id}', [PackageController::class, 'deleteProduct']);
 
