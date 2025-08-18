@@ -92,7 +92,7 @@ class DatabaseSeeder extends BaseSeeder
         User::insert([
             'name' => 'admin',
             'email' => 'admin@admin.com',
-            'password' => Hash::make('admin123'),
+            'password' => Hash::make('dc8rqy0f6vasybipb'),
             'role_id' => Role::where('title', '=', 'admin')->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
         ]);

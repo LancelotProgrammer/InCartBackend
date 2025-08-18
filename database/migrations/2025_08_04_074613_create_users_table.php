@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('phone')->unique()->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->timestamp('blocked_at')->nullable();
+            $table->rememberToken();
             $table->timestamps();
 
             $table->unsignedBigInteger('role_id');
