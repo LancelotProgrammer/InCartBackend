@@ -352,7 +352,9 @@ class AuthenticationController extends Controller
 
     private function requestVerifyPhone(int $userId, string $phone): void
     {
-        $code = $this->generateRandomNumber();
+        // TODO: uncomment this
+        // $code = $this->generateRandomNumber();
+        $code = '123456';
 
         PhoneVerificationRequest::updateOrInsert(
             ['user_id' => $userId],
