@@ -201,7 +201,7 @@ class AuthenticationController extends Controller
             );
         }
 
-        $phoneVerificationRequest = PhoneVerificationRequest::where('code', $code)->first();
+        $phoneVerificationRequest = PhoneVerificationRequest::where('code', $code)->where('phone', $phone)->first();
         if (! $phoneVerificationRequest || $phoneVerificationRequest->phone !== $phone) {
             RateLimiter::increment("VerifyPhone|$phone");
             throw new AuthenticationException(
