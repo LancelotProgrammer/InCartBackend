@@ -17,7 +17,7 @@ class LogicalException extends Exception
     public function __construct(
         private string $errorMessage = 'Authentication failed',
         private string $details = 'Authentication failed',
-        private int $statusCode = 401,
+        private int $statusCode = 400,
         private array $errors = []
     ) {
         parent::__construct($errorMessage, $statusCode);

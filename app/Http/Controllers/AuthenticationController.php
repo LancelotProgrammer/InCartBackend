@@ -61,14 +61,14 @@ class AuthenticationController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'cityId' => 'required|int|exists:cities,id',
+            'city_id' => 'required|int|exists:cities,id',
         ]);
 
         $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
-            'city_id' => $request->input('cityId'),
+            'city_id' => $request->input('city_id'),
             'role_id' => Role::where('title', '=', 'user')->value('id'),
         ]);
 
@@ -130,13 +130,13 @@ class AuthenticationController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|unique:users,phone',
-            'cityId' => 'required|int|exists:cities,id',
+            'city_id' => 'required|int|exists:cities,id',
         ]);
 
         $user = User::create([
             'name' => $request->input('name'),
             'phone' => $request->input('phone'),
-            'city_id' => $request->input('cityId'),
+            'city_id' => $request->input('city_id'),
             'role_id' => Role::where('title', '=', 'user')->value('id'),
         ]);
 
