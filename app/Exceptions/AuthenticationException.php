@@ -17,7 +17,8 @@ class AuthenticationException extends Exception
     public function __construct(
         private string $errorMessage = 'Authentication failed',
         private string $details = 'Authentication failed',
-        private int $statusCode = 401
+        private int $statusCode = 401,
+        private array $errors = []
     ) {
         parent::__construct($errorMessage, $statusCode);
         $this->context = $this->getDebugPosition();
@@ -25,6 +26,13 @@ class AuthenticationException extends Exception
 
     public function render(Request $request): Response
     {
+        if (count($this->errors) > 0)
+        {
+            return response([
+                'message' => $this->errorMessage,
+                'errors' => $this->errors,
+            ])->setStatusCode($this->statusCode);
+        }
         return response([
             'message' => $this->errorMessage,
         ])->setStatusCode($this->statusCode);

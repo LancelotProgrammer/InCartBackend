@@ -32,9 +32,8 @@ use InvalidArgumentException;
         - test update user info, middleware for optional auth, middleware for blocked users
         - null edge case at model::where
         - improve phone number validation
-        - refactor code to use services
-        - refactor code to use repositories
         - write tests for all functions
+        - refactor using services, classes and helpers
 */
 
 class AuthenticationController extends Controller

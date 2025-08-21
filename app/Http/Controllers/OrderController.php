@@ -3,13 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\SuccessfulResponseResource;
+use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
+use App\Pipes\AuthorizeUser;
+use App\Pipes\GetUserPreviousOrders;
+use App\Pipes\ValidateUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Pipeline;
 
 class OrderController extends Controller
 {
-    public function getUserPreviousOrders(Request $request): SuccessfulResponseResource
+    /**
+     * @authenticated
+     *
+     * @group Order Actions
+     */
+    public function getUserPreviousOrders(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResource;
+        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+            ->through([
+                ValidateUser::class,
+                new AuthorizeUser('get-user-previous-orders'),
+                GetUserPreviousOrders::class
+            ])
+            ->thenReturn());
     }
 
     public function order(Request $request): SuccessfulResponseResource

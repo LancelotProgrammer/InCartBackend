@@ -3,22 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\SuccessfulResponseResource;
+use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
+use App\Pipes\AddProductToFavorites;
+use App\Pipes\AuthorizeUser;
+use App\Pipes\DeleteProductFromFavorites;
+use App\Pipes\GetFavoriteProducts;
+use App\Pipes\ValidateUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Pipeline;
 
 class FavoriteController extends Controller
 {
-    public function getFavoriteProducts(Request $request): SuccessfulResponseResource
+    /**
+     * @authenticated
+     *
+     * @group Favorites Actions
+     */
+    public function getFavoriteProducts(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResource;
+        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+            ->through([
+                ValidateUser::class,
+                new AuthorizeUser('get-favorite-products'),
+                GetFavoriteProducts::class,
+            ])
+            ->thenReturn());
     }
 
-    public function addProduct(Request $request): SuccessfulResponseResource
+    /**
+     * @authenticated
+     *
+     * @group Favorites Actions
+     */
+    public function addProductToFavorites(Request $request): SuccessfulResponseResource
     {
-        return new SuccessfulResponseResource;
+        return new SuccessfulResponseResource(Pipeline::send($request)
+            ->through([
+                ValidateUser::class,
+                new AuthorizeUser('add-product-to-favorite'),
+                AddProductToFavorites::class,
+            ])
+            ->thenReturn());
     }
 
-    public function deleteProduct(Request $request): SuccessfulResponseResource
+    /**
+     * @authenticated
+     *
+     * @group Favorites Actions
+     */
+    public function deleteProductFromFavorites(Request $request): SuccessfulResponseResource
     {
-        return new SuccessfulResponseResource;
+        return new SuccessfulResponseResource(Pipeline::send($request)
+            ->through([
+                ValidateUser::class,
+                new AuthorizeUser('delete-product-from-favorite'),
+                DeleteProductFromFavorites::class,
+            ])
+            ->thenReturn());
     }
 }

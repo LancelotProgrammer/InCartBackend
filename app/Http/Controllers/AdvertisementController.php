@@ -2,13 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SuccessfulResponseResource;
+use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
+use App\Pipes\GetAdvertisements;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Pipeline;
 
 class AdvertisementController extends Controller
 {
-    public function getAdvertisements(Request $request): SuccessfulResponseResource
+    /**
+     * @unauthenticated
+     *
+     * @group Advertisement Actions
+     */
+    public function getAdvertisements(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResource;
+        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+            ->through([
+                GetAdvertisements::class,
+            ])
+            ->thenReturn());
     }
 }

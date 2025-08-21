@@ -2,13 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SuccessfulResponseResource;
+use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
+use App\Pipes\GetCategories;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Pipeline;
 
 class CategoryController extends Controller
 {
-    public function getCategories(Request $request): SuccessfulResponseResource
+    /**
+     * @unauthenticated
+     *
+     * @group Category Actions
+     */
+    public function getCategories(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResource;
+        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+            ->through([
+                GetCategories::class,
+            ])
+            ->thenReturn());
     }
 }
