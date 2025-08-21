@@ -277,13 +277,40 @@ class AuthenticationController extends Controller
         return new EmptySuccessfulResponseResource;
     }
 
+
     /**
      * @group Account Management
+     * @bodyParam phone string The user’s phone number. Example: +123456789
+     * @bodyParam email string The user’s email. Example: new@mail.com
+     * @bodyParam name string The user’s name. Example: John Doe
+     * @bodyParam current_password string The current password. Example: oldpass123
+     * @bodyParam new_password string The new password. Example: newpass456
      */
-    public function updateUserPhone(Request $request): EmptySuccessfulResponseResource
+    public function updateUser(Request $request): EmptySuccessfulResponseResource
+    {
+        if ($request->has('phone')) {
+            return $this->updateUserPhone($request);
+        }
+
+        if ($request->has('email')) {
+            return $this->updateUserEmail($request);
+        }
+
+        if ($request->has('name')) {
+            return $this->updateUserName($request);
+        }
+
+        if ($request->has(['current_password', 'new_password'])) {
+            return $this->updateUserPassword($request);
+        }
+
+        throw new InvalidArgumentException('No valid update field provided.');
+    }
+
+    private function updateUserPhone(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'phone' => 'required|string|unique:users,phone,'.$request->user()->id,
+            'phone' => 'required|string|unique:users,phone,' . $request->user()->id,
         ]);
 
         $user = $request->user();
@@ -294,13 +321,10 @@ class AuthenticationController extends Controller
         return new EmptySuccessfulResponseResource;
     }
 
-    /**
-     * @group Account Management
-     */
-    public function updateUserEmail(Request $request): EmptySuccessfulResponseResource
+    private function updateUserEmail(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email,'.$request->user()->id,
+            'email' => 'required|email|unique:users,email,' . $request->user()->id,
         ]);
 
         $user = $request->user();
@@ -311,10 +335,7 @@ class AuthenticationController extends Controller
         return new EmptySuccessfulResponseResource;
     }
 
-    /**
-     * @group Account Management
-     */
-    public function updateUserName(Request $request): EmptySuccessfulResponseResource
+    private function updateUserName(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -326,10 +347,7 @@ class AuthenticationController extends Controller
         return new EmptySuccessfulResponseResource;
     }
 
-    /**
-     * @group Account Management
-     */
-    public function updateUserPassword(Request $request): EmptySuccessfulResponseResource
+    private function updateUserPassword(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
             'current_password' => 'required|string',
@@ -368,7 +386,7 @@ class AuthenticationController extends Controller
         try {
             Otp::send($phone, $verifyPhone->code);
         } catch (Exception $e) {
-            Log::channel('error')->error('OTP Error'.$e->getMessage());
+            Log::channel('error')->error('OTP Error' . $e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'OTP verification request failed. look for OTP Error in error logs for more details'
@@ -464,7 +482,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new VerifyEmail($user->name, $verifyEmail->email, $verifyEmail->token));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error'.$e->getMessage());
+            Log::channel('error')->error('Email Error' . $e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -540,7 +558,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new ForgotPassword($userName, $code));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error'.$e->getMessage());
+            Log::channel('error')->error('Email Error' . $e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -691,7 +709,7 @@ class AuthenticationController extends Controller
     private function isWeakNumber(string $number): bool
     {
         $length = strlen($number);
-        if (preg_match('/^(\d)\1{'.($length - 1).'}$/', $number)) {
+        if (preg_match('/^(\d)\1{' . ($length - 1) . '}$/', $number)) {
             return true;
         }
         for ($patternLength = 1; $patternLength <= $length / 2; $patternLength++) {

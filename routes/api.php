@@ -46,10 +46,7 @@ Route::middleware([
 
         Route::post('/firebase-token', [AuthenticationController::class, 'createFirebaseToken']);
 
-        Route::put('/user/update', [AuthenticationController::class, 'updateUserPhone']);
-        Route::put('/user/email', [AuthenticationController::class, 'updateUserEmail']);
-        Route::put('/user/name', [AuthenticationController::class, 'updateUserName']);
-        Route::put('/user/password', [AuthenticationController::class, 'updateUserPassword']);
+        Route::put('/user/update', [AuthenticationController::class, 'updateUser']);
 
         Route::post('/logout', [AuthenticationController::class, 'logout']);
     });
