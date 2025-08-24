@@ -11,6 +11,6 @@ class GetPackages
     {
         
 
-        return $next();
+        return $next([]);
     }
 }

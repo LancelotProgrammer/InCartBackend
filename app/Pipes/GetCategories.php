@@ -11,6 +11,6 @@ class GetCategories
     {
         
 
-        return $next();
+        return $next([]);
     }
 }

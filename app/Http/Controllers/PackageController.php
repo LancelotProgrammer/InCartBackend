@@ -25,7 +25,7 @@ class PackageController extends Controller
      */
     public function getPackages(Request $request): SuccessfulResponseResource
     {
-        return new SuccessfulResponseResource(Pipeline::send($request)
+        return new SuccessfulResponseResource(...Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('get-packages'),
@@ -41,7 +41,7 @@ class PackageController extends Controller
      */
     public function createPackage(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+        return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('create-package'),

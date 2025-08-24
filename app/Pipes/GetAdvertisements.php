@@ -11,6 +11,6 @@ class GetAdvertisements
     {
         
 
-        return $next();
+        return $next([]);
     }
 }

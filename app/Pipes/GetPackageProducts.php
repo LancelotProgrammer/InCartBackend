@@ -11,6 +11,6 @@ class GetPackageProducts
     {
         
 
-        return $next();
+        return $next([]);
     }
 }

@@ -11,6 +11,6 @@ class GetFavoriteProducts
     {
         
 
-        return $next();
+        return $next([]);
     }
 }

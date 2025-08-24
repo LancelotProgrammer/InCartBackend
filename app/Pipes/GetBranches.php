@@ -11,6 +11,6 @@ class GetBranches
     {
         
 
-        return $next();
+        return $next([]);
     }
 }

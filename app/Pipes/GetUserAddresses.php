@@ -11,6 +11,6 @@ class GetUserAddresses
     {
         
 
-        return $next();
+        return $next([]);
     }
 }
