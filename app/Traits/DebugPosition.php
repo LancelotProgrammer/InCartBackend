@@ -2,20 +2,19 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Facades\Log;
+
 trait DebugPosition
 {
     public function getDebugPosition(): string
     {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
 
-        foreach ($trace as $frame) {
-            if (
-                isset($frame['class']) &&
-                str_starts_with($frame['class'], 'App\\') &&
-                ! str_starts_with($frame['class'], 'App\\Exceptions')
-            ) {
-                return $frame['class'].'|'.($frame['function']).'|'.($frame['line'] ?? 'unknown').':';
-            }
+        $frame1 = $trace[1] ?? null;
+        $frame2 = $trace[2] ?? null;
+
+        if ($frame1 && isset($frame1['class']) && $frame2 && isset($frame2['class'])) {
+            return $frame2['class'] . '|' . ($frame2['function'] ?? 'unknown') . '|' . ($frame1['line'] ?? 'unknown') . ':';
         }
 
         return 'unknown location';
