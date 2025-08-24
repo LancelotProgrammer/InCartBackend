@@ -32,7 +32,7 @@ Route::middleware([
         Route::post('/phone/register', [AuthenticationController::class, 'phoneRegister']);
         Route::post('/phone/login', [AuthenticationController::class, 'phoneLogin']);
 
-        Route::post('/verify-otp', [AuthenticationController::class, 'verifyOtp']);
+        Route::post('/send-otp', [AuthenticationController::class, 'sendOtp']);
 
         Route::post('/request-forget-password', [AuthenticationController::class, 'forgotPasswordRequest']);
         Route::post('/verify-forget-password', [AuthenticationController::class, 'verifyForgetPasswordRequest']);

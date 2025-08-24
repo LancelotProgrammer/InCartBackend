@@ -22,6 +22,7 @@ return [
     'credentials_are_incorrect' => 'Credentials are incorrect',
     'user_is_verified' => 'User is verified',
     'opt_verification_error' => 'OTP verification error',
+    'opt_resending_error' => 'OTP resending error',
     'current_password_is_incorrect' => 'Current password is incorrect',
     'user_is_blocked' => 'User is blocked',
 ];

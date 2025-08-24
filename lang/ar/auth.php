@@ -22,6 +22,7 @@ return [
     'credentials_are_incorrect' => 'بيانات التسجيل غير صحيحة',
     'user_is_verified' => 'المستخدم مُحقق',
     'opt_verification_error' => 'خطأ في التحقق من رمز التحقق (OTP)',
+    'opt_resending_error' => 'خطأ في إعادة إرسال رمز التحقق',
     'current_password_is_incorrect' => 'كلمة المرور الحالية غير صحيحة',
     'user_is_blocked' => 'المستخدم محظور',
 ];

@@ -46,7 +46,7 @@ return new class extends Migration
         });
 
         Schema::create('phone_verification_requests', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->id();
             $table->string('phone');
             $table->string('code');
             $table->timestamp('created_at')->nullable();
