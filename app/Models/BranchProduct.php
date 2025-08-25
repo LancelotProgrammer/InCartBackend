@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use InvalidArgumentException;
+use stdClass;
 
 #[ScopedBy([BranchScope::class])]
 class BranchProduct extends Pivot
@@ -93,10 +94,20 @@ class BranchProduct extends Pivot
 
     public function getDiscountPriceAttribute(): mixed
     {
-        if (empty($this->discount) || $this->discount <= 0) {
-            return $this->price;
+        return self::getDiscountPrice($this);
+    }
+
+    public static function getDiscountPriceValue(stdClass $branchProduct): mixed
+    {
+        return self::getDiscountPrice($branchProduct);
+    }
+
+    public static function getDiscountPrice(stdClass|self $branchProduct): mixed
+    {
+        if (empty($branchProduct->discount) || $branchProduct->discount <= 0) {
+            return $branchProduct->price;
         }
-        $discountedPrice = $this->price - $this->price * ($this->discount / 100);
+        $discountedPrice = $branchProduct->price - $branchProduct->price * ($branchProduct->discount / 100);
 
         return round($discountedPrice, 2);
     }

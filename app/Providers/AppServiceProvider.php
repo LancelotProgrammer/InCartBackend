@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->bindServices();
         $this->configureModel();
+        $this->configureBuilder();
         $this->configureFilamentTable();
         $this->configureGate();
         $this->configureDB();
@@ -36,6 +38,19 @@ class AppServiceProvider extends ServiceProvider
     private function configureModel(): void
     {
         Model::shouldBeStrict();
+    }
+
+    private function configureBuilder(): void
+    {
+        Builder::macro('branchScope', function ()
+        {
+            return $this->where('branch_id', '=', request()->attributes->get('currentBranchId'));
+        });
+
+        Builder::macro('publishedScope', function ()
+        {
+            return $this->whereNotNull('published_at');
+        });
     }
 
     private function configureFilamentTable(): void

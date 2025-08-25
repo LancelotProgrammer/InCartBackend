@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
+use App\Http\Resources\SuccessfulResponseResource;
 use App\Pipes\GetBranches;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Pipeline;
@@ -14,9 +14,9 @@ class BranchController extends Controller
      *
      * @group Branch Actions
      */
-    public function getBranches(Request $request): SuccessfulResponseResourceWithMetadata
+    public function getBranches(Request $request): SuccessfulResponseResource
     {
-        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+        return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
                 GetBranches::class,
             ])

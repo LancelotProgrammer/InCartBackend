@@ -19,7 +19,7 @@ class OrderController extends Controller
      */
     public function getUserPreviousOrders(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+        return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('get-user-previous-orders'),

@@ -16,7 +16,7 @@ class AdvertisementController extends Controller
      */
     public function getAdvertisements(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+        return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
                 GetAdvertisements::class,
             ])

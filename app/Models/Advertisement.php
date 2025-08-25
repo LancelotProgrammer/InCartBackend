@@ -17,7 +17,7 @@ class Advertisement extends Model
 {
     use HasFactory, HasPublishAttribute, HasTranslations;
 
-    protected $fillable = ['title', 'description', 'order', 'type', 'published_at', 'branch_id', 'product_id', 'category_id'];
+    protected $fillable = ['title', 'description', 'order', 'type', 'url', 'published_at', 'branch_id', 'product_id', 'category_id'];
 
     protected $casts = [
         'title' => 'array',

@@ -21,7 +21,7 @@ class UserAddressController extends Controller
      */
     public function getUserAddresses(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+        return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('get-user-address'),

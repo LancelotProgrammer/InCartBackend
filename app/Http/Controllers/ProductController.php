@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function getProducts(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+        return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
                 GetProducts::class,
             ])

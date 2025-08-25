@@ -21,7 +21,7 @@ class FavoriteController extends Controller
      */
     public function getFavoriteProducts(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+        return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('get-favorite-products'),

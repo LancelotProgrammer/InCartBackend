@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
+use App\Http\Resources\SuccessfulResponseResource;
 use App\Pipes\GetHome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Pipeline;
@@ -12,11 +12,11 @@ class HomeController extends Controller
     /**
      * @unauthenticated
      *
-     * @group Favorites Actions
+     * @group Home Actions
      */
-    public function getHome(Request $request): SuccessfulResponseResourceWithMetadata
+    public function getHome(Request $request): SuccessfulResponseResource
     {
-        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+        return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
                 GetHome::class,
             ])

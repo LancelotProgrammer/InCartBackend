@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function getCategories(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
+        return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
                 GetCategories::class,
             ])
