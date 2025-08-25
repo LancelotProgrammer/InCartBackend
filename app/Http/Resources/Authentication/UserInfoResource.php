@@ -21,7 +21,7 @@ class UserInfoResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => (string) $this->id,
+            'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email ?? null,
             'phone' => $this->phone ?? null,
