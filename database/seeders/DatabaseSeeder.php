@@ -37,7 +37,7 @@ class DatabaseSeeder extends BaseSeeder
         $rootCategoryCount = 3;
         $productCount = 200;
         $branchCount = 3;
-        $branchAdvertisementCount = 10;
+        $branchAdvertisementCount = 30;
         $userCount = 100;
         $userAddressCount = 3;
         $userNotificationCount = 3;
@@ -103,10 +103,10 @@ class DatabaseSeeder extends BaseSeeder
             ->count($rootCategoryCount)->create();
         $secondLevelCategories = SecondLevelCategoryFactory::new()
             ->has(File::factory()->count($categoryFileCount), 'files')
-            ->count($rootCategoryCount * 5)->create();
+            ->count($rootCategoryCount * 10)->create();
         $thirdLevelCategories = ThirdLevelCategoryFactory::new()
             ->has(File::factory()->count($categoryFileCount), 'files')
-            ->count($rootCategoryCount * 5 * 2)->create();
+            ->count($rootCategoryCount * 20)->create();
         $allCategoriesToAttach = $secondLevelCategories->concat($thirdLevelCategories);
 
         $this->command->info('seeding products');

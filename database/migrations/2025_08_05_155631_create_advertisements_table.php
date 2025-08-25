@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('order');
             $table->integer('type');
             $table->dateTime('published_at')->nullable();
+            $table->string('url')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('branch_id');

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Database\Seeders\ArabicSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,9 +17,11 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $text = $this->translations(['en', 'ar'], [$this->faker->sentence(2), ArabicSeeder::getFakeProductName()]);
+
         return [
-            'title' => $this->translations('en', $this->faker->sentence(3)),
-            'description' => $this->translations('en', $this->faker->optional()->paragraph()),
+            'title' => $text,
+            'description' => $text,
             'brand' => $this->faker->optional()->company(),
             'sku' => $this->faker->unique()->bothify('SKU-####-???'), // e.g. SKU-1234-ABC
         ];

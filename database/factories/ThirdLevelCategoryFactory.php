@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Category;
+use Database\Seeders\ArabicSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ThirdLevelCategoryFactory extends Factory
@@ -21,9 +22,11 @@ class ThirdLevelCategoryFactory extends Factory
             $q->whereNull('parent_id');
         })->inRandomOrder()->first();
 
+        $text = $this->translations(['en', 'ar'], [$this->faker->sentence(2), ArabicSeeder::getFakeCategoryName()]);
+
         return [
-            'title' => $this->translations('en', $this->faker->sentence(3)),
-            'description' => $this->translations('en', $this->faker->optional()->paragraph()),
+            'title' => $text,
+            'description' => $text,
             'published_at' => $this->faker->optional()->dateTimeBetween('-1 years', 'now'),
             'parent_id' => $parent?->id,
         ];
