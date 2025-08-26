@@ -29,4 +29,19 @@ trait HasPublishAttribute
         $this->published_at = null;
         $this->save();
     }
+
+    public function scopePublished($query)
+    {
+        return $query->whereNotNull('published_at');
+    }
+
+    public function scopeUnpublished($query)
+    {
+        return $query->whereNull('published_at');
+    }
+
+    public function isPublished(): bool
+    {
+        return ! is_null($this->published_at);
+    }
 }

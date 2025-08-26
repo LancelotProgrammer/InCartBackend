@@ -16,7 +16,7 @@ class GetBranches
 
         $cityId = $request->input('city_id');
 
-        return $next(Branch::where('city_id', '=', $cityId)->all()->map(function ($branch) {
+        return $next(Branch::where('city_id', '=', $cityId)->published()->get()->map(function ($branch) {
             return [
                 'id' => $branch->id,
                 'name' => $branch->title

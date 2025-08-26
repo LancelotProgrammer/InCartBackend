@@ -20,13 +20,13 @@ class GetProducts
                 return [
                     'id' => $product->id,
                     'title' => $product->title,
+                    'image' => $image,
                     'price' => $branchProduct ? (string) $branchProduct->price : null,
                     'discount' => $branchProduct ? (string) $branchProduct->discount : null,
                     'discount_price' => $branchProduct ? (string) $branchProduct->discount_price : null,
                     'unit' => $branchProduct ? (string) $branchProduct->unit->value : null,
                     'expired_at' => $branchProduct ? $branchProduct->expires_at->format('Y') : null,
                     'limit' => $branchProduct ? (int) $branchProduct->maximum_order_quantity : null,
-                    'image' => $image,
                 ];
             }),
             [

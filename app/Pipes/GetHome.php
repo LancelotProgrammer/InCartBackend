@@ -5,11 +5,13 @@ namespace App\Pipes;
 use App\Constants\CacheKeys;
 use App\Enums\AdvertisementLink;
 use App\Enums\AdvertisementType;
+use App\Models\Advertisement;
 use App\Models\BranchProduct;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use stdClass;
 
 class GetHome
@@ -52,28 +54,36 @@ class GetHome
 
             $statusesResult = [];
             foreach ($statuses as $status) {
-                $statusesResult[] = match (true) {
-                    $status->product_id && $status->category_id => $this->getAdvertisementProduct($status),
-                    $status->category_id && !$status->product_id => $this->getCategory($status),
-                    default => $this->getImageExternalUrl($status),
+                $statusLinkType = Advertisement::getLinkValue($status);
+                $statusesResult[] = match ($statusLinkType) {
+                    AdvertisementLink::PRODUCT->value => $this->getAdvertisementProduct($status),
+                    AdvertisementLink::CATEGORY->value => $this->getCategory($status),
+                    AdvertisementLink::EXTERNAL->value => $this->getImageExternalUrl($status),
+                    default => throw new InvalidArgumentException('Advertisement link is not supported'),
                 };
             }
+
             $videosResult = [];
-            foreach ($videos as $status) {
-                $videosResult[] = $this->getVideoExternalUrl($status);
+            foreach ($videos as $video) {
+                $videosResult[] = $this->getVideoExternalUrl($video);
             }
+
             $offersResult = [];
-            foreach ($offers as $status) {
-                $offersResult[] = $this->getAdvertisementOfferProduct($status);
+            foreach ($offers as $offer) {
+                $offersResult[] = $this->getAdvertisementOfferProduct($offer);
             }
+
             $cardsResult = [];
-            foreach ($cards as $status) {
-                $cardsResult[] = match (true) {
-                    $status->product_id && $status->category_id => $this->getAdvertisementProduct($status),
-                    $status->category_id && !$status->product_id => $this->getCategory($status),
-                    default => $this->getImageExternalUrl($status),
+            foreach ($cards as $card) {
+                $cardLinkType = Advertisement::getLinkValue($card);
+                $cardsResult[] = match ($cardLinkType) {
+                    AdvertisementLink::PRODUCT->value => $this->getAdvertisementProduct($card),
+                    AdvertisementLink::CATEGORY->value => $this->getCategory($card),
+                    AdvertisementLink::EXTERNAL->value => $this->getImageExternalUrl($card),
+                    default => throw new InvalidArgumentException('Advertisement link is not supported'),
                 };
             }
+
             $newProductsResult = [];
             foreach ($products as $product) {
                 $newProductsResult[] = $this->getProductDetails($product);
@@ -91,70 +101,35 @@ class GetHome
         return $next($result);
     }
 
-    private function getProductDetails(stdClass $product): array
-    {
-        $productImage = DB::table('product_file')
-            ->join('files', 'product_file.id', '=', 'files.id')
-            ->where('product_file.id', '=', $product->id)
-            ->first();
-
-        $branchProduct = DB::table('branch_product')
-            ->join('products', 'branch_product.id', '=', 'products.id')
-            ->branchScope()
-            ->publishedScope()
-            ->where('branch_product.id', '=', $product->id)
-            ->first();
-
-        $productCategory = DB::table('product_category')
-            ->join('products', 'product_category.id', '=', 'products.id')
-            ->where('product_category.id', '=', $product->id)
-            ->first();
-
-        return [
-            'id' => $product->id,
-            'price' => $branchProduct->price,
-            'discount' => $branchProduct->discount,
-            'discount_price' => BranchProduct::getDiscountPriceValue($branchProduct),
-            'unit' => $branchProduct->unit,
-            'expired_at' => $branchProduct->expires_at,
-            'limit' => $branchProduct->maximum_order_quantity,
-            'image' => $productImage->id,
-            'category' => [
-                'id' => $productCategory->id,
-                'title' => get_translatable_attribute($productCategory->title),
-            ]
-        ];
-    }
-
     private function getAdvertisementProduct(stdClass $advertisement): array
     {
         $advertisementImage = DB::table('advertisement_file')
-            ->join('files', 'advertisement_file.id', '=', 'files.id')
-            ->where('advertisement_file.id', '=', $advertisement->id)
+            ->join('files', 'files.id', '=', 'advertisement_file.file_id')
+            ->where('advertisement_file.advertisement_id', $advertisement->id)
+            ->select('files.url')
             ->first();
 
-        $product = DB::table('products')->where('id', '=', $advertisement->id)->first();
+        $product = DB::table('products')
+            ->where('id', $advertisement->product_id)
+            ->first();
 
         $productImage = DB::table('product_file')
-            ->join('files', 'product_file.id', '=', 'files.id')
-            ->where('product_file.id', '=', $product->id)
+            ->join('files', 'files.id', '=', 'product_file.file_id')
+            ->where('product_file.product_id', $product->id)
+            ->select('files.url')
             ->first();
 
         $branchProduct = DB::table('branch_product')
-            ->join('products', 'branch_product.id', '=', 'products.id')
+            ->join('products', 'products.id', '=', 'branch_product.product_id')
             ->branchScope()
             ->publishedScope()
-            ->where('branch_product.id', '=', $product->id)
-            ->first();
-
-        $productImage = DB::table('product_category')
-            ->join('products', 'product_category.id', '=', 'products.id')
-            ->where('product_category.id', '=', $product->id)
+            ->where('branch_product.product_id', $product->id)
             ->first();
 
         $productCategory = DB::table('product_category')
-            ->join('products', 'product_category.id', '=', 'products.id')
-            ->where('product_category.id', '=', $product->id)
+            ->join('categories', 'categories.id', '=', 'product_category.category_id')
+            ->where('product_category.product_id', $product->id)
+            ->select(['categories.title', 'categories.id'])
             ->first();
 
         return [
@@ -165,54 +140,18 @@ class GetHome
             'created_at' => $advertisement->created_at,
             'product' => [
                 'id' => $product->id,
+                'title' => get_translatable_attribute($product->title),
+                'image' => $productImage->url,
                 'price' => $branchProduct->price,
                 'discount' => $branchProduct->discount,
                 'discount_price' => BranchProduct::getDiscountPriceValue($branchProduct),
                 'unit' => $branchProduct->unit,
                 'expired_at' => $branchProduct->expires_at,
                 'limit' => $branchProduct->maximum_order_quantity,
-                'image' => $productImage->id,
                 'category' => [
                     'id' => $productCategory->id,
                     'title' => get_translatable_attribute($productCategory->title),
                 ]
-            ]
-        ];
-    }
-
-    private function getAdvertisementOfferProduct(stdClass $advertisement): array
-    {
-        $product = DB::table('products')->where('id', '=', $advertisement->id)->first();
-
-        $productImage = DB::table('product_file')
-            ->join('files', 'product_file.id', '=', 'files.id')
-            ->where('product_file.id', '=', $product->id)
-            ->first();
-
-        $branchProduct = DB::table('branch_product')
-            ->join('products', 'branch_product.id', '=', 'products.id')
-            ->branchScope()
-            ->publishedScope()
-            ->where('branch_product.id', '=', $product->id)
-            ->first();
-
-        $productCategory = DB::table('product_category')
-            ->join('products', 'product_category.id', '=', 'products.id')
-            ->where('product_category.id', '=', $product->id)
-            ->first();
-
-        return [
-            'id' => $product->id,
-            'price' => $branchProduct->price,
-            'discount' => $branchProduct->discount,
-            'discount_price' => BranchProduct::getDiscountPriceValue($branchProduct),
-            'unit' => $branchProduct->unit,
-            'expired_at' => $branchProduct->expires_at,
-            'limit' => $branchProduct->maximum_order_quantity,
-            'image' => $productImage->id,
-            'category' => [
-                'id' => $productCategory->id,
-                'title' => get_translatable_attribute($productCategory->title),
             ]
         ];
     }
@@ -248,15 +187,16 @@ class GetHome
     private function getImageExternalUrl(stdClass $advertisement): array
     {
         $advertisementImage = DB::table('advertisement_file')
-            ->join('files', 'advertisement_file.id', '=', 'files.id')
-            ->where('advertisement_file.id', '=', $advertisement->id)
+            ->join('files', 'files.id', '=', 'advertisement_file.file_id')
+            ->where('advertisement_file.advertisement_id', $advertisement->id)
+            ->select('files.url')
             ->first();
 
         return [
             'id' => $advertisement->id,
             'image' => $advertisementImage->url,
             'title' => get_translatable_attribute($advertisement->title),
-            'type' => AdvertisementLink::CATEGORY->value,
+            'type' => AdvertisementLink::EXTERNAL->value,
             'created_at' => $advertisement->created_at,
             'external' => [
                 'url' => $advertisement->url,
@@ -267,18 +207,99 @@ class GetHome
     private function getVideoExternalUrl(stdClass $advertisement): array
     {
         $advertisementVideo = DB::table('advertisement_file')
-            ->join('files', 'advertisement_file.id', '=', 'files.id')
-            ->where('advertisement_file.id', '=', $advertisement->id)
+            ->join('files', 'files.id', '=', 'advertisement_file.file_id')
+            ->where('advertisement_file.advertisement_id', $advertisement->id)
+            ->select('files.url')
             ->first();
 
         return [
             'id' => $advertisement->id,
             'video' => $advertisementVideo->url,
             'title' => get_translatable_attribute($advertisement->title),
-            'type' => AdvertisementLink::CATEGORY->value,
+            'type' => AdvertisementLink::EXTERNAL->value,
             'created_at' => $advertisement->created_at,
             'external' => [
                 'url' => $advertisement->url,
+            ]
+        ];
+    }
+
+    private function getAdvertisementOfferProduct(stdClass $advertisement): array
+    {
+        $product = DB::table('products')
+            ->where('id', $advertisement->product_id)
+            ->first();
+
+        $productImage = DB::table('product_file')
+            ->join('files', 'files.id', '=', 'product_file.file_id')
+            ->where('product_file.product_id', $product->id)
+            ->select('files.url')
+            ->first();
+
+        $branchProduct = DB::table('branch_product')
+            ->join('products', 'products.id', '=', 'branch_product.product_id')
+            ->branchScope()
+            ->publishedScope()
+            ->where('branch_product.product_id', $product->id)
+            ->first();
+
+        $productCategory = DB::table('product_category')
+            ->join('categories', 'categories.id', '=', 'product_category.category_id')
+            ->where('product_category.product_id', $product->id)
+            ->select(['categories.title', 'categories.id'])
+            ->first();
+
+        return [
+            'id' => $product->id,
+            'title' => get_translatable_attribute($product->title),
+            'image' => $productImage->url,
+            'price' => $branchProduct->price,
+            'discount' => $branchProduct->discount,
+            'discount_price' => BranchProduct::getDiscountPriceValue($branchProduct),
+            'unit' => $branchProduct->unit,
+            'expired_at' => $branchProduct->expires_at,
+            'limit' => $branchProduct->maximum_order_quantity,
+            'category' => [
+                'id' => $productCategory->id,
+                'title' => get_translatable_attribute($productCategory->title),
+            ]
+        ];
+    }
+
+    private function getProductDetails(stdClass $product): array
+    {
+        $productImage = DB::table('product_file')
+            ->join('files', 'files.id', '=', 'product_file.file_id')
+            ->where('product_file.product_id', $product->id)
+            ->select('files.url')
+            ->first();
+
+        $branchProduct = DB::table('branch_product')
+            ->join('products', 'products.id', '=', 'branch_product.product_id')
+            ->branchScope()
+            ->publishedScope()
+            ->where('branch_product.product_id', $product->id)
+            ->first();
+
+        $productCategory = DB::table('product_category')
+            ->join('categories', 'categories.id', '=', 'product_category.category_id')
+            ->where('product_category.product_id', $product->id)
+            ->select(['categories.title', 'categories.id'])
+            ->first();
+
+        return [
+            'id' => $product->id,
+            'title' => get_translatable_attribute($product->title),
+            'image' => $productImage->url,
+            'price' => $branchProduct->price,
+            'discount' => $branchProduct->discount,
+            'discount_price' => BranchProduct::getDiscountPriceValue($branchProduct),
+            'unit' => $branchProduct->unit,
+            'expired_at' => $branchProduct->expires_at,
+            'limit' => $branchProduct->maximum_order_quantity,
+            'category' => [
+                'id' => $productCategory->id,
+                'title' => get_translatable_attribute($productCategory->title),
             ]
         ];
     }
