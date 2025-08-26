@@ -36,6 +36,7 @@ class DatabaseSeeder extends BaseSeeder
     {
         $rootCategoryCount = 3;
         $productCount = 200;
+        $productCategoryCount = 10;
         $branchCount = 3;
         $branchAdvertisementCount = 30;
         $userCount = 100;
@@ -111,9 +112,14 @@ class DatabaseSeeder extends BaseSeeder
 
         $this->command->info('seeding products');
         $products = Product::factory()
-            ->hasAttached($allCategoriesToAttach)
             ->has(File::factory()->count($productFileCount), 'files')
-            ->count($productCount)->create();
+            ->count($productCount)
+            ->create()
+            ->each(function ($product) use ($allCategoriesToAttach, $productCategoryCount) {
+                $product->categories()->attach(
+                    $allCategoriesToAttach->random($productCategoryCount)->pluck('id')->toArray()
+                );
+            });
 
         $cities = City::all();
         $citySequence = [];

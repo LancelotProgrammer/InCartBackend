@@ -11,8 +11,8 @@ class CategoryController extends Controller
 {
     /**
      * @unauthenticated
-     *
      * @group Category Actions
+     * @queryParam level integer The city ID. Example: 1
      */
     public function getCategories(Request $request): SuccessfulResponseResourceWithMetadata
     {
