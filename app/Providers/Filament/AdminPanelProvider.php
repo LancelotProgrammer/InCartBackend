@@ -12,6 +12,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -40,12 +41,12 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('API documentation')
-                    ->group('developers')
-                    ->icon('heroicon-o-home')
+                    ->group('Developers')
+                    ->icon(Heroicon::ClipboardDocumentList)
                     ->url($appUrl.'/docs', true),
                 NavigationItem::make('Telescope')
-                    ->group('developers')
-                    ->icon('heroicon-o-home')
+                    ->group('Developers')
+                    ->icon(Heroicon::CommandLine)
                     ->url($appUrl.'/telescope', true),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')

@@ -15,12 +15,15 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class AdvertisementResource extends Resource
 {
     protected static ?string $model = Advertisement::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string | UnitEnum | null $navigationGroup = 'Resources';
+
+    protected static string | BackedEnum | null $navigationIcon = Heroicon::Megaphone;
 
     public static function form(Schema $schema): Schema
     {
