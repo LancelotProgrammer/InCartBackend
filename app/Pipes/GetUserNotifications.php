@@ -10,17 +10,18 @@ class GetUserNotifications
 {
     public function __invoke(Request $request, Closure $next)
     {
-        $notifications = $request->user()->notifications()->latest()->paginate();
+        $notifications = $request->user()->notifications()->latest()->simplePaginate();
 
         if (! $notifications) {
             throw new LogicalException("No notifications found", "User has no notifications", 404);
         }
 
-        return $next([$notifications->items(), [
-            'current_page' => $notifications->currentPage(),
-            'per_page' => $notifications->perPage(),
-            'total' => $notifications->total(),
-            'last_page' => $notifications->lastPage(),
-        ]]);
+        return $next([
+            $notifications->items(),
+            [
+                'current_page' => $notifications->currentPage(),
+                'per_page' => $notifications->perPage(),
+            ]
+        ]);
     }
 }
