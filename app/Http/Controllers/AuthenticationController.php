@@ -29,7 +29,7 @@ use InvalidArgumentException;
 
 /*
     TODO:
-        - test update user info, middleware for optional auth, middleware for blocked users
+        - test update user info and  blocked users middleware
         - null edge case at model::where
         - improve phone number validation
         - make a scheduler to delete unverified users 
