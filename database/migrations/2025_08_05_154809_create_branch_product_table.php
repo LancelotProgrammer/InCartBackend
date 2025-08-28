@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
 
             $table->decimal('price', 10, 2);
-            $table->integer('unit');
             $table->integer('discount');
             $table->double('maximum_order_quantity');
             $table->double('minimum_order_quantity');

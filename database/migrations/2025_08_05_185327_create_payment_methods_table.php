@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
             $table->json('title');
+            $table->string('code');
             $table->integer('order');
             $table->dateTime('published_at')->nullable();
 

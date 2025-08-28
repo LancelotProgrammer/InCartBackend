@@ -136,11 +136,9 @@ class DatabaseSeeder extends BaseSeeder
                 function () {
                     $minimumQuantity = $this->faker->numberBetween(1, 10);
                     $maximumQuantity = $this->faker->numberBetween($minimumQuantity + 10, 50);
-                    $type = $this->faker->randomElement(UnitType::cases());
 
                     return [
                         'price' => $this->faker->randomFloat(2, 10, 500),
-                        'unit' => $type->value,
                         'discount' => $this->faker->numberBetween(0, 50),
                         'maximum_order_quantity' => $maximumQuantity,
                         'minimum_order_quantity' => $minimumQuantity,
@@ -167,8 +165,8 @@ class DatabaseSeeder extends BaseSeeder
                     'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'code' => '123456',
                     'published_at' => now(),
-                    'type' => CouponType::FIXED->value,
-                    'config' => '{"discount_amount":15,"start_date":"2025-06-01","end_date":"2026-06-30","use_limit":5,"user_limit":100}',
+                    'type' => CouponType::TIMED->value,
+                    'config' => '{"value":15,"start_date":"2025-06-01","end_date":"2026-06-30","use_limit":5,"user_limit":100}',
                     'branch_id' => $branch->id,
                 ],
                 [
@@ -176,8 +174,8 @@ class DatabaseSeeder extends BaseSeeder
                     'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'code' => '123456',
                     'published_at' => now(),
-                    'type' => CouponType::FIXED->value,
-                    'config' => '{"discount_amount":10,"start_date":"2025-09-01","end_date":"2026-06-30","use_limit":3,"user_limit":50}',
+                    'type' => CouponType::TIMED->value,
+                    'config' => '{"value":10,"start_date":"2025-09-01","end_date":"2026-06-30","use_limit":3,"user_limit":50}',
                     'branch_id' => $branch->id,
                 ],
                 [
@@ -185,8 +183,8 @@ class DatabaseSeeder extends BaseSeeder
                     'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'code' => '123456',
                     'published_at' => now(),
-                    'type' => CouponType::FIXED->value,
-                    'config' => '{"discount_amount":5,"start_date":"2025-10-01","end_date":"2026-06-30","use_limit":2,"user_limit":25}',
+                    'type' => CouponType::TIMED->value,
+                    'config' => '{"value":5,"start_date":"2025-10-01","end_date":"2026-06-30","use_limit":2,"user_limit":25}',
                     'branch_id' => $branch->id,
                 ],
             ]);
@@ -197,30 +195,35 @@ class DatabaseSeeder extends BaseSeeder
             PaymentMethod::insert([
                 [
                     'branch_id' => $branch->id,
+                    'code' => 'pay-on-delivery',
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Pay on Delivery', 'الدفع عند الاستلام']), JSON_UNESCAPED_UNICODE),
                     'published_at' => now(),
                     'order' => '1',
                 ],
                 [
                     'branch_id' => $branch->id,
+                    'code' => 'apple-pay',
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Apple Pay', 'Apple Pay']), JSON_UNESCAPED_UNICODE),
                     'published_at' => now(),
                     'order' => '2',
                 ],
                 [
                     'branch_id' => $branch->id,
+                    'code' => 'google-pay',
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Google Pay', 'Google Pay']), JSON_UNESCAPED_UNICODE),
                     'published_at' => now(),
                     'order' => '2',
                 ],
                 [
                     'branch_id' => $branch->id,
+                    'code' => 'mada-pay',
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Mada Pay', 'Mada Pay']), JSON_UNESCAPED_UNICODE),
                     'published_at' => now(),
                     'order' => '3',
                 ],
                 [
                     'branch_id' => $branch->id,
+                    'code' => 'stc-pay',
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['STC Pay', 'STC Pay']), JSON_UNESCAPED_UNICODE),
                     'published_at' => now(),
                     'order' => '3',

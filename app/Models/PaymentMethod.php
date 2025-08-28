@@ -17,7 +17,7 @@ class PaymentMethod extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['title', 'description', 'order', 'branch_id', 'published_at'];
+    protected $fillable = ['title', 'code', 'order', 'published_at', 'branch_id'];
 
     protected $casts = [
         'title' => 'array',

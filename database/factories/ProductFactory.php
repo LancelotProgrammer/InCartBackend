@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\UnitType;
 use Database\Seeders\ArabicSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,6 +23,7 @@ class ProductFactory extends Factory
         return [
             'title' => $text,
             'description' => $text,
+            'unit' => $this->faker->randomElement(UnitType::cases()),
             'brand' => $this->faker->optional()->company(),
             'sku' => $this->faker->unique()->bothify('SKU-####-???'), // e.g. SKU-1234-ABC
         ];

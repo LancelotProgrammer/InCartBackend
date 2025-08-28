@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UnitType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,11 +13,12 @@ class Product extends Model
 {
     use HasFactory, HasTranslations;
 
-    protected $fillable = ['title', 'description', 'brand', 'sku'];
+    protected $fillable = ['title', 'description', 'unit', 'brand', 'sku'];
 
     protected $casts = [
         'title' => 'array',
         'description' => 'array',
+        'unit' => UnitType::class,
     ];
 
     public array $translatable = ['title', 'description'];

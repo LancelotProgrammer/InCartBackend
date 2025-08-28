@@ -84,4 +84,6 @@ Route::middleware([
     Route::get('/categories', [CategoryController::class, 'getCategories']);
     Route::get('/advertisements', [AdvertisementController::class, 'getAdvertisements']);
     Route::get('/payment-methods', [PaymentMethodController::class, 'getPaymentMethods']);
+
+    Route::post('/moyasar/callback', [OrderController::class, 'paymentGatewayCallback'])->name('moyasar.callback');
 });

@@ -9,6 +9,7 @@ use App\Models\Branch;
 use App\Models\BranchProduct;
 use App\Models\Cart;
 use App\Models\Coupon;
+use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -60,7 +61,7 @@ class OrderFactory extends Factory
         if ($applyCoupon) {
             $coupon = Coupon::inRandomOrder()->first();
             if ($coupon) {
-                $couponDiscount = $coupon->config['discount_amount'] ?? 0;
+                $couponDiscount = $coupon->config['value'] ?? 0;
             }
         }
 
@@ -69,29 +70,43 @@ class OrderFactory extends Factory
         $serviceFee = $this->faker->randomFloat(2, 0, 10);
         $taxAmount = $this->faker->randomFloat(2, 0, 15);
 
+        $payment = PaymentMethod::inRandomOrder()->first();
+        $token = null;
+        if ($payment->code !== 'pay-on-delivery') {
+            do {
+                $token = Str::random(32);
+            } while (Order::where('payment_token', '=', $token)->exists());
+        }
+
+        $date = $this->faker->boolean() ? $this->faker->optional()->dateTimeBetween('+1 days', '+1 month') : null;
+        if ($date === null) {
+            $deliveryStatus = DeliveryStatus::NOT_SHIPPED;
+        } else {
+            $deliveryStatus = DeliveryStatus::SCHEDULED;
+        }
+
         return [
-            'order_number' => 'ORD-'.now()->format('Ymd').'-'.strtoupper(Str::random(6)),
+            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(6)),
             'notes' => $this->faker->optional()->sentence(),
-            'order_status' => $this->faker->randomElement(OrderStatus::cases())->value,
-            'payment_status' => $this->faker->randomElement(PaymentStatus::cases())->value,
-            'delivery_status' => $this->faker->randomElement(DeliveryStatus::cases())->value,
+            'delivery_date' => $date,
+            'payment_token' => $token,
+
+            'order_status' => OrderStatus::PENDING->value,
+            'payment_status' => PaymentStatus::UNPAID->value,
+            'delivery_status' => $deliveryStatus,
 
             'subtotal_price' => round($subtotal, 2),
             'coupon_discount' => $couponDiscount,
             'delivery_fee' => $deliveryFee,
             'service_fee' => $serviceFee,
             'tax_amount' => $taxAmount,
-
-            'detail_price' => round($subtotal, 2),
             'total_price' => round($subtotal - $couponDiscount + $deliveryFee + $serviceFee + $taxAmount, 2),
-
-            'delivery_date' => $this->faker->boolean() ? $this->faker->optional()->dateTimeBetween('+1 days', '+1 month') : null,
 
             'user_id' => $user->id,
             'branch_id' => $branch->id,
             'cart_id' => $cart->id,
             'coupon_id' => $coupon?->id,
-            'payment_method_id' => PaymentMethod::inRandomOrder()->first()->id,
+            'payment_method_id' => $payment->id,
             'user_address_id' => $address->id,
         ];
     }

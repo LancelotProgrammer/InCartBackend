@@ -26,8 +26,8 @@ class Order extends Model
         'service_fee',
         'tax_amount',
         'total_price',
-        'detail_price',
         'delivery_date',
+        'payment_token',
         'user_id',
         'branch_id',
         'cart_id',
@@ -46,7 +46,6 @@ class Order extends Model
         'service_fee' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'total_price' => 'decimal:2',
-        'detail_price' => 'decimal:2',
         'delivery_date' => 'datetime',
     ];
 

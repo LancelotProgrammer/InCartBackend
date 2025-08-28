@@ -24,8 +24,8 @@ return new class extends Migration
             $table->decimal('service_fee', 10, 2)->default(0);     // Optional
             $table->decimal('tax_amount', 10, 2)->default(0);      // VAT or other tax
             $table->decimal('total_price', 10, 2)->default(0);     // What the customer pays
-            $table->decimal('detail_price', 10, 2)->default(0);    // Price before coupon discount
             $table->timestamp('delivery_date')->nullable();
+            $table->string('payment_token')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

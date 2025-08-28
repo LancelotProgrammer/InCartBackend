@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->json('title');
             $table->json('description')->nullable();
+            $table->integer('unit');
             $table->text('brand')->nullable();
             $table->text('sku')->nullable();
             $table->timestamps();
