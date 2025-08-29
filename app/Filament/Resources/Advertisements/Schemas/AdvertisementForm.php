@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Advertisements\Schemas;
 
 use App\Enums\AdvertisementLink;
 use App\Enums\AdvertisementType;
+use App\Filament\Actions\TranslationComponent;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
@@ -23,26 +24,8 @@ class AdvertisementForm
                 Section::make('Information')
                     ->columns(2)
                     ->schema([
-                        KeyValue::make('title')
-                            ->addable(false)
-                            ->deletable(false)
-                            ->editableKeys(false)
-                            ->keyLabel('Language')
-                            ->valueLabel('Value')
-                            ->valuePlaceholder('Value')
-                            ->afterStateHydrated(function (KeyValue $component) {
-                                $component->state('{"en":"","ar":""}');
-                            }),
-                        KeyValue::make('description')
-                            ->addable(false)
-                            ->deletable(false)
-                            ->editableKeys(false)
-                            ->keyLabel('Language')
-                            ->valueLabel('Value')
-                            ->valuePlaceholder('Value')
-                            ->afterStateHydrated(function (KeyValue $component) {
-                                $component->state('{"en":"","ar":""}');
-                            }),
+                        TranslationComponent::configure('title'),
+                        TranslationComponent::configure('description'),
                         Select::make('branch_id')->relationship('branch', 'title')->required(),
                         TextInput::make('order')->required()->numeric(),
                     ]),
@@ -100,6 +83,7 @@ class AdvertisementForm
                 Section::make('Files')
                     ->columnSpanFull()
                     ->schema([
+                        // TODO: make files hidden when AdvertisementType is offer
                         FileUpload::make('files')
                             ->multiple()
                             ->dehydrated(false)

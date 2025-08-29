@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
-use Filament\Forms\Components\DateTimePicker;
+use App\Filament\Components\TranslationComponent;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class CategoryForm
@@ -13,12 +13,14 @@ class CategoryForm
     {
         return $schema
             ->components([
-                TextInput::make('title')
-                    ->required(),
-                TextInput::make('description'),
-                DateTimePicker::make('published_at'),
-                Select::make('parent_id')
-                    ->relationship('parent', 'title'),
+                Section::make('Information')
+                    ->columnSpanFull()
+                    ->columns(2)
+                    ->schema([
+                        TranslationComponent::configure('title'),
+                        TranslationComponent::configure('description'),
+                        Select::make('parent_id')->relationship('parent', 'title')->columnSpanFull(),
+                    ]),
             ]);
     }
 }

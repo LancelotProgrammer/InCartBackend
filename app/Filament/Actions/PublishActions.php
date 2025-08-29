@@ -11,19 +11,19 @@ class PublishActions
     {
         return [
             Action::make('publish')
-                ->action(function (Advertisement $record) {
+                ->action(function ($record) {
                     return $record->publish();
                 })
                 ->requiresConfirmation()
-                ->visible(function (Advertisement $record) {
+                ->visible(function ($record) {
                     return ! $record->isPublished();
                 }),
             Action::make('unpublish')
-                ->action(function (Advertisement $record) {
+                ->action(function ($record) {
                     return $record->unpublish();
                 })
                 ->requiresConfirmation()
-                ->visible(function (Advertisement $record) {
+                ->visible(function ($record) {
                     return $record->isPublished();
                 })
         ];

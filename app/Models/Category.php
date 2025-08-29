@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasPublishAttribute;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, HasPublishAttribute;
 
     public static int $maxDepth = 3;
 

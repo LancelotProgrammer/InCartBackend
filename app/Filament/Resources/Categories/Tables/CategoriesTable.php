@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
+use App\Filament\Actions\PublishActions;
 use App\Models\Category;
 use Exception;
 use Filament\Actions\BulkActionGroup;
@@ -49,13 +50,10 @@ class CategoriesTable
                     })
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ...PublishActions::configure()
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                //
             ]);
     }
 }
