@@ -30,7 +30,7 @@ class CategoryResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        return CategoryInfolist::configure($schema);
+        return $schema;
     }
 
     public static function table(Table $table): Table

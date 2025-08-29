@@ -53,7 +53,6 @@ class CouponResource extends Resource
             'index' => ListCoupons::route('/'),
             'create' => CreateCoupon::route('/create'),
             'view' => ViewCoupon::route('/{record}'),
-            'edit' => EditCoupon::route('/{record}/edit'),
         ];
     }
 }

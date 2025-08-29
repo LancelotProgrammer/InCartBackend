@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Branches\Tables;
 
+use App\Filament\Actions\PublishActions;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -15,35 +16,23 @@ class BranchesTable
     {
         return $table
             ->columns([
-                TextColumn::make('longitude')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('latitude')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('city.name')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('id'),
+                TextColumn::make('title'),
+                TextColumn::make('longitude'),
+                TextColumn::make('latitude'),
+                TextColumn::make('created_at')->dateTime(),
+                TextColumn::make('published_at')->dateTime(),
+                TextColumn::make('city.name')->numeric()->sortable(),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
+                ...PublishActions::configure()
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                //
             ]);
     }
 }

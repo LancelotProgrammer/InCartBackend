@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Advertisements\Tables;
 use App\Enums\AdvertisementLink;
 use App\Enums\AdvertisementType;
 use App\Filament\Actions\PublishActions;
+use App\Filament\Filters\BranchSelectFilter;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -29,7 +30,7 @@ class AdvertisementsTable
                 TextColumn::make('branch.title'),
             ])
             ->filters([
-                SelectFilter::make('branch')->relationship('branch', 'title'),
+                BranchSelectFilter::configure(),
                 SelectFilter::make('type')->options(collect(AdvertisementType::cases())->pluck('name', 'value')->toArray()),
                 SelectFilter::make('link')->options(collect(AdvertisementLink::cases())->pluck('name', 'value')->toArray())
                     ->query(function (Builder $query, array $data) {

@@ -142,7 +142,7 @@ class HomeService
                 'price' => $branchProduct->price,
                 'discount' => $branchProduct->discount,
                 'discount_price' => BranchProduct::getDiscountPriceValue($branchProduct),
-                'unit' => $branchProduct->unit,
+                'unit' => $product->unit,
                 'expired_at' => $branchProduct->expires_at,
                 'limit' => $branchProduct->maximum_order_quantity,
                 'category' => [
@@ -253,7 +253,7 @@ class HomeService
             'price' => $branchProduct->price,
             'discount' => $branchProduct->discount,
             'discount_price' => BranchProduct::getDiscountPriceValue($branchProduct),
-            'unit' => $branchProduct->unit,
+            'unit' => $product->unit,
             'expired_at' => $branchProduct->expires_at,
             'limit' => $branchProduct->maximum_order_quantity,
             'category' => [
@@ -291,7 +291,7 @@ class HomeService
             'price' => $branchProduct->price,
             'discount' => $branchProduct->discount,
             'discount_price' => BranchProduct::getDiscountPriceValue($branchProduct),
-            'unit' => $branchProduct->unit,
+            'unit' => $product->unit,
             'expired_at' => $branchProduct->expires_at,
             'limit' => $branchProduct->maximum_order_quantity,
             'category' => [

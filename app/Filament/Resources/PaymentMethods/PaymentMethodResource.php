@@ -27,12 +27,12 @@ class PaymentMethodResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return PaymentMethodForm::configure($schema);
+        return $schema;
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return PaymentMethodInfolist::configure($schema);
+        return $schema;
     }
 
     public static function table(Table $table): Table
@@ -51,9 +51,6 @@ class PaymentMethodResource extends Resource
     {
         return [
             'index' => ListPaymentMethods::route('/'),
-            'create' => CreatePaymentMethod::route('/create'),
-            'view' => ViewPaymentMethod::route('/{record}'),
-            'edit' => EditPaymentMethod::route('/{record}/edit'),
         ];
     }
 }

@@ -44,7 +44,7 @@ class GetProductDetails
                     'price' => $branchProduct ? (string) $branchProduct->price : null,
                     'discount' => $branchProduct ? (string) $branchProduct->discount : null,
                     'discount_price' => $branchProduct ? (string) $branchProduct->discount_price : null,
-                    'unit' => $branchProduct ? (string) $branchProduct->unit->value : null,
+                    'unit' => $branchProduct ? (string) $related->unit->value : null,
                     'expired_at' => $branchProduct ? $branchProduct->expires_at->format('Y') : null,
                     'limit' => $branchProduct ? (int) $branchProduct->maximum_order_quantity : null,
                 ];
@@ -58,7 +58,7 @@ class GetProductDetails
             'price' => $branchProduct ? (string) $branchProduct->price : null,
             'discount' => $branchProduct ? (string) $branchProduct->discount : null,
             'discount_price' => $branchProduct ? (string) $branchProduct->discount_price : null,
-            'unit' => $branchProduct ? (string) $branchProduct->unit->value : null,
+            'unit' => $branchProduct ? (string) $product->unit->value : null,
             'expired_at' => $branchProduct ? $branchProduct->expires_at->format('Y') : null,
             'limit' => $branchProduct ? (int) $branchProduct->maximum_order_quantity : null,
             'related' => $relatedProducts,

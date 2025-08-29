@@ -34,7 +34,7 @@ class CityResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        return CityInfolist::configure($schema);
+        return $schema;
     }
 
     public static function table(Table $table): Table
@@ -53,9 +53,6 @@ class CityResource extends Resource
     {
         return [
             'index' => ListCities::route('/'),
-            'create' => CreateCity::route('/create'),
-            'view' => ViewCity::route('/{record}'),
-            'edit' => EditCity::route('/{record}/edit'),
         ];
     }
 }

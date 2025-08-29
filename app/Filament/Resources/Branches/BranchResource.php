@@ -32,7 +32,7 @@ class BranchResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        return BranchInfolist::configure($schema);
+        return $schema;
     }
 
     public static function table(Table $table): Table
@@ -51,9 +51,6 @@ class BranchResource extends Resource
     {
         return [
             'index' => ListBranches::route('/'),
-            'create' => CreateBranch::route('/create'),
-            'view' => ViewBranch::route('/{record}'),
-            'edit' => EditBranch::route('/{record}/edit'),
         ];
     }
 }

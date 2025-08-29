@@ -48,7 +48,7 @@ class GetProducts
                     'price' => $branchProduct?->price,
                     'discount' => $branchProduct?->discount,
                     'discount_price' => $branchProduct?->discount_price,
-                    'unit' => $branchProduct?->unit->value,
+                    'unit' => $product?->unit->value,
                     'expired_at' => $branchProduct?->expires_at?->format('Y'),
                     'limit' => $branchProduct?->maximum_order_quantity,
                 ];

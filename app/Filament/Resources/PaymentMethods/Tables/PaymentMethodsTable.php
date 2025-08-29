@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PaymentMethods\Tables;
 
+use App\Filament\Actions\PublishActions;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -14,28 +15,22 @@ class PaymentMethodsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->reorderable('order')
             ->columns([
-                TextColumn::make('order')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('published_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('branch.title')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('id'),
+                TextColumn::make('title'),
+                TextColumn::make('order'),
+                TextColumn::make('published_at'),
+                TextColumn::make('branch.title'),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ...PublishActions::configure()
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                //
             ]);
     }
 }

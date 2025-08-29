@@ -14,19 +14,18 @@ use Spatie\Translatable\HasTranslations;
 #[ScopedBy([BranchScope::class])]
 class Coupon extends Model
 {
-    use HasFactory, HasPublishAttribute, HasTranslations;
+    use HasFactory, HasTranslations;
 
-    protected $fillable = ['title', 'description', 'code', 'type', 'config', 'published_at', 'branch_id'];
+    protected $fillable = ['title', 'description', 'code', 'type', 'config', 'branch_id'];
 
     protected $casts = [
         'title' => 'array',
         'description' => 'array',
         'type' => CouponType::class,
-        'config' => 'array',
-        'published_at' => 'datetime',
+        'config' => 'array'
     ];
 
-    public array $translatable = ['title'];
+    public array $translatable = ['title', 'description'];
 
     public function branch(): BelongsTo
     {
