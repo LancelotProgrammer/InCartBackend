@@ -10,11 +10,11 @@ class GetPaymentMethods
 {
     public function __invoke(Request $request, Closure $next)
     {
-        return $next(PaymentMethod::published()->get()->map(function ($branch) {
+        return $next(PaymentMethod::published()->get()->map(function ($paymentMethod) {
             return [
-                'id' => $branch->id,
-                'order' => $branch->order,
-                'name' => $branch->title
+                'id' => $paymentMethod->id,
+                'order' => $paymentMethod->order,
+                'name' => $paymentMethod->title
             ];
         }));
     }
