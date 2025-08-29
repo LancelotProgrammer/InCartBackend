@@ -36,27 +36,21 @@ class GetProducts
 
         $products = $query->simplePaginate();
 
-        return $next([
-            collect($products->items())->map(function ($product) {
-                $branchProduct = $product->branchProducts->first();
-                $image = $product->files->first()?->url;
+        return $next(collect($products->items())->map(function ($product) {
+            $branchProduct = $product->branchProducts->first();
+            $image = $product->files->first()?->url;
 
-                return [
-                    'id' => $product->id,
-                    'title' => $product->title,
-                    'image' => $image,
-                    'price' => $branchProduct?->price,
-                    'discount' => $branchProduct?->discount,
-                    'discount_price' => $branchProduct?->discount_price,
-                    'unit' => $product?->unit->value,
-                    'expired_at' => $branchProduct?->expires_at?->format('Y'),
-                    'limit' => $branchProduct?->maximum_order_quantity,
-                ];
-            }),
-            [
-                'current_page' => $products->currentPage(),
-                'per_page' => $products->perPage(),
-            ],
-        ]);
+            return [
+                'id' => $product->id,
+                'title' => $product->title,
+                'image' => $image,
+                'price' => $branchProduct?->price,
+                'discount' => $branchProduct?->discount,
+                'discount_price' => $branchProduct?->discount_price,
+                'unit' => $product?->unit->value,
+                'expired_at' => $branchProduct?->expires_at?->format('Y'),
+                'limit' => $branchProduct?->maximum_order_quantity,
+            ];
+        }));
     }
 }

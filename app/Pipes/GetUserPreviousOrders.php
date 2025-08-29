@@ -16,12 +16,6 @@ class GetUserPreviousOrders
             throw new LogicalException('No orders found', 'User has no previous orders', 404);
         }
 
-        return $next([
-            $orders->items(),
-            [
-                'current_page' => $orders->currentPage(),
-                'per_page' => $orders->perPage(),
-            ],
-        ]);
+        return $next($orders->items());
     }
 }

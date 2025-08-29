@@ -16,12 +16,6 @@ class GetUserNotifications
             throw new LogicalException('No notifications found', 'User has no notifications', 404);
         }
 
-        return $next([
-            $notifications->items(),
-            [
-                'current_page' => $notifications->currentPage(),
-                'per_page' => $notifications->perPage(),
-            ],
-        ]);
+        return $next($notifications->items());
     }
 }
