@@ -11,12 +11,18 @@ class GetCategories
     public function __invoke(Request $request, Closure $next)
     {
         $request->validate([
-            'level' => 'nullable|integer|min:1|max:3',
+            'level' => 'nullable|integer|min:2|max:3',
+            'id' => 'nullable|integer|exists:categories,id',
         ]);
 
         $level = (int) $request->query('level', 1);
-
+        
         $query = Category::query()->with('children');
+        
+        $id = (int) $request->query('id', 1);
+        if ($id && $level > 1) {
+            $query->where('id', '=', $id);
+        }
 
         if ($level === 1) {
             $query->whereNull('parent_id');

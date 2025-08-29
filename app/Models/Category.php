@@ -95,13 +95,11 @@ class Category extends Model
     public function getDepthAttribute(): int
     {
         $depth = 1;
-        $parent = $this->relationLoaded('parent') ? $this->parent : null;
-
+        $parent = $this->parent;
         while ($parent) {
             $depth++;
-            $parent = $parent->relationLoaded('parent') ? $parent->parent : null;
+            $parent = $parent->relationLoaded('parent') ? $parent->parent : $parent->parent()->first();
         }
-
         return $depth;
     }
 }
