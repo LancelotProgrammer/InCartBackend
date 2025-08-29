@@ -56,16 +56,28 @@ class CouponService
         if (!empty($config['end_date']) && self::$time->gt(Carbon::parse($config['end_date']))) {
             throw new LogicalException("Coupon has expired.");
         }
-        if (!empty($config['use_limit'])) {
-            $userUses = Order::where('coupon_id', $coupon->id)->count();
-            if ($userUses >= $config['use_limit']) {
-                throw new LogicalException("You have already used this coupon the maximum number of times.");
-            }
+
+        $totalUses = Order::where('coupon_id', $coupon->id)->count();
+        $userUses  = Order::where('coupon_id', $coupon->id)->where('user_id', self::$userId)->count();
+
+        // Check user limit first
+        if (!empty($config['user_limit']) && $userUses >= $config['user_limit']) {
+            throw new LogicalException("You have already used this coupon the maximum number of times for your account.");
         }
-        if (!empty($config['user_limit'])) {
-            $userUses = Order::where('coupon_id', $coupon->id)->where('user_id', self::$userId)->count();
-            if ($userUses >= $config['user_limit']) {
-                throw new LogicalException("You have already used this coupon the maximum number of times.");
+        // Check total use limit
+        if (!empty($config['use_limit']) && $totalUses >= $config['use_limit']) {
+            throw new LogicalException("This coupon has reached its maximum number of uses.");
+        }
+        // Check if using the coupon now would exceed total limit
+        if (!empty($config['use_limit']) && $totalUses + 1 > $config['use_limit']) {
+            throw new LogicalException("Using this coupon now would exceed the total allowed uses.");
+        }
+        // Optional: prevent user from “taking” another user’s slot if near limit
+        if (!empty($config['use_limit']) && !empty($config['user_limit'])) {
+            $remainingUses = $config['use_limit'] - $totalUses;
+            $remainingForUser = $config['user_limit'] - $userUses;
+            if ($remainingUses <= 0 || $remainingForUser <= 0) {
+                throw new LogicalException("Coupon cannot be used due to limit restrictions.");
             }
         }
 
