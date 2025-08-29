@@ -34,8 +34,7 @@ class AdvertisementsTable
                 SelectFilter::make('type')->options(collect(AdvertisementType::cases())->pluck('name', 'value')->toArray()),
                 SelectFilter::make('link')->options(collect(AdvertisementLink::cases())->pluck('name', 'value')->toArray())
                     ->query(function (Builder $query, array $data) {
-                        return match ((int)$data['value'])
-                        {
+                        return match ((int) $data['value']) {
                             AdvertisementLink::PRODUCT->value => $query->whereNotNull('product_id')->whereNotNull('category_id'),
                             AdvertisementLink::CATEGORY->value => $query->whereNull('product_id')->whereNotNull('category_id'),
                             AdvertisementLink::EXTERNAL->value => $query->whereNull('product_id')->whereNull('category_id'),
@@ -45,7 +44,7 @@ class AdvertisementsTable
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 ViewAction::make(),
-                ...PublishActions::configure()
+                ...PublishActions::configure(),
             ])
             ->toolbarActions([
                 //

@@ -21,9 +21,9 @@ class SettingResource extends Resource
 {
     protected static ?string $model = Setting::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Developers';
+    protected static string|UnitEnum|null $navigationGroup = 'Developers';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::Cog8Tooth;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Cog8Tooth;
 
     protected static ?string $recordTitleAttribute = 'key';
 

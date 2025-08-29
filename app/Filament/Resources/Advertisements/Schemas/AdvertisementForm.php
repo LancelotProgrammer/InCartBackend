@@ -4,9 +4,8 @@ namespace App\Filament\Resources\Advertisements\Schemas;
 
 use App\Enums\AdvertisementLink;
 use App\Enums\AdvertisementType;
-use App\Filament\Actions\TranslationComponent;
+use App\Filament\Components\TranslationComponent;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -65,7 +64,7 @@ class AdvertisementForm
                         Section::make('Links')
                             ->columns(2)
                             ->schema(function (Get $get) {
-                                return match ((int)$get('link')) {
+                                return match ((int) $get('link')) {
                                     AdvertisementLink::CATEGORY->value => [
                                         Select::make('category_id')->relationship('category', 'title'),
                                     ],
@@ -87,7 +86,7 @@ class AdvertisementForm
                         FileUpload::make('files')
                             ->multiple()
                             ->dehydrated(false)
-                            ->storeFileNamesIn('file_names')
+                            ->storeFileNamesIn('file_names'),
                     ]),
             ]);
     }

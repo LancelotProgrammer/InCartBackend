@@ -86,7 +86,7 @@ class OrderFactory extends Factory
         }
 
         return [
-            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(6)),
+            'order_number' => 'ORD-'.now()->format('YmdHis').'-'.strtoupper(Str::random(6)),
             'notes' => $this->faker->optional()->sentence(),
             'delivery_date' => $date,
             'payment_token' => $token,

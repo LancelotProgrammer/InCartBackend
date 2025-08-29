@@ -2,7 +2,6 @@
 
 namespace App\Filament\Actions;
 
-use App\Models\Advertisement;
 use Filament\Actions\Action;
 
 class PublishActions
@@ -25,7 +24,7 @@ class PublishActions
                 ->requiresConfirmation()
                 ->visible(function ($record) {
                     return $record->isPublished();
-                })
+                }),
         ];
     }
 }

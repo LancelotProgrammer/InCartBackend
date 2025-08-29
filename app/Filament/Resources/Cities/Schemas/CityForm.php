@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Cities\Schemas;
 
 use App\Filament\Components\TranslationComponent;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class CityForm

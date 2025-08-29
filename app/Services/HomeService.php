@@ -148,8 +148,8 @@ class HomeService
                 'category' => [
                     'id' => $productCategory->id,
                     'title' => get_translatable_attribute($productCategory->title),
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -177,7 +177,7 @@ class HomeService
                 'id' => $category->id,
                 'title' => get_translatable_attribute($category->title),
                 'image' => $categoryImage->url,
-            ]
+            ],
         ];
     }
 
@@ -197,7 +197,7 @@ class HomeService
             'created_at' => $advertisement->created_at,
             'external' => [
                 'url' => $advertisement->url,
-            ]
+            ],
         ];
     }
 
@@ -217,7 +217,7 @@ class HomeService
             'created_at' => $advertisement->created_at,
             'external' => [
                 'url' => $advertisement->url,
-            ]
+            ],
         ];
     }
 
@@ -259,7 +259,7 @@ class HomeService
             'category' => [
                 'id' => $productCategory->id,
                 'title' => get_translatable_attribute($productCategory->title),
-            ]
+            ],
         ];
     }
 
@@ -297,7 +297,7 @@ class HomeService
             'category' => [
                 'id' => $productCategory->id,
                 'title' => get_translatable_attribute($productCategory->title),
-            ]
+            ],
         ];
     }
 }

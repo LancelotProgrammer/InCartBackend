@@ -13,10 +13,15 @@ use InvalidArgumentException;
 class CouponService
 {
     public static Carbon $time;
+
     public static UserAddress $userAddress;
+
     public static int $userId;
+
     public static int $branchId;
+
     public static array $productsIds;
+
     public static array $categoriesIds;
 
     public function __construct(
@@ -47,37 +52,37 @@ class CouponService
             'user_limit' => 'integer|nullable',
         ]);
         if ($validator->fails()) {
-            throw new InvalidArgumentException("Invalid coupon config: " . $validator->errors()->first());
+            throw new InvalidArgumentException('Invalid coupon config: '.$validator->errors()->first());
         }
 
-        if (!empty($config['start_date']) && self::$time->lt(Carbon::parse($config['start_date']))) {
-            throw new LogicalException("Coupon is not active yet.");
+        if (! empty($config['start_date']) && self::$time->lt(Carbon::parse($config['start_date']))) {
+            throw new LogicalException('Coupon is not active yet.');
         }
-        if (!empty($config['end_date']) && self::$time->gt(Carbon::parse($config['end_date']))) {
-            throw new LogicalException("Coupon has expired.");
+        if (! empty($config['end_date']) && self::$time->gt(Carbon::parse($config['end_date']))) {
+            throw new LogicalException('Coupon has expired.');
         }
 
         $totalUses = Order::where('coupon_id', $coupon->id)->count();
-        $userUses  = Order::where('coupon_id', $coupon->id)->where('user_id', self::$userId)->count();
+        $userUses = Order::where('coupon_id', $coupon->id)->where('user_id', self::$userId)->count();
 
         // Check user limit first
-        if (!empty($config['user_limit']) && $userUses >= $config['user_limit']) {
-            throw new LogicalException("You have already used this coupon the maximum number of times for your account.");
+        if (! empty($config['user_limit']) && $userUses >= $config['user_limit']) {
+            throw new LogicalException('You have already used this coupon the maximum number of times for your account.');
         }
         // Check total use limit
-        if (!empty($config['use_limit']) && $totalUses >= $config['use_limit']) {
-            throw new LogicalException("This coupon has reached its maximum number of uses.");
+        if (! empty($config['use_limit']) && $totalUses >= $config['use_limit']) {
+            throw new LogicalException('This coupon has reached its maximum number of uses.');
         }
         // Check if using the coupon now would exceed total limit
-        if (!empty($config['use_limit']) && $totalUses + 1 > $config['use_limit']) {
-            throw new LogicalException("Using this coupon now would exceed the total allowed uses.");
+        if (! empty($config['use_limit']) && $totalUses + 1 > $config['use_limit']) {
+            throw new LogicalException('Using this coupon now would exceed the total allowed uses.');
         }
         // Optional: prevent user from “taking” another user’s slot if near limit
-        if (!empty($config['use_limit']) && !empty($config['user_limit'])) {
+        if (! empty($config['use_limit']) && ! empty($config['user_limit'])) {
             $remainingUses = $config['use_limit'] - $totalUses;
             $remainingForUser = $config['user_limit'] - $userUses;
             if ($remainingUses <= 0 || $remainingForUser <= 0) {
-                throw new LogicalException("Coupon cannot be used due to limit restrictions.");
+                throw new LogicalException('Coupon cannot be used due to limit restrictions.');
             }
         }
 

@@ -32,7 +32,7 @@ use InvalidArgumentException;
         - test update user info and  blocked users middleware
         - null edge case at model::where
         - improve phone number validation
-        - make a scheduler to delete unverified users 
+        - make a scheduler to delete unverified users
         - review ratelimiter
         - write tests for all functions
         - refactor using services, classes and helpers
@@ -213,7 +213,7 @@ class AuthenticationController extends Controller
             ['token' => $request->input('token')]
         );
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
@@ -223,11 +223,12 @@ class AuthenticationController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @group Account Management
+     *
      * @bodyParam phone string The user’s phone number. Example: +123456789
      * @bodyParam otp integer The user’s phone number otp. Example: 123456
      * @bodyParam email string The user’s email. Example: new@mail.com
@@ -259,7 +260,7 @@ class AuthenticationController extends Controller
     private function updateUserPhone(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'phone' => 'required|string|unique:users,phone,' . $request->user()->id,
+            'phone' => 'required|string|unique:users,phone,'.$request->user()->id,
             'otp' => 'required|integer',
         ]);
 
@@ -268,13 +269,13 @@ class AuthenticationController extends Controller
         $user = $request->user();
         $user->update(['phone' => $request->input('phone')]);
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     private function updateUserEmail(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email,' . $request->user()->id,
+            'email' => 'required|email|unique:users,email,'.$request->user()->id,
         ]);
 
         $user = $request->user();
@@ -282,7 +283,7 @@ class AuthenticationController extends Controller
 
         $this->requestVerifyEmail($user->id, $request->input('email'));
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     private function updateUserName(Request $request): EmptySuccessfulResponseResource
@@ -294,7 +295,7 @@ class AuthenticationController extends Controller
         $user = $request->user();
         $user->update(['name' => $request->input('name')]);
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     private function updateUserPassword(Request $request): EmptySuccessfulResponseResource
@@ -314,7 +315,7 @@ class AuthenticationController extends Controller
 
         $user->update(['password' => Hash::make($request->input('new_password'))]);
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
@@ -341,7 +342,7 @@ class AuthenticationController extends Controller
 
         if ($phoneVerificationRequest) {
 
-            if (!(Carbon::parse($phoneVerificationRequest->created_at)->diffInMinutes(Carbon::now()) > self::OTP_VERIFICATION_MINUTES)) {
+            if (! (Carbon::parse($phoneVerificationRequest->created_at)->diffInMinutes(Carbon::now()) > self::OTP_VERIFICATION_MINUTES)) {
                 RateLimiter::increment("ResendOtp|$phone");
                 throw new AuthenticationException(
                     trans('auth.opt_resending_error'),
@@ -365,14 +366,14 @@ class AuthenticationController extends Controller
             $verifyCode = PhoneVerificationRequest::where('phone', $phone)->latest()->first()->code;
             Otp::send($phone, $verifyCode);
         } catch (Exception $e) {
-            Log::channel('error')->error('OTP Error: ' . $e->getMessage());
+            Log::channel('error')->error('OTP Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'OTP verification request failed. Check error logs for details.'
             );
         }
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     private function verifyOtp(string $phone, string $code): void
@@ -417,7 +418,7 @@ class AuthenticationController extends Controller
     {
         $this->requestVerifyEmail($request->user()->id);
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     public function requestVerifyEmail(int $userId, ?string $email = null): void
@@ -453,7 +454,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new VerifyEmail($user->name, $verifyEmail->email, $verifyEmail->token));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error' . $e->getMessage());
+            Log::channel('error')->error('Email Error'.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -475,17 +476,20 @@ class AuthenticationController extends Controller
 
         if (RateLimiter::tooManyAttempts("VerifyEmail|$email", self::EMAIL_VERIFICATION_ATTEMPTS)) {
             RateLimiter::increment("VerifyEmail|$email");
+
             return view('pages.email-verification-failure');
         }
 
         if (! $emailVerificationRequest || $emailVerificationRequest->email !== $email) {
             RateLimiter::increment("VerifyEmail|$email");
+
             return view('pages.email-verification-failure');
         }
 
         if (Carbon::parse($emailVerificationRequest->created_at)->diffInDays(Carbon::now()) > self::EMAIL_VERIFICATION_DAYS) {
             EmailVerificationRequest::where('user_id', $emailVerificationRequest->user_id)->delete();
             RateLimiter::increment("VerifyEmail|$email");
+
             return view('pages.email-verification-failure');
         }
 
@@ -546,7 +550,7 @@ class AuthenticationController extends Controller
         $code = $this->createAndStoreForgotPasswordCode($user->id);
         $this->sendEmailForResetPassword($user->email, $user->name, $code);
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     private function createAndStoreForgotPasswordCode(int $userId): string
@@ -569,7 +573,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new ForgotPassword($userName, $code));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error' . $e->getMessage());
+            Log::channel('error')->error('Email Error'.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -687,7 +691,7 @@ class AuthenticationController extends Controller
         }
         PasswordResetRequest::where('user_id', $user->id)->where('token', $token)->delete();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     private function logoutFromAll(int $userId): void
@@ -721,7 +725,7 @@ class AuthenticationController extends Controller
     private function isWeakNumber(string $number): bool
     {
         $length = strlen($number);
-        if (preg_match('/^(\d)\1{' . ($length - 1) . '}$/', $number)) {
+        if (preg_match('/^(\d)\1{'.($length - 1).'}$/', $number)) {
             return true;
         }
         for ($patternLength = 1; $patternLength <= $length / 2; $patternLength++) {

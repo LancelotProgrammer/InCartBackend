@@ -45,7 +45,7 @@ class AdvertisementFactory extends Factory
 
         $link = $this->faker->randomElement($allowedLinks);
 
-        $text = $this->translations(['en', 'ar'], [$this->faker->sentence(2), 'عرض ' . ArabicSeeder::getFakeProductName()]);
+        $text = $this->translations(['en', 'ar'], [$this->faker->sentence(2), 'عرض '.ArabicSeeder::getFakeProductName()]);
 
         return [
             'title' => $text,

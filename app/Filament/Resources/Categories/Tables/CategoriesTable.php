@@ -4,11 +4,6 @@ namespace App\Filament\Resources\Categories\Tables;
 
 use App\Filament\Actions\PublishActions;
 use App\Models\Category;
-use Exception;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -29,7 +24,7 @@ class CategoriesTable
                 TextColumn::make('title'),
                 TextColumn::make('parent.title')->label('parent'),
                 TextColumn::make('published_at')->dateTime(),
-                TextColumn::make('created_at')->dateTime()
+                TextColumn::make('created_at')->dateTime(),
             ])
             ->filters([
                 Filter::make('category_name')
@@ -42,15 +37,16 @@ class CategoriesTable
                         if ($category) {
                             return $query->when(
                                 $data['title'],
-                                fn(Builder $query, $date): Builder => $query->where('id', '=', $category->id)->orWhere('parent_id', '=', $category->id),
+                                fn (Builder $query, $date): Builder => $query->where('id', '=', $category->id)->orWhere('parent_id', '=', $category->id),
                             );
                         }
+
                         // TODO fix this temporary code: this code add dummy where clause to the builder to indicate that there is no categories with the provided title. Then filament displays for the user (no result) message
                         return $query->where('title', '=', '123456789');
-                    })
+                    }),
             ])
             ->recordActions([
-                ...PublishActions::configure()
+                ...PublishActions::configure(),
             ])
             ->toolbarActions([
                 //

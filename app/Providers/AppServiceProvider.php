@@ -42,13 +42,11 @@ class AppServiceProvider extends ServiceProvider
 
     private function configureBuilder(): void
     {
-        Builder::macro('branchScope', function ()
-        {
+        Builder::macro('branchScope', function () {
             return $this->where('branch_id', '=', request()->attributes->get('currentBranchId'));
         });
 
-        Builder::macro('publishedScope', function ()
-        {
+        Builder::macro('publishedScope', function () {
             return $this->whereNotNull('published_at');
         });
     }

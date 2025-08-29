@@ -26,7 +26,7 @@ class AdvertisementInfolist
                     ->schema([
                         ImageEntry::make('url'),
                     ])
-                    ->columns(2)
+                    ->columns(2),
             ]);
     }
 }

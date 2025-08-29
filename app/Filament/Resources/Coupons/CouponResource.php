@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Coupons;
 
 use App\Filament\Resources\Coupons\Pages\CreateCoupon;
-use App\Filament\Resources\Coupons\Pages\EditCoupon;
 use App\Filament\Resources\Coupons\Pages\ListCoupons;
 use App\Filament\Resources\Coupons\Pages\ViewCoupon;
 use App\Filament\Resources\Coupons\Schemas\CouponForm;
@@ -21,9 +20,9 @@ class CouponResource extends Resource
 {
     protected static ?string $model = Coupon::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Resources';
+    protected static string|UnitEnum|null $navigationGroup = 'Resources';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::ReceiptPercent;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::ReceiptPercent;
 
     public static function form(Schema $schema): Schema
     {

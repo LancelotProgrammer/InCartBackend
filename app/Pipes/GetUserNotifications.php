@@ -13,7 +13,7 @@ class GetUserNotifications
         $notifications = $request->user()->notifications()->latest()->simplePaginate();
 
         if (! $notifications) {
-            throw new LogicalException("No notifications found", "User has no notifications", 404);
+            throw new LogicalException('No notifications found', 'User has no notifications', 404);
         }
 
         return $next([
@@ -21,7 +21,7 @@ class GetUserNotifications
             [
                 'current_page' => $notifications->currentPage(),
                 'per_page' => $notifications->perPage(),
-            ]
+            ],
         ]);
     }
 }

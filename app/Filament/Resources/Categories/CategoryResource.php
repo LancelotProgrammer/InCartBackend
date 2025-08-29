@@ -2,10 +2,8 @@
 
 namespace App\Filament\Resources\Categories;
 
-use App\Filament\Resources\Categories\Pages\CreateCategory;
 use App\Filament\Resources\Categories\Pages\ListCategories;
 use App\Filament\Resources\Categories\Schemas\CategoryForm;
-use App\Filament\Resources\Categories\Schemas\CategoryInfolist;
 use App\Filament\Resources\Categories\Tables\CategoriesTable;
 use App\Models\Category;
 use BackedEnum;
@@ -19,9 +17,9 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Category And Products';
+    protected static string|UnitEnum|null $navigationGroup = 'Category And Products';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::NumberedList;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::NumberedList;
 
     public static function form(Schema $schema): Schema
     {

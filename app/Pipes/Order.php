@@ -26,6 +26,7 @@ class Order
             OrderService::calculateCouponPriceDiscount();
             OrderService::calculateFeesAndTotals();
             OrderService::handlePaymentMethod();
+
             return OrderService::createOrder();
         });
 

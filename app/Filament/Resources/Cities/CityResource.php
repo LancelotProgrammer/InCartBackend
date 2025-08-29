@@ -2,12 +2,8 @@
 
 namespace App\Filament\Resources\Cities;
 
-use App\Filament\Resources\Cities\Pages\CreateCity;
-use App\Filament\Resources\Cities\Pages\EditCity;
 use App\Filament\Resources\Cities\Pages\ListCities;
-use App\Filament\Resources\Cities\Pages\ViewCity;
 use App\Filament\Resources\Cities\Schemas\CityForm;
-use App\Filament\Resources\Cities\Schemas\CityInfolist;
 use App\Filament\Resources\Cities\Tables\CitiesTable;
 use App\Models\City;
 use BackedEnum;
@@ -21,9 +17,9 @@ class CityResource extends Resource
 {
     protected static ?string $model = City::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Cities and Branches';
+    protected static string|UnitEnum|null $navigationGroup = 'Cities and Branches';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedGlobeAlt;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGlobeAlt;
 
     protected static ?string $recordTitleAttribute = 'name';
 

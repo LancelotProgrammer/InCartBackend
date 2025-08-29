@@ -14,7 +14,7 @@ class GetPaymentMethods
             return [
                 'id' => $paymentMethod->id,
                 'order' => $paymentMethod->order,
-                'name' => $paymentMethod->title
+                'name' => $paymentMethod->title,
             ];
         }));
     }

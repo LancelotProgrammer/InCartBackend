@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\CouponType;
 use App\Models\Scopes\BranchScope;
-use App\Traits\HasPublishAttribute;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +21,7 @@ class Coupon extends Model
         'title' => 'array',
         'description' => 'array',
         'type' => CouponType::class,
-        'config' => 'array'
+        'config' => 'array',
     ];
 
     public array $translatable = ['title', 'description'];

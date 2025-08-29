@@ -31,7 +31,7 @@ class SetCurrentBranch
     {
         // 1- Priority: from header
         if ($branchId = $request->header('X-BRANCH-ID')) {
-            return $this->validateBranch((int)$branchId, 'The provided X-BRANCH-ID is not attached to any branch');
+            return $this->validateBranch((int) $branchId, 'The provided X-BRANCH-ID is not attached to any branch');
         }
 
         // 2- Authenticated user -> use default branch in user's city

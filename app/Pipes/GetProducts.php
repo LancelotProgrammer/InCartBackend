@@ -23,7 +23,7 @@ class GetProducts
                 $query->where('categories.id', $request->input('category_id'));
             });
         }
-        
+
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($query) use ($search) {

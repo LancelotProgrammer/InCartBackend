@@ -10,25 +10,26 @@ class RootCategoryFactory extends Factory
     protected $model = Category::class;
 
     private static $currentIndex = 0;
+
     private static $rootDefinitions = [
         [
             'en_title' => 'Main 1',
             'ar_title' => 'الرئيسي 1',
             'en_description' => 'First main category',
-            'ar_description' => 'الفئة الرئيسية الأولى'
+            'ar_description' => 'الفئة الرئيسية الأولى',
         ],
         [
             'en_title' => 'Main 2',
             'ar_title' => 'الرئيسي 2',
             'en_description' => 'Second main category',
-            'ar_description' => 'الفئة الرئيسية الثانية'
+            'ar_description' => 'الفئة الرئيسية الثانية',
         ],
         [
             'en_title' => 'Main 3',
             'ar_title' => 'الرئيسي 3',
             'en_description' => 'Third main category',
-            'ar_description' => 'الفئة الرئيسية الثالثة'
-        ]
+            'ar_description' => 'الفئة الرئيسية الثالثة',
+        ],
     ];
 
     /**

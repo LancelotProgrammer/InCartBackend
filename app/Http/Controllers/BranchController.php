@@ -11,7 +11,9 @@ class BranchController extends Controller
 {
     /**
      * @authenticated
+     *
      * @group Branch Actions
+     *
      * @queryParam city_id integer The city ID. Example: 1
      */
     public function getBranches(Request $request): SuccessfulResponseResource

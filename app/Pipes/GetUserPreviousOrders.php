@@ -13,7 +13,7 @@ class GetUserPreviousOrders
         $orders = $request->user()->orders()->latest()->simplePaginate();
 
         if (! $orders) {
-            throw new LogicalException("No orders found", "User has no previous orders", 404);
+            throw new LogicalException('No orders found', 'User has no previous orders', 404);
         }
 
         return $next([
@@ -21,7 +21,7 @@ class GetUserPreviousOrders
             [
                 'current_page' => $orders->currentPage(),
                 'per_page' => $orders->perPage(),
-            ]
+            ],
         ]);
     }
 }

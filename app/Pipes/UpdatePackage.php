@@ -9,7 +9,6 @@ class UpdatePackage
 {
     public function __invoke(Request $request, Closure $next)
     {
-        
 
         return $next();
     }

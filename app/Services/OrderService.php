@@ -27,35 +27,55 @@ use InvalidArgumentException;
 class OrderService
 {
     private static int $addressId;
+
     private static ?string $deliveryDate = null;
+
     private static int $paymentMethodId;
+
     private static ?string $couponCode = null;
+
     private static array $cartItems;
+
     private static ?string $notes = null;
+
     private static int $branchId;
+
     private static User $user;
 
     private static string $orderNumber;
 
     private static float $distance;
+
     private static ?Carbon $date = null;
 
     private static ?Coupon $coupon = null;
+
     private static CouponService $couponService;
+
     private static Cart $cart;
+
     private static PaymentMethod $paymentMethod;
+
     private static ?string $paymentToken = null;
 
     private static float $deliveryFee = 0;
+
     private static float $subtotal = 0;
+
     private static float $couponDiscount = 0;
+
     private static float $taxAmount = 0;
+
     private static float $totalPrice = 0;
 
     private static float $serviceFee = 1; // TODO: get from settings
+
     private static float $taxRate = 5; // TODO: get from settings
+
     private static float $minDistance = 1; // TODO: get from settings
+
     private static float $maxDistance = 1000; // TODO: get from settings
+
     private static float $pricePerKilometer = 1; // TODO: get from settings
 
     public static function validateRequest(Request $request): void
@@ -88,7 +108,7 @@ class OrderService
     {
         do {
             self::$orderNumber = sprintf(
-                "ORD-%s-%s",
+                'ORD-%s-%s',
                 now()->format('YmdHis'),
                 strtoupper(Str::random(6))
             );
@@ -126,13 +146,14 @@ class OrderService
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
         $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
+
         return $earthRadius * (2 * atan2(sqrt($a), sqrt(1 - $a)));
     }
 
     public static function calculateCartPrice(): void
     {
         $products = Product::whereIn('id', collect(self::$cartItems)->pluck('id'))
-            ->with(['branches' => fn($query) => $query->where('branches.id', self::$branchId)->withPivot([
+            ->with(['branches' => fn ($query) => $query->where('branches.id', self::$branchId)->withPivot([
                 'price',
                 'discount',
                 'maximum_order_quantity',
@@ -142,7 +163,7 @@ class OrderService
 
         foreach (self::$cartItems as $item) {
             $product = $products->firstWhere('id', $item['id']);
-            if (!$product || $product->branches->isEmpty()) {
+            if (! $product || $product->branches->isEmpty()) {
                 continue;
             }
             $branchProduct = $product->branches->first()->pivot;
@@ -184,14 +205,14 @@ class OrderService
             self::$user->id,
             self::$branchId,
             $products->unique('id')->pluck('id')->toArray(),
-            $products->flatMap(fn($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
+            $products->flatMap(fn ($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
         );
 
         if (empty(self::$couponCode)) {
             return;
         }
         $coupon = Coupon::published()->where('code', self::$couponCode)->first();
-        if (!$coupon) {
+        if (! $coupon) {
             return;
         }
 
@@ -208,7 +229,6 @@ class OrderService
     {
         // future: use this code to calculate the cart wight
         throw new Exception('Not implemented yet');
-
         // self::$totalWeight = 0;
         // $products = Product::whereIn('id', collect(self::$cartItems)->pluck('id'))
         //     ->with(['branches' => fn($query) => $query->where('branches.id', self::$branchId)])
@@ -274,7 +294,7 @@ class OrderService
 
         $class = $map[$paymentMethod->code] ?? null;
 
-        if (!$class || !in_array(PaymentGatewayInterface::class, class_implements($class))) {
+        if (! $class || ! in_array(PaymentGatewayInterface::class, class_implements($class))) {
             throw new InvalidArgumentException("Payment gateway not found for {$paymentMethod->code}");
         }
 

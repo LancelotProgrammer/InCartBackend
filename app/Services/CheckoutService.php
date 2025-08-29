@@ -27,10 +27,10 @@ class CheckoutService
         $paymentMethod = PaymentMethod::findOrFail($request->input('payment_method_id'));
         $order = Order::where('payment_token', '=', 'order_id')->first();
         if ($paymentMethod->code === 'pay-on-delivery') {
-            throw new LogicalException("Payment method is pay-on-delivery and it is already checked out");
+            throw new LogicalException('Payment method is pay-on-delivery and it is already checked out');
         }
         if ($order->payment_status === PaymentStatus::PAID->value) {
-            throw new LogicalException("order is already payed");
+            throw new LogicalException('order is already payed');
         }
         self::resolvePaymentGateway($paymentMethod, $request);
     }
@@ -46,7 +46,7 @@ class CheckoutService
 
         $class = $map[$paymentMethod->code] ?? null;
 
-        if (!$class || !in_array(PaymentGatewayInterface::class, class_implements($class))) {
+        if (! $class || ! in_array(PaymentGatewayInterface::class, class_implements($class))) {
             throw new InvalidArgumentException("Payment gateway not found for {$paymentMethod->code}");
         }
 

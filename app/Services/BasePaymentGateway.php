@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class BasePaymentGateway
 {
-    public function generateToken(): string 
+    public function generateToken(): string
     {
         do {
             $token = Str::random(32);
@@ -17,7 +17,7 @@ class BasePaymentGateway
         return $token;
     }
 
-    public function payOrder(Order $order): void 
+    public function payOrder(Order $order): void
     {
         $order::update([
             'payment_status' => PaymentStatus::PAID->value,

@@ -99,14 +99,14 @@ class ArabicSeeder
         'البذور',
         'الأسمدة',
         'أدوات الزراعة',
-        'الدفيئات'
+        'الدفيئات',
     ];
 
     private static $productTemplates = [
         '{{adjective}} {{noun}}',
         '{{brand}} {{noun}}',
         '{{noun}} {{feature}}',
-        '{{adjective}} {{brand}} {{noun}}'
+        '{{adjective}} {{brand}} {{noun}}',
     ];
 
     private static $arabicAdjectives = [
@@ -133,7 +133,7 @@ class ArabicSeeder
         'ذكي',
         'سحري',
         'فريد',
-        'خاص'
+        'خاص',
     ];
 
     private static $arabicNouns = [
@@ -160,7 +160,7 @@ class ArabicSeeder
         'معدات',
         'مستلزمات',
         'لوازم',
-        'مواد'
+        'مواد',
     ];
 
     private static $arabicBrands = [
@@ -183,7 +183,7 @@ class ArabicSeeder
         'السريع',
         'القوي',
         'الخفيف',
-        'المتين'
+        'المتين',
     ];
 
     private static $arabicFeatures = [
@@ -201,7 +201,7 @@ class ArabicSeeder
         'سريع الشحن',
         'عالية الدقة',
         'منخفض الطاقة',
-        'صديق للبشرة'
+        'صديق للبشرة',
     ];
 
     public static function getFakeProductName(): array|string
@@ -216,7 +216,7 @@ class ArabicSeeder
             '{{adjective}}' => self::$arabicAdjectives[array_rand(self::$arabicAdjectives)] ?? '',
             '{{noun}}' => self::$arabicNouns[array_rand(self::$arabicNouns)] ?? '',
             '{{brand}}' => self::$arabicBrands[array_rand(self::$arabicBrands)] ?? '',
-            '{{feature}}' => self::$arabicFeatures[array_rand(self::$arabicFeatures)] ?? ''
+            '{{feature}}' => self::$arabicFeatures[array_rand(self::$arabicFeatures)] ?? '',
         ];
 
         return str_replace(array_keys($replacements), array_values($replacements), $template);

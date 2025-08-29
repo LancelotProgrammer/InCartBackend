@@ -8,7 +8,6 @@ use App\Rules\TimedCouponType;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -41,7 +40,7 @@ class CouponForm
                                 'max:15',
                                 'regex:/^(?!.* {2})[\p{Arabic}a-zA-Z0-9 ]+$/u',
                             ])
-                            ->dehydrateStateUsing(fn(?string $state) => $state ? trim($state) : null)
+                            ->dehydrateStateUsing(fn (?string $state) => $state ? trim($state) : null)
                             ->password()
                             ->revealable()
                             ->required(),
@@ -62,7 +61,7 @@ class CouponForm
                             ->addable(false)
                             ->deletable(false)
                             ->editableKeys(false)
-                            ->rules([new TimedCouponType()])
+                            ->rules([new TimedCouponType])
                             ->afterStateHydrated(function (KeyValue $component) {
                                 $component->state('{"value":"","start_date":"","end_date":"","use_limit":"","user_limit":""}');
                             })

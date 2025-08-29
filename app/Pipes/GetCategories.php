@@ -16,9 +16,9 @@ class GetCategories
         ]);
 
         $level = (int) $request->query('level', 1);
-        
+
         $query = Category::query()->with('children');
-        
+
         $id = (int) $request->query('id', 1);
         if ($id && $level > 1) {
             $query->where('id', '=', $id);
@@ -27,16 +27,16 @@ class GetCategories
         if ($level === 1) {
             $query->whereNull('parent_id');
         } elseif ($level === 2) {
-            $query->whereHas('parent', fn($q) => $q->whereNull('parent_id'));
+            $query->whereHas('parent', fn ($q) => $q->whereNull('parent_id'));
         } elseif ($level === 3) {
-            $query->whereHas('parent.parent', fn($q) => $q->whereNull('parent_id'));
+            $query->whereHas('parent.parent', fn ($q) => $q->whereNull('parent_id'));
         }
 
         $categories = $query->get()->map(function ($category) {
             return [
                 'id' => $category->id,
                 'title' => $category->title,
-                'categories' => $category->children->map(fn($child) => [
+                'categories' => $category->children->map(fn ($child) => [
                     'id' => $child->id,
                     'title' => $child->title,
                 ])->toArray(),

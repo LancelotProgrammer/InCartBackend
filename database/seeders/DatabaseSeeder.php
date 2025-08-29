@@ -234,7 +234,7 @@ class DatabaseSeeder extends BaseSeeder
             ->has(
                 FavoriteFactory::new()
                     ->count($favoriteCount)
-                    ->sequence(fn($seq) => [
+                    ->sequence(fn ($seq) => [
                         'product_id' => $products[$seq->index % count($products)]->id,
                     ]),
                 'favorites'

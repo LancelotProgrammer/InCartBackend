@@ -5,12 +5,12 @@ namespace App\Services;
 use App\Contracts\PaymentGatewayInterface;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class MoyasarPaymentGateway extends BasePaymentGateway implements PaymentGatewayInterface
 {
     protected string $apiKey;
+
     protected string $baseUrl;
 
     public function __construct()

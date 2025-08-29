@@ -14,7 +14,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use HasFactory, HasTranslations, HasPublishAttribute;
+    use HasFactory, HasPublishAttribute, HasTranslations;
 
     public static int $maxDepth = 3;
 
@@ -101,6 +101,7 @@ class Category extends Model
             $depth++;
             $parent = $parent->relationLoaded('parent') ? $parent->parent : $parent->parent()->first();
         }
+
         return $depth;
     }
 }

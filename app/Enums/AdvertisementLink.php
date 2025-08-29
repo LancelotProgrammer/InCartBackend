@@ -13,9 +13,9 @@ enum AdvertisementLink: int implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self:: PRODUCT => 'Product',
-            self:: CATEGORY => 'Category',
-            self:: EXTERNAL => 'External',
+            self::PRODUCT => 'Product',
+            self::CATEGORY => 'Category',
+            self::EXTERNAL => 'External',
         };
     }
 }

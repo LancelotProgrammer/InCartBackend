@@ -20,9 +20,9 @@ class CreateAdvertisement extends CreateRecord
             $file = File::create([
                 'name' => basename($path),
                 'type' => FileType::IMAGE->value,
-                'mime' => mime_content_type(storage_path('app/public/' . $path)),
-                'size' => filesize(storage_path('app/public/' . $path)),
-                'url'  => $path,
+                'mime' => mime_content_type(storage_path('app/public/'.$path)),
+                'size' => filesize(storage_path('app/public/'.$path)),
+                'url' => $path,
             ]);
             $fileIds[] = $file->id;
         }

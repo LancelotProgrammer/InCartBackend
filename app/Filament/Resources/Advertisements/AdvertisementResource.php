@@ -19,9 +19,9 @@ class AdvertisementResource extends Resource
 {
     protected static ?string $model = Advertisement::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Resources';
+    protected static string|UnitEnum|null $navigationGroup = 'Resources';
 
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::Megaphone;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Megaphone;
 
     public static function form(Schema $schema): Schema
     {

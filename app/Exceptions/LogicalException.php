@@ -34,6 +34,7 @@ class LogicalException extends Exception
                     'errors' => $this->errors,
                 ])->setStatusCode($this->statusCode);
             }
+
             return response([
                 'message' => $this->errorMessage,
             ])->setStatusCode($this->statusCode);
@@ -45,6 +46,7 @@ class LogicalException extends Exception
                     'errors' => $this->errors,
                 ])->setStatusCode($this->statusCode);
             }
+
             return response([
                 'message' => $this->errorMessage,
                 'details' => $this->details,

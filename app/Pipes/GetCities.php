@@ -13,7 +13,7 @@ class GetCities
         return $next(City::all()->map(function ($city) {
             return [
                 'id' => $city->id,
-                'name' => $city->name
+                'name' => $city->name,
             ];
         }));
     }

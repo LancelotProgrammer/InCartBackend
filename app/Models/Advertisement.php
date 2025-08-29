@@ -65,8 +65,8 @@ class Advertisement extends Model
     {
         return match (true) {
             $advertisement->product_id && $advertisement->category_id => AdvertisementLink::PRODUCT,
-            $advertisement->category_id && !$advertisement->product_id => AdvertisementLink::CATEGORY,
-            !$advertisement->category_id && !$advertisement->product_id => AdvertisementLink::EXTERNAL,
+            $advertisement->category_id && ! $advertisement->product_id => AdvertisementLink::CATEGORY,
+            ! $advertisement->category_id && ! $advertisement->product_id => AdvertisementLink::EXTERNAL,
             default => throw new InvalidArgumentException('Advertisement link is not supported'),
         };
     }
