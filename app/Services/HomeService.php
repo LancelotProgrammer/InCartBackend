@@ -55,9 +55,9 @@ class HomeService
             foreach ($statuses as $status) {
                 $statusLinkType = Advertisement::getLinkValue($status);
                 $statusesResult[] = match ($statusLinkType) {
-                    AdvertisementLink::PRODUCT->value => self::getAdvertisementProduct($status),
-                    AdvertisementLink::CATEGORY->value => self::getCategory($status),
-                    AdvertisementLink::EXTERNAL->value => self::getImageExternalUrl($status),
+                    AdvertisementLink::PRODUCT => self::getAdvertisementProduct($status),
+                    AdvertisementLink::CATEGORY => self::getCategory($status),
+                    AdvertisementLink::EXTERNAL => self::getImageExternalUrl($status),
                     default => throw new InvalidArgumentException('Advertisement link is not supported'),
                 };
             }
@@ -76,9 +76,9 @@ class HomeService
             foreach ($cards as $card) {
                 $cardLinkType = Advertisement::getLinkValue($card);
                 $cardsResult[] = match ($cardLinkType) {
-                    AdvertisementLink::PRODUCT->value => self::getAdvertisementProduct($card),
-                    AdvertisementLink::CATEGORY->value => self::getCategory($card),
-                    AdvertisementLink::EXTERNAL->value => self::getImageExternalUrl($card),
+                    AdvertisementLink::PRODUCT => self::getAdvertisementProduct($card),
+                    AdvertisementLink::CATEGORY => self::getCategory($card),
+                    AdvertisementLink::EXTERNAL => self::getImageExternalUrl($card),
                     default => throw new InvalidArgumentException('Advertisement link is not supported'),
                 };
             }

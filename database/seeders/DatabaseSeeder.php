@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Enums\CouponType;
 use App\Enums\SettingType;
-use App\Enums\UnitType;
 use App\Models\Advertisement;
 use App\Models\Branch;
 use App\Models\City;

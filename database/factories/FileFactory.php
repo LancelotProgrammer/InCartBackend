@@ -17,14 +17,12 @@ class FileFactory extends Factory
      */
     public function definition(): array
     {
-        $type = $this->faker->randomElement(FileType::cases());
-
         return [
             'name' => 'test_file'.'.'.$this->faker->fileExtension(),
-            'type' => $type->value,
-            'mime' => $this->faker->mimeType(),
+            'type' => 1,
+            'mime' => 'image/jpeg',
             'size' => $this->faker->numberBetween(1024, 5 * 1024 * 1024), // 1KB to 5MB
-            'url' => $this->faker->url(),
+            'url' => $this->faker->imageUrl(),
         ];
     }
 }

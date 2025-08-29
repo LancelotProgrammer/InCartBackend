@@ -64,9 +64,9 @@ class Advertisement extends Model
     public static function getLink(stdClass|self $advertisement): mixed
     {
         return match (true) {
-            $advertisement->product_id && $advertisement->category_id => AdvertisementLink::PRODUCT->value,
-            $advertisement->category_id && !$advertisement->product_id => AdvertisementLink::CATEGORY->value,
-            !$advertisement->category_id && !$advertisement->product_id => AdvertisementLink::EXTERNAL->value,
+            $advertisement->product_id && $advertisement->category_id => AdvertisementLink::PRODUCT,
+            $advertisement->category_id && !$advertisement->product_id => AdvertisementLink::CATEGORY,
+            !$advertisement->category_id && !$advertisement->product_id => AdvertisementLink::EXTERNAL,
             default => throw new InvalidArgumentException('Advertisement link is not supported'),
         };
     }
