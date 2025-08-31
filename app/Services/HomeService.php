@@ -160,7 +160,7 @@ class HomeService
             ->where('advertisement_file.id', '=', $advertisement->id)
             ->first();
 
-        $category = DB::table('categories')->where('id', '=', $advertisement->id)->first();
+        $category = DB::table('categories')->publishedScope()->where('id', '=', $advertisement->id)->first();
 
         $categoryImage = DB::table('category_file')
             ->join('files', 'category_file.id', '=', 'files.id')

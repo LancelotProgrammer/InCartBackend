@@ -16,16 +16,11 @@ class SettingsTable
     {
         return $table
             ->columns([
-                TextColumn::make('key')
-                    ->searchable(),
-                TextColumn::make('value')
-                    ->searchable(),
-                TextColumn::make('type')
-                    ->searchable(),
-                TextColumn::make('group')
-                    ->searchable(),
-                IconColumn::make('is_locked')
-                    ->boolean(),
+                TextColumn::make('key'),
+                TextColumn::make('value'),
+                TextColumn::make('type'),
+                TextColumn::make('group'),
+                IconColumn::make('is_locked')->boolean(),
             ])
             ->filters([
                 //

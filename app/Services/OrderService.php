@@ -124,7 +124,7 @@ class OrderService
     {
         $branch = Branch::find(self::$branchId);
 
-        $address = UserAddress::find(self::$addressId);
+        $address = UserAddress::where('id', '=', self::$addressId)->where('user_id', '=', self::$user->id);
 
         $distance = self::haversineDistance(
             $branch->latitude,

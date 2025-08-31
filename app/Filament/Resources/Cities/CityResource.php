@@ -21,8 +21,6 @@ class CityResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGlobeAlt;
 
-    protected static ?string $recordTitleAttribute = 'name';
-
     public static function form(Schema $schema): Schema
     {
         return CityForm::configure($schema);

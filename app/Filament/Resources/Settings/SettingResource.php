@@ -25,8 +25,6 @@ class SettingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Cog8Tooth;
 
-    protected static ?string $recordTitleAttribute = 'key';
-
     public static function form(Schema $schema): Schema
     {
         return SettingForm::configure($schema);

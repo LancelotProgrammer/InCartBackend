@@ -18,6 +18,7 @@ class BranchForm
                 TextInput::make('longitude'),
                 TextInput::make('latitude'),
                 Select::make('city_id')
+                    ->columnSpanFull()
                     ->relationship('city', 'name')
                     ->required(),
             ]);

@@ -8,13 +8,16 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use InvalidArgumentException;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -26,6 +29,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'blocked_at',
         'role_id',
         'city_id',
+        'file_id',
     ];
 
     protected $hidden = [
@@ -79,6 +83,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasMany(Order::class);
     }
 
+    public function avatar(): HasOne
+    {
+        return $this->hasOne(File::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if ($this->email === null) {
@@ -86,5 +95,44 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         }
 
         return str_ends_with($this->email, '@admin.com');
+    }
+
+    protected function ensureHasBlockedAt(): void
+    {
+        if (! array_key_exists('blocked_at', $this->attributes)) {
+            throw new InvalidArgumentException(sprintf(
+                "The model %s does not have a 'blocked_at' attribute.",
+                static::class
+            ));
+        }
+    }
+
+    public function block(): void
+    {
+        $this->ensureHasBlockedAt();
+        $this->blocked_at = now();
+        $this->save();
+    }
+
+    public function unBlock(): void
+    {
+        $this->ensureHasBlockedAt();
+        $this->blocked_at = null;
+        $this->save();
+    }
+
+    public function scopeBlock($query)
+    {
+        return $query->whereNotNull('blocked_at');
+    }
+
+    public function scopeUnblock($query)
+    {
+        return $query->whereNull('blocked_at');
+    }
+
+    public function isBlocked(): bool
+    {
+        return ! is_null($this->blocked_at);
     }
 }

@@ -28,7 +28,7 @@ use Illuminate\View\View;
 use InvalidArgumentException;
 
 /*
-    TODO:
+    TODO: list
         - test update user info and  blocked users middleware
         - null edge case at model::where
         - improve phone number validation

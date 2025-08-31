@@ -3,6 +3,7 @@
 namespace App\Filament\Components;
 
 use Filament\Forms\Components\KeyValue;
+use Filament\Support\Enums\Operation;
 
 class TranslationComponent
 {
@@ -15,8 +16,10 @@ class TranslationComponent
             ->keyLabel('Language')
             ->valueLabel('Value')
             ->valuePlaceholder('Value')
-            ->afterStateHydrated(function (KeyValue $component) {
-                $component->state('{"en":"","ar":""}');
+            ->afterStateHydrated(function (KeyValue $component, string $operation) {
+                if ($operation === Operation::Create->value) {
+                    $component->state('{"en":"","ar":""}');
+                }
             })->required();
     }
 }

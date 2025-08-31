@@ -23,7 +23,7 @@ class UserFactory extends Factory
             'phone' => fake()->unique()->phoneNumber(),
             'phone_verified_at' => fake()->boolean(50) ? now() : null,
             'role_id' => Role::where('title', '=', 'user')->value('id'),
-            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
+            'city_id' => City::inRandomOrder()->first()->id,
         ];
     }
 }

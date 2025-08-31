@@ -4,6 +4,7 @@ namespace App\Filament\Resources\PaymentMethods;
 
 use App\Filament\Resources\PaymentMethods\Pages\ListPaymentMethods;
 use App\Filament\Resources\PaymentMethods\Tables\PaymentMethodsTable;
+use App\Filament\Resources\Permissions\Schemas\PaymentMethodForm;
 use App\Models\PaymentMethod;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -22,7 +23,7 @@ class PaymentMethodResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema;
+        return PaymentMethodForm::configure($schema);
     }
 
     public static function infolist(Schema $schema): Schema

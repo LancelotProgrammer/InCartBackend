@@ -22,12 +22,15 @@ return new class extends Migration
             $table->timestamp('blocked_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->unsignedBigInteger('role_id');
             $table->unsignedBigInteger('city_id');
+            $table->unsignedBigInteger('file_id')->nullable();
 
             $table->foreign('role_id')->references('id')->on('roles')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('city_id')->references('id')->on('cities')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('file_id')->references('id')->on('files')->onUpdate('cascade')->onDelete('restrict');
         });
 
         Schema::create('password_reset_requests', function (Blueprint $table) {

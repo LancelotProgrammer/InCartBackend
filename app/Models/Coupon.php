@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CouponType;
 use App\Models\Scopes\BranchScope;
+use App\Traits\HasPublishAttribute;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,9 +14,9 @@ use Spatie\Translatable\HasTranslations;
 #[ScopedBy([BranchScope::class])]
 class Coupon extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, HasPublishAttribute;
 
-    protected $fillable = ['title', 'description', 'code', 'type', 'config', 'branch_id'];
+    protected $fillable = ['title', 'description', 'code', 'type', 'config', 'published_at', 'branch_id'];
 
     protected $casts = [
         'title' => 'array',

@@ -11,7 +11,9 @@ class RoleInfolist
     {
         return $schema
             ->components([
+                TextEntry::make('id'),
                 TextEntry::make('title'),
+                TextEntry::make('permissions.title')->bulleted()->label('permissions'),
             ]);
     }
 }

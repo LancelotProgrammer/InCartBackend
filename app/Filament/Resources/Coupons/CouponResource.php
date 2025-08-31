@@ -24,6 +24,8 @@ class CouponResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ReceiptPercent;
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     public static function form(Schema $schema): Schema
     {
         return CouponForm::configure($schema);
@@ -51,7 +53,6 @@ class CouponResource extends Resource
         return [
             'index' => ListCoupons::route('/'),
             'create' => CreateCoupon::route('/create'),
-            'view' => ViewCoupon::route('/{record}'),
         ];
     }
 }

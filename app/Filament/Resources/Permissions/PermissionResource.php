@@ -32,7 +32,7 @@ class PermissionResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        return PermissionInfolist::configure($schema);
+        return $schema;
     }
 
     public static function table(Table $table): Table
@@ -50,10 +50,7 @@ class PermissionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListPermissions::route('/'),
-            'create' => CreatePermission::route('/create'),
-            'view' => ViewPermission::route('/{record}'),
-            'edit' => EditPermission::route('/{record}/edit'),
+            'index' => ListPermissions::route('/')
         ];
     }
 }

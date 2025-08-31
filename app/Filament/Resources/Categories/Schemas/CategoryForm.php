@@ -19,7 +19,10 @@ class CategoryForm
                     ->schema([
                         TranslationComponent::configure('title'),
                         TranslationComponent::configure('description'),
-                        Select::make('parent_id')->relationship('parent', 'title')->columnSpanFull(),
+                        Select::make('parent_id')
+                            ->relationship('parent', 'title')
+                            ->columnSpanFull()
+                            ->searchable(),
                     ]),
             ]);
     }

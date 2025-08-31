@@ -12,6 +12,7 @@ class CitiesTable
     {
         return $table
             ->columns([
+                TextColumn::make('id'),
                 TextColumn::make('name'),
             ])
             ->filters([

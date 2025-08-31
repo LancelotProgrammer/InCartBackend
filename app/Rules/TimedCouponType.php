@@ -14,6 +14,6 @@ class TimedCouponType implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        //
+        // TODO: fix
     }
 }

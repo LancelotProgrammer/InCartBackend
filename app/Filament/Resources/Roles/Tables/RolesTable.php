@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class RolesTable
 {
@@ -15,8 +16,9 @@ class RolesTable
     {
         return $table
             ->columns([
-                TextColumn::make('title')
-                    ->searchable(),
+                TextColumn::make('id'),
+                TextColumn::make('title'),
+                TextColumn::make('permissions.title'),
             ])
             ->filters([
                 //
@@ -26,9 +28,7 @@ class RolesTable
                 EditAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                //
             ]);
     }
 }

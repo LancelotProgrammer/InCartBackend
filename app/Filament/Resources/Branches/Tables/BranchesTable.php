@@ -21,6 +21,9 @@ class BranchesTable
                 TextColumn::make('published_at')->dateTime(),
                 TextColumn::make('city.name')->numeric()->sortable(),
             ])
+            ->groups([
+                'city.name'
+            ])
             ->filters([
                 //
             ])

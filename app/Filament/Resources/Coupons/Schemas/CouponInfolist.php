@@ -10,8 +10,8 @@ class CouponInfolist
 {
     public static function configure(Schema $schema): Schema
     {
-        // TODO: improve the design
         return $schema
+            ->columns(4)
             ->components([
                 TextEntry::make('title'),
                 TextEntry::make('description'),
@@ -21,7 +21,7 @@ class CouponInfolist
                 TextEntry::make('created_at')->dateTime(),
                 TextEntry::make('updated_at')->dateTime(),
                 TextEntry::make('branch.title'),
-                KeyValueEntry::make('config'),
+                KeyValueEntry::make('config')->columnSpanFull(),
             ]);
     }
 }

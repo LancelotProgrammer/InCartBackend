@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Branches;
 
+use App\Filament\Resources\Advertisements\Schemas\BranchInfolist;
 use App\Filament\Resources\Branches\Pages\ListBranches;
 use App\Filament\Resources\Branches\Schemas\BranchForm;
 use App\Filament\Resources\Branches\Tables\BranchesTable;
@@ -21,6 +22,8 @@ class BranchResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::BuildingOffice2;
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     public static function form(Schema $schema): Schema
     {
         return BranchForm::configure($schema);
@@ -28,7 +31,7 @@ class BranchResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        return $schema;
+        return BranchInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table

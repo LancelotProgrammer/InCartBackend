@@ -163,6 +163,7 @@ class DatabaseSeeder extends BaseSeeder
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'code' => '123456',
+                    'published_at' => now(),
                     'type' => CouponType::TIMED->value,
                     'config' => '{"value":15,"start_date":"2025-06-01","end_date":"2026-06-30","use_limit":5,"user_limit":100}',
                     'branch_id' => $branch->id,
@@ -171,6 +172,7 @@ class DatabaseSeeder extends BaseSeeder
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'code' => '123456',
+                    'published_at' => now(),
                     'type' => CouponType::TIMED->value,
                     'config' => '{"value":10,"start_date":"2025-09-01","end_date":"2026-06-30","use_limit":3,"user_limit":50}',
                     'branch_id' => $branch->id,
@@ -179,6 +181,7 @@ class DatabaseSeeder extends BaseSeeder
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'code' => '123456',
+                    'published_at' => now(),
                     'type' => CouponType::TIMED->value,
                     'config' => '{"value":5,"start_date":"2025-10-01","end_date":"2026-06-30","use_limit":2,"user_limit":25}',
                     'branch_id' => $branch->id,
@@ -234,7 +237,7 @@ class DatabaseSeeder extends BaseSeeder
             ->has(
                 FavoriteFactory::new()
                     ->count($favoriteCount)
-                    ->sequence(fn ($seq) => [
+                    ->sequence(fn($seq) => [
                         'product_id' => $products[$seq->index % count($products)]->id,
                     ]),
                 'favorites'

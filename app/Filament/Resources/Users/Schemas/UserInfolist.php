@@ -11,12 +11,9 @@ class UserInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('name')
-                    ->label(trans('dashboard.users.name')),
-                TextEntry::make('email')
-                    ->label(trans('dashboard.users.email')),
-                TextEntry::make('phone')
-                    ->label(trans('dashboard.users.phone')),
+                TextEntry::make('name'),
+                TextEntry::make('email'),
+                TextEntry::make('phone'),
             ]);
     }
 }

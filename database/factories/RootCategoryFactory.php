@@ -51,7 +51,7 @@ class RootCategoryFactory extends Factory
                 ['en', 'ar'],
                 [$root['en_description'], $root['ar_description']]
             ),
-            'published_at' => $this->faker->optional()->dateTimeBetween('-1 years', 'now'),
+            'published_at' => now(),
             'parent_id' => null,
         ];
     }

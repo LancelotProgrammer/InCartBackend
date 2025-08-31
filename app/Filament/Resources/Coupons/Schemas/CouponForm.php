@@ -66,14 +66,15 @@ class CouponForm
                                 $component->state('{"value":"","start_date":"","end_date":"","use_limit":"","user_limit":""}');
                             })
                             ->required(),
+                        // TODO: improve this translation block
                         TextEntry::make('config_description')
                             ->state(new HtmlString('
                                 <ul style="margin:0; padding-left:18px; line-height:1.7;">
-                                    <li><strong>value</strong> -> <span>قيمة مبلغ المالي للعرض .</span></li>
-                                    <li><strong>start_date</strong> -> <span>تاريخ بداية صلاحية العرض أو الكوبون.</span></li>
-                                    <li><strong>end_date</strong> -> <span>تاريخ انتهاء صلاحية العرض أو الكوبون.</span></li>
-                                    <li><strong>use_limit</strong> -> <span>عدد المرات المسموح باستخدام العرض بشكل عام.</span></li>
-                                    <li><strong>user_limit</strong> -> <span>عدد المرات المسموح لكل مستخدم فردي أن يستفيد من العرض.</span></li>
+                                    <li><strong>value</strong> -> <span>قيمة المبلغ المالي للخصم .</span></li>
+                                    <li><strong>start_date</strong> -> <span>تاريخ بداية صلاحية الكوبون.</span></li>
+                                    <li><strong>end_date</strong> -> <span>تاريخ انتهاء صلاحية الكوبون.</span></li>
+                                    <li><strong>use_limit</strong> -> <span>عدد المرات المسموح باستخدام الكوبون بشكل عام.</span></li>
+                                    <li><strong>user_limit</strong> -> <span>عدد المرات المسموح لكل مستخدم فردي أن يستفيد من الكوبون.</span></li>
                                 </ul>
                             ')),
                     ]),

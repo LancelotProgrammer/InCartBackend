@@ -29,6 +29,7 @@ class AdvertisementForm
                         TextInput::make('order')->required()->numeric(),
                     ]),
                 Section::make('Configs')
+                    ->columns(2 )
                     ->schema([
                         Select::make('type')->options(AdvertisementType::class)
                             ->afterStateUpdated(function (Set $set) {
@@ -62,7 +63,15 @@ class AdvertisementForm
                             ->live()
                             ->required(),
                         Section::make('Links')
-                            ->columns(2)
+                            ->columnSpanFull()
+                            ->columns(function (Get $get) {
+                                return match ((int) $get('link')) {
+                                    AdvertisementLink::CATEGORY->value => 1,
+                                    AdvertisementLink::PRODUCT->value => 2,
+                                    AdvertisementLink::EXTERNAL->value => 1,
+                                    default => 1,
+                                };
+                            })
                             ->schema(function (Get $get) {
                                 return match ((int) $get('link')) {
                                     AdvertisementLink::CATEGORY->value => [
@@ -82,7 +91,7 @@ class AdvertisementForm
                 Section::make('Files')
                     ->columnSpanFull()
                     ->schema([
-                        // TODO: make files hidden when AdvertisementType is offer
+                        // TODO: make files hidden when AdvertisementType is offer / and fix upload issue
                         FileUpload::make('files')
                             ->multiple()
                             ->dehydrated(false)

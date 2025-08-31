@@ -18,8 +18,7 @@ class OrdersTable
     {
         return $table
             ->columns([
-                TextColumn::make('order_number')
-                    ->searchable(),
+                TextColumn::make('order_number'),
                 TextColumn::make('order_status')
                     ->badge()
                     ->sortable(),
