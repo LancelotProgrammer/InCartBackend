@@ -21,6 +21,8 @@ class PaymentMethodResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     public static function form(Schema $schema): Schema
     {
         return PaymentMethodForm::configure($schema);

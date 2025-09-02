@@ -22,7 +22,6 @@ return new class extends Migration
             $table->timestamp('blocked_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
-            $table->softDeletes();
 
             $table->unsignedBigInteger('role_id');
             $table->unsignedBigInteger('city_id');

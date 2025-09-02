@@ -6,6 +6,8 @@ use App\Filament\Actions\PublishActions;
 use App\Filament\Filters\BranchSelectFilter;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\TernaryFilter;
@@ -22,7 +24,6 @@ class CouponsTable
                 TextColumn::make('title')->searchable(),
                 TextColumn::make('start_date')->state(fn($record) => $record->config['start_date']),
                 TextColumn::make('end_date')->state(fn($record) => $record->config['end_date']),
-                TextColumn::make('type')->badge(),
                 TextColumn::make('published_at')->dateTime(),
                 TextColumn::make('created_at')->dateTime(),
                 TextColumn::make('branch.title'),
@@ -62,6 +63,10 @@ class CouponsTable
             ->recordActions([
                 ViewAction::make(),
                 ...PublishActions::configure(),
+                Action::make('show_code')
+                    ->schema([
+                        TextEntry::make('code'),
+                    ])
             ])
             ->toolbarActions([
                 //

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -18,9 +19,9 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UsersTable
 {
@@ -29,22 +30,32 @@ class UsersTable
         return $table
             ->columns([
                 Split::make([
-                    // ImageColumn::make('avatar.url'),
                     TextColumn::make('name')
                         ->weight(FontWeight::Bold)
                         ->searchable(),
-                    Stack::make([
-                        TextColumn::make('email')
+                    Stack::make(function ($record) {
+                        $columns = [];
+                        isset($record->email) ? $columns[] = TextColumn::make('email')
                             ->icon(Heroicon::Envelope)
-                            ->searchable()
-                            ->placeholder('No Email'),
-                        TextColumn::make('phone')
+                            ->searchable() : null;
+                        isset($record->email) ? $columns[] = TextColumn::make('email_verified_at')
+                            ->icon(Heroicon::CheckCircle)
+                            ->prefix('Email verified at: ')
+                            ->date() : null;
+                        isset($record->phone) ? $columns[] = TextColumn::make('phone')
                             ->icon(Heroicon::DevicePhoneMobile)
-                            ->searchable()
-                            ->placeholder('No Phone'),
+                            ->searchable() : null;
+                        isset($record->phone) ? $columns[] = TextColumn::make('phone_verified_at')
+                            ->icon(Heroicon::CheckCircle)
+                            ->prefix('Phone verified at: ')
+                            ->date() : null;
+                        return $columns;
+                    }),
+                    Stack::make([
+                        TextColumn::make('blocked_at')->icon(Heroicon::ExclamationCircle)->prefix('Blocked At: ')->date(),
+                        TextColumn::make('city.name')->icon(Heroicon::OutlinedGlobeAlt),
+                        TextColumn::make('role.title')->icon(Heroicon::UserGroup),
                     ]),
-                    TextColumn::make('city.name')->icon(Heroicon::UserGroup),
-                    TextColumn::make('role.title')->icon(Heroicon::OutlinedGlobeAlt),
                 ]),
             ])
             ->filtersTriggerAction(
@@ -55,13 +66,16 @@ class UsersTable
             ->filters([
                 SelectFilter::make('city')->relationship('city', 'name'),
                 SelectFilter::make('role')->relationship('role', 'title'),
+                TernaryFilter::make('email_verified_at')->label('Email verified')
+                    ->nullable(),
+                TernaryFilter::make('phone_verified_at')->label('Phone verified')
+                    ->nullable()
             ], layout: FiltersLayout::Modal)
             ->recordActions([
-                DeleteAction::make(),
-                ForceDeleteAction::make(),
-                RestoreAction::make(),
-                ViewAction::make(),
-                EditAction::make(),
+                ActionGroup::make([
+                    DeleteAction::make(),
+                    EditAction::make(),
+                ]),
                 // TODO: improve the design of these actions
                 Action::make('Block')
                     ->action(function ($record) {

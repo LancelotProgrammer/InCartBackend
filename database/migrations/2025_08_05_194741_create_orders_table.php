@@ -27,7 +27,6 @@ return new class extends Migration
             $table->timestamp('delivery_date')->nullable();
             $table->string('payment_token')->nullable();
             $table->timestamps();
-            $table->softDeletes();
 
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('branch_id');

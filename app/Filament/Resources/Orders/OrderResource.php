@@ -60,12 +60,4 @@ class OrderResource extends Resource
             'edit' => EditOrder::route('/{record}/edit'),
         ];
     }
-
-    public static function getRecordRouteBindingEloquentQuery(): Builder
-    {
-        return parent::getRecordRouteBindingEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
-    }
 }

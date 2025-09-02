@@ -16,7 +16,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
 
 class UserResource extends Resource
@@ -36,7 +35,7 @@ class UserResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        return UserInfolist::configure($schema);
+        return $schema;
     }
 
     public static function table(Table $table): Table
@@ -54,17 +53,7 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListUsers::route('/'),
-            'create' => CreateUser::route('/create'),
-            'edit' => EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/')
         ];
-    }
-
-    public static function getRecordRouteBindingEloquentQuery(): Builder
-    {
-        return parent::getRecordRouteBindingEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }

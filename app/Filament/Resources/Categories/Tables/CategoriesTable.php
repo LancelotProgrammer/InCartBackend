@@ -28,7 +28,7 @@ class CategoriesTable
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('depth')->label('level'),
-                TextColumn::make('title'),
+                TextColumn::make('title')->searchable(),
                 TextColumn::make('parent.title')->label('parent'),
                 TextColumn::make('published_at')->dateTime(),
                 TextColumn::make('created_at')->dateTime(),

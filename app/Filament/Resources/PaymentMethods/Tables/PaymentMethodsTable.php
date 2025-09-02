@@ -19,7 +19,7 @@ class PaymentMethodsTable
             ->reorderable('order')
             ->columns([
                 TextColumn::make('id'),
-                TextColumn::make('title'),
+                TextColumn::make('title')->searchable(),
                 TextColumn::make('order'),
                 TextColumn::make('published_at'),
                 TextColumn::make('branch.title'),
