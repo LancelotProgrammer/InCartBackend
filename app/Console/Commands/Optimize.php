@@ -32,7 +32,6 @@ class Optimize extends Command
         }
 
         $this->commandFormat('scribe:generate', 'artisan');
-        $this->commandFormat('ide-helper:generate', 'artisan');
         $this->commandFormat('app:delete:logs', 'artisan');
         $this->commandFormat('app:telescope:purge', 'artisan');
         $this->commandFormat('vendor\bin\pint', 'shell');

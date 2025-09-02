@@ -6,6 +6,7 @@ use App\Filament\Actions\PublishActions;
 use App\Models\Category;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
@@ -18,7 +19,7 @@ class CategoriesTable
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                return $query->with('parent.parent.parent');
+                return $query->with(['parent.parent.parent', 'files']);
             })
             ->filtersTriggerAction(
                 fn(Action $action) => $action
@@ -27,6 +28,9 @@ class CategoriesTable
             )
             ->columns([
                 TextColumn::make('id'),
+                ImageColumn::make('url')->label('Image')->state(function ($record) {
+                    return $record->files->first()->url;
+                }),
                 TextColumn::make('depth')->label('level'),
                 TextColumn::make('title')->searchable(),
                 TextColumn::make('parent.title')->label('parent'),

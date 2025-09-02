@@ -2,31 +2,25 @@
 
 namespace App\Filament\Resources\Advertisements\Pages;
 
-use App\Enums\FileType;
 use App\Filament\Resources\Advertisements\AdvertisementResource;
-use App\Models\File;
+use App\Filament\Services\HandleUploadedFiles;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class CreateAdvertisement extends CreateRecord
 {
     protected static string $resource = AdvertisementResource::class;
 
-    public function afterCreate(): void
+    protected function handleRecordCreation(array $data): Model
     {
-        $uploadedPaths = $this->form->getState()['files'] ?? [];
+        $uploadedPaths = $data['files'] ?? [];
 
-        $fileIds = [];
-        foreach ($uploadedPaths as $path) {
-            $file = File::create([
-                'name' => basename($path),
-                'type' => FileType::IMAGE->value,
-                'mime' => mime_content_type(storage_path('app/public/'.$path)),
-                'size' => filesize(storage_path('app/public/'.$path)),
-                'url' => $path,
-            ]);
-            $fileIds[] = $file->id;
-        }
+        unset($data['files']);
 
-        $this->record->files()->attach($fileIds);
+        $model = static::getModel()::create($data);
+
+        HandleUploadedFiles::configure($uploadedPaths, $model);
+
+        return $model;
     }
 }

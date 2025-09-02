@@ -14,10 +14,10 @@ class ProductInfolist
                 TextEntry::make('title'),
                 TextEntry::make('description'),
                 TextEntry::make('brand'),
+                TextEntry::make('unit')
+                    ->badge(),
                 TextEntry::make('sku'),
                 TextEntry::make('created_at')
-                    ->dateTime(),
-                TextEntry::make('updated_at')
                     ->dateTime(),
             ]);
     }

@@ -6,7 +6,6 @@ use App\Filament\Actions\PublishActions;
 use App\Filament\Filters\BranchSelectFilter;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -22,14 +21,14 @@ class CouponsTable
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('title')->searchable(),
-                TextColumn::make('start_date')->state(fn($record) => $record->config['start_date']),
-                TextColumn::make('end_date')->state(fn($record) => $record->config['end_date']),
+                TextColumn::make('start_date')->state(fn ($record) => $record->config['start_date']),
+                TextColumn::make('end_date')->state(fn ($record) => $record->config['end_date']),
                 TextColumn::make('published_at')->dateTime(),
                 TextColumn::make('created_at')->dateTime(),
                 TextColumn::make('branch.title'),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -42,7 +41,7 @@ class CouponsTable
                     ->falseLabel('Disabled Coupons')
                     // TODO: test this filter
                     ->queries(
-                        true: fn(Builder $query) => $query
+                        true: fn (Builder $query) => $query
                             ->whereNotNull('published_at')
                             ->where(function ($q) {
                                 $q->whereNull('config->start_date')
@@ -52,13 +51,13 @@ class CouponsTable
                                 $q->whereNull('config->end_date')
                                     ->orWhere('config->end_date', '>=', now());
                             }),
-                        false: fn(Builder $query) => $query->where(function ($q) {
+                        false: fn (Builder $query) => $query->where(function ($q) {
                             $q->whereNull('published_at')
                                 ->orWhere('config->start_date', '>', now())
                                 ->orWhere('config->end_date', '<', now());
                         }),
-                        blank: fn(Builder $query) => $query,
-                    )
+                        blank: fn (Builder $query) => $query,
+                    ),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 ViewAction::make(),
@@ -66,7 +65,7 @@ class CouponsTable
                 Action::make('show_code')
                     ->schema([
                         TextEntry::make('code'),
-                    ])
+                    ]),
             ])
             ->toolbarActions([
                 //

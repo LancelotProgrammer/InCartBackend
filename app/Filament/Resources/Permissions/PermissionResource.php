@@ -2,12 +2,8 @@
 
 namespace App\Filament\Resources\Permissions;
 
-use App\Filament\Resources\Permissions\Pages\CreatePermission;
-use App\Filament\Resources\Permissions\Pages\EditPermission;
 use App\Filament\Resources\Permissions\Pages\ListPermissions;
-use App\Filament\Resources\Permissions\Pages\ViewPermission;
 use App\Filament\Resources\Permissions\Schemas\PermissionForm;
-use App\Filament\Resources\Permissions\Schemas\PermissionInfolist;
 use App\Filament\Resources\Permissions\Tables\PermissionsTable;
 use App\Models\Permission;
 use BackedEnum;
@@ -50,7 +46,7 @@ class PermissionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListPermissions::route('/')
+            'index' => ListPermissions::route('/'),
         ];
     }
 }

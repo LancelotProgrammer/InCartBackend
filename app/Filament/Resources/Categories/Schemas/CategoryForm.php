@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Categories\Schemas;
 
 use App\Filament\Components\TranslationComponent;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -23,6 +24,13 @@ class CategoryForm
                             ->relationship('parent', 'title')
                             ->columnSpanFull()
                             ->searchable(),
+                        // TODO fix this. Note: there is no create page
+                        FileUpload::make('files')
+                            ->columnSpanFull()
+                            ->multiple()
+                            ->disk('public')
+                            ->directory('advertisements')
+                            ->visibility('public'),
                     ]),
             ]);
     }

@@ -14,7 +14,7 @@ use Spatie\Translatable\HasTranslations;
 #[ScopedBy([BranchScope::class])]
 class Coupon extends Model
 {
-    use HasFactory, HasTranslations, HasPublishAttribute;
+    use HasFactory, HasPublishAttribute, HasTranslations;
 
     protected $fillable = ['title', 'description', 'code', 'type', 'config', 'published_at', 'branch_id'];
 

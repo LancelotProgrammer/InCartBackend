@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Coupons;
 
 use App\Filament\Resources\Coupons\Pages\CreateCoupon;
 use App\Filament\Resources\Coupons\Pages\ListCoupons;
-use App\Filament\Resources\Coupons\Pages\ViewCoupon;
 use App\Filament\Resources\Coupons\Schemas\CouponForm;
 use App\Filament\Resources\Coupons\Schemas\CouponInfolist;
 use App\Filament\Resources\Coupons\Tables\CouponsTable;

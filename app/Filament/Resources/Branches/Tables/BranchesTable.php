@@ -23,7 +23,7 @@ class BranchesTable
                 TextColumn::make('city.name')->numeric()->sortable(),
             ])
             ->groups([
-                'city.name'
+                'city.name',
             ])
             ->filters([
                 //

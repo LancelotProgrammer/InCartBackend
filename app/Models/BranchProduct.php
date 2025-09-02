@@ -19,6 +19,9 @@ class BranchProduct extends Pivot
     protected $table = 'branch_product';
 
     protected $fillable = [
+        'branch_id',
+        'product_id',
+        'price',
         'price',
         'discount',
         'maximum_order_quantity',

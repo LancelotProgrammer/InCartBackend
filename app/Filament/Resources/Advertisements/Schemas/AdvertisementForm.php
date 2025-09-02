@@ -29,7 +29,7 @@ class AdvertisementForm
                         TextInput::make('order')->required()->numeric(),
                     ]),
                 Section::make('Configs')
-                    ->columns(2 )
+                    ->columns(2)
                     ->schema([
                         Select::make('type')->options(AdvertisementType::class)
                             ->afterStateUpdated(function (Set $set) {
@@ -94,8 +94,9 @@ class AdvertisementForm
                         // TODO: make files hidden when AdvertisementType is offer / and fix upload issue
                         FileUpload::make('files')
                             ->multiple()
-                            ->dehydrated(false)
-                            ->storeFileNamesIn('file_names'),
+                            ->disk('public')
+                            ->directory('advertisements')
+                            ->visibility('public'),
                     ]),
             ]);
     }

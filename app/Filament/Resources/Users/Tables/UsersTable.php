@@ -4,16 +4,10 @@ namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\ViewAction;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -21,7 +15,6 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class UsersTable
 {
@@ -49,6 +42,7 @@ class UsersTable
                             ->icon(Heroicon::CheckCircle)
                             ->prefix('Phone verified at: ')
                             ->date() : null;
+
                         return $columns;
                     }),
                     Stack::make([
@@ -59,7 +53,7 @@ class UsersTable
                 ]),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -69,7 +63,7 @@ class UsersTable
                 TernaryFilter::make('email_verified_at')->label('Email verified')
                     ->nullable(),
                 TernaryFilter::make('phone_verified_at')->label('Phone verified')
-                    ->nullable()
+                    ->nullable(),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 ActionGroup::make([

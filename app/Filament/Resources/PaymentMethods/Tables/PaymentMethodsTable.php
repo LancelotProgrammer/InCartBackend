@@ -25,7 +25,7 @@ class PaymentMethodsTable
                 TextColumn::make('branch.title'),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
