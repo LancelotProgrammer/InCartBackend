@@ -16,6 +16,7 @@ class HandleUploadedFiles
 
         foreach ($uploadedPaths as $uploadedFile) {
             if ($uploadedFile instanceof TemporaryUploadedFile) {
+                // TODO: make advertisements as variable
                 $pathOnPublicDisk = $uploadedFile->store('advertisements', 'public');
             } else {
                 $pathOnPublicDisk = $uploadedFile;
