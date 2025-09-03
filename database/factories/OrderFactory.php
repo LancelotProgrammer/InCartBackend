@@ -7,8 +7,6 @@ use App\Enums\DeliveryType;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Branch;
-use App\Models\BranchProduct;
-use App\Models\Cart;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\PaymentMethod;
@@ -51,7 +49,7 @@ class OrderFactory extends Factory
         $deliveryFee = $this->faker->randomFloat(2, 0, 20);
         $serviceFee = $this->faker->randomFloat(2, 0, 10);
         $taxAmount = $this->faker->randomFloat(2, 0, 15);
-        
+
         // 5. Random payment method
         $payment = PaymentMethod::inRandomOrder()->first();
         $token = null;
@@ -60,7 +58,7 @@ class OrderFactory extends Factory
                 $token = Str::random(32);
             } while (Order::where('payment_token', '=', $token)->exists());
         }
-        
+
         // 5. Random delivery type
         $date = $this->faker->boolean() ? $this->faker->optional()->dateTimeBetween('+1 days', '+1 month') : null;
         if ($date === null) {

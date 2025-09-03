@@ -40,19 +40,19 @@ class AdvertisementInfolist
 
                 $counter = 1;
                 foreach ($record->files as $file) {
-                    $entryArray[] = ImageEntry::make('advertisement.file.id.' . $counter)->label('file ' . $counter)->state($file->url);
+                    $entryArray[] = ImageEntry::make('advertisement.file.id.'.$counter)->label('file '.$counter)->state($file->url);
                     $counter++;
                 }
 
                 if ($record->link === AdvertisementLink::CATEGORY) {
                     foreach ($record->category->files as $file) {
-                        $entryArray[] = ImageEntry::make('category.file.id.' . $counter)->label('file ' . $counter)->state($file->url);
+                        $entryArray[] = ImageEntry::make('category.file.id.'.$counter)->label('file '.$counter)->state($file->url);
                         $counter++;
                     }
                 }
                 if ($record->link === AdvertisementLink::PRODUCT) {
                     foreach ($record->product->files as $file) {
-                        $entryArray[] = ImageEntry::make('product.file.id.' . $counter)->label('file ' . $counter)->state($file->url);
+                        $entryArray[] = ImageEntry::make('product.file.id.'.$counter)->label('file '.$counter)->state($file->url);
                         $counter++;
                     }
                 }

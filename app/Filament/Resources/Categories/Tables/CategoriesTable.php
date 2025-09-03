@@ -22,7 +22,7 @@ class CategoriesTable
                 return $query->with(['parent.parent.parent', 'files']);
             })
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -48,7 +48,7 @@ class CategoriesTable
                         if ($category) {
                             return $query->when(
                                 $data['title'],
-                                fn(Builder $query, $date): Builder => $query->where('id', '=', $category->id)->orWhere('parent_id', '=', $category->id),
+                                fn (Builder $query, $date): Builder => $query->where('id', '=', $category->id)->orWhere('parent_id', '=', $category->id),
                             );
                         }
 

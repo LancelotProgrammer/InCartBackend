@@ -26,7 +26,7 @@ class HandleUploadedFiles
                 'type' => FileType::IMAGE->value,
                 'mime' => Storage::disk('public')->mimeType($pathOnPublicDisk),
                 'size' => Storage::disk('public')->size($pathOnPublicDisk),
-                'url'  => Storage::disk('public')->url($pathOnPublicDisk),
+                'url' => Storage::disk('public')->url($pathOnPublicDisk),
             ]);
 
             $fileIds[] = $file->id;

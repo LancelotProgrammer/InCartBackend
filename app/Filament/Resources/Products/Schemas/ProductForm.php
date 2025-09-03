@@ -14,7 +14,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Operation;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductForm
@@ -29,7 +28,7 @@ class ProductForm
                 $counter = 1;
                 if ($record !== null) {
                     foreach ($record->files as $file) {
-                        $entryArray[] = ImageEntry::make('advertisement.file.number.' . $counter)->label('file ' . $counter)->state($file->url);
+                        $entryArray[] = ImageEntry::make('advertisement.file.number.'.$counter)->label('file '.$counter)->state($file->url);
                         $counter++;
                     }
                 }
@@ -81,7 +80,7 @@ class ProductForm
                                 if ($record === null) {
                                     $items = [];
                                     foreach (Branch::all() as $index => $branch) {
-                                        $items['item' . ($index + 1)] = [
+                                        $items['item'.($index + 1)] = [
                                             'branch_id' => $branch->id,
                                         ];
                                     }
