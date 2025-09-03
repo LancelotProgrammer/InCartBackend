@@ -41,7 +41,7 @@ class DatabaseSeeder extends BaseSeeder
         $productCategoryCount = 10;
         $branchCount = 3;
         $branchAdvertisementCount = 30;
-        $userCount = 50;
+        $userCount = 100;
         $userAddressCount = 3;
         $userNotificationCount = 3;
         $favoriteCount = 3;
@@ -49,7 +49,7 @@ class DatabaseSeeder extends BaseSeeder
         $productFileCount = 3;
         $categoryFileCount = 1;
         $advertisementFileCount = 1;
-        $orderCount = 50;
+        $orderCount = 200;
 
         $this->command->info(PHP_EOL);
         $this->command->info('seeding static data');

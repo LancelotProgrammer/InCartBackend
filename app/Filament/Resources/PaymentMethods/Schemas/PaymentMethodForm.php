@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Permissions\Schemas;
+namespace App\Filament\Resources\PaymentMethods\Schemas;
 
 use App\Filament\Components\TranslationComponent;
 use Filament\Forms\Components\Select;
