@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
             $table->timestamps();
+
+            $table->unsignedBigInteger('order_id');
+
+            $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade')->onDelete('restrict');
         });
     }
 

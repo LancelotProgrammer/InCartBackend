@@ -6,6 +6,9 @@ use App\Enums\CouponType;
 use App\Enums\SettingType;
 use App\Models\Advertisement;
 use App\Models\Branch;
+use App\Models\BranchProduct;
+use App\Models\Cart;
+use App\Models\CartProduct;
 use App\Models\City;
 use App\Models\Coupon;
 use App\Models\File;
@@ -38,7 +41,7 @@ class DatabaseSeeder extends BaseSeeder
         $productCategoryCount = 10;
         $branchCount = 3;
         $branchAdvertisementCount = 30;
-        $userCount = 100;
+        $userCount = 50;
         $userAddressCount = 3;
         $userNotificationCount = 3;
         $favoriteCount = 3;
@@ -46,7 +49,7 @@ class DatabaseSeeder extends BaseSeeder
         $productFileCount = 3;
         $categoryFileCount = 1;
         $advertisementFileCount = 1;
-        $orderCount = 200;
+        $orderCount = 50;
 
         $this->command->info(PHP_EOL);
         $this->command->info('seeding static data');
@@ -135,7 +138,6 @@ class DatabaseSeeder extends BaseSeeder
                 function () {
                     $minimumQuantity = $this->faker->numberBetween(1, 10);
                     $maximumQuantity = $this->faker->numberBetween($minimumQuantity + 10, 50);
-
                     return [
                         'price' => $this->faker->randomFloat(2, 10, 500),
                         'discount' => $this->faker->numberBetween(0, 50),
@@ -147,11 +149,7 @@ class DatabaseSeeder extends BaseSeeder
                     ];
                 }
             )
-            ->has(
-                Advertisement::Factory()
-                    ->has(File::factory()->count($advertisementFileCount), 'files')
-                    ->count($branchAdvertisementCount)
-            )
+            ->has(Advertisement::Factory()->has(File::factory()->count($advertisementFileCount), 'files')->count($branchAdvertisementCount))
             ->create();
 
         $branches = Branch::all();
@@ -235,17 +233,28 @@ class DatabaseSeeder extends BaseSeeder
             ->has(UserAddress::factory()->count($userAddressCount), 'addresses')
             ->has(UserNotification::factory()->count($userNotificationCount), 'notifications')
             ->has(
-                FavoriteFactory::new()
-                    ->count($favoriteCount)
-                    ->sequence(fn ($seq) => [
-                        'product_id' => $products[$seq->index % count($products)]->id,
-                    ]),
+                FavoriteFactory::new()->count($favoriteCount)->sequence(fn($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
                 'favorites'
             )
             ->has(PackageFactory::new()->hasAttached($products->random(rand(3, 7))->values())->count($packageProductCount), 'packages')
             ->create();
 
         $this->command->info('seeding orders');
-        Order::factory()->count($orderCount)->create();
+        Order::factory()
+            ->count($orderCount)
+            ->create()
+            ->each(function ($order) {
+                $cart = Cart::factory()->create(['order_id' => $order->id]);
+                CartProduct::factory()->count(rand(2, 10))->create(['cart_id' => $cart->id]);
+                $subtotal = $cart->cartProducts->sum(function ($cartProduct) use ($order) {
+                    $branchProduct = BranchProduct::where('branch_id', $order->branch_id)->where('product_id', $cartProduct->id)->first();
+                    if (!$branchProduct) return 0;
+                    return ($branchProduct->price - $branchProduct->discount ?? 0) * $cartProduct->quantity;
+                });
+                $order->update([
+                    'subtotal_price' => $subtotal,
+                    'total_price' => $subtotal - $order->coupon_discount + $order->delivery_fee + $order->service_fee + $order->tax_amount,
+                ]);
+            });
     }
 }
