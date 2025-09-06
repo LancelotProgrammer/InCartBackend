@@ -73,7 +73,7 @@ Route::middleware([
         Route::delete('/favorites/products/{id}', [FavoriteController::class, 'deleteProductFromFavorites']);
 
         Route::get('/users/addresses', [UserAddressController::class, 'getUserAddresses']);
-        Route::post('/users/addresses/{id}', [UserAddressController::class, 'addUserAddress']);
+        Route::post('/users/addresses', [UserAddressController::class, 'addUserAddress']);
         Route::delete('/users/addresses/{id}', [UserAddressController::class, 'deleteUserAddress']);
     });
 
