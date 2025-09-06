@@ -47,9 +47,4 @@ class Branch extends Model
     {
         return $this->hasMany(PaymentMethod::class);
     }
-
-    public function UserAddresses(): HasMany
-    {
-        return $this->hasMany(UserAddress::class);
-    }
 }

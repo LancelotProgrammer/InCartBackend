@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Constants\CountryLongitudeLatitude;
-use App\Models\Branch;
+use App\Enums\UserAddressType;
 use App\Models\City;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,15 +20,15 @@ class UserAddressFactory extends Factory
     public function definition(): array
     {
         $cityId = City::inRandomOrder()->first()->id;
-        $branchId = Branch::where('city_id', '=', $cityId)->inRandomOrder()->first()->id;
 
         return [
             'title' => $this->faker->streetName(),
             'description' => $this->faker->optional()->sentence(),
+            'type' => $this->faker->randomElement(UserAddressType::cases())->value,
+            'phone' => fake()->unique()->phoneNumber(),
             'longitude' => $this->faker->randomFloat(6, CountryLongitudeLatitude::MIN_LONGITUDE, CountryLongitudeLatitude::MAX_LONGITUDE),
             'latitude' => $this->faker->randomFloat(6, CountryLongitudeLatitude::MIN_LONGITUDE, CountryLongitudeLatitude::MAX_LATITUDE),
             'city_id' => $cityId,
-            'branch_id' => $branchId,
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserAddressType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,20 @@ class UserAddress extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'longitude', 'latitude', 'city_id', 'user_id', 'branch_id'];
+    protected $fillable = [
+        'title',
+        'description',
+        'phone',
+        'type',
+        'longitude',
+        'latitude',
+        'city_id',
+        'user_id'
+    ];
+
+    protected $casts = [
+        'type' => UserAddressType::class,
+    ];
 
     public function city(): BelongsTo
     {
@@ -20,10 +34,5 @@ class UserAddress extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function branch(): BelongsTo
-    {
-        return $this->belongsTo(Branch::class);
     }
 }
