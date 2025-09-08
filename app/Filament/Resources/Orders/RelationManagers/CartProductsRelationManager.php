@@ -13,7 +13,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class CartProductsRelationManager extends RelationManager
 {
@@ -25,7 +24,7 @@ class CartProductsRelationManager extends RelationManager
             ->components([
                 Select::make('product_id')
                     ->relationship('product', 'title'),
-                TextInput::make('quantity')->numeric(255),
+                TextInput::make('quantity')->numeric(),
             ]);
     }
 
@@ -49,7 +48,7 @@ class CartProductsRelationManager extends RelationManager
                         return [
                             Hidden::make('cart_id')->default($this->getOwnerRecord()->carts->first()->id),
                             Select::make('product_id')->relationship('product', 'title'),
-                            TextInput::make('quantity')->numeric(255),
+                            TextInput::make('quantity')->numeric(),
                         ];
                     }),
             ])

@@ -4,11 +4,12 @@ namespace App\Pipes;
 
 use App\Models\Product;
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class GetProductDetails
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
         $request->merge(['id' => $request->route('id')]);
 
@@ -25,14 +26,14 @@ class GetProductDetails
         }
 
         $categoryIds = $product->categories->pluck('id')->toArray();
-        $relatedProducts = Product::whereHas('categories', function ($query) use ($categoryIds) {
+        $relatedProducts = Product::whereHas('categories', function (Builder $query) use ($categoryIds): void {
             $query->whereIn('categories.id', $categoryIds);
         })
             ->where('id', '!=', $product->id)
             ->inRandomOrder()
             ->limit(10)
             ->get()
-            ->map(function ($related) {
+            ->map(function (Product $related): array {
                 $branchProduct = $related->branchProducts->first();
                 $image = $related->files->first();
 

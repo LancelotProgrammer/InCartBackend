@@ -10,15 +10,15 @@ use Illuminate\Validation\Rules\Enum;
 
 class UpdateUserAddress
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
         $validated = $request->validate([
-            'title'       => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'phone'       => 'required|string|max:20',
-            'type'        => ['required', new Enum(UserAddressType::class)],
-            'longitude'   => 'required|numeric',
-            'latitude'    => 'required|numeric',
+            'phone' => 'required|string|max:20',
+            'type' => ['required', new Enum(UserAddressType::class)],
+            'longitude' => 'required|numeric',
+            'latitude' => 'required|numeric',
         ]);
 
         UserAddress::where('user_id', '=', $request->user()->id)

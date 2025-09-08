@@ -19,7 +19,7 @@ class UserAddress extends Model
         'longitude',
         'latitude',
         'city_id',
-        'user_id'
+        'user_id',
     ];
 
     protected $casts = [

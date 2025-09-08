@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class DeleteUserAddress
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
         $request->merge(['id' => $request->route('id')]);
 

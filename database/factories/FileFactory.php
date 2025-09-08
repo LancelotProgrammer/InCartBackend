@@ -24,11 +24,11 @@ class FileFactory extends Factory
         $textColor = ($r * 299 + $g * 587 + $b * 114) / 1000 > 128 ? '000000' : 'FFFFFF';
 
         return [
-            'name' => 'test_image' . '.' . 'png',
+            'name' => 'test_image'.'.'.'png',
             'type' => 1,
             'mime' => 'image/jpeg',
             'size' => $this->faker->numberBetween(1024, 5 * 1024 * 1024),
-            'url' => "https://dummyimage.com/640x480/{$bg}/{$textColor}.png?text=" . urlencode(fake()->productName),
+            'url' => "https://dummyimage.com/640x480/{$bg}/{$textColor}.png?text=".urlencode(fake()->productName),
         ];
     }
 }

@@ -34,14 +34,14 @@ class UserAddressController extends Controller
 
     /**
      * @authenticated
-     * 
+     *
      * @bodyParam title string required Title. Example: title
      * @bodyParam description string required Description. Example: description
      * @bodyParam phone string required Phone. Example: +96654546123
      * @bodyParam type integer required User address type. Example: 1
      * @bodyParam longitude float required Longitude. Example: 3.0
      * @bodyParam latitude float required Latitude. Example: 3.0
-     * 
+     *
      * @group User Addresses Actions
      */
     public function createUserAddress(Request $request): SuccessfulResponseResource
@@ -57,14 +57,14 @@ class UserAddressController extends Controller
 
     /**
      * @authenticated
-     * 
+     *
      * @bodyParam title string required Title. Example: title
      * @bodyParam description string required Description. Example: description
      * @bodyParam phone string required Phone. Example: +96654546123
      * @bodyParam type integer required User address type. Example: 1
      * @bodyParam longitude float required Longitude. Example: 3.0
      * @bodyParam latitude float required Latitude. Example: 3.0
-     * 
+     *
      * @group User Addresses Actions
      */
     public function updateUserAddress(Request $request): EmptySuccessfulResponseResource
@@ -77,7 +77,7 @@ class UserAddressController extends Controller
             ])
             ->thenReturn();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**

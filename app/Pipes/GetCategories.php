@@ -4,11 +4,12 @@ namespace App\Pipes;
 
 use App\Models\Category;
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class GetCategories
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
         $request->validate([
             'level' => 'nullable|integer|min:2|max:3',
@@ -27,16 +28,16 @@ class GetCategories
         if ($level === 1) {
             $query->whereNull('parent_id');
         } elseif ($level === 2) {
-            $query->whereHas('parent', fn ($q) => $q->whereNull('parent_id'));
+            $query->whereHas('parent', fn (Builder $query): Builder => $query->whereNull('parent_id'));
         } elseif ($level === 3) {
-            $query->whereHas('parent.parent', fn ($q) => $q->whereNull('parent_id'));
+            $query->whereHas('parent.parent', fn (Builder $query): Builder => $query->whereNull('parent_id'));
         }
 
-        $categories = $query->get()->map(function ($category) {
+        $categories = $query->get()->map(function (Category $category): array {
             return [
                 'id' => $category->id,
                 'title' => $category->title,
-                'categories' => $category->children->map(fn ($child) => [
+                'categories' => $category->children->map(fn (Category $child): array => [
                     'id' => $child->id,
                     'title' => $child->title,
                 ])->toArray(),

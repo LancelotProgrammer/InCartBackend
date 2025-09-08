@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class ValidateUser
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
         $user = $request->user();
 

@@ -17,7 +17,6 @@ use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\UserAddress;
-use App\Services\OrderPayload;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -30,7 +29,7 @@ class OrderService
 
     public function initializeOrderPayload(): self
     {
-        $this->payload = new OrderPayload();
+        $this->payload = new OrderPayload;
 
         return $this;
     }
@@ -68,7 +67,7 @@ class OrderService
     public function generateOrderNumber(): self
     {
         do {
-            $orderNumber =  sprintf(
+            $orderNumber = sprintf(
                 'ORD-%s-%s',
                 now()->format('YmdHis'),
                 strtoupper(Str::random(6))
@@ -150,11 +149,11 @@ class OrderService
             $branchProduct = $product->branches->first()->pivot;
 
             if ($item['quantity'] > $branchProduct->maximum_order_quantity) {
-                throw new LogicalException("Quantity exceeds maximum allowed for product {$product->title}");
+                throw new LogicalException("Quantity exceeds maximum allowed for product {$product->id}");
             }
 
             if ($item['quantity'] < $branchProduct->minimum_order_quantity) {
-                throw new LogicalException("Quantity is below minimum allowed for product {$product->title}");
+                throw new LogicalException("Quantity is below minimum allowed for product {$product->id}");
             }
 
             $price = BranchProduct::getDiscountPrice($branchProduct);
@@ -224,7 +223,6 @@ class OrderService
     {
         // future: use this function to apply coupon and manipulate cart items
         throw new Exception('Not implemented yet');
-
         // return $this;
     }
 
@@ -232,7 +230,6 @@ class OrderService
     {
         // future: use this code to calculate the cart wight
         throw new Exception('Not implemented yet');
-
         // $this->payload->setTotalWeight(0);
         // $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
         //     ->with(['branches' => fn($query) => $query->where('branches.id', $this->payload->getBranchId())])
@@ -280,10 +277,11 @@ class OrderService
             return $this;
         }
 
-        if ($coupon->type === CouponType::TIMED) {
-            $discount = $this->payload->getCouponService()->calculateTimeCoupon($coupon);
-            $this->payload->setCouponDiscount($discount);
-        }
+        $discount = match ($coupon->type) {
+            CouponType::TIMED => $this->payload->getCouponService()->calculateTimeCoupon($coupon)
+        };
+
+        $this->payload->setCouponDiscount($discount);
 
         return $this;
     }

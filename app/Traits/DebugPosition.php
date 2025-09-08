@@ -12,7 +12,7 @@ trait DebugPosition
         $frame2 = $trace[2] ?? null;
 
         if ($frame1 && isset($frame1['class']) && $frame2 && isset($frame2['class'])) {
-            return $frame2['class'].'|'.($frame2['function'] ?? 'unknown').'|'.($frame1['line'] ?? 'unknown').':';
+            return $frame2['class'].'|'.$frame2['function'].'|'.($frame1['line'] ?? 'unknown').':';
         }
 
         return 'unknown location';

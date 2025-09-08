@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class GetBranches
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
         $request->validate([
             'city_id' => 'required|int|exists:cities,id',
@@ -16,7 +16,7 @@ class GetBranches
 
         $cityId = $request->input('city_id');
 
-        return $next(Branch::where('city_id', '=', $cityId)->published()->get()->map(function ($branch) {
+        return $next(Branch::where('city_id', '=', $cityId)->published()->get()->map(function (Branch $branch) {
             return [
                 'id' => $branch->id,
                 'name' => $branch->title,

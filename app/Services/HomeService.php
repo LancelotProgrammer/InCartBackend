@@ -15,7 +15,7 @@ use stdClass;
 
 class HomeService
 {
-    public static function getHomeContent(Request $request)
+    public static function getHomeContent(Request $request): mixed
     {
         return Cache::remember(CacheKeys::HOME, 3600, function () {
             $statuses = DB::table('advertisements')

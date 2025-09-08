@@ -10,7 +10,7 @@ class OrderInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            // TODO: fix this design 
+            // TODO: fix this design
             ->columns(5)
             ->components([
                 TextEntry::make('order_number'),

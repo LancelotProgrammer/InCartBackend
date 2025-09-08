@@ -8,13 +8,9 @@ use Illuminate\Http\Request;
 
 class GetUserNotifications
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
         $notifications = $request->user()->notifications()->latest()->simplePaginate();
-
-        if (! $notifications) {
-            throw new LogicalException('No notifications found', 'User has no notifications', 404);
-        }
 
         return $next($notifications->items());
     }

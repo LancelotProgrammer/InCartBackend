@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class createOrder
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
         $order = DB::transaction(function () use ($request) {
-            $orderService = new OrderService();
+            $orderService = new OrderService;
+
             return $orderService->initializeOrderPayload()
                 ->validateRequest($request)
                 ->setData($request)

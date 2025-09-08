@@ -32,12 +32,12 @@ class CouponService
         array $productsIds,
         array $categoriesIds,
     ) {
-        self::$time = $time;
-        self::$userAddress = $userAddress;
-        self::$userId = $userId;
-        self::$branchId = $branchId;
-        self::$productsIds = $productsIds;
-        self::$categoriesIds = $categoriesIds;
+        $this->time = $time;
+        $this->userAddress = $userAddress;
+        $this->userId = $userId;
+        $this->branchId = $branchId;
+        $this->productsIds = $productsIds;
+        $this->categoriesIds = $categoriesIds;
     }
 
     public function calculateTimeCoupon(Coupon $coupon): float
@@ -55,15 +55,15 @@ class CouponService
             throw new InvalidArgumentException('Invalid coupon config: '.$validator->errors()->first());
         }
 
-        if (! empty($config['start_date']) && self::$time->lt(Carbon::parse($config['start_date']))) {
+        if (! empty($config['start_date']) && $this->time->lt(Carbon::parse($config['start_date']))) {
             throw new LogicalException('Coupon is not active yet.');
         }
-        if (! empty($config['end_date']) && self::$time->gt(Carbon::parse($config['end_date']))) {
+        if (! empty($config['end_date']) && $this->time->gt(Carbon::parse($config['end_date']))) {
             throw new LogicalException('Coupon has expired.');
         }
 
         $totalUses = Order::where('coupon_id', $coupon->id)->count();
-        $userUses = Order::where('coupon_id', $coupon->id)->where('user_id', self::$userId)->count();
+        $userUses = Order::where('coupon_id', $coupon->id)->where('user_id', $this->userId)->count();
 
         // Check user limit first
         if (! empty($config['user_limit']) && $userUses >= $config['user_limit']) {

@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
 use InvalidArgumentException;
 
 trait HasPublishAttribute
@@ -30,14 +31,14 @@ trait HasPublishAttribute
         $this->save();
     }
 
-    public function scopePublished($query)
+    public function scopePublished(Builder $query): void
     {
-        return $query->whereNotNull('published_at');
+        $query->whereNotNull('published_at');
     }
 
-    public function scopeUnpublished($query)
+    public function scopeUnpublished(Builder $query): void
     {
-        return $query->whereNull('published_at');
+        $query->whereNull('published_at');
     }
 
     public function isPublished(): bool

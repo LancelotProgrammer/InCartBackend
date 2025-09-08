@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class AddProductToPackage
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
 
         return $next();

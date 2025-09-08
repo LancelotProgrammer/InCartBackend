@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 
 class GetPaymentMethods
 {
-    public function __invoke(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Closure
     {
-        return $next(PaymentMethod::published()->get()->map(function ($paymentMethod) {
+        return $next(PaymentMethod::published()->get()->map(function (PaymentMethod $paymentMethod) {
             return [
                 'id' => $paymentMethod->id,
                 'order' => $paymentMethod->order,

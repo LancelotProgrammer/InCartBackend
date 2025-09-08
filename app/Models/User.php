@@ -5,6 +5,7 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -120,14 +121,14 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         $this->save();
     }
 
-    public function scopeBlock($query)
+    public function scopeBlock(Builder $query): void
     {
-        return $query->whereNotNull('blocked_at');
+        $query->whereNotNull('blocked_at');
     }
 
-    public function scopeUnblock($query)
+    public function scopeUnblock(Builder $query): void
     {
-        return $query->whereNull('blocked_at');
+        $query->whereNull('blocked_at');
     }
 
     public function isBlocked(): bool

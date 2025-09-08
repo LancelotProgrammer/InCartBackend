@@ -31,7 +31,7 @@ class CheckoutService
         if ($paymentMethod->code === 'pay-on-delivery') {
             throw new LogicalException('Payment method is pay-on-delivery and it is already checked out');
         }
-        if ($order->payment_status === PaymentStatus::PAID->value) {
+        if ($order->payment_status === PaymentStatus::PAID) {
             throw new LogicalException('order is already payed');
         }
         $this->resolvePaymentGateway($paymentMethod, $request);

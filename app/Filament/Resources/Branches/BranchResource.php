@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Branches;
 
-use App\Filament\Resources\Advertisements\Schemas\BranchInfolist;
 use App\Filament\Resources\Branches\Pages\ListBranches;
 use App\Filament\Resources\Branches\Schemas\BranchForm;
+use App\Filament\Resources\Branches\Schemas\BranchInfolist;
 use App\Filament\Resources\Branches\Tables\BranchesTable;
 use App\Models\Branch;
 use BackedEnum;

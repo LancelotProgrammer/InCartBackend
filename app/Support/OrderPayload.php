@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 class OrderPayload
 {
     private CouponService $couponService;
+
     private int $addressId;
 
     private ?string $deliveryDate = null;
@@ -69,6 +70,7 @@ class OrderPayload
     {
         return $this->couponService;
     }
+
     public function setCouponService(CouponService $couponService): void
     {
         $this->couponService = $couponService;
@@ -78,6 +80,7 @@ class OrderPayload
     {
         return $this->addressId;
     }
+
     public function setAddressId(int $id): void
     {
         $this->addressId = $id;
@@ -87,6 +90,7 @@ class OrderPayload
     {
         return $this->deliveryDate;
     }
+
     public function setDeliveryDate(?string $date): void
     {
         $this->deliveryDate = $date;
@@ -96,6 +100,7 @@ class OrderPayload
     {
         return $this->paymentMethodId;
     }
+
     public function setPaymentMethodId(int $id): void
     {
         $this->paymentMethodId = $id;
@@ -105,6 +110,7 @@ class OrderPayload
     {
         return $this->couponCode;
     }
+
     public function setCouponCode(?string $code): void
     {
         $this->couponCode = $code;
@@ -114,6 +120,7 @@ class OrderPayload
     {
         return $this->cartItems;
     }
+
     public function setCartItems(array $items): void
     {
         $this->cartItems = $items;
@@ -123,6 +130,7 @@ class OrderPayload
     {
         return $this->notes;
     }
+
     public function setNotes(?string $notes): void
     {
         $this->notes = $notes;
@@ -132,6 +140,7 @@ class OrderPayload
     {
         return $this->branchId;
     }
+
     public function setBranchId(int $id): void
     {
         $this->branchId = $id;
@@ -141,6 +150,7 @@ class OrderPayload
     {
         return $this->user;
     }
+
     public function setUser(User $user): void
     {
         $this->user = $user;
@@ -150,6 +160,7 @@ class OrderPayload
     {
         return $this->orderNumber;
     }
+
     public function setOrderNumber(string $orderNumber): void
     {
         $this->orderNumber = $orderNumber;
@@ -159,6 +170,7 @@ class OrderPayload
     {
         return $this->distance;
     }
+
     public function setDistance(float $distance): void
     {
         $this->distance = $distance;
@@ -168,6 +180,7 @@ class OrderPayload
     {
         return $this->date;
     }
+
     public function setDate(?Carbon $date): void
     {
         $this->date = $date;
@@ -177,6 +190,7 @@ class OrderPayload
     {
         return $this->coupon;
     }
+
     public function setCoupon(?Coupon $coupon): void
     {
         $this->coupon = $coupon;
@@ -186,6 +200,7 @@ class OrderPayload
     {
         return $this->cart;
     }
+
     public function setCart(Cart $cart): void
     {
         $this->cart = $cart;
@@ -195,6 +210,7 @@ class OrderPayload
     {
         return $this->paymentMethod;
     }
+
     public function setPaymentMethod(PaymentMethod $method): void
     {
         $this->paymentMethod = $method;
@@ -204,6 +220,7 @@ class OrderPayload
     {
         return $this->paymentToken;
     }
+
     public function setPaymentToken(?string $token): void
     {
         $this->paymentToken = $token;
@@ -213,6 +230,7 @@ class OrderPayload
     {
         return $this->deliveryFee;
     }
+
     public function setDeliveryFee(float $fee): void
     {
         $this->deliveryFee = $fee;
@@ -222,6 +240,7 @@ class OrderPayload
     {
         return $this->subtotal;
     }
+
     public function setSubtotal(float $subtotal): void
     {
         $this->subtotal = $subtotal;
@@ -231,6 +250,7 @@ class OrderPayload
     {
         return $this->couponDiscount;
     }
+
     public function setCouponDiscount(float $discount): void
     {
         $this->couponDiscount = $discount;
@@ -240,6 +260,7 @@ class OrderPayload
     {
         return $this->taxAmount;
     }
+
     public function setTaxAmount(float $tax): void
     {
         $this->taxAmount = $tax;
@@ -249,6 +270,7 @@ class OrderPayload
     {
         return $this->totalPrice;
     }
+
     public function setTotalPrice(float $total): void
     {
         $this->totalPrice = $total;
@@ -258,6 +280,7 @@ class OrderPayload
     {
         return $this->serviceFee;
     }
+
     public function setServiceFee(float $fee): void
     {
         $this->serviceFee = $fee;
@@ -267,6 +290,7 @@ class OrderPayload
     {
         return $this->taxRate;
     }
+
     public function setTaxRate(float $rate): void
     {
         $this->taxRate = $rate;
@@ -276,6 +300,7 @@ class OrderPayload
     {
         return $this->minDistance;
     }
+
     public function setMinDistance(float $min): void
     {
         $this->minDistance = $min;
@@ -285,6 +310,7 @@ class OrderPayload
     {
         return $this->maxDistance;
     }
+
     public function setMaxDistance(float $max): void
     {
         $this->maxDistance = $max;
@@ -294,6 +320,7 @@ class OrderPayload
     {
         return $this->pricePerKilometer;
     }
+
     public function setPricePerKilometer(float $price): void
     {
         $this->pricePerKilometer = $price;
