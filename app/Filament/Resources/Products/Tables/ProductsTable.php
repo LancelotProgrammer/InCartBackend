@@ -14,9 +14,6 @@ class ProductsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->with('files');
-            })
             ->columns([
                 TextColumn::make('id'),
                 ImageColumn::make('url')->label('Image')->state(function ($record) {

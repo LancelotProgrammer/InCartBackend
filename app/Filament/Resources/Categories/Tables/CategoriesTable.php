@@ -18,9 +18,6 @@ class CategoriesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->with(['parent.parent.parent', 'files']);
-            })
             ->filtersTriggerAction(
                 fn (Action $action) => $action
                     ->button()

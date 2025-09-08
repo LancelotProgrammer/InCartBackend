@@ -54,8 +54,9 @@ Route::middleware([
     Route::middleware(['auth:sanctum', UserStateValidation::class])->group(function () {
         Route::get('/branches', [BranchController::class, 'getBranches']);
 
-        Route::post('/order', [OrderController::class, 'order']);
-        Route::post('/checkout', [OrderController::class, 'checkout']);
+        Route::post('/order/bill', [OrderController::class, 'createOrderBill']);
+        Route::post('/order', [OrderController::class, 'createOrder']);
+        Route::post('/order/checkout', [OrderController::class, 'createOrderCheckout']);
 
         Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);
         Route::get('/users/notifications', [UserNotificationController::class, 'getUserNotifications']);
@@ -73,7 +74,8 @@ Route::middleware([
         Route::delete('/favorites/products/{id}', [FavoriteController::class, 'deleteProductFromFavorites']);
 
         Route::get('/users/addresses', [UserAddressController::class, 'getUserAddresses']);
-        Route::post('/users/addresses', [UserAddressController::class, 'addUserAddress']);
+        Route::post('/users/addresses', [UserAddressController::class, 'createUserAddress']);
+        Route::put('/users/addresses/{id}', [UserAddressController::class, 'updateUserAddress']);
         Route::delete('/users/addresses/{id}', [UserAddressController::class, 'deleteUserAddress']);
     });
 

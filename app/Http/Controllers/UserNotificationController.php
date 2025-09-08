@@ -21,7 +21,7 @@ class UserNotificationController extends Controller
         return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
                 ValidateUser::class,
-                new AuthorizeUser('getUserNotifications'),
+                new AuthorizeUser('get-user-notifications'),
                 GetUserNotifications::class,
             ])
             ->thenReturn());

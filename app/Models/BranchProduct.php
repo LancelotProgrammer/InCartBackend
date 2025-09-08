@@ -22,7 +22,6 @@ class BranchProduct extends Pivot
         'branch_id',
         'product_id',
         'price',
-        'price',
         'discount',
         'maximum_order_quantity',
         'minimum_order_quantity',

@@ -16,7 +16,7 @@ class GetProducts
             'page' => 'nullable|integer|min:1',
         ]);
 
-        $query = Product::with(['branchProducts', 'files']);
+        $query = Product::query();
 
         if ($request->filled('category_id')) {
             $query->whereHas('categories', function ($query) use ($request) {

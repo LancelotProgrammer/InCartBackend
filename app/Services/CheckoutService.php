@@ -12,7 +12,7 @@ use InvalidArgumentException;
 
 class CheckoutService
 {
-    public static function validateRequest(Request $request)
+    public function validateRequest(Request $request): self
     {
         $request->validate([
             'order_id' => 'required|int|exists:orders,id',
@@ -20,9 +20,11 @@ class CheckoutService
             'token' => 'nullable|string',
             'metadata' => 'nullable|array',
         ]);
+
+        return $this;
     }
 
-    public static function checkout(Request $request): void
+    public function checkout(Request $request): self
     {
         $paymentMethod = PaymentMethod::findOrFail($request->input('payment_method_id'));
         $order = Order::where('payment_token', '=', 'order_id')->first();
@@ -32,10 +34,12 @@ class CheckoutService
         if ($order->payment_status === PaymentStatus::PAID->value) {
             throw new LogicalException('order is already payed');
         }
-        self::resolvePaymentGateway($paymentMethod, $request);
+        $this->resolvePaymentGateway($paymentMethod, $request);
+
+        return $this;
     }
 
-    private static function resolvePaymentGateway(PaymentMethod $paymentMethod, Request $request): void
+    private function resolvePaymentGateway(PaymentMethod $paymentMethod, Request $request): void
     {
         $map = [
             'apple-pay' => MoyasarPaymentGateway::class,

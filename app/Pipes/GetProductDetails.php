@@ -16,7 +16,7 @@ class GetProductDetails
             'id' => 'required|integer|exists:products,id',
         ]);
 
-        $product = Product::with(['branchProducts', 'files'])->where('id', '=', $request->route('id'))->first();
+        $product = Product::where('id', '=', $request->route('id'))->first();
         $branchProduct = $product->branchProducts->first();
         $images = $product->files()->get();
         $imagesResult = [];
@@ -29,7 +29,6 @@ class GetProductDetails
             $query->whereIn('categories.id', $categoryIds);
         })
             ->where('id', '!=', $product->id)
-            ->with(['branchProducts', 'files'])
             ->inRandomOrder()
             ->limit(10)
             ->get()

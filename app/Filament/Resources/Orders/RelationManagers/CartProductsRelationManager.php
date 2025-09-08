@@ -32,9 +32,6 @@ class CartProductsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->with(['product.files']);
-            })
             ->columns([
                 ImageColumn::make('url')->label('Image')->state(function ($record) {
                     return $record->product->files->first()->url;

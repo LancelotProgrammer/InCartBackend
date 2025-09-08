@@ -12,17 +12,17 @@ use InvalidArgumentException;
 
 class CouponService
 {
-    public static Carbon $time;
+    public Carbon $time;
 
-    public static UserAddress $userAddress;
+    public UserAddress $userAddress;
 
-    public static int $userId;
+    public int $userId;
 
-    public static int $branchId;
+    public int $branchId;
 
-    public static array $productsIds;
+    public array $productsIds;
 
-    public static array $categoriesIds;
+    public array $categoriesIds;
 
     public function __construct(
         Carbon $time,
@@ -40,7 +40,7 @@ class CouponService
         self::$categoriesIds = $categoriesIds;
     }
 
-    public static function calculateTimeCoupon(Coupon $coupon): float
+    public function calculateTimeCoupon(Coupon $coupon): float
     {
         $config = $coupon->config;
 

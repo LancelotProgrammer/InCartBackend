@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Resources\SuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AuthorizeUser;
-use App\Pipes\Checkout;
 use App\Pipes\GetUserPreviousOrders;
-use App\Pipes\Order;
+use App\Pipes\createOrder;
+use App\Pipes\createOrderBill;
+use App\Pipes\createOrderCheckout;
 use App\Pipes\PaymentGatewayCallback;
 use App\Pipes\ValidateUser;
 use Illuminate\Http\Request;
@@ -46,13 +47,38 @@ class OrderController extends Controller
      *
      * @group Order Actions
      */
-    public function order(Request $request): SuccessfulResponseResource
+    public function createOrderBill(Request $request): SuccessfulResponseResource
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
                 ValidateUser::class,
-                new AuthorizeUser('get-user-previous-orders'),
-                Order::class,
+                new AuthorizeUser('create-order-bill'),
+                createOrderBill::class,
+            ])
+            ->thenReturn());
+    }
+
+    /**
+     * @authenticated
+     *
+     * @bodyParam address_id integer required The user address ID. Example: 1
+     * @bodyParam delivery_date date The delivery date. Example: 2025
+     * @bodyParam payment_method_id integer required The payment method ID. Example: 1
+     * @bodyParam coupon string The city ID. Example: COUPONTEST
+     * @bodyParam cart object[] required Cart items. Example: [{"id": 1, "quantity": 10}, {"id": 2, "quantity": 2.5}]
+     * @bodyParam cart[].id integer required The product ID. Example: 1
+     * @bodyParam cart[].quantity numeric required numeric The product quantity. Example: 1
+     * @bodyParam notes string Order notes. Example: Some notes
+     *
+     * @group Order Actions
+     */
+    public function createOrder(Request $request): SuccessfulResponseResource
+    {
+        return new SuccessfulResponseResource(Pipeline::send($request)
+            ->through([
+                ValidateUser::class,
+                new AuthorizeUser('create-order'),
+                createOrder::class,
             ])
             ->thenReturn());
     }
@@ -69,13 +95,13 @@ class OrderController extends Controller
      *
      * @group Order Actions
      */
-    public function checkout(Request $request): SuccessfulResponseResource
+    public function createOrderCheckout(Request $request): SuccessfulResponseResource
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
                 ValidateUser::class,
-                new AuthorizeUser('get-user-previous-orders'),
-                Checkout::class,
+                new AuthorizeUser('create-order-checkout'),
+                createOrderCheckout::class,
             ])
             ->thenReturn());
     }

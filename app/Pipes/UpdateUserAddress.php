@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
 
-class AddUserAddress
+class UpdateUserAddress
 {
     public function __invoke(Request $request, Closure $next)
     {
@@ -21,12 +21,10 @@ class AddUserAddress
             'latitude'    => 'required|numeric',
         ]);
 
-        $address = UserAddress::create([
-            ...$validated,
-            'user_id' => $request->user()->id,
-            'city_id' => $request->user()->city_id,
-        ]);
+        UserAddress::where('user_id', '=', $request->user()->id)
+            ->where('city_id', '=', $request->user()->city_id)
+            ->update($validated);
 
-        return $next($address);
+        return $next();
     }
 }
