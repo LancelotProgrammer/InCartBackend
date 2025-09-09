@@ -7,9 +7,11 @@ use App\Models\Category;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -18,21 +20,30 @@ class CategoriesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->paginationPageOptions([100])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
+            ->defaultGroup('parent_id')
+            ->groups([
+                Group::make('parent_id')
+                    ->label('Parent Category')
+                    ->getTitleFromRecordUsing(fn($record) => optional($record->parent)->title ?? 'Root'),
+            ])
             ->columns([
-                TextColumn::make('id'),
-                ImageColumn::make('url')->label('Image')->state(function ($record) {
-                    return $record->files->first()->url;
-                }),
-                TextColumn::make('depth')->label('level'),
-                TextColumn::make('title')->searchable(),
-                TextColumn::make('parent.title')->label('parent'),
-                TextColumn::make('published_at')->dateTime(),
-                TextColumn::make('created_at')->dateTime(),
+                Stack::make([
+                    ImageColumn::make('url')
+                        ->label('Image')
+                        ->state(fn($record) => $record->files->first()->url ?? null),
+                    TextColumn::make('title')->searchable(),
+                    TextColumn::make('published_at')->dateTime(),
+                ]),
+            ])
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 5,
             ])
             ->filters([
                 Filter::make('category_name')
@@ -45,7 +56,7 @@ class CategoriesTable
                         if ($category) {
                             return $query->when(
                                 $data['title'],
-                                fn (Builder $query, $date): Builder => $query->where('id', '=', $category->id)->orWhere('parent_id', '=', $category->id),
+                                fn(Builder $query, $date): Builder => $query->where('id', '=', $category->id)->orWhere('parent_id', '=', $category->id),
                             );
                         }
 
