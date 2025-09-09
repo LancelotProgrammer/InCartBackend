@@ -6,10 +6,11 @@ use App\Models\Category;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class GetCategories
 {
-    public function __invoke(Request $request, Closure $next): array
+    public function __invoke(Request $request, Closure $next): Collection
     {
         $request->validate([
             'level' => 'nullable|integer|min:2|max:3',
