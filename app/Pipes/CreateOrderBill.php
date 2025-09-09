@@ -34,7 +34,7 @@ class CreateOrderBill
             $request->user(),
         ));
 
-        $orderBill = DB::transaction(function () use ($request, $orderService) {
+        $orderBill = DB::transaction(function () use ($orderService) {
 
             return $orderService
                 ->generateOrderNumber()

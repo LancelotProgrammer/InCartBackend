@@ -34,7 +34,7 @@ class CreateOrder
             $request->user(),
         ));
 
-        $order = DB::transaction(function () use ($request, $orderService) {
+        $order = DB::transaction(function () use ($orderService) {
 
             return $orderService
                 ->generateOrderNumber()
