@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Resources\SuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AuthorizeUser;
-use App\Pipes\createOrder;
-use App\Pipes\createOrderBill;
-use App\Pipes\createOrderCheckout;
+use App\Pipes\CreateOrder;
+use App\Pipes\CreateOrderBill;
+use App\Pipes\CreateOrderCheckout;
 use App\Pipes\GetUserPreviousOrders;
 use App\Pipes\PaymentGatewayCallback;
 use App\Pipes\ValidateUser;
@@ -53,7 +53,7 @@ class OrderController extends Controller
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('create-order-bill'),
-                createOrderBill::class,
+                CreateOrderBill::class,
             ])
             ->thenReturn());
     }
@@ -78,7 +78,7 @@ class OrderController extends Controller
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('create-order'),
-                createOrder::class,
+                CreateOrder::class,
             ])
             ->thenReturn());
     }
@@ -101,7 +101,7 @@ class OrderController extends Controller
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('create-order-checkout'),
-                createOrderCheckout::class,
+                CreateOrderCheckout::class,
             ])
             ->thenReturn());
     }

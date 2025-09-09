@@ -325,4 +325,26 @@ class OrderPayload
     {
         $this->pricePerKilometer = $price;
     }
+
+    public function fromRequest(
+        int $addressId,
+        ?string $deliveryDate,
+        ?int $paymentMethodId,
+        ?string $couponCode,
+        array $cartItems,
+        ?string $notes,
+        int $branchId,
+        User $user,
+    ): self {
+        $this->setAddressId($addressId);
+        $this->setDeliveryDate($deliveryDate);
+        $this->setPaymentMethodId($paymentMethodId);
+        $this->setCouponCode($couponCode);
+        $this->setCartItems($cartItems);
+        $this->setNotes($notes);
+        $this->setBranchId($branchId);
+        $this->setUser($user);
+
+        return $this;
+    }
 }

@@ -12,18 +12,6 @@ use InvalidArgumentException;
 
 class CheckoutService
 {
-    public function validateRequest(Request $request): self
-    {
-        $request->validate([
-            'order_id' => 'required|int|exists:orders,id',
-            'payment_method_id' => 'required|int|exists:payment_methods,id',
-            'token' => 'nullable|string',
-            'metadata' => 'nullable|array',
-        ]);
-
-        return $this;
-    }
-
     public function checkout(Request $request): self
     {
         $paymentMethod = PaymentMethod::findOrFail($request->input('payment_method_id'));

@@ -18,7 +18,6 @@ use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\UserAddress;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -27,41 +26,9 @@ class OrderService
 {
     private OrderPayload $payload;
 
-    public function initializeOrderPayload(): self
+    public function __construct(OrderPayload $payload)
     {
-        $this->payload = new OrderPayload;
-
-        return $this;
-    }
-
-    public function validateRequest(Request $request): self
-    {
-        $request->validate([
-            'address_id' => 'required|exists:user_addresses,id',
-            'delivery_date' => 'nullable|date|after_or_equal:today',
-            'payment_method_id' => 'required|exists:payment_methods,id',
-            'coupon' => 'nullable|string',
-            'cart' => 'required|array',
-            'cart.*.id' => 'required|exists:products,id',
-            'cart.*.quantity' => 'required|numeric',
-            'notes' => 'nullable|string',
-        ]);
-
-        return $this;
-    }
-
-    public function setData(Request $request): self
-    {
-        $this->payload->setAddressId($request->input('address_id'));
-        $this->payload->setDeliveryDate($request->input('delivery_date'));
-        $this->payload->setPaymentMethodId($request->input('payment_method_id'));
-        $this->payload->setCouponCode($request->input('coupon'));
-        $this->payload->setCartItems($request->input('cart'));
-        $this->payload->setNotes($request->input('notes'));
-        $this->payload->setBranchId($request->attributes->get('currentBranchId'));
-        $this->payload->setUser($request->user());
-
-        return $this;
+        $this->payload = $payload;
     }
 
     public function generateOrderNumber(): self

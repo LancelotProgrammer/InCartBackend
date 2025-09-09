@@ -7,14 +7,20 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class createOrderCheckout
+class CreateOrderCheckout
 {
     public function __invoke(Request $request, Closure $next): Closure
     {
+        $request->validate([
+            'order_id' => 'required|int|exists:orders,id',
+            'payment_method_id' => 'required|int|exists:payment_methods,id',
+            'token' => 'nullable|string',
+            'metadata' => 'nullable|array',
+        ]);
+
         DB::transaction(function () use ($request) {
             $checkoutService = new CheckoutService;
-            $checkoutService->validateRequest($request)
-                ->checkout($request);
+            $checkoutService->checkout($request);
         });
 
         return $next([]);
