@@ -10,7 +10,7 @@ use Illuminate\Validation\Rules\Enum;
 
 class UpdateUserAddress
 {
-    public function __invoke(Request $request, Closure $next): array
+    public function __invoke(Request $request, Closure $next)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -25,6 +25,6 @@ class UpdateUserAddress
             ->where('city_id', '=', $request->user()->city_id)
             ->update($validated);
 
-        return $next();
+        return $next([]);
     }
 }

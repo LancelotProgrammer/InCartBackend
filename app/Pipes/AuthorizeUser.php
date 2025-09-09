@@ -13,7 +13,7 @@ class AuthorizeUser
         private array $arguments = []
     ) {}
 
-    public function __invoke(Request $request, Closure $next): array
+    public function __invoke(Request $request, Closure $next)
     {
         $user = $request->user();
 
