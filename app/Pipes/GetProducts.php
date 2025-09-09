@@ -6,10 +6,11 @@ use App\Models\Product;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class GetProducts
 {
-    public function __invoke(Request $request, Closure $next): array
+    public function __invoke(Request $request, Closure $next): Collection
     {
         $request->validate([
             'category_id' => 'nullable|integer|exists:categories,id',
