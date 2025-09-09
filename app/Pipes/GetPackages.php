@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class GetPackages
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
 
         return $next([]);

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class GetBranches
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         $request->validate([
             'city_id' => 'required|int|exists:cities,id',

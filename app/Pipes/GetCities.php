@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class GetCities
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         return $next(City::all()->map(function (City $city) {
             return [

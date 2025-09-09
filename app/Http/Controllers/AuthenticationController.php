@@ -28,14 +28,13 @@ use Illuminate\View\View;
 use InvalidArgumentException;
 
 /*
-    TODO: list
-        - test update user info and  blocked users middleware
-        - null edge case at model::where
-        - improve phone number validation
-        - make a scheduler to delete unverified users
-        - review ratelimiter
-        - write tests for all functions
-        - refactor using services, classes and helpers
+    TODO:
+    - test update user info and  blocked users middleware
+    - null edge case at model::where
+    - improve phone number validation
+    - make a scheduler to delete unverified users
+    - review ratelimiter
+    - refactor using services, classes and helpers
 */
 
 class AuthenticationController extends Controller

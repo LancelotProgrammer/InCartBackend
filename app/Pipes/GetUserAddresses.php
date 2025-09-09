@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class GetUserAddresses
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         $addresses = $request->user()->addresses()->get();
 

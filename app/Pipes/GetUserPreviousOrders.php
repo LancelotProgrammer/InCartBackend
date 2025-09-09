@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class GetUserPreviousOrders
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         $orders = $request->user()->orders()->latest()->simplePaginate();
 

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class GetHome
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         return $next(HomeService::getHomeContent($request));
     }

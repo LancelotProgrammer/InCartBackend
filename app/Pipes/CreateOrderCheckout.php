@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class CreateOrderCheckout
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         $request->validate([
             'order_id' => 'required|int|exists:orders,id',

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class GetPaymentMethods
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         return $next(PaymentMethod::published()->get()->map(function (PaymentMethod $paymentMethod) {
             return [

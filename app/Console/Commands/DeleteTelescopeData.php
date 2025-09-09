@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class DeleteTelescopeData extends Command
@@ -26,6 +27,10 @@ class DeleteTelescopeData extends Command
      */
     public function handle(): void
     {
+        if (App::environment('production')) {
+            return;
+        }
+
         $this->info('Clearing Telescope data...');
 
         DB::statement('SET FOREIGN_KEY_CHECKS=0');

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class GetUserNotifications
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         $notifications = $request->user()->notifications()->latest()->simplePaginate();
 

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class PaymentGatewayCallback
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         app(match ($request->route()->getName()) {
             'moyasar.callback' => MoyasarPaymentGateway::class,

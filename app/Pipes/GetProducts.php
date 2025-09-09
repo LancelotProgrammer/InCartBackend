@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class GetProducts
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         $request->validate([
             'category_id' => 'nullable|integer|exists:categories,id',

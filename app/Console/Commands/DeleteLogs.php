@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 
 class DeleteLogs extends Command
 {
@@ -25,6 +26,10 @@ class DeleteLogs extends Command
      */
     public function handle(): void
     {
+        if (App::environment('production')) {
+            return;
+        }
+
         $logPath = storage_path('logs');
 
         if (! is_dir($logPath)) {
@@ -33,7 +38,7 @@ class DeleteLogs extends Command
             return;
         }
 
-        $files = glob($logPath.'/*.log');
+        $files = glob($logPath . '/*.log');
 
         if (empty($files)) {
             $this->info('No log files found.');

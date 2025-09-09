@@ -10,7 +10,7 @@ use Illuminate\Validation\Rules\Enum;
 
 class CreateUserAddress
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',

@@ -8,6 +8,7 @@ use App\Enums\AdvertisementType;
 use App\Models\Advertisement;
 use App\Models\BranchProduct;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -17,7 +18,7 @@ class HomeService
 {
     public static function getHomeContent(Request $request): mixed
     {
-        return Cache::remember(CacheKeys::HOME, 3600, function () {
+        return Cache::remember(CacheKeys::HOME . App::getLocale(), 3600, function () {
             $statuses = DB::table('advertisements')
                 ->where('type', '=', AdvertisementType::STATUS->value)
                 ->branchScope()

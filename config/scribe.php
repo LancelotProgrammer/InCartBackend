@@ -218,6 +218,7 @@ return [
             Strategies\StaticData::withSettings(data: [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
+                'Accept-Language' => 'ar',
             ]),
         ],
         'urlParameters' => [

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class CreateOrder
 {
-    public function __invoke(Request $request, Closure $next): Closure
+    public function __invoke(Request $request, Closure $next): array
     {
         $request->validate([
             'address_id' => 'required|exists:user_addresses,id',
