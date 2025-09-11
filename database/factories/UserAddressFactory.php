@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Constants\CountryLongitudeLatitude;
+use App\Constants\CountryLatitudeLongitude;
 use App\Enums\UserAddressType;
 use App\Models\City;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -26,8 +26,8 @@ class UserAddressFactory extends Factory
             'description' => $this->faker->optional()->sentence(),
             'type' => $this->faker->randomElement(UserAddressType::cases())->value,
             'phone' => fake()->unique()->phoneNumber(),
-            'longitude' => $this->faker->randomFloat(6, CountryLongitudeLatitude::MIN_LONGITUDE, CountryLongitudeLatitude::MAX_LONGITUDE),
-            'latitude' => $this->faker->randomFloat(6, CountryLongitudeLatitude::MIN_LONGITUDE, CountryLongitudeLatitude::MAX_LATITUDE),
+            'latitude' => $this->faker->randomFloat(6, CountryLatitudeLongitude::MIN_LATITUDE, CountryLatitudeLongitude::MAX_LATITUDE),
+            'longitude' => $this->faker->randomFloat(6, CountryLatitudeLongitude::MIN_LONGITUDE, CountryLatitudeLongitude::MAX_LONGITUDE),
             'city_id' => $cityId,
         ];
     }

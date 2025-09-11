@@ -53,9 +53,9 @@ class OrderPayload
 
     private float $totalPrice = 0;
 
-    private float $serviceFee = 1; // TODO: get from settings
+    private float $serviceFee = 2; // TODO: get from settings
 
-    private float $taxRate = 5; // TODO: get from settings
+    private float $taxRate = 2; // TODO: get from settings
 
     private float $minDistance = 1; // TODO: get from settings
 

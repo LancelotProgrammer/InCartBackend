@@ -16,8 +16,8 @@ class UserAddress extends Model
         'description',
         'phone',
         'type',
-        'longitude',
         'latitude',
+        'longitude',
         'city_id',
         'user_id',
     ];

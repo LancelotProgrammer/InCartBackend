@@ -15,8 +15,8 @@ class BranchInfolist
                 TextEntry::make('id')->numeric(),
                 TextEntry::make('title'),
                 TextEntry::make('description'),
-                TextEntry::make('longitude')->numeric(),
                 TextEntry::make('latitude')->numeric(),
+                TextEntry::make('longitude')->numeric(),
                 TextEntry::make('city_id'),
             ]);
     }

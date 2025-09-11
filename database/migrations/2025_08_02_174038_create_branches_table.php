@@ -17,8 +17,8 @@ return new class extends Migration
             $table->json('description')->nullable();
             $table->dateTime('published_at')->nullable();
             $table->boolean('is_default');
-            $table->double('longitude');
             $table->double('latitude');
+            $table->double('longitude');
             $table->timestamps();
 
             $table->unsignedBigInteger('city_id');

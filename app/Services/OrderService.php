@@ -64,7 +64,11 @@ class OrderService
 
         $address = UserAddress::where('id', '=', $this->payload->getAddressId())
             ->where('user_id', '=', $this->payload->getUser()->id)
-            ->firstOrFail();
+            ->first();
+
+        if (!$address) {
+            throw new LogicalException('User address is invalid');
+        }
 
         $distance = $this->haversineDistance(
             $branch->latitude,
@@ -102,6 +106,7 @@ class OrderService
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
             ->with(['branches' => fn($query) => $query->where('branches.id', $this->payload->getBranchId())->withPivot([
                 'price',
+                'quantity',
                 'discount',
                 'maximum_order_quantity',
                 'minimum_order_quantity',
@@ -115,6 +120,10 @@ class OrderService
             }
 
             $branchProduct = $product->branches->first()->pivot;
+
+            if ($item['quantity'] > $branchProduct->quantity) {
+                throw new LogicalException("Quantity exceeds storage for product {$product->id}");
+            }
 
             if ($item['quantity'] > $branchProduct->maximum_order_quantity) {
                 throw new LogicalException("Quantity exceeds maximum allowed for product {$product->id}");
@@ -136,7 +145,7 @@ class OrderService
     public function createCart(): self
     {
         $cart = Cart::create([
-            'title' => $this->payload->getOrderNumber(),
+            'order_number' => $this->payload->getOrderNumber(),
         ]);
 
         $cartProducts = [];
@@ -144,7 +153,7 @@ class OrderService
             $cartProducts[] = [
                 'cart_id' => $cart->id,
                 'product_id' => $product['id'],
-                'count' => $product['quantity'],
+                'quantity' => $product['quantity'],
             ];
         }
 

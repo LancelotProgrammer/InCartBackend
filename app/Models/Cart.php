@@ -12,7 +12,7 @@ class Cart extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['order_id'];
+    protected $fillable = ['order_number', 'order_id'];
 
     public function order(): BelongsTo
     {

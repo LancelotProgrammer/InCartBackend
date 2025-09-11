@@ -14,7 +14,7 @@ class Branch extends Model
 {
     use HasFactory, HasPublishAttribute, HasTranslations;
 
-    protected $fillable = ['title', 'description', 'published_at', 'longitude', 'latitude', 'city_id'];
+    protected $fillable = ['title', 'description', 'published_at', 'latitude', 'longitude', 'city_id'];
 
     protected $casts = [
         'title' => 'array',

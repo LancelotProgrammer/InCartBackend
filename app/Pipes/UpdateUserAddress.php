@@ -17,8 +17,8 @@ class UpdateUserAddress
             'description' => 'nullable|string',
             'phone' => 'required|string|max:20',
             'type' => ['required', new Enum(UserAddressType::class)],
-            'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
 
         UserAddress::where('user_id', '=', $request->user()->id)

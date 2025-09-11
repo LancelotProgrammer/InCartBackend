@@ -234,7 +234,7 @@ class DatabaseSeeder extends BaseSeeder
             ->has(UserAddress::factory()->count($userAddressCount), 'addresses')
             ->has(UserNotification::factory()->count($userNotificationCount), 'notifications')
             ->has(
-                FavoriteFactory::new()->count($favoriteCount)->sequence(fn ($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
+                FavoriteFactory::new()->count($favoriteCount)->sequence(fn($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
                 'favorites'
             )
             ->has(PackageFactory::new()->hasAttached($products->random(rand(3, 7))->values())->count($packageProductCount), 'packages')
@@ -245,7 +245,10 @@ class DatabaseSeeder extends BaseSeeder
             ->count($orderCount)
             ->create()
             ->each(function ($order) {
-                $cart = Cart::factory()->create(['order_id' => $order->id]);
+                $cart = Cart::factory()->create([
+                    'order_number' => $order->order_number,
+                    'order_id' => $order->id
+                ]);
                 CartProduct::factory()->count(rand(2, 10))->create(['cart_id' => $cart->id]);
                 $subtotal = $cart->cartProducts->sum(function ($cartProduct) use ($order) {
                     $branchProduct = BranchProduct::where('branch_id', $order->branch_id)->where('product_id', $cartProduct->id)->first();

@@ -17,8 +17,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('phone')->nullable();
             $table->integer('type');
-            $table->double('longitude');
             $table->double('latitude');
+            $table->double('longitude');
             $table->timestamps();
 
             $table->unsignedBigInteger('user_id');

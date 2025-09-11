@@ -17,8 +17,8 @@ class CreateUserAddress
             'description' => 'nullable|string',
             'phone' => 'required|string|max:20',
             'type' => ['required', new Enum(UserAddressType::class)],
-            'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
 
         $address = UserAddress::create([

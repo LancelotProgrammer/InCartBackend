@@ -34,6 +34,7 @@ class BranchProduct extends Pivot
         'price' => 'decimal:2',
         'maximum_order_quantity' => 'decimal:2',
         'minimum_order_quantity' => 'decimal:2',
+        'quantity' => 'decimal:2',
         'expires_at' => 'datetime',
         'published_at' => 'datetime',
     ];

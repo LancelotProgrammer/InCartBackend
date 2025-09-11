@@ -39,8 +39,8 @@ class UserAddressController extends Controller
      * @bodyParam description string required Description. Example: description
      * @bodyParam phone string required Phone. Example: +96654546123
      * @bodyParam type integer required User address type. Example: 1
-     * @bodyParam longitude float required Longitude. Example: 3.0
      * @bodyParam latitude float required Latitude. Example: 3.0
+     * @bodyParam longitude float required Longitude. Example: 3.0
      *
      * @group User Addresses Actions
      */
@@ -62,8 +62,8 @@ class UserAddressController extends Controller
      * @bodyParam description string required Description. Example: description
      * @bodyParam phone string required Phone. Example: +96654546123
      * @bodyParam type integer required User address type. Example: 1
-     * @bodyParam longitude float required Longitude. Example: 3.0
      * @bodyParam latitude float required Latitude. Example: 3.0
+     * @bodyParam longitude float required Longitude. Example: 3.0
      *
      * @group User Addresses Actions
      */

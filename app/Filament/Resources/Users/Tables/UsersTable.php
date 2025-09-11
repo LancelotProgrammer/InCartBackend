@@ -26,25 +26,22 @@ class UsersTable
                     TextColumn::make('name')
                         ->weight(FontWeight::Bold)
                         ->searchable(),
-                    Stack::make(function ($record) {
-                        $columns = [];
-                        isset($record->email) ? $columns[] = TextColumn::make('email')
+                    Stack::make([
+                        TextColumn::make('email')
                             ->icon(Heroicon::Envelope)
-                            ->searchable() : null;
-                        isset($record->email) ? $columns[] = TextColumn::make('email_verified_at')
+                            ->searchable(),
+                        TextColumn::make('email_verified_at')
                             ->icon(Heroicon::CheckCircle)
                             ->prefix('Email verified at: ')
-                            ->date() : null;
-                        isset($record->phone) ? $columns[] = TextColumn::make('phone')
+                            ->date(),
+                        TextColumn::make('phone')
                             ->icon(Heroicon::DevicePhoneMobile)
-                            ->searchable() : null;
-                        isset($record->phone) ? $columns[] = TextColumn::make('phone_verified_at')
+                            ->searchable(),
+                        TextColumn::make('phone_verified_at')
                             ->icon(Heroicon::CheckCircle)
                             ->prefix('Phone verified at: ')
-                            ->date() : null;
-
-                        return $columns;
-                    }),
+                            ->date()
+                    ]),
                     Stack::make([
                         TextColumn::make('blocked_at')->icon(Heroicon::ExclamationCircle)->prefix('Blocked At: ')->date(),
                         TextColumn::make('city.name')->icon(Heroicon::OutlinedGlobeAlt),
@@ -53,7 +50,7 @@ class UsersTable
                 ]),
             ])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )

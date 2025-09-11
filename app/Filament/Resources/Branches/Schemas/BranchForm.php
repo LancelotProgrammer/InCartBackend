@@ -15,8 +15,8 @@ class BranchForm
             ->components([
                 TranslationComponent::configure('title'),
                 TranslationComponent::configure('description'),
-                TextInput::make('longitude'),
                 TextInput::make('latitude'),
+                TextInput::make('longitude'),
                 Select::make('city_id')
                     ->columnSpanFull()
                     ->relationship('city', 'name')
