@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Support;
 
 use App\Models\Cart;
 use App\Models\Coupon;
 use App\Models\PaymentMethod;
 use App\Models\User;
+use App\Services\CouponService;
 use Illuminate\Support\Carbon;
 
 class OrderPayload

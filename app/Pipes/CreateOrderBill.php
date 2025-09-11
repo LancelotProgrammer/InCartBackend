@@ -2,8 +2,8 @@
 
 namespace App\Pipes;
 
-use App\Services\OrderPayload;
 use App\Services\OrderService;
+use App\Support\OrderPayload;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
