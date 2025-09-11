@@ -30,9 +30,3 @@ return new class extends Migration
         Schema::dropIfExists('carts');
     }
 };
-
-
-// ALTER TABLE `carts` MODIFY `order_id` bigint unsigned null;
-// ALTER TABLE `carts` ADD COLUMN `order_number` varchar(255) NULL AFTER `id`;
-// UPDATE `carts` SET `order_number` = CONCAT( 'ORD-', id, '-', LPAD(FLOOR(RAND(id) * 1000000), 6, '0') ) WHERE `order_number` IS NULL;
-// ALTER TABLE `carts` MODIFY `order_number` varchar(255) NOT NULL;
