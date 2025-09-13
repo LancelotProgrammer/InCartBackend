@@ -67,7 +67,7 @@ class OrderService
             ->first();
 
         if (!$address) {
-            throw new LogicalException('User address is invalid');
+            throw new LogicalException('User address is invalid', 'The address does not exist or does not belong to you.');
         }
 
         $distance = $this->haversineDistance(
@@ -81,7 +81,7 @@ class OrderService
             $distance < $this->payload->getMinDistance()
             || $distance > $this->payload->getMaxDistance()
         ) {
-            throw new LogicalException('Destination is invalid');
+            throw new LogicalException('Destination is invalid', "The total destination is {$distance} km, which is outside the allowed range of {$this->payload->getMinDistance()} km to {$this->payload->getMaxDistance()} km.");
         }
 
         $this->payload->setDistance($distance);
@@ -122,15 +122,15 @@ class OrderService
             $branchProduct = $product->branches->first()->pivot;
 
             if ($item['quantity'] > $branchProduct->quantity) {
-                throw new LogicalException("Quantity exceeds storage for product {$product->id}");
+                throw new LogicalException("Quantity exceeds storage for product {$product->id}, quantity allowed is: {$branchProduct->quantity}");
             }
 
             if ($item['quantity'] > $branchProduct->maximum_order_quantity) {
-                throw new LogicalException("Quantity exceeds maximum allowed for product {$product->id}");
+                throw new LogicalException("Quantity exceeds maximum allowed for product {$product->id}, maximum order quantity allowed is: {$branchProduct->maximum_order_quantity}");
             }
 
             if ($item['quantity'] < $branchProduct->minimum_order_quantity) {
-                throw new LogicalException("Quantity is below minimum allowed for product {$product->id}");
+                throw new LogicalException("Quantity is below minimum allowed for product {$product->id}, minimum order quantity allowed is: {$branchProduct->minimum_order_quantity}");
             }
 
             $price = BranchProduct::getDiscountPrice($branchProduct);
@@ -330,7 +330,6 @@ class OrderService
 
             'user_id' => $this->payload->getUser()->id,
             'branch_id' => $this->payload->getBranchId(),
-            'cart_id' => $this->payload->getCart()->id,
             'coupon_id' => $this->payload->getCoupon()?->id,
             'payment_method_id' => $this->payload->getPaymentMethod()->id,
             'user_address_id' => $this->payload->getAddressId(),

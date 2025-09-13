@@ -17,10 +17,10 @@ class CheckoutService
         $paymentMethod = PaymentMethod::findOrFail($request->input('payment_method_id'));
         $order = Order::where('payment_token', '=', 'order_id')->first();
         if ($paymentMethod->code === 'pay-on-delivery') {
-            throw new LogicalException('Payment method is pay-on-delivery and it is already checked out');
+            throw new LogicalException('Checkout error', 'Payment method is pay-on-delivery and it is already checked out');
         }
         if ($order->payment_status === PaymentStatus::PAID) {
-            throw new LogicalException('order is already payed');
+            throw new LogicalException('Checkout error', 'order is already payed');
         }
         $this->resolvePaymentGateway($paymentMethod, $request);
 
