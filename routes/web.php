@@ -3,9 +3,7 @@
 use App\Http\Controllers\AuthenticationController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('/auth')->group(function () {
-    Route::get('/verify-email', [AuthenticationController::class, 'verifyEmail']);
-});
+Route::get('/email/verify/{id}/{hash}', [AuthenticationController::class, 'verifyEmail'])->name('verify.email');
 
 Route::middleware('auth')->group(function () {
     Route::get('/docs', function () {

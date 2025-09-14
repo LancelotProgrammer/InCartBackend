@@ -20,7 +20,7 @@ class OrderController extends Controller
     /**
      * @authenticated
      *
-     * @group Order Actions
+     * @group Profile Actions
      */
     public function getUserPreviousOrders(Request $request): SuccessfulResponseResourceWithMetadata
     {

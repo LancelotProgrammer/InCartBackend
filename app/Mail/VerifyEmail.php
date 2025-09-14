@@ -17,13 +17,9 @@ class VerifyEmail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public string $name, private string $email, private string $token)
+    public function __construct(string $url, public string $name)
     {
-        $encodedEmail = urlencode($this->email);
-        $encodedToken = urlencode($this->token);
-        /** @var string $appUrl */
-        $appUrl = config('app.url');
-        $this->url = "$appUrl/auth/verify-email?email=$encodedEmail&token=$encodedToken";
+        $this->url = $url;
     }
 
     /**

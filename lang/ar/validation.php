@@ -165,6 +165,8 @@ return [
     'ulid' => ':attribute يجب أن يكون ULID صالح.',
     'uuid' => ':attribute يجب أن يكون UUID صالح.',
 
+    'phone' => 'رقم الهاتف :attribute غير صالح.',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OtpType;
 use App\Exceptions\AuthenticationException;
 use App\Http\Resources\Authentication\UserInfoResource;
 use App\Http\Resources\Authentication\UserResource;
@@ -9,7 +10,6 @@ use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResource;
 use App\Mail\ForgotPassword;
 use App\Mail\VerifyEmail;
-use App\Models\EmailVerificationRequest;
 use App\Models\PasswordResetRequest;
 use App\Models\PhoneVerificationRequest;
 use App\Models\Role;
@@ -23,18 +23,18 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\View\View;
 use InvalidArgumentException;
 
 /*
     TODO:
-    - test update user info and  blocked users middleware
-    - null edge case at model::where
-    - improve phone number validation
+    - asynchronous email sending
     - make a scheduler to delete unverified users
-    - review ratelimiter
     - refactor using services, classes and helpers
+    - blocked users middleware / review ratelimiter
 */
 
 class AuthenticationController extends Controller
@@ -45,17 +45,12 @@ class AuthenticationController extends Controller
 
     private const OTP_VERIFICATION_MINUTES = 2;
 
-    private const EMAIL_VERIFICATION_ATTEMPTS = 10;
-
-    private const EMAIL_VERIFICATION_DAYS = 30;
-
     private const FORGOT_PASSWORD_ATTEMPTS = 10;
 
     private const FORGOT_PASSWORD_DAYS = 30;
 
     /**
      * @unauthenticated
-     *
      * @group Authentication Actions
      */
     public function emailRegister(Request $request): SuccessfulResponseResource
@@ -67,12 +62,20 @@ class AuthenticationController extends Controller
             'city_id' => 'required|int|exists:cities,id',
         ]);
 
+        $roleId = Role::where('title', '=', 'user')->value('id');
+        if (!$roleId) {
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Pleas add a user role to the system'
+            );
+        }
+
         $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
             'city_id' => $request->input('city_id'),
-            'role_id' => Role::where('title', '=', 'user')->value('id'),
+            'role_id' => $roleId,
         ]);
 
         $this->requestVerifyEmail($user->id, $request->input('email'));
@@ -95,7 +98,7 @@ class AuthenticationController extends Controller
         ]);
 
         $ip = $request->ip();
-        $user = User::where('email', $request->input('email'))->first();
+        $user = User::where('email', '=', $request->input('email'))->first();
 
         if (! $user) {
             throw new AuthenticationException(
@@ -120,6 +123,8 @@ class AuthenticationController extends Controller
             );
         }
 
+        $this->validateUserStatus($user);
+
         return new SuccessfulResponseResource(
             $this->createUserResponse($user)
         );
@@ -134,18 +139,28 @@ class AuthenticationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|unique:users,phone',
+            'phone' => 'required|phone:SA|unique:users,phone',
             'otp' => 'required|integer',
             'city_id' => 'required|int|exists:cities,id',
         ]);
 
-        $this->verifyOtp($request->input('phone'), $request->input('otp'));
+        $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpType::REGISTER->value);
+
+        $roleId = Role::where('title', '=', 'user')->value('id');
+        if (!$roleId) {
+            throw new AuthenticationException(
+                trans('auth.something_went_wrong'),
+                'Pleas add a user role to the system',
+                500
+            );
+        }
 
         $user = User::create([
             'name' => $request->input('name'),
             'phone' => $request->input('phone'),
+            'phone_verified_at' => Carbon::now(),
             'city_id' => $request->input('city_id'),
-            'role_id' => Role::where('title', '=', 'user')->value('id'),
+            'role_id' => $roleId,
         ]);
 
         return new SuccessfulResponseResource(
@@ -161,11 +176,11 @@ class AuthenticationController extends Controller
     public function phoneLogin(Request $request): SuccessfulResponseResource
     {
         $request->validate([
-            'phone' => 'required|string',
+            'phone' => 'required|phone:SA',
             'otp' => 'required|integer',
         ]);
 
-        $user = User::where('phone', $request->input('phone'))->first();
+        $user = User::where('phone', '=', $request->input('phone'))->first();
 
         if (! $user) {
             throw new AuthenticationException(
@@ -174,7 +189,9 @@ class AuthenticationController extends Controller
             );
         }
 
-        $this->verifyOtp($request->input('phone'), $request->input('otp'));
+        $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpType::LOGIN->value);
+
+        $this->validateUserStatus($user);
 
         return new SuccessfulResponseResource(
             $this->createUserResponse($user)
@@ -228,8 +245,6 @@ class AuthenticationController extends Controller
     /**
      * @group Account Management
      *
-     * @bodyParam phone string The user’s phone number. Example: +123456789
-     * @bodyParam otp integer The user’s phone number otp. Example: 123456
      * @bodyParam email string The user’s email. Example: new@mail.com
      * @bodyParam name string The user’s name. Example: John Doe
      * @bodyParam current_password string The current password. Example: oldpass123
@@ -237,9 +252,12 @@ class AuthenticationController extends Controller
      */
     public function updateUser(Request $request): EmptySuccessfulResponseResource
     {
-        if ($request->has('phone') && $request->has('otp')) {
-            return $this->updateUserPhone($request);
-        }
+        // future: enable this if the user can update their phone number
+        //  * @bodyParam phone string The user’s phone number. Example: +123456789
+        //  * @bodyParam otp integer The user’s phone number otp. Example: 123456
+        // if ($request->has('phone') && $request->has('otp')) {
+        //     return $this->updateUserPhone($request);
+        // }
 
         if ($request->has('email')) {
             return $this->updateUserEmail($request);
@@ -256,29 +274,30 @@ class AuthenticationController extends Controller
         throw new InvalidArgumentException('No valid update field provided.');
     }
 
-    private function updateUserPhone(Request $request): EmptySuccessfulResponseResource
-    {
-        $request->validate([
-            'phone' => 'required|string|unique:users,phone,'.$request->user()->id,
-            'otp' => 'required|integer',
-        ]);
+    // future: enable this if the user can update their phone number
+    // private function updateUserPhone(Request $request): EmptySuccessfulResponseResource
+    // {
+    //     $request->validate([
+    //         'phone' => 'required|phone:SA|unique:users,phone,' . $request->user()->id,
+    //         'otp' => 'required|integer',
+    //     ]);
 
-        $this->verifyOtp($request->input('phone'), $request->input('otp'));
+    //     $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpScreen::UPDATE->value);
 
-        $user = $request->user();
-        $user->update(['phone' => $request->input('phone')]);
+    //     $user = $request->user();
+    //     $user->update(['phone' => $request->input('phone')]);
 
-        return new EmptySuccessfulResponseResource;
-    }
+    //     return new EmptySuccessfulResponseResource;
+    // }
 
     private function updateUserEmail(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email,'.$request->user()->id,
+            'email' => 'required|email|unique:users,email,' . $request->user()->id,
         ]);
 
         $user = $request->user();
-        $user->update(['email' => $request->input('email')]);
+        $user->update(['pending_email' => $request->input('email')]);
 
         $this->requestVerifyEmail($user->id, $request->input('email'));
 
@@ -319,30 +338,36 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
-     *
+     * @bodyParam phone string required The user’s phone number. Example: +123456789
+     * @bodyParam type string required The OTP screen type 1 => REGISTER, 2 => LOGIN, 3 => UPDATE. Example: 1
      * @group Send OTP
      */
     public function sendOtp(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'phone' => 'required|string',
+            'phone' => 'required|phone:SA',
+            'type' => ['required', new Enum(OtpType::class)]
         ]);
 
         $phone = $request->input('phone');
+        $type = $request->input('type');
+        $rateLimiterKey = "SendOtp|$phone|$type";
 
-        if (RateLimiter::tooManyAttempts("ResendOtp|$phone", self::OTP_ATTEMPTS)) {
+        if (RateLimiter::tooManyAttempts($rateLimiterKey, self::OTP_ATTEMPTS)) {
             throw new AuthenticationException(
                 trans('auth.opt_resending_error'),
                 'Too many attempts'
             );
         }
 
-        $phoneVerificationRequest = PhoneVerificationRequest::where('phone', $phone)->first();
+        $phoneVerificationRequest = PhoneVerificationRequest::where('phone', '=', $phone)
+            ->where('type', '=', $type)
+            ->first();
 
         if ($phoneVerificationRequest) {
 
             if (! (Carbon::parse($phoneVerificationRequest->created_at)->diffInMinutes(Carbon::now()) > self::OTP_VERIFICATION_MINUTES)) {
-                RateLimiter::increment("ResendOtp|$phone");
+                RateLimiter::increment($rateLimiterKey);
                 throw new AuthenticationException(
                     trans('auth.opt_resending_error'),
                     'Code is not expired to resend'
@@ -358,38 +383,43 @@ class AuthenticationController extends Controller
                 'phone' => $phone,
                 'code' => '123456', // TODO: replace with $this->generateRandomNumber() in production
                 'created_at' => now(),
+                'type' => $type
             ]);
         }
 
         try {
-            $verifyCode = PhoneVerificationRequest::where('phone', $phone)->latest()->first()->code;
+            $verifyCode = PhoneVerificationRequest::where('phone', '=', $phone)->latest()->first()->code;
             Otp::send($phone, $verifyCode);
         } catch (Exception $e) {
-            Log::channel('error')->error('OTP Error: '.$e->getMessage());
+            Log::channel('error')->error('OTP Error: ' . $e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'OTP verification request failed. Check error logs for details.'
             );
         }
 
+        RateLimiter::clear($rateLimiterKey);
         return new EmptySuccessfulResponseResource;
     }
 
-    private function verifyOtp(string $phone, string $code): void
+    private function verifyOtp(string $phone, string $code, int $type): void
     {
-        $phoneVerificationRequest = PhoneVerificationRequest::where('code', $code)
-            ->where('phone', $phone)
-            ->first();
+        $rateLimiterKey = "VerifyPhone|$phone|$type";
 
-        if (RateLimiter::tooManyAttempts("VerifyPhone|$phone", self::OTP_ATTEMPTS)) {
+        if (RateLimiter::tooManyAttempts($rateLimiterKey, self::OTP_ATTEMPTS)) {
             throw new AuthenticationException(
                 trans('auth.opt_verification_error'),
                 'Too many attempts'
             );
         }
 
+        $phoneVerificationRequest = PhoneVerificationRequest::where('code', '=', $code)
+            ->where('type', '=', $type)
+            ->where('phone', '=', $phone)
+            ->first();
+
         if (! $phoneVerificationRequest) {
-            RateLimiter::increment("VerifyPhone|$phone");
+            RateLimiter::increment($rateLimiterKey);
             throw new AuthenticationException(
                 trans('auth.opt_verification_error'),
                 'Code or phone is invalid'
@@ -397,20 +427,18 @@ class AuthenticationController extends Controller
         }
 
         if (Carbon::parse($phoneVerificationRequest->created_at)->diffInMinutes(Carbon::now()) > self::OTP_VERIFICATION_MINUTES) {
-            RateLimiter::increment("VerifyPhone|$phone");
+            RateLimiter::increment($rateLimiterKey);
             throw new AuthenticationException(
                 trans('auth.opt_verification_error'),
                 'Code has expired'
             );
         }
 
-        PhoneVerificationRequest::where('phone', $phoneVerificationRequest->phone)->delete();
-        RateLimiter::clear("VerifyPhone|$phone");
+        PhoneVerificationRequest::where('phone', '=', $phoneVerificationRequest->phone)->delete();
+        RateLimiter::clear($rateLimiterKey);
     }
 
     /**
-     * @unauthenticated
-     *
      * @group Request Verify Email
      */
     public function getVerifyEmail(Request $request): EmptySuccessfulResponseResource
@@ -423,6 +451,7 @@ class AuthenticationController extends Controller
     public function requestVerifyEmail(int $userId, ?string $email = null): void
     {
         $user = User::find($userId);
+
         if ($email === null) {
             if ($user->email_verified_at !== null) {
                 throw new AuthenticationException(
@@ -430,30 +459,29 @@ class AuthenticationController extends Controller
                     'User is verified'
                 );
             }
-            $this->sendVerifyEmailToEmail($user, $user->email);
+            $this->sendVerifyEmailToEmail($user, $user->email, false);
         } else {
-            $this->sendVerifyEmailToEmail($user, $email);
+            $user->pending_email = $email;
+            $user->save();
+            $this->sendVerifyEmailToEmail($user, $email, true);
         }
     }
-
-    public function sendVerifyEmailToEmail(User $user, string $email): void
+    public function sendVerifyEmailToEmail(User $user, string $email, bool $isUpdate = false): void
     {
-        $token = Str::random();
-
-        EmailVerificationRequest::updateOrInsert(
-            ['user_id' => $user->id],
+        $link = URL::temporarySignedRoute(
+            'verify.email',
+            now()->addMinutes(60),
             [
-                'email' => $email,
-                'token' => $token,
-                'created_at' => now(),
+                'id' => $user->id,
+                'hash' => sha1($email),  // important: hash the actual target email
+                'update' => $isUpdate ? 1 : 0,
             ]
         );
-        $verifyEmail = EmailVerificationRequest::where('email', $email)->where('token', $token)->first();
 
         try {
-            Mail::to($email)->send(new VerifyEmail($user->name, $verifyEmail->email, $verifyEmail->token));
+            Mail::to($email)->send(new VerifyEmail($link, $user->name));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error'.$e->getMessage());
+            Log::channel('error')->error('Email Error: ' . $e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -463,45 +491,34 @@ class AuthenticationController extends Controller
 
     public function verifyEmail(Request $request): View
     {
-        $request->validate([
-            'email' => 'required|email',
-            'token' => 'required|string',
-        ]);
+        $id = $request->route('id');
+        $hash = $request->route('hash');
+        $isUpdate = $request->query('update') == 1;
 
-        $email = $request->input('email');
-        $token = $request->input('token');
+        $user = User::findOrFail($id);
+        $targetEmail = $isUpdate ? $user->pending_email : $user->email;
 
-        $emailVerificationRequest = EmailVerificationRequest::where('token', $token)->first();
-
-        if (RateLimiter::tooManyAttempts("VerifyEmail|$email", self::EMAIL_VERIFICATION_ATTEMPTS)) {
-            RateLimiter::increment("VerifyEmail|$email");
-
+        if (! hash_equals((string) $hash, sha1($targetEmail))) {
             return view('pages.email-verification-failure');
         }
 
-        if (! $emailVerificationRequest || $emailVerificationRequest->email !== $email) {
-            RateLimiter::increment("VerifyEmail|$email");
+        if ($request->hasValidSignature()) {
+            if ($isUpdate) {
+                $user->forceFill([
+                    'email' => $user->pending_email,
+                    'pending_email' => null,
+                    'email_verified_at' => now(),
+                ])->save();
+            } else {
+                $user->forceFill([
+                    'email_verified_at' => now(),
+                ])->save();
+            }
 
-            return view('pages.email-verification-failure');
+            return view('pages.email-verification-success');
         }
 
-        if (Carbon::parse($emailVerificationRequest->created_at)->diffInDays(Carbon::now()) > self::EMAIL_VERIFICATION_DAYS) {
-            EmailVerificationRequest::where('user_id', $emailVerificationRequest->user_id)->delete();
-            RateLimiter::increment("VerifyEmail|$email");
-
-            return view('pages.email-verification-failure');
-        }
-
-        User::where('id', $emailVerificationRequest->user_id)
-            ->update([
-                'email_verified_at' => Carbon::now(),
-                'email' => $emailVerificationRequest->email,
-            ]);
-
-        EmailVerificationRequest::where('user_id', $emailVerificationRequest->user_id)->delete();
-        RateLimiter::clear("VerifyEmail|$email");
-
-        return view('pages.email-verification-success');
+        return view('pages.email-verification-failure');
     }
 
     /**
@@ -526,7 +543,7 @@ class AuthenticationController extends Controller
             );
         }
 
-        $user = User::where('email', $email)->first();
+        $user = User::where('email', '=', $email)->first();
         if (! $user) {
             RateLimiter::increment($rateLimitKey);
             throw new AuthenticationException(
@@ -572,7 +589,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new ForgotPassword($userName, $code));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error'.$e->getMessage());
+            Log::channel('error')->error('Email Error: ' . $e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -595,8 +612,8 @@ class AuthenticationController extends Controller
         $email = $request->input('email');
         $code = $request->input('code');
 
-        $user = User::where('email', $email)->first();
-        $PasswordResetRequest = PasswordResetRequest::where('user_id', $user->id)->first();
+        $user = User::where('email', '=', $email)->first();
+        $PasswordResetRequest = PasswordResetRequest::where('user_id', '=', $user->id)->first();
 
         if (! $PasswordResetRequest) {
             throw new AuthenticationException(
@@ -606,16 +623,16 @@ class AuthenticationController extends Controller
         }
 
         if ($PasswordResetRequest->attempts >= self::FORGOT_PASSWORD_ATTEMPTS) {
-            PasswordResetRequest::where('user_id', $user->id)->delete();
+            PasswordResetRequest::where('user_id', '=', $user->id)->delete();
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Password reset request has been deleted because of too many attempts'
             );
         }
 
-        $passwordReset = PasswordResetRequest::where('user_id', $user->id)->where('code', $code)->first();
+        $passwordReset = PasswordResetRequest::where('user_id', '=', $user->id)->where('code', '=', $code)->first();
         if (! $passwordReset) {
-            PasswordResetRequest::where('user_id', $user->id)->increment('attempts');
+            PasswordResetRequest::where('user_id', '=', $user->id)->increment('attempts');
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Password reset code is invalid'
@@ -629,10 +646,13 @@ class AuthenticationController extends Controller
             );
         }
         do {
-            $token = Str::random(16);
-        } while (PasswordResetRequest::where('token', $token)->exists());
+            $token = Str::random(32);
+        } while (PasswordResetRequest::where('token', '=', $token)->exists());
 
-        PasswordResetRequest::where('user_id', $user->id)->update(['token' => $token]);
+        PasswordResetRequest::where('user_id', '=', $user->id)
+            ->update(
+                ['token' => $token]
+            );
 
         return new SuccessfulResponseResource(
             [
@@ -658,12 +678,12 @@ class AuthenticationController extends Controller
         $token = $request->input('token');
         $logoutFromAll = $request->input('logoutFromAll', false);
 
-        $passwordReset = PasswordResetRequest::where('token', $token)->first();
+        $passwordReset = PasswordResetRequest::where('token', '=', $token)->first();
 
         if (! $passwordReset) {
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
-                'Token or code are invalid'
+                'Token is invalid'
             );
         }
 
@@ -686,16 +706,19 @@ class AuthenticationController extends Controller
         $user->update(['password' => Hash::make($password)]);
         if ($logoutFromAll) {
             $this->logoutFromAll($user->id);
-            PasswordResetRequest::where('user_id', $user->id)->where('token', $token)->delete();
+            PasswordResetRequest::where('user_id', '=', $user->id)->where('token', '=', $token)->delete();
         }
-        PasswordResetRequest::where('user_id', $user->id)->where('token', $token)->delete();
+        PasswordResetRequest::where('user_id', '=', $user->id)->where('token', '=', $token)->delete();
 
         return new EmptySuccessfulResponseResource;
     }
 
     private function logoutFromAll(int $userId): void
     {
-        User::find($userId)->tokens()->delete();
+        $user = User::find($userId);
+        if ($user) {
+            $user->tokens()->delete();
+        }
     }
 
     public function generateRandomNumber(int $length = 6): string
@@ -724,7 +747,7 @@ class AuthenticationController extends Controller
     private function isWeakNumber(string $number): bool
     {
         $length = strlen($number);
-        if (preg_match('/^(\d)\1{'.($length - 1).'}$/', $number)) {
+        if (preg_match('/^(\d)\1{' . ($length - 1) . '}$/', $number)) {
             return true;
         }
         for ($patternLength = 1; $patternLength <= $length / 2; $patternLength++) {
