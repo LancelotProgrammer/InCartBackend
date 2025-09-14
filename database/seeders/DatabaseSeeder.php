@@ -170,7 +170,7 @@ class DatabaseSeeder extends BaseSeeder
                 [
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
-                    'code' => '123456',
+                    'code' => '1234567',
                     'published_at' => now(),
                     'type' => CouponType::TIMED->value,
                     'config' => '{"value":10,"start_date":"2025-09-01","end_date":"2026-06-30","use_limit":3,"user_limit":50}',
@@ -179,7 +179,7 @@ class DatabaseSeeder extends BaseSeeder
                 [
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
                     'description' => json_encode(Factory::translations(['en', 'ar'], ['test coupon', 'كوبون تجريبي']), JSON_UNESCAPED_UNICODE),
-                    'code' => '123456',
+                    'code' => '12345678',
                     'published_at' => now(),
                     'type' => CouponType::TIMED->value,
                     'config' => '{"value":5,"start_date":"2025-10-01","end_date":"2026-06-30","use_limit":2,"user_limit":25}',

@@ -41,12 +41,12 @@ class GetProductDetails
                     'id' => $related->id,
                     'title' => $related->title,
                     'image' => $image->url,
-                    'price' => $branchProduct ? (string) $branchProduct->price : null,
-                    'discount' => $branchProduct ? (string) $branchProduct->discount : null,
-                    'discount_price' => $branchProduct ? (string) $branchProduct->discount_price : null,
-                    'unit' => $branchProduct ? (string) $related->unit->value : null,
-                    'expired_at' => $branchProduct ? $branchProduct->expires_at->format('Y') : null,
-                    'limit' => $branchProduct ? (int) $branchProduct->maximum_order_quantity : null,
+                    'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
+                    'min_limit' => $branchProduct?->minimum_order_quantity,
+                    'price' => $branchProduct->price,
+                    'discount' => $branchProduct?->discount,
+                    'discount_price' => $branchProduct?->discount_price,
+                    'expired_at' => $branchProduct->expires_at,
                 ];
             });
 
@@ -55,12 +55,12 @@ class GetProductDetails
             'title' => $product->title,
             'description' => $product->description,
             'image' => $imagesResult,
-            'price' => $branchProduct ? (string) $branchProduct->price : null,
-            'discount' => $branchProduct ? (string) $branchProduct->discount : null,
-            'discount_price' => $branchProduct ? (string) $branchProduct->discount_price : null,
-            'unit' => $branchProduct ? (string) $product->unit->value : null,
-            'expired_at' => $branchProduct ? $branchProduct->expires_at->format('Y') : null,
-            'limit' => $branchProduct ? (int) $branchProduct->maximum_order_quantity : null,
+            'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
+            'min_limit' => $branchProduct?->minimum_order_quantity,
+            'price' => $branchProduct->price,
+            'discount' => $branchProduct?->discount,
+            'discount_price' => $branchProduct?->discount_price,
+            'expired_at' => $branchProduct->expires_at,
             'related' => $relatedProducts,
         ]);
     }

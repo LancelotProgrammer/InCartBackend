@@ -311,7 +311,7 @@ class OrderService
 
     public function createOrder(): Order
     {
-        return Order::create([
+        $order = Order::create([
             'order_number' => $this->payload->getOrderNumber(),
             'notes' => $this->payload->getNotes(),
             'payment_token' => $this->payload->getPaymentToken(),
@@ -334,6 +334,12 @@ class OrderService
             'payment_method_id' => $this->payload->getPaymentMethod()->id,
             'user_address_id' => $this->payload->getAddressId(),
         ]);
+
+        $this->payload->getCart()->update([
+            'order_id' => $order->id,
+        ]);
+
+        return $order;
     }
 
     public function createOrderBill(): array

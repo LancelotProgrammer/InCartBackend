@@ -57,6 +57,7 @@ Route::middleware([
         Route::post('/order/bill', [OrderController::class, 'createOrderBill']);
         Route::post('/order', [OrderController::class, 'createOrder']);
         Route::post('/order/checkout', [OrderController::class, 'createOrderCheckout']);
+        Route::get('/order/{id}', [OrderController::class, 'getOrderDetails']);
 
         Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);
         Route::get('/users/notifications', [UserNotificationController::class, 'getUserNotifications']);

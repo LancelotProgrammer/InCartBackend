@@ -8,6 +8,7 @@ use App\Pipes\AuthorizeUser;
 use App\Pipes\CreateOrder;
 use App\Pipes\CreateOrderBill;
 use App\Pipes\CreateOrderCheckout;
+use App\Pipes\GetOrderDetails;
 use App\Pipes\GetUserPreviousOrders;
 use App\Pipes\PaymentGatewayCallback;
 use App\Pipes\ValidateUser;
@@ -102,6 +103,20 @@ class OrderController extends Controller
                 ValidateUser::class,
                 new AuthorizeUser('create-order-checkout'),
                 CreateOrderCheckout::class,
+            ])
+            ->thenReturn());
+    }
+
+    /**
+     * @authenticated
+     *
+     * @group Order Actions
+     */
+    public function getOrderDetails(Request $request): JsonResource
+    {
+        return new JsonResource(Pipeline::send($request)
+            ->through([
+                GetOrderDetails::class,
             ])
             ->thenReturn());
     }
