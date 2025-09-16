@@ -2,6 +2,7 @@
 
 namespace App\Pipes;
 
+use App\Exceptions\LogicalException;
 use App\Models\UserAddress;
 use Closure;
 use Illuminate\Http\Request;
@@ -18,7 +19,11 @@ class DeleteUserAddress
 
         $address = UserAddress::where('id', $validated['id'])
             ->where('user_id', $request->user()->id)
-            ->firstOrFail();
+            ->first();
+
+        if (!$address) {
+            throw new LogicalException('Address not found or does not belong to the user.');
+        }
 
         $address->delete();
 

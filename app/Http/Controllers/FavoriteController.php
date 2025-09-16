@@ -16,7 +16,6 @@ class FavoriteController extends Controller
 {
     /**
      * @authenticated
-     *
      * @group Favorites Actions
      */
     public function getFavoriteProducts(Request $request): SuccessfulResponseResourceWithMetadata
@@ -32,8 +31,9 @@ class FavoriteController extends Controller
 
     /**
      * @authenticated
-     *
      * @group Favorites Actions
+     *
+     * @urlParam id int required The product ID.
      */
     public function addProductToFavorites(Request $request): SuccessfulResponseResource
     {
@@ -48,8 +48,9 @@ class FavoriteController extends Controller
 
     /**
      * @authenticated
-     *
      * @group Favorites Actions
+     *
+     * @urlParam id int required The product ID.
      */
     public function deleteProductFromFavorites(Request $request): SuccessfulResponseResource
     {

@@ -60,7 +60,7 @@ class OrderService
 
     public function calculateDestination(): self
     {
-        $branch = Branch::findOrFail($this->payload->getBranchId());
+        $branch = Branch::findOrFail($this->payload->getBranchId()); // TODO remove OrFail
 
         $address = UserAddress::where('id', '=', $this->payload->getAddressId())
             ->where('user_id', '=', $this->payload->getUser()->id)
@@ -171,7 +171,7 @@ class OrderService
 
         $couponService = new CouponService(
             Carbon::now(),
-            UserAddress::findOrFail($this->payload->getAddressId()),
+            UserAddress::findOrFail($this->payload->getAddressId()), // TODO remove OrFail
             $this->payload->getUser()->id,
             $this->payload->getBranchId(),
             $products->unique('id')->pluck('id')->toArray(),
@@ -280,7 +280,7 @@ class OrderService
 
     public function handlePaymentMethod(): self
     {
-        $paymentMethod = PaymentMethod::findOrFail($this->payload->getPaymentMethodId());
+        $paymentMethod = PaymentMethod::findOrFail($this->payload->getPaymentMethodId()); // TODO remove OrFail
         $this->payload->setPaymentMethod($paymentMethod);
 
         if ($paymentMethod->code !== 'pay-on-delivery') {

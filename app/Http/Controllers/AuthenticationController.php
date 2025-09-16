@@ -495,7 +495,7 @@ class AuthenticationController extends Controller
         $hash = $request->route('hash');
         $isUpdate = $request->query('update') == 1;
 
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($id); // TODO remove OrFail
         $targetEmail = $isUpdate ? $user->pending_email : $user->email;
 
         if (! hash_equals((string) $hash, sha1($targetEmail))) {

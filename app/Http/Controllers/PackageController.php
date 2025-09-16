@@ -20,8 +20,9 @@ class PackageController extends Controller
 {
     /**
      * @authenticated
-     *
      * @group Packages Actions
+     *
+     * @queryParam product_id int Optional. Filter to check if product exists in packages.
      */
     public function getPackages(Request $request): SuccessfulResponseResource
     {
@@ -36,8 +37,10 @@ class PackageController extends Controller
 
     /**
      * @authenticated
-     *
      * @group Packages Actions
+     *
+     * @bodyParam title string required The package name.
+     * @bodyParam description string optional The package description.
      */
     public function createPackage(Request $request): SuccessfulResponseResourceWithMetadata
     {
@@ -52,8 +55,11 @@ class PackageController extends Controller
 
     /**
      * @authenticated
-     *
      * @group Packages Actions
+     *
+     * @urlParam id int required The package ID.
+     * @bodyParam title string optional The package name.
+     * @bodyParam description string optional The package description.
      */
     public function updatePackage(Request $request, int $id): SuccessfulResponseResource
     {
@@ -68,8 +74,9 @@ class PackageController extends Controller
 
     /**
      * @authenticated
-     *
      * @group Packages Actions
+     *
+     * @urlParam id int required The package ID.
      */
     public function deletePackage(Request $request, int $id): SuccessfulResponseResource
     {
@@ -84,8 +91,9 @@ class PackageController extends Controller
 
     /**
      * @authenticated
-     *
      * @group Packages Actions
+     *
+     * @urlParam id int required The package ID.
      */
     public function getPackageProducts(Request $request): SuccessfulResponseResourceWithMetadata
     {
@@ -100,8 +108,10 @@ class PackageController extends Controller
 
     /**
      * @authenticated
-     *
      * @group Packages Actions
+     *
+     * @urlParam package_id int required The package ID.
+     * @urlParam product_id int required The product ID.
      */
     public function addProductToPackage(Request $request): SuccessfulResponseResource
     {
@@ -116,8 +126,10 @@ class PackageController extends Controller
 
     /**
      * @authenticated
-     *
      * @group Packages Actions
+     *
+     * @urlParam package_id int required The package ID.
+     * @urlParam product_id int required The product ID.
      */
     public function deleteProductFromPackage(Request $request): SuccessfulResponseResource
     {

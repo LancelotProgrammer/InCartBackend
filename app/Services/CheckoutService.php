@@ -14,7 +14,7 @@ class CheckoutService
 {
     public function checkout(Request $request): self
     {
-        $paymentMethod = PaymentMethod::findOrFail($request->input('payment_method_id'));
+        $paymentMethod = PaymentMethod::findOrFail($request->input('payment_method_id')); // TODO remove OrFail
         $order = Order::where('payment_token', '=', 'order_id')->first();
         if ($paymentMethod->code === 'pay-on-delivery') {
             throw new LogicalException('Checkout error', 'Payment method is pay-on-delivery and it is already checked out');
