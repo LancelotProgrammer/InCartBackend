@@ -21,6 +21,6 @@ class DeletePackage
 
         $package->delete();
 
-        return $next([]);
+        return $next();
     }
 }

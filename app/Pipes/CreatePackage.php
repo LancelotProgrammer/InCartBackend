@@ -20,6 +20,6 @@ class CreatePackage
             ...$data
         ]);
 
-        return $next(['package' => $package]);
+        return $next($package);
     }
 }
