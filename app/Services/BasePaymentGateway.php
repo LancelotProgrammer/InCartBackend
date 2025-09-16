@@ -8,6 +8,13 @@ use Illuminate\Support\Str;
 
 class BasePaymentGateway
 {
+    public static array $map = [
+        'apple-pay' => MoyasarPaymentGateway::class,
+        'google-pay' => MoyasarPaymentGateway::class,
+        'mada-pay' => MoyasarPaymentGateway::class,
+        'stc-pay' => MoyasarPaymentGateway::class,
+    ];
+
     public function generateToken(): string
     {
         do {

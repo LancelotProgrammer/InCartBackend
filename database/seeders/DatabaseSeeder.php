@@ -72,8 +72,22 @@ class DatabaseSeeder extends BaseSeeder
 
         $this->command->info('seeding roles');
         Role::insert([
-            ['title' => 'admin'],
-            ['title' => 'user'],
+            [
+                'title' => 'super-admin',
+                'code' => 'super-admin'
+            ],
+            [
+                'title' => 'admin',
+                'code' => 'admin'
+            ],
+            [
+                'title' => 'employee',
+                'code' => 'employee'
+            ],
+            [
+                'title' => 'user',
+                'code' => 'user'
+            ],
         ]);
 
         $this->command->info('seeding permissions');
@@ -96,7 +110,7 @@ class DatabaseSeeder extends BaseSeeder
             'name' => 'admin',
             'email' => 'admin@admin.com',
             'password' => Hash::make('dc8rqy0f6vasybipb'),
-            'role_id' => Role::where('title', '=', 'admin')->value('id'),
+            'role_id' => Role::where('title', '=', 'super-admin')->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
         ]);
 

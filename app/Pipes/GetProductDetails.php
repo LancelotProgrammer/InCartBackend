@@ -3,6 +3,7 @@
 namespace App\Pipes;
 
 use App\Models\Product;
+use App\Services\FavoriteService;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -61,6 +62,7 @@ class GetProductDetails
             'discount' => $branchProduct?->discount,
             'discount_price' => $branchProduct?->discount_price,
             'expired_at' => $branchProduct->expires_at,
+            'is_favorite' => $request->user()->id !== null ? FavoriteService::isProductFavorite($product->id, $request->user()->id) : false,
             'related' => $relatedProducts,
         ]);
     }

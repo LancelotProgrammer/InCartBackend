@@ -62,7 +62,7 @@ class AuthenticationController extends Controller
             'city_id' => 'required|int|exists:cities,id',
         ]);
 
-        $roleId = Role::where('title', '=', 'user')->value('id');
+        $roleId = Role::where('code', '=', 'user')->value('id');
         if (!$roleId) {
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
@@ -146,7 +146,7 @@ class AuthenticationController extends Controller
 
         $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpType::REGISTER->value);
 
-        $roleId = Role::where('title', '=', 'user')->value('id');
+        $roleId = Role::where('code', '=', 'user')->value('id');
         if (!$roleId) {
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
@@ -495,7 +495,12 @@ class AuthenticationController extends Controller
         $hash = $request->route('hash');
         $isUpdate = $request->query('update') == 1;
 
-        $user = User::findOrFail($id); // TODO remove OrFail
+        $user = User::find($id);
+
+        if (! $user) {
+            return view('pages.email-verification-failure');
+        }
+
         $targetEmail = $isUpdate ? $user->pending_email : $user->email;
 
         if (! hash_equals((string) $hash, sha1($targetEmail))) {

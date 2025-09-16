@@ -22,7 +22,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'phone' => fake()->unique()->phoneNumber(),
             'phone_verified_at' => fake()->boolean(50) ? now() : null,
-            'role_id' => Role::where('title', '=', 'user')->value('id'),
+            'role_id' => Role::where('code', '=', 'user')->value('id'),
             'city_id' => City::inRandomOrder()->first()->id,
         ];
     }

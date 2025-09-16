@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\PaymentGatewayInterface;
 use App\Enums\CouponType;
 use App\Enums\DeliveryStatus;
+use App\Enums\DeliveryType;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Exceptions\LogicalException;
@@ -60,7 +61,11 @@ class OrderService
 
     public function calculateDestination(): self
     {
-        $branch = Branch::findOrFail($this->payload->getBranchId()); // TODO remove OrFail
+        $branch = Branch::find($this->payload->getBranchId());
+
+        if (!$branch) {
+            throw new LogicalException('Branch is invalid', 'The selected branch does not exist.');
+        }
 
         $address = UserAddress::where('id', '=', $this->payload->getAddressId())
             ->where('user_id', '=', $this->payload->getUser()->id)
@@ -169,9 +174,15 @@ class OrderService
             ->with('categories')
             ->get();
 
+        $userAddress = UserAddress::find($this->payload->getAddressId());
+
+        if (! $userAddress) {
+            throw new LogicalException('User address is invalid', 'The address does not exist or does not belong to you.');
+        }
+
         $couponService = new CouponService(
             Carbon::now(),
-            UserAddress::findOrFail($this->payload->getAddressId()), // TODO remove OrFail
+            $userAddress,
             $this->payload->getUser()->id,
             $this->payload->getBranchId(),
             $products->unique('id')->pluck('id')->toArray(),
@@ -280,7 +291,12 @@ class OrderService
 
     public function handlePaymentMethod(): self
     {
-        $paymentMethod = PaymentMethod::findOrFail($this->payload->getPaymentMethodId()); // TODO remove OrFail
+        $paymentMethod = PaymentMethod::find($this->payload->getPaymentMethodId());
+
+        if (! $paymentMethod) {
+            throw new LogicalException('Payment method not found', 'The selected payment method does not exist.');
+        }
+
         $this->payload->setPaymentMethod($paymentMethod);
 
         if ($paymentMethod->code !== 'pay-on-delivery') {
@@ -292,14 +308,7 @@ class OrderService
 
     private function resolvePaymentGateway(PaymentMethod $paymentMethod): void
     {
-        $map = [
-            'apple-pay' => MoyasarPaymentGateway::class,
-            'google-pay' => MoyasarPaymentGateway::class,
-            'mada-pay' => MoyasarPaymentGateway::class,
-            'stc-pay' => MoyasarPaymentGateway::class,
-        ];
-
-        $class = $map[$paymentMethod->code] ?? null;
+        $class = BasePaymentGateway::$map[$paymentMethod->code] ?? null;
 
         if (! $class || ! in_array(PaymentGatewayInterface::class, class_implements($class))) {
             throw new InvalidArgumentException("Payment gateway not found for {$paymentMethod->code}");
@@ -315,6 +324,8 @@ class OrderService
             'order_number' => $this->payload->getOrderNumber(),
             'notes' => $this->payload->getNotes(),
             'payment_token' => $this->payload->getPaymentToken(),
+
+            'delivery_type' => $this->payload->getDate() !== null ? DeliveryType::SCHEDULED->value : DeliveryType::IMMEDIATE->value,
             'delivery_date' => $this->payload->getDate(),
 
             'order_status' => OrderStatus::PENDING->value,
@@ -339,7 +350,26 @@ class OrderService
             'order_id' => $order->id,
         ]);
 
+        foreach ($this->payload->getCart()->cartProducts as $cartProduct) {
+            $product = $cartProduct->product;
+            $product->decrement('quantity', $cartProduct->quantity);
+        }
+
+        $this->decrementBranchStock();
+
         return $order;
+    }
+
+    private function decrementBranchStock(): void
+    {
+        foreach ($this->payload->getCart()->cartProducts as $cartProduct) {
+            $branchId = $this->payload->getBranchId();
+            $productId = $cartProduct->product_id;
+
+            BranchProduct::where('branch_id', $branchId)
+                ->where('product_id', $productId)
+                ->decrement('quantity', $cartProduct->quantity);
+        }
     }
 
     public function createOrderBill(): array

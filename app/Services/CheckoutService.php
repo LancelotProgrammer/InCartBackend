@@ -14,7 +14,12 @@ class CheckoutService
 {
     public function checkout(Request $request): self
     {
-        $paymentMethod = PaymentMethod::findOrFail($request->input('payment_method_id')); // TODO remove OrFail
+        $paymentMethod = PaymentMethod::find($request->input('payment_method_id'));
+
+        if (! $paymentMethod) {
+            throw new LogicalException('Payment method not found');
+        }
+
         $order = Order::where('payment_token', '=', 'order_id')->first();
         if ($paymentMethod->code === 'pay-on-delivery') {
             throw new LogicalException('Checkout error', 'Payment method is pay-on-delivery and it is already checked out');
@@ -29,14 +34,7 @@ class CheckoutService
 
     private function resolvePaymentGateway(PaymentMethod $paymentMethod, Request $request): void
     {
-        $map = [
-            'apple-pay' => MoyasarPaymentGateway::class,
-            'google-pay' => MoyasarPaymentGateway::class,
-            'mada-pay' => MoyasarPaymentGateway::class,
-            'stc-pay' => MoyasarPaymentGateway::class,
-        ];
-
-        $class = $map[$paymentMethod->code] ?? null;
+        $class = BasePaymentGateway::$map[$paymentMethod->code] ?? null;
 
         if (! $class || ! in_array(PaymentGatewayInterface::class, class_implements($class))) {
             throw new InvalidArgumentException("Payment gateway not found for {$paymentMethod->code}");
