@@ -2,6 +2,7 @@
 
 namespace App\Pipes;
 
+use App\Exceptions\LogicalException;
 use App\Models\Favorite;
 use Closure;
 use Illuminate\Http\Request;
@@ -13,10 +14,14 @@ class DeleteProductFromFavorites
         $productId = $request->route('id');
         $userId = $request->user()->id;
 
-        Favorite::where('user_id', $userId)
+        $deleted = Favorite::where('user_id', $userId)
             ->where('product_id', $productId)
             ->delete();
 
-        return $next();
+        if ($deleted === 0) {
+            throw new LogicalException('Favorite not found or does not belong to the user.');
+        }
+
+        return $next([]);
     }
 }

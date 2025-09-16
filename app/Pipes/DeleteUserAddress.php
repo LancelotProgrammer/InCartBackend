@@ -27,6 +27,6 @@ class DeleteUserAddress
 
         $address->delete();
 
-        return $next();
+        return $next([]);
     }
 }

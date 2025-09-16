@@ -5,10 +5,11 @@ namespace App\Pipes;
 use App\Models\Product;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class GetAdvertisements
 {
-    public function __invoke(Request $request, Closure $next): array
+    public function __invoke(Request $request, Closure $next): Collection
     {
         $request->validate([
             'category_id' => 'nullable|integer|exists:categories,id',
@@ -16,7 +17,9 @@ class GetAdvertisements
             'page' => 'nullable|integer|min:1',
         ]);
 
-        $products = Product::whereNotNull('discount')->simplePaginate();
+        $products = Product::whereHas('branchProducts', function ($query) {
+            $query->whereNotNull('discount');
+        })->simplePaginate();
 
         return $next(collect($products->items())->map(function (Product $product): array {
             $branchProduct = $product->branchProducts->first();

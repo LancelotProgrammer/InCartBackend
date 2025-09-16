@@ -26,7 +26,7 @@ class PackageController extends Controller
      */
     public function getPackages(Request $request): SuccessfulResponseResource
     {
-        return new SuccessfulResponseResource(...Pipeline::send($request)
+        return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('get-packages'),

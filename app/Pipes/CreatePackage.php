@@ -20,6 +20,11 @@ class CreatePackage
             ...$data
         ]);
 
-        return $next($package);
+        return $next([
+            'id' => $package->id,
+            'title' => $package->title,
+            'description' => $package->description,
+            'created_at' => $package->created_at,
+        ]);
     }
 }

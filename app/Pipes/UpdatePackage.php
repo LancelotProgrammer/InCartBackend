@@ -26,6 +26,11 @@ class UpdatePackage
 
         $package->update($data);
 
-        return $next(['package' => $package]);
+        return $next([
+            'id' => $package->id,
+            'title' => $package->title,
+            'description' => $package->description,
+            'created_at' => $package->created_at,
+        ]);
     }
 }

@@ -39,15 +39,15 @@ class GetProductDetails
                 $image = $related->files->first();
 
                 return [
-                    'id' => $related->id,
-                    'title' => $related->title,
-                    'image' => $image->url,
-                    'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
-                    'min_limit' => $branchProduct?->minimum_order_quantity,
-                    'price' => $branchProduct->price,
-                    'discount' => $branchProduct?->discount,
-                    'discount_price' => $branchProduct?->discount_price,
-                    'expired_at' => $branchProduct->expires_at,
+                    'id' => '',
+                    'title' => '',
+                    'image' => '',
+                    'max_limit' => '',
+                    'min_limit' => '',
+                    'price' => '',
+                    'discount' => '',
+                    'discount_price' => '',
+                    'expired_at' => '',
                 ];
             });
 

@@ -4,6 +4,7 @@ namespace App\Pipes;
 
 use App\Exceptions\LogicalException;
 use App\Models\Favorite;
+use App\Models\Product;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -14,8 +15,14 @@ class AddProductToFavorites
         $productId = $request->route('id');
         $userId = $request->user()->id;
 
+        $product = Product::find($productId);
+
+        if (!$product) {
+            throw new LogicalException('Product not found.');
+        }
+
         if (Favorite::where('user_id', $userId)->where('product_id', $productId)->exists()) {
-            throw new LogicalException('Product is already in favorites.');
+            throw new LogicalException('Product is already in user favorites.');
         }
 
         Favorite::create([
@@ -23,6 +30,6 @@ class AddProductToFavorites
             'product_id' => $productId
         ]);
 
-        return $next();
+        return $next([]);
     }
 }

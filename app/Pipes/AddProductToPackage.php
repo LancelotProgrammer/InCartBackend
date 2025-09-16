@@ -28,6 +28,6 @@ class AddProductToPackage
 
         $package->products()->attach($productId);
 
-        return $next();
+        return $next([]);
     }
 }

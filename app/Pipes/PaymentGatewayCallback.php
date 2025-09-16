@@ -16,6 +16,6 @@ class PaymentGatewayCallback
             default => throw new Exception('Unsupported payment gateway callback'),
         })->callback($request);
 
-        return $next();
+        return $next([]);
     }
 }

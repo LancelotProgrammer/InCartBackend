@@ -22,8 +22,12 @@ class DeleteProductFromPackage
             throw new LogicalException('Package not found or does not belong to the user.');
         }
 
-        $package->products()->detach($productId);
+        $deleted = $package->products()->detach($productId);
 
-        return $next();
+        if ($deleted === 0) {
+            throw new LogicalException('Package product not found or does not belong to the user.');
+        }
+
+        return $next([]);
     }
 }
