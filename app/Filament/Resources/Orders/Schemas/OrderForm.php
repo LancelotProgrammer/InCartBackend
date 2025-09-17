@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Enums\DeliveryStatus;
-use App\Enums\DeliveryType;
+use App\Enums\DeliveryScheduledType;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use Filament\Forms\Components\DateTimePicker;
@@ -32,10 +32,10 @@ class OrderForm
                 TextInput::make('tax_amount')->required()->numeric()->default(0.0),
                 TextInput::make('total_price')->required()->numeric()->default(0.0),
 
-                Select::make('delivery_type')->options(DeliveryType::class)->required(),
+                Select::make('delivery_scheduled_type')->options(DeliveryScheduledType::class)->required(),
                 DateTimePicker::make('delivery_date'),
 
-                Select::make('user_id')->relationship('user', 'name')->required(),
+                Select::make('customer_id')->relationship('customer', 'name')->required(),
                 Select::make('branch_id')->relationship('branch', 'title')->required(),
                 Select::make('coupon_id')->relationship('coupon', 'title'), // filter based on branch
                 Select::make('payment_method_id')->relationship('paymentMethod', 'title')->required(), // filter based on branch

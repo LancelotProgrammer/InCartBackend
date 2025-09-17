@@ -19,7 +19,7 @@ class GetOrderDetails
             'carts.cartProducts.product',
         ])
             ->where('id', $orderId)
-            ->where('user_id', $request->user()->id)
+            ->where('customer_id', $request->user()->id)
             ->first();
 
 

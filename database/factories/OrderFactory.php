@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\DeliveryStatus;
-use App\Enums\DeliveryType;
+use App\Enums\DeliveryScheduledType;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Branch;
@@ -26,12 +26,19 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        // 1. Pick a user who has an address
-        $user = User::has('addresses')->with('addresses')->inRandomOrder()->first();
+        // 1. pick a random user who has addresses AND has role = user
+        $user = User::whereHas('addresses') 
+            ->whereHas('role', fn($query) => $query->where('code', 'user'))
+            ->with('addresses')
+            ->inRandomOrder()
+            ->first();
+
         $address = $user->addresses->random();
 
-        // 2. Pick a branch in same city
-        $branch = Branch::where('city_id', $address->city_id)->inRandomOrder()->first();
+        // 2. Pick a branch in the same city
+        $branch = Branch::where('city_id', $address->city_id)
+            ->inRandomOrder()
+            ->first();
 
         // 3. Coupon logic (50% chance)
         $applyCoupon = $this->faker->boolean(50);
@@ -62,17 +69,17 @@ class OrderFactory extends Factory
         // 5. Random delivery type
         $date = $this->faker->boolean() ? $this->faker->optional()->dateTimeBetween('+1 days', '+1 month') : null;
         if ($date === null) {
-            $deliveryType = DeliveryType::IMMEDIATE;
+            $deliveryType = DeliveryScheduledType::IMMEDIATE;
             $deliveryStatus = DeliveryStatus::NOT_SHIPPED;
         } else {
-            $deliveryType = DeliveryType::SCHEDULED;
+            $deliveryType = DeliveryScheduledType::SCHEDULED;
             $deliveryStatus = DeliveryStatus::SCHEDULED;
         }
 
         return [
-            'order_number' => 'ORD-'.now()->format('YmdHis').'-'.strtoupper(Str::random(6)),
+            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(6)),
             'notes' => $this->faker->optional()->sentence(),
-            'delivery_type' => $deliveryType,
+            'delivery_scheduled_type' => $deliveryType,
             'delivery_date' => $date,
             'payment_token' => $token,
 
@@ -85,7 +92,7 @@ class OrderFactory extends Factory
             'service_fee' => $serviceFee,
             'tax_amount' => $taxAmount,
 
-            'user_id' => $user->id,
+            'customer_id' => $user->id,
             'branch_id' => $branch->id,
             'coupon_id' => $coupon?->id,
             'payment_method_id' => $payment->id,

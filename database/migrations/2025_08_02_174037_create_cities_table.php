@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
+            $table->double('latitude');
+            $table->double('longitude');
             $table->json('name');
         });
     }

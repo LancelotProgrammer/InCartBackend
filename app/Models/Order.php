@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DeliveryStatus;
-use App\Enums\DeliveryType;
+use App\Enums\DeliveryScheduledType;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,10 +28,12 @@ class Order extends Model
         'service_fee',
         'tax_amount',
         'total_price',
-        'delivery_type',
+        'delivery_scheduled_type',
         'delivery_date',
         'payment_token',
-        'user_id',
+        'customer_id',
+        'manager_id',
+        'delivery_id',
         'branch_id',
         'coupon_id',
         'payment_method_id',
@@ -48,13 +50,23 @@ class Order extends Model
         'service_fee' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'total_price' => 'decimal:2',
-        'delivery_type' => DeliveryType::class,
+        'delivery_scheduled_type' => DeliveryScheduledType::class,
         'delivery_date' => 'datetime',
     ];
 
-    public function user(): BelongsTo
+    public function customer(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    public function delivery(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'delivery_id');
     }
 
     public function branch(): BelongsTo

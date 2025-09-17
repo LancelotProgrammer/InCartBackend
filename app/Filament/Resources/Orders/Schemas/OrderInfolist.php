@@ -27,13 +27,13 @@ class OrderInfolist
                 TextEntry::make('tax_amount')->numeric(),
                 TextEntry::make('total_price')->numeric(),
 
-                TextEntry::make('delivery_type')->badge(),
+                TextEntry::make('delivery_scheduled_type')->badge(),
                 TextEntry::make('delivery_date')->dateTime(),
 
                 TextEntry::make('created_at')->dateTime(),
                 TextEntry::make('updated_at')->dateTime(),
 
-                TextEntry::make('user.name'),
+                TextEntry::make('customer.name'),
                 TextEntry::make('branch.title'),
                 TextEntry::make('cart.title'),
                 TextEntry::make('coupon.title'),

@@ -41,13 +41,10 @@ Route::middleware([
 
     Route::middleware(['auth:sanctum', UserStateValidation::class])->prefix('/auth')->group(function () {
         Route::get('/email/request-verify', [AuthenticationController::class, 'getVerifyEmail']);
-
         Route::get('/user', [AuthenticationController::class, 'getUser']);
-
+        // Route::post('/user/credentials', [AuthenticationController::class, 'addCredentials']);
         Route::post('/firebase-token', [AuthenticationController::class, 'createFirebaseToken']);
-
         Route::put('/user/update', [AuthenticationController::class, 'updateUser']);
-
         Route::post('/logout', [AuthenticationController::class, 'logout']);
     });
 

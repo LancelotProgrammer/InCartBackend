@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Contracts\PaymentGatewayInterface;
 use App\Enums\CouponType;
 use App\Enums\DeliveryStatus;
-use App\Enums\DeliveryType;
+use App\Enums\DeliveryScheduledType;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Exceptions\LogicalException;
@@ -75,7 +75,7 @@ class OrderService
             throw new LogicalException('User address is invalid', 'The address does not exist or does not belong to you.');
         }
 
-        $distance = $this->haversineDistance(
+        $distance = DistanceService::haversineDistance(
             $branch->latitude,
             $branch->longitude,
             $address->latitude,
@@ -92,16 +92,6 @@ class OrderService
         $this->payload->setDistance($distance);
 
         return $this;
-    }
-
-    private function haversineDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
-    {
-        $earthRadius = 6371; // km
-        $dLat = deg2rad($lat2 - $lat1);
-        $dLon = deg2rad($lon2 - $lon1);
-        $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
-
-        return $earthRadius * (2 * atan2(sqrt($a), sqrt(1 - $a)));
     }
 
     public function calculateCartPrice(): self
@@ -325,7 +315,7 @@ class OrderService
             'notes' => $this->payload->getNotes(),
             'payment_token' => $this->payload->getPaymentToken(),
 
-            'delivery_type' => $this->payload->getDate() !== null ? DeliveryType::SCHEDULED->value : DeliveryType::IMMEDIATE->value,
+            'delivery_scheduled_type' => $this->payload->getDate() !== null ? DeliveryScheduledType::SCHEDULED->value : DeliveryScheduledType::IMMEDIATE->value,
             'delivery_date' => $this->payload->getDate(),
 
             'order_status' => OrderStatus::PENDING->value,
@@ -339,7 +329,7 @@ class OrderService
             'tax_amount' => $this->payload->getTaxAmount(),
             'total_price' => $this->payload->getTotalPrice(),
 
-            'user_id' => $this->payload->getUser()->id,
+            'customer_id' => $this->payload->getUser()->id,
             'branch_id' => $this->payload->getBranchId(),
             'coupon_id' => $this->payload->getCoupon()?->id,
             'payment_method_id' => $this->payload->getPaymentMethod()->id,
@@ -349,11 +339,6 @@ class OrderService
         $this->payload->getCart()->update([
             'order_id' => $order->id,
         ]);
-
-        foreach ($this->payload->getCart()->cartProducts as $cartProduct) {
-            $product = $cartProduct->product;
-            $product->decrement('quantity', $cartProduct->quantity);
-        }
 
         $this->decrementBranchStock();
 

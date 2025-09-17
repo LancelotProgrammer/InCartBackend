@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Traits\HasPublishAttribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,13 +11,17 @@ use Spatie\Translatable\HasTranslations;
 
 class Branch extends Model
 {
-    use HasFactory, HasPublishAttribute, HasTranslations;
+    use HasPublishAttribute, HasTranslations;
 
-    protected $fillable = ['title', 'description', 'published_at', 'latitude', 'longitude', 'city_id'];
+    protected $fillable = ['title', 'description', 'is_default', 'published_at', 'latitude', 'longitude', 'city_id'];
 
     protected $casts = [
         'title' => 'array',
         'description' => 'array',
+        'is_default' => 'boolean',
+        'published_at' => 'datetime',
+        'latitude' => 'double',
+        'longitude' => 'double',
     ];
 
     public array $translatable = ['title', 'description'];

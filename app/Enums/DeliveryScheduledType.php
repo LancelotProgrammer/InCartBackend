@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-enum DeliveryType: int implements HasLabel
+enum DeliveryScheduledType: int implements HasLabel
 {
     case SCHEDULED = 1;
     case IMMEDIATE = 2;

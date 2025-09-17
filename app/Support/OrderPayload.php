@@ -57,9 +57,9 @@ class OrderPayload
 
     private float $taxRate = 2; // TODO: get from settings
 
-    private float $minDistance = 1; // TODO: get from settings
+    private float $minDistance = 0.2; // TODO: get from settings
 
-    private float $maxDistance = 1000; // TODO: get from settings
+    private float $maxDistance = 100; // TODO: get from settings
 
     private float $pricePerKilometer = 1; // TODO: get from settings
 

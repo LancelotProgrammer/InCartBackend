@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OtpType;
+use App\Enums\UserAccountType;
 use App\Exceptions\AuthenticationException;
 use App\Http\Resources\Authentication\UserInfoResource;
 use App\Http\Resources\Authentication\UserResource;
@@ -221,12 +222,17 @@ class AuthenticationController extends Controller
     public function createFirebaseToken(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
-            'token' => 'required|string',
+            'firebase_token' => 'required|string',
         ]);
 
         UserFirebaseToken::updateOrCreate(
-            ['user_id' => $request->user()->id],
-            ['token' => $request->input('token')]
+            [
+                'user_id' => $request->user()->id,
+                'token_id' => $request->user()->currentAccessToken()->id,
+            ],
+            [
+                'firebase_token' => $request->input('firebase_token')
+            ]
         );
 
         return new EmptySuccessfulResponseResource;
@@ -245,63 +251,28 @@ class AuthenticationController extends Controller
     /**
      * @group Account Management
      *
-     * @bodyParam email string The user’s email. Example: new@mail.com
      * @bodyParam name string The user’s name. Example: John Doe
-     * @bodyParam current_password string The current password. Example: oldpass123
-     * @bodyParam new_password string The new password. Example: newpass456
      */
     public function updateUser(Request $request): EmptySuccessfulResponseResource
     {
-        // future: enable this if the user can update their phone number
+        // future: enable this to allow users to update their phone number / email / password
         //  * @bodyParam phone string The user’s phone number. Example: +123456789
         //  * @bodyParam otp integer The user’s phone number otp. Example: 123456
         // if ($request->has('phone') && $request->has('otp')) {
         //     return $this->updateUserPhone($request);
         // }
-
-        if ($request->has('email')) {
-            return $this->updateUserEmail($request);
-        }
+        // if ($request->has('email')) {
+        //     return $this->updateUserEmail($request);
+        // }
+        // if ($request->has(['current_password', 'new_password'])) {
+        //     return $this->updateUserPassword($request);
+        // }
 
         if ($request->has('name')) {
             return $this->updateUserName($request);
         }
 
-        if ($request->has(['current_password', 'new_password'])) {
-            return $this->updateUserPassword($request);
-        }
-
         throw new InvalidArgumentException('No valid update field provided.');
-    }
-
-    // future: enable this if the user can update their phone number
-    // private function updateUserPhone(Request $request): EmptySuccessfulResponseResource
-    // {
-    //     $request->validate([
-    //         'phone' => 'required|phone:SA|unique:users,phone,' . $request->user()->id,
-    //         'otp' => 'required|integer',
-    //     ]);
-
-    //     $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpScreen::UPDATE->value);
-
-    //     $user = $request->user();
-    //     $user->update(['phone' => $request->input('phone')]);
-
-    //     return new EmptySuccessfulResponseResource;
-    // }
-
-    private function updateUserEmail(Request $request): EmptySuccessfulResponseResource
-    {
-        $request->validate([
-            'email' => 'required|email|unique:users,email,' . $request->user()->id,
-        ]);
-
-        $user = $request->user();
-        $user->update(['pending_email' => $request->input('email')]);
-
-        $this->requestVerifyEmail($user->id, $request->input('email'));
-
-        return new EmptySuccessfulResponseResource;
     }
 
     private function updateUserName(Request $request): EmptySuccessfulResponseResource
@@ -316,25 +287,78 @@ class AuthenticationController extends Controller
         return new EmptySuccessfulResponseResource;
     }
 
-    private function updateUserPassword(Request $request): EmptySuccessfulResponseResource
-    {
-        $request->validate([
-            'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8',
-        ]);
+    // future: enable this to allow users to update their phone number / email / password
+    // private function updateUserPhone(Request $request): EmptySuccessfulResponseResource
+    // {
+    //     $this->validateUserAccountType($request->user(), UserAccountType::PHONE);
+    //     $request->validate([
+    //         'phone' => 'required|phone:SA|unique:users,phone,' . $request->user()->id,
+    //         'otp' => 'required|integer',
+    //     ]);
+    //     $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpType::UPDATE->value);
+    //     $user = $request->user();
+    //     $user->update(['phone' => $request->input('phone')]);
+    //     return new EmptySuccessfulResponseResource;
+    // }
 
-        $user = $request->user();
-        if (! Hash::check($request->input('current_password'), $user->password)) {
-            throw new AuthenticationException(
-                trans('auth.current_password_is_incorrect'),
-                'The provided current password is incorrect.'
-            );
-        }
+    // private function updateUserEmail(Request $request): EmptySuccessfulResponseResource
+    // {
+    //     $this->validateUserAccountType($request->user(), UserAccountType::EMAIL);
+    //     $request->validate([
+    //         'email' => 'required|email|unique:users,email,' . $request->user()->id,
+    //     ]);
+    //     $user = $request->user();
+    //     $user->update(['pending_email' => $request->input('email')]);
+    //     $this->requestVerifyEmail($user->id, $request->input('email'));
+    //     return new EmptySuccessfulResponseResource;
+    // }
 
-        $user->update(['password' => Hash::make($request->input('new_password'))]);
+    // private function updateUserPassword(Request $request): EmptySuccessfulResponseResource
+    // {
+    //     $this->validateUserAccountType($request->user(), UserAccountType::EMAIL);
+    //     $request->validate([
+    //         'current_password' => 'required|string',
+    //         'new_password' => 'required|string|min:8',
+    //     ]);
+    //     $user = $request->user();
+    //     if (! Hash::check($request->input('current_password'), $user->password)) {
+    //         throw new AuthenticationException(
+    //             trans('auth.current_password_is_incorrect'),
+    //             'The provided current password is incorrect.'
+    //         );
+    //     }
+    //     $user->update(['password' => Hash::make($request->input('new_password'))]);
+    //     return new EmptySuccessfulResponseResource;
+    // }
 
-        return new EmptySuccessfulResponseResource;
-    }
+    // private function validateUserAccountType(User $user, UserAccountType $userAccountType): void
+    // {
+    //     $isValid = match ($userAccountType) {
+    //         UserAccountType::PHONE => !empty($user->phone) && empty($user->email),
+    //         UserAccountType::EMAIL => !empty($user->email),
+    //     };
+    //     if (! $isValid) {
+    //         throw new AuthenticationException(
+    //             trans('auth.something_went_wrong'),
+    //             'The provided account type does not match the user.'
+    //         );
+    //     }
+    // }
+
+    // public function addCredentials(Request $request): EmptySuccessfulResponseResource
+    // {
+    //     $validated = $request->validate([
+    //         'email' => 'required|email|unique:users,email',
+    //         'password' => 'required|string|min:8',
+    //     ]);
+    //     $user = $request->user();
+    //     $this->validateUserAccountType($user, UserAccountType::PHONE);
+    //     $user->update([
+    //         'email' => $validated['email'],
+    //         'password' => Hash::make($validated['password']),
+    //     ]);
+    //     return new EmptySuccessfulResponseResource();
+    // }
 
     /**
      * @unauthenticated
@@ -457,6 +481,12 @@ class AuthenticationController extends Controller
                 throw new AuthenticationException(
                     trans('auth.user_is_verified'),
                     'User is verified'
+                );
+            }
+            if ($user->email === null) {
+                throw new AuthenticationException(
+                    trans('auth.user_is_verified'),
+                    'User does not have an email'
                 );
             }
             $this->sendVerifyEmailToEmail($user, $user->email, false);

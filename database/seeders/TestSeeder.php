@@ -37,19 +37,18 @@ class TestSeeder extends BaseSeeder
     public function run(): void
     {
         $rootCategoryCount = 3;
-        $productCount = 50;
+        $productCount = 20;
         $productCategoryCount = 10;
-        $branchCount = 3;
-        $branchAdvertisementCount = 30;
-        $userCount = 25;
+        $branchAdvertisementCount = 5;
+        $userCount = 20;
         $userAddressCount = 3;
         $userNotificationCount = 3;
         $favoriteCount = 3;
-        $packageProductCount = 10;
+        $packageProductCount = 3;
         $productFileCount = 3;
         $categoryFileCount = 1;
         $advertisementFileCount = 1;
-        $orderCount = 50;
+        $orderCount = 20;
 
         $this->command->info(PHP_EOL);
         $this->command->info('seeding static data');
@@ -65,9 +64,21 @@ class TestSeeder extends BaseSeeder
 
         $this->command->info('seeding cities');
         City::insert([
-            ['name' => json_encode(Factory::translations(['en', 'ar'], ['Jeddah', 'جدة']), JSON_UNESCAPED_UNICODE)],
-            ['name' => json_encode(Factory::translations(['en', 'ar'], ['Riyadh', 'رياض']), JSON_UNESCAPED_UNICODE)],
-            ['name' => json_encode(Factory::translations(['en', 'ar'], ['Makkah', 'مكة']), JSON_UNESCAPED_UNICODE)],
+            [
+                'name' => json_encode(Factory::translations(['en', 'ar'], ['Jeddah', 'جدة']), JSON_UNESCAPED_UNICODE),
+                'latitude' => 21.5292,
+                'longitude' => 39.1611,
+            ],
+            [
+                'name' => json_encode(Factory::translations(['en', 'ar'], ['Riyadh', 'رياض']), JSON_UNESCAPED_UNICODE),
+                'latitude' => 24.7136,
+                'longitude' => 46.6753,
+            ],
+            [
+                'name' => json_encode(Factory::translations(['en', 'ar'], ['Makkah', 'مكة']), JSON_UNESCAPED_UNICODE),
+                'latitude' => 21.4241,
+                'longitude' => 39.8173,
+            ],
         ]);
 
         $this->command->info('seeding roles');
@@ -77,12 +88,12 @@ class TestSeeder extends BaseSeeder
                 'code' => 'super-admin'
             ],
             [
-                'title' => 'admin',
-                'code' => 'admin'
+                'title' => 'manager',
+                'code' => 'manager'
             ],
             [
-                'title' => 'employee',
-                'code' => 'employee'
+                'title' => 'delivery',
+                'code' => 'delivery'
             ],
             [
                 'title' => 'user',
@@ -105,12 +116,81 @@ class TestSeeder extends BaseSeeder
             $role->permissions()->syncWithoutDetaching($permissions->pluck('id'));
         });
 
-        $this->command->info('seeding admin user');
+        $this->command->info('seeding owner');
         User::insert([
-            'name' => 'admin',
-            'email' => 'admin@admin.com',
+            'name' => 'owner',
+            'email' => 'owner@owner.com',
             'password' => Hash::make('dc8rqy0f6vasybipb'),
             'role_id' => Role::where('title', '=', 'super-admin')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
+        ]);
+
+        $this->command->info('seeding managers');
+        $managerPassword = Hash::make('man123456');
+        User::insert([
+            'name' => 'manager 1',
+            'email' => 'manager1@manager1.com',
+            'password' => $managerPassword,
+            'role_id' => Role::where('title', '=', 'manager')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
+        ]);
+        User::insert([
+            'name' => 'manager 2',
+            'email' => 'manager2@manager2.com',
+            'password' => $managerPassword,
+            'role_id' => Role::where('title', '=', 'manager')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Riyadh')->value('id'),
+        ]);
+        User::insert([
+            'name' => 'manager 3',
+            'email' => 'manager3@manager3.com',
+            'password' => $managerPassword,
+            'role_id' => Role::where('title', '=', 'manager')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
+        ]);
+
+        $this->command->info('seeding delivery employees');
+        $deliveryPassword = Hash::make('del123456');
+        User::insert([
+            'name' => 'delivery 1',
+            'email' => 'delivery1@delivery1.com',
+            'password' => $deliveryPassword,
+            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
+        ]);
+        User::insert([
+            'name' => 'delivery 2',
+            'email' => 'delivery2@delivery2.com',
+            'password' => $deliveryPassword,
+            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
+        ]);
+        User::insert([
+            'name' => 'delivery 3',
+            'email' => 'delivery3@delivery3.com',
+            'password' => $deliveryPassword,
+            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Riyadh')->value('id'),
+        ]);
+        User::insert([
+            'name' => 'delivery 4',
+            'email' => 'delivery4@delivery4.com',
+            'password' => $deliveryPassword,
+            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Riyadh')->value('id'),
+        ]);
+        User::insert([
+            'name' => 'delivery 5',
+            'email' => 'delivery5@delivery5.com',
+            'password' => $deliveryPassword,
+            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
+        ]);
+        User::insert([
+            'name' => 'delivery 6',
+            'email' => 'delivery6@delivery6.com',
+            'password' => $deliveryPassword,
+            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
         ]);
 
@@ -137,37 +217,54 @@ class TestSeeder extends BaseSeeder
                 );
             });
 
-        $cities = City::all();
-        $citySequence = [];
-        foreach ($cities as $city) {
-            $citySequence[] = ['city_id' => $city->id];
-        }
-
         $this->command->info('seeding branches');
-        Branch::factory()
-            ->sequence(...$citySequence)
-            ->count($branchCount)
-            ->hasAttached(
-                $products,
-                function () {
-                    $minimumQuantity = $this->faker->numberBetween(1, 10);
-                    $maximumQuantity = $this->faker->numberBetween($minimumQuantity + 10, 50);
-
-                    return [
-                        'price' => $this->faker->randomFloat(2, 10, 500),
-                        'discount' => $this->faker->numberBetween(0, 50),
-                        'maximum_order_quantity' => $maximumQuantity,
-                        'minimum_order_quantity' => $minimumQuantity,
-                        'quantity' => $this->faker->numberBetween(100, 10000),
-                        'expires_at' => $this->faker->dateTimeBetween('+10 days', '+1 year'),
-                        'published_at' => $this->faker->dateTimeBetween('-1 year', '-10 days'),
-                    ];
-                }
-            )
-            ->has(Advertisement::Factory()->has(File::factory()->count($advertisementFileCount), 'files')->count($branchAdvertisementCount))
-            ->create();
-
+        $branch = Branch::create([
+            'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 1', 'الفرع رقم 1']), JSON_UNESCAPED_UNICODE),
+            'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 1', 'الفرع رقم 1']), JSON_UNESCAPED_UNICODE),
+            'latitude' => 21.5292,
+            'longitude' => 39.1611,
+            'is_default' => true,
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id')
+        ]);
+        $branch = Branch::create([
+            'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 2', 'الفرع رقم 2']), JSON_UNESCAPED_UNICODE),
+            'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 2', 'الفرع رقم 2']), JSON_UNESCAPED_UNICODE),
+            'latitude' => 24.7136,
+            'longitude' => 46.6753,
+            'is_default' => true,
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Riyadh')->value('id')
+        ]);
+        $branch = Branch::create([
+            'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 3', 'الفرع رقم 3']), JSON_UNESCAPED_UNICODE),
+            'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 3', 'الفرع رقم 3']), JSON_UNESCAPED_UNICODE),
+            'latitude' => 21.4241,
+            'longitude' => 39.8173,
+            'is_default' => true,
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id')
+        ]);
         $branches = Branch::all();
+
+        $this->command->info('seeding branches config');
+        foreach ($branches as $branch) {
+            foreach ($products as $product) {
+                $minimumQuantity = fake()->numberBetween(1, 10);
+                $maximumQuantity = fake()->numberBetween($minimumQuantity + 10, 50);
+                $branch->products()->attach($product->id, [
+                    'price' => fake()->randomFloat(2, 10, 500),
+                    'discount' => fake()->numberBetween(0, 50),
+                    'minimum_order_quantity' => $minimumQuantity,
+                    'maximum_order_quantity' => $maximumQuantity,
+                    'quantity' => fake()->numberBetween(100, 10000),
+                    'expires_at' => fake()->dateTimeBetween('+10 days', '+1 year'),
+                    'published_at' => fake()->dateTimeBetween('-1 year', '-10 days'),
+                ]);
+            }
+            Advertisement::factory()
+                ->count($branchAdvertisementCount)
+                ->for($branch)
+                ->has(File::factory()->count($advertisementFileCount), 'files')
+                ->create();
+        }
 
         $this->command->info('seeding coupons');
         foreach ($branches as $branch) {

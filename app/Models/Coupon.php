@@ -23,6 +23,7 @@ class Coupon extends Model
         'description' => 'array',
         'type' => CouponType::class,
         'config' => 'array',
+        'published_at' => 'datetime',
     ];
 
     public array $translatable = ['title', 'description'];

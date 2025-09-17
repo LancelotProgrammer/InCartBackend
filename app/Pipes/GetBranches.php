@@ -5,10 +5,11 @@ namespace App\Pipes;
 use App\Models\Branch;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class GetBranches
 {
-    public function __invoke(Request $request, Closure $next): array
+    public function __invoke(Request $request, Closure $next): Collection
     {
         $request->validate([
             'city_id' => 'required|int|exists:cities,id',

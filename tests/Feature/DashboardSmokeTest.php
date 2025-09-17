@@ -1,16 +1,9 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
 beforeEach(function () {
-    $this->admin = User::firstOrCreate(
-        ['email' => 'admin@admin.com'],
-        [
-            'name' => 'Admin',
-            'password' => Hash::make('admin123'),
-        ]
-    );
+    $this->admin = User::where('email', 'owner@owner.com')->first();
 });
 
 describe('API smoke test', function () {

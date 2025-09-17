@@ -79,9 +79,19 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasMany(Package::class);
     }
 
-    public function orders(): HasMany
+    public function customerOrders(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order::class, 'customer_id');
+    }
+
+    public function managerOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'manager_id');
+    }
+
+    public function deliveryOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'delivery_id');
     }
 
     public function avatar(): HasOne
@@ -95,7 +105,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             return false;
         }
 
-        return str_ends_with($this->email, '@admin.com');
+        return str_ends_with($this->email, '@owner.com');
     }
 
     protected function ensureHasBlockedAt(): void
