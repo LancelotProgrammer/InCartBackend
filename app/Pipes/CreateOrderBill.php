@@ -18,7 +18,7 @@ class CreateOrderBill
             'payment_method_id' => 'required|exists:payment_methods,id',
             'coupon' => 'nullable|string',
             'cart' => 'required|array',
-            'cart.*.id' => 'required|exists:products,id',
+            'cart.*.id' => 'required|exists:products,id|distinct',
             'cart.*.quantity' => 'required|numeric',
             'notes' => 'nullable|string',
         ]);

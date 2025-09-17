@@ -30,14 +30,6 @@ use Illuminate\Validation\Rules\Enum;
 use Illuminate\View\View;
 use InvalidArgumentException;
 
-/*
-    TODO:
-    - asynchronous email sending
-    - make a scheduler to delete unverified users
-    - refactor using services, classes and helpers
-    - blocked users middleware / review ratelimiter
-*/
-
 class AuthenticationController extends Controller
 {
     private const PASSWORD_ATTEMPTS = 5;

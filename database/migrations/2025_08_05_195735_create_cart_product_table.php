@@ -21,6 +21,8 @@ return new class extends Migration
 
             $table->foreign('cart_id')->references('id')->on('carts')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('restrict');
+
+            $table->unique(['cart_id', 'product_id'], 'cart_product_unique');
         });
     }
 
