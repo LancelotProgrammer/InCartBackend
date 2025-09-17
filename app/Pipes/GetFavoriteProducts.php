@@ -11,17 +11,24 @@ class GetFavoriteProducts
 {
     public function __invoke(Request $request, Closure $next): Collection
     {
-        $favorites = Favorite::with('product.files')
+        $favorites = Favorite::with(['product.files', 'product.branchProducts'])
             ->where('user_id', $request->user()->id)
             ->get()
             ->map(function (Favorite $favorite) {
                 $product = $favorite->product;
+                $branchProduct = $product->branchProducts->first();
                 $image = $product->files->first()?->url;
                 return [
                     'id' => $product->id,
                     'title' => $product->title,
                     'image' => $image,
                     'favorite_at' => $favorite->created_at,
+                    'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
+                    'min_limit' => $branchProduct?->minimum_order_quantity,
+                    'price' => $branchProduct->price,
+                    'discount' => $branchProduct?->discount,
+                    'discount_price' => $branchProduct?->discount_price,
+                    'expired_at' => $branchProduct->expires_at,
                 ];
             });
 

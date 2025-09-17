@@ -152,21 +152,21 @@ test('packages endpoints', function () {
         'description' => 'This is an updated test package description.',
     ])->assertStatus(200);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/packages/' . $packageId . '/products/1')->assertStatus(200);
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/packages/' . $packageId . '/products/1')->assertStatus(204);
 
     $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/packages/' . $packageId . '/products')->assertStatus(200);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/' . $packageId . '/products/1')->assertStatus(200);
+    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/' . $packageId . '/products/1')->assertStatus(204);
 
     $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/' . $packageId)->assertStatus(200);
 });
 
 test('favorites endpoints', function () {
-    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/favorites/products/1')->assertStatus(200);
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/favorites/products/1')->assertStatus(204);
 
     $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/favorites/products')->assertStatus(200);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/favorites/products/1')->assertStatus(200);
+    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/favorites/products/1')->assertStatus(204);
 });
 
 test('addresses endpoints', function () {

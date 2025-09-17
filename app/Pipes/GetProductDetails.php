@@ -39,15 +39,15 @@ class GetProductDetails
                 $image = $related->files->first();
 
                 return [
-                    'id' => '',
-                    'title' => '',
-                    'image' => '',
-                    'max_limit' => '',
-                    'min_limit' => '',
-                    'price' => '',
-                    'discount' => '',
-                    'discount_price' => '',
-                    'expired_at' => '',
+                    'id' => $related->id,
+                    'title' => $related->title,
+                    'image' => $image->url,
+                    'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
+                    'min_limit' => $branchProduct?->minimum_order_quantity,
+                    'price' => $branchProduct->price,
+                    'discount' => $branchProduct?->discount,
+                    'discount_price' => $branchProduct?->discount_price,
+                    'expired_at' => $branchProduct->expires_at,
                 ];
             });
 
@@ -62,7 +62,7 @@ class GetProductDetails
             'discount' => $branchProduct?->discount,
             'discount_price' => $branchProduct?->discount_price,
             'expired_at' => $branchProduct->expires_at,
-            'is_favorite' => $request->user()->id !== null ? FavoriteService::isProductFavorite($product->id, $request->user()->id) : false,
+            'is_favorite' => auth('sanctum')->user()?->id !== null ? FavoriteService::isProductFavorite($product->id, auth('sanctum')->user()->id) : false,
             'related' => $relatedProducts,
         ]);
     }

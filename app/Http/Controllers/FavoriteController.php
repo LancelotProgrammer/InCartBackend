@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AddProductToFavorites;
@@ -35,15 +36,17 @@ class FavoriteController extends Controller
      *
      * @urlParam id int required The product ID.
      */
-    public function addProductToFavorites(Request $request): SuccessfulResponseResource
+    public function addProductToFavorites(Request $request): EmptySuccessfulResponseResource
     {
-        return new SuccessfulResponseResource(Pipeline::send($request)
+        Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('add-product-to-favorite'),
                 AddProductToFavorites::class,
             ])
-            ->thenReturn());
+            ->thenReturn();
+
+        return new EmptySuccessfulResponseResource();
     }
 
     /**
@@ -52,14 +55,16 @@ class FavoriteController extends Controller
      *
      * @urlParam id int required The product ID.
      */
-    public function deleteProductFromFavorites(Request $request): SuccessfulResponseResource
+    public function deleteProductFromFavorites(Request $request): EmptySuccessfulResponseResource
     {
-        return new SuccessfulResponseResource(Pipeline::send($request)
+        Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('delete-product-from-favorite'),
                 DeleteProductFromFavorites::class,
             ])
-            ->thenReturn());
+            ->thenReturn();
+
+        return new EmptySuccessfulResponseResource();
     }
 }

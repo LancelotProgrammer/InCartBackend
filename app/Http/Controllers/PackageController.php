@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AddProductToPackage;
@@ -113,15 +114,17 @@ class PackageController extends Controller
      * @urlParam package_id int required The package ID.
      * @urlParam product_id int required The product ID.
      */
-    public function addProductToPackage(Request $request): SuccessfulResponseResource
+    public function addProductToPackage(Request $request): EmptySuccessfulResponseResource
     {
-        return new SuccessfulResponseResource(Pipeline::send($request)
+        Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('add-product-to-package'),
                 AddProductToPackage::class,
             ])
-            ->thenReturn());
+            ->thenReturn();
+
+        return new EmptySuccessfulResponseResource();
     }
 
     /**
@@ -131,14 +134,16 @@ class PackageController extends Controller
      * @urlParam package_id int required The package ID.
      * @urlParam product_id int required The product ID.
      */
-    public function deleteProductFromPackage(Request $request): SuccessfulResponseResource
+    public function deleteProductFromPackage(Request $request): EmptySuccessfulResponseResource
     {
-        return new SuccessfulResponseResource(Pipeline::send($request)
+        Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('delete-product-from-package'),
                 DeleteProductFromPackage::class,
             ])
-            ->thenReturn());
+            ->thenReturn();
+
+        return new EmptySuccessfulResponseResource();
     }
 }

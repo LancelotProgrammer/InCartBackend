@@ -31,7 +31,7 @@ class ProductController extends Controller
 
     /**
      * @unauthenticated
-     *
+     * @header Authorization Bearer {YOUR_AUTH_KEY}
      * @group Product Actions
      */
     public function getProductDetails(Request $request): SuccessfulResponseResource
