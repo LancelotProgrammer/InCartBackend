@@ -204,7 +204,7 @@ class HomeService
 
     private static function getVideoExternalUrl(stdClass $advertisement): array
     {
-        $advertisementVideo = DB::table('advertisement_file')
+        $advertisementImage = DB::table('advertisement_file')
             ->join('files', 'files.id', '=', 'advertisement_file.file_id')
             ->where('advertisement_file.advertisement_id', $advertisement->id)
             ->select('files.url')
@@ -212,7 +212,7 @@ class HomeService
 
         return [
             'id' => $advertisement->id,
-            'video' => $advertisementVideo->url,
+            'image' => $advertisementImage->url,
             'title' => get_translatable_attribute($advertisement->title),
             'type' => AdvertisementLink::EXTERNAL->value,
             'created_at' => $advertisement->created_at,

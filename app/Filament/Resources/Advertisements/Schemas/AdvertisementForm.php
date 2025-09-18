@@ -95,7 +95,10 @@ class AdvertisementForm
                     ->columnSpanFull()
                     ->schema([
                         FileUpload::make('files')
-                            ->multiple()
+                            ->multiple(function (Get $get) {
+                                return (int)$get('type') !== AdvertisementType::VIDEO->value;
+                            })
+                            ->required()
                             ->disk('public')
                             ->directory('advertisements')
                             ->visibility('public'),
