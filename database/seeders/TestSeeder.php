@@ -2,33 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\CouponType;
-use App\Enums\SettingType;
-use App\Models\Advertisement;
-use App\Models\Branch;
-use App\Models\BranchProduct;
-use App\Models\Cart;
-use App\Models\CartProduct;
-use App\Models\City;
-use App\Models\Coupon;
-use App\Models\File;
-use App\Models\Order;
-use App\Models\PaymentMethod;
-use App\Models\Permission;
-use App\Models\Product;
-use App\Models\Role;
-use App\Models\Setting;
-use App\Models\User;
-use App\Models\UserAddress;
-use App\Models\UserNotification;
-use Database\Factories\FavoriteFactory;
-use Database\Factories\PackageFactory;
-use Database\Factories\RootCategoryFactory;
-use Database\Factories\SecondLevelCategoryFactory;
-use Database\Factories\ThirdLevelCategoryFactory;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
-
 class TestSeeder extends BaseSeeder
 {
     /**
