@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Enums\UnitType;
 use App\Filament\Components\TranslationComponent;
 use App\Models\Branch;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -28,7 +29,7 @@ class ProductForm
                 $counter = 1;
                 if ($record !== null) {
                     foreach ($record->files as $file) {
-                        $entryArray[] = ImageEntry::make('advertisement.file.number.'.$counter)->label('file '.$counter)->state($file->url);
+                        $entryArray[] = ImageEntry::make('advertisement.file.number.' . $counter)->label('file ' . $counter)->state($file->url);
                         $counter++;
                     }
                 }
@@ -42,8 +43,8 @@ class ProductForm
                             TranslationComponent::configure('description'),
                             TextInput::make('brand'),
                             TextInput::make('sku'),
+                            Select::make('unit')->options(UnitType::class),
                             Select::make('categories')
-                                ->columnSpanFull()
                                 ->multiple()
                                 ->relationship('categories', 'title')
                                 ->required(),
@@ -51,18 +52,8 @@ class ProductForm
                     Section::make('configs')->schema([
                         Repeater::make('branches')
                             ->label('Branches Configs')
-                            ->columnSpanFull()
+                            ->columns(4)
                             ->relationship('branchProducts')
-                            ->table([
-                                TableColumn::make('Branch'),
-                                TableColumn::make('Price'),
-                                TableColumn::make('Discount'),
-                                TableColumn::make('Maximum order quantity'),
-                                TableColumn::make('Minimum order quantity'),
-                                TableColumn::make('Quantity'),
-                                TableColumn::make('Expires at'),
-                                TableColumn::make('Published at'),
-                            ])
                             ->schema([
                                 Select::make('branch_id')->disabled()->relationship('branch', 'title'),
                                 TextInput::make('price'),
@@ -71,7 +62,13 @@ class ProductForm
                                 TextInput::make('minimum_order_quantity')->numeric(),
                                 TextInput::make('quantity')->numeric(),
                                 DatePicker::make('expires_at'),
-                                Toggle::make('published_at'), // TODO: FIX this
+                                Toggle::make('published_at')
+                                    ->dehydrateStateUsing(
+                                        function ($state) {
+                                            return $state ? Carbon::now() : null;
+                                        }
+                                    )
+                                    ->inline(false),
                             ])
                             ->defaultItems(function () {
                                 return Branch::count();
@@ -80,7 +77,7 @@ class ProductForm
                                 if ($record === null) {
                                     $items = [];
                                     foreach (Branch::all() as $index => $branch) {
-                                        $items['item'.($index + 1)] = [
+                                        $items['item' . ($index + 1)] = [
                                             'branch_id' => $branch->id,
                                         ];
                                     }

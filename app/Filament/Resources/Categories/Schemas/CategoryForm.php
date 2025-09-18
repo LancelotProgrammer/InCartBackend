@@ -24,7 +24,6 @@ class CategoryForm
                             ->relationship('parent', 'title')
                             ->columnSpanFull()
                             ->searchable(),
-                        // TODO fix this. Note: there is no create page
                         FileUpload::make('files')
                             ->columnSpanFull()
                             ->multiple()

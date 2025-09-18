@@ -10,14 +10,13 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class HandleUploadedFiles
 {
-    public static function configure(array $uploadedPaths, Model $model): void
+    public static function configure(array $uploadedPaths, Model $model, string $folderName): void
     {
         $fileIds = [];
 
         foreach ($uploadedPaths as $uploadedFile) {
             if ($uploadedFile instanceof TemporaryUploadedFile) {
-                // TODO: make advertisements as variable
-                $pathOnPublicDisk = $uploadedFile->store('advertisements', 'public');
+                $pathOnPublicDisk = $uploadedFile->store($folderName, 'public');
             } else {
                 $pathOnPublicDisk = $uploadedFile;
             }

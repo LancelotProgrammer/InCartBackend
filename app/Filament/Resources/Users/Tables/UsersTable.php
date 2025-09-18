@@ -67,7 +67,6 @@ class UsersTable
                     DeleteAction::make(),
                     EditAction::make(),
                 ]),
-                // TODO: improve the design of these actions
                 Action::make('Block')
                     ->action(function ($record) {
                         return $record->Block();

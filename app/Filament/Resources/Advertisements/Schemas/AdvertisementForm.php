@@ -89,9 +89,11 @@ class AdvertisementForm
                             }),
                     ]),
                 Section::make('Files')
+                    ->hidden(function (Get $get) {
+                        return (int)$get('type') === AdvertisementType::OFFER->value;
+                    })
                     ->columnSpanFull()
                     ->schema([
-                        // TODO: make files hidden when AdvertisementType is offer / and fix upload issue
                         FileUpload::make('files')
                             ->multiple()
                             ->disk('public')

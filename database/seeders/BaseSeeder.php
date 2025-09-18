@@ -244,29 +244,34 @@ class BaseSeeder extends Seeder
             });
 
         $this->command->info('seeding branches');
-        $branch = Branch::create([
-            'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 1', 'الفرع رقم 1']), JSON_UNESCAPED_UNICODE),
-            'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 1', 'الفرع رقم 1']), JSON_UNESCAPED_UNICODE),
-            'latitude' => 21.5292,
-            'longitude' => 39.1611,
-            'is_default' => true,
-            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id')
-        ]);
-        $branch = Branch::create([
-            'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 2', 'الفرع رقم 2']), JSON_UNESCAPED_UNICODE),
-            'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 2', 'الفرع رقم 2']), JSON_UNESCAPED_UNICODE),
-            'latitude' => 24.7136,
-            'longitude' => 46.6753,
-            'is_default' => true,
-            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Riyadh')->value('id')
-        ]);
-        $branch = Branch::create([
-            'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 3', 'الفرع رقم 3']), JSON_UNESCAPED_UNICODE),
-            'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 3', 'الفرع رقم 3']), JSON_UNESCAPED_UNICODE),
-            'latitude' => 21.4241,
-            'longitude' => 39.8173,
-            'is_default' => true,
-            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id')
+        $branch = Branch::insert([
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 1', 'الفرع رقم 1']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 1', 'الفرع رقم 1']), JSON_UNESCAPED_UNICODE),
+                'latitude' => 21.5292,
+                'longitude' => 39.1611,
+                'is_default' => true,
+                'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
+                'published_at' => now(),
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 2', 'الفرع رقم 2']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 2', 'الفرع رقم 2']), JSON_UNESCAPED_UNICODE),
+                'latitude' => 24.7136,
+                'longitude' => 46.6753,
+                'is_default' => true,
+                'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Riyadh')->value('id'),
+                'published_at' => now(),
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 3', 'الفرع رقم 3']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 3', 'الفرع رقم 3']), JSON_UNESCAPED_UNICODE),
+                'latitude' => 21.4241,
+                'longitude' => 39.8173,
+                'is_default' => true,
+                'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
+                'published_at' => now(),
+            ]
         ]);
         $branches = Branch::all();
 

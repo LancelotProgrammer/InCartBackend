@@ -16,7 +16,7 @@ return new class extends Migration
             $table->json('title');
             $table->json('description')->nullable();
             $table->dateTime('published_at')->nullable();
-            $table->boolean('is_default');
+            $table->boolean('is_default')->default(false);
             $table->double('latitude');
             $table->double('longitude');
             $table->timestamps();

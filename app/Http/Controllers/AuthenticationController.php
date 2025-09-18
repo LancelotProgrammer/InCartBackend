@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OtpType;
-use App\Enums\UserAccountType;
 use App\Exceptions\AuthenticationException;
+use App\Exceptions\SetupException;
 use App\Http\Resources\Authentication\UserInfoResource;
 use App\Http\Resources\Authentication\UserResource;
 use App\Http\Resources\EmptySuccessfulResponseResource;
@@ -57,9 +57,9 @@ class AuthenticationController extends Controller
 
         $roleId = Role::where('code', '=', 'user')->value('id');
         if (!$roleId) {
-            throw new AuthenticationException(
+            throw new SetupException(
                 trans('auth.something_went_wrong'),
-                'Pleas add a user role to the system'
+                'System setup error. Pleas add a user role to the system'
             );
         }
 
@@ -141,10 +141,9 @@ class AuthenticationController extends Controller
 
         $roleId = Role::where('code', '=', 'user')->value('id');
         if (!$roleId) {
-            throw new AuthenticationException(
+            throw new SetupException(
                 trans('auth.something_went_wrong'),
-                'Pleas add a user role to the system',
-                500
+                'System setup error. Pleas add a user role to the system'
             );
         }
 

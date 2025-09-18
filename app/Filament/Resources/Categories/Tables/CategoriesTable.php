@@ -60,7 +60,7 @@ class CategoriesTable
                             );
                         }
 
-                        // TODO fix this temporary code: this code add a dummy where clause to the builder to indicate that there is no categories with the provided title. Then filament displays for the user (no result) message
+                        // NOTE: fix this temporary code: this code add a dummy where clause to the builder to indicate that there is no categories with the provided title. Then filament displays for the user (no result) message
                         return $query->where('title', '=', '123456789');
                     }),
             ], layout: FiltersLayout::Modal)

@@ -6,12 +6,15 @@ use App\Enums\CouponType;
 use App\Filament\Components\TranslationComponent;
 use App\Rules\TimedCouponType;
 use Filament\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
@@ -22,9 +25,10 @@ class CouponForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->columns(1)
+            ->columns(3)
             ->components([
                 Section::make('Information')
+                    ->columnSpan(1)
                     ->columns(2)
                     ->schema([
                         TranslationComponent::configure('title'),
@@ -40,7 +44,7 @@ class CouponForm
                                 'max:15',
                                 'regex:/^(?!.* {2})[\p{Arabic}a-zA-Z0-9 ]+$/u',
                             ])
-                            ->dehydrateStateUsing(fn (?string $state) => $state ? trim($state) : null)
+                            ->dehydrateStateUsing(fn(?string $state) => $state ? trim($state) : null)
                             ->password()
                             ->revealable()
                             ->required(),
@@ -52,32 +56,29 @@ class CouponForm
                                 $component->state(CouponType::TIMED->value);
                             })
                             ->required(),
+                        // future: add more types if needed
+                        // Select::make('type')
+                        //     ->columnSpanFull()
+                        //     ->live()
+                        //     ->options(CouponType::class)
+                        //     ->required(),
                     ]),
                 Section::make('Config')
+                    ->columnSpan(2)
                     ->columns(3)
-                    ->schema([
-                        KeyValue::make('config')
-                            ->columnSpan(2)
-                            ->addable(false)
-                            ->deletable(false)
-                            ->editableKeys(false)
-                            ->rules([new TimedCouponType])
-                            ->afterStateHydrated(function (KeyValue $component) {
-                                $component->state('{"value":"","start_date":"","end_date":"","use_limit":"","user_limit":""}');
-                            })
-                            ->required(),
-                        // TODO: improve this translation block
-                        TextEntry::make('config_description')
-                            ->state(new HtmlString('
-                                <ul style="margin:0; padding-left:18px; line-height:1.7;">
-                                    <li><strong>value</strong> -> <span>قيمة المبلغ المالي للخصم .</span></li>
-                                    <li><strong>start_date</strong> -> <span>تاريخ بداية صلاحية الكوبون.</span></li>
-                                    <li><strong>end_date</strong> -> <span>تاريخ انتهاء صلاحية الكوبون.</span></li>
-                                    <li><strong>use_limit</strong> -> <span>عدد المرات المسموح باستخدام الكوبون بشكل عام.</span></li>
-                                    <li><strong>user_limit</strong> -> <span>عدد المرات المسموح لكل مستخدم فردي أن يستفيد من الكوبون.</span></li>
-                                </ul>
-                            ')),
-                    ]),
+                    ->schema(self::getCouponConfigForm()),
             ]);
+    }
+
+    private static function getCouponConfigForm()
+    {
+        return function (Get $get) {
+            $type = (int)$get('type');
+            return $type
+                ? CouponType::from((int)$type)->getForm()
+                : [TextEntry::make('no_coupon_has_been_selected')
+                    ->columnSpanFull()
+                    ->state(new HtmlString('Please select a coupon type.'))];
+        };
     }
 }

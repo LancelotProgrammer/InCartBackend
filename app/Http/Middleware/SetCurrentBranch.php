@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\SetupException;
 use App\Models\Branch;
 use App\Models\City;
 use App\Models\User;
@@ -50,12 +51,12 @@ class SetCurrentBranch
         // }
 
         // 4-Absolute fallback -> use the global default branch
-        return $this->getDefaultBranchForCity(null, 'The default branch is not found');
+        return $this->getFallbackBranch();
     }
 
     protected function validateBranch(int $branchId, string $errorMessage): int
     {
-        $exists = Branch::where('id', $branchId)->first();
+        $exists = Branch::where('id', $branchId)->published()->first();
         if (! $exists) {
             throw new InvalidArgumentException($errorMessage);
         }
@@ -65,13 +66,23 @@ class SetCurrentBranch
 
     protected function getDefaultBranchForCity(?int $cityId, string $errorMessage): int
     {
-        $query = Branch::query()->where('is_default', true);
+        $query = Branch::query()->published()->where('is_default', true);
         if ($cityId) {
             $query->where('city_id', $cityId);
         }
         $branchId = $query->value('id');
         if (! $branchId) {
             throw new InvalidArgumentException($errorMessage);
+        }
+
+        return $branchId;
+    }
+
+    protected function getFallbackBranch(): int
+    {
+        $branchId = Branch::query()->published()->where('is_default', true)->value('id');
+        if (! $branchId) {
+            throw new SetupException('Something went wrong', 'System setup error. Please setup a branch from the dashboard as default and publish it');
         }
 
         return $branchId;

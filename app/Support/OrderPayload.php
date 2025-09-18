@@ -6,12 +6,11 @@ use App\Models\Cart;
 use App\Models\Coupon;
 use App\Models\PaymentMethod;
 use App\Models\User;
-use App\Services\CouponService;
 use Illuminate\Support\Carbon;
 
 class OrderPayload
 {
-    private CouponService $couponService;
+    private Carbon $time;
 
     private int $addressId;
 
@@ -67,14 +66,14 @@ class OrderPayload
     // Getters & Setters
     // -------------------------------
 
-    public function getCouponService(): CouponService
+    public function getTime(): Carbon
     {
-        return $this->couponService;
+        return $this->time;
     }
 
-    public function setCouponService(CouponService $couponService): void
+    public function setTime(Carbon $time): void
     {
-        $this->couponService = $couponService;
+        $this->time = $time;
     }
 
     public function getAddressId(): int
@@ -328,6 +327,7 @@ class OrderPayload
     }
 
     public function fromRequest(
+        Carbon $time,
         int $addressId,
         ?string $deliveryDate,
         ?int $paymentMethodId,
@@ -337,6 +337,7 @@ class OrderPayload
         int $branchId,
         User $user,
     ): self {
+        $this->setTime($time);
         $this->setAddressId($addressId);
         $this->setDeliveryDate($deliveryDate);
         $this->setPaymentMethodId($paymentMethodId);

@@ -26,9 +26,9 @@ class AdvertisementsTable
                 TextColumn::make('order')->sortable()->numeric(),
                 TextColumn::make('type')->badge(),
                 TextColumn::make('link')->badge(),
-                TextColumn::make('published_at')->dateTime(),
-                TextColumn::make('created_at')->dateTime(),
                 TextColumn::make('branch.title'),
+                TextColumn::make('created_at')->dateTime(),
+                TextColumn::make('published_at')->dateTime(),
             ])
             ->filtersTriggerAction(
                 fn (Action $action) => $action

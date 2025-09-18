@@ -19,7 +19,7 @@ class CreateProduct extends CreateRecord
 
         $model = static::getModel()::create($data);
 
-        HandleUploadedFiles::configure($uploadedPaths, $model);
+        HandleUploadedFiles::configure($uploadedPaths, $model, 'products');
 
         return $model;
     }

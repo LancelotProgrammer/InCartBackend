@@ -23,7 +23,7 @@ class ListCategories extends ListRecords
 
                     $created = $model::create($data);
 
-                    HandleUploadedFiles::configure($uploadedPaths, $created);
+                    HandleUploadedFiles::configure($uploadedPaths, $created, 'categories');
 
                     return $created;
                 }),

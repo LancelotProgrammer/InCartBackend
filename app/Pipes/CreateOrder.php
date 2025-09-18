@@ -24,6 +24,7 @@ class CreateOrder
         ]);
 
         $orderService = new OrderService((new OrderPayload())->fromRequest(
+            now(),
             $request->input('address_id'),
             $request->input('delivery_date'),
             $request->input('payment_method_id'),
@@ -42,11 +43,9 @@ class CreateOrder
                 ->calculateDestination()
                 ->calculateCartPrice()
                 ->createCart()
-                ->handleCouponService()
-                // ->calculateCouponItemCount()
                 // ->calculateCartWight()
                 ->calculateDeliveryPrice()
-                ->calculateCouponPriceDiscount()
+                ->handleCouponService()
                 ->calculateFeesAndTotals()
                 ->handlePaymentMethod()
                 ->createOrder();

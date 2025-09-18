@@ -19,7 +19,7 @@ class CreateAdvertisement extends CreateRecord
 
         $model = static::getModel()::create($data);
 
-        HandleUploadedFiles::configure($uploadedPaths, $model);
+        HandleUploadedFiles::configure($uploadedPaths, $model, 'advertisements');
 
         return $model;
     }

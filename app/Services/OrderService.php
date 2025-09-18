@@ -38,7 +38,7 @@ class OrderService
         do {
             $orderNumber = sprintf(
                 'ORD-%s-%s',
-                now()->format('YmdHis'),
+                $this->payload->getTime()->format('YmdHis'),
                 strtoupper(Str::random(6))
             );
         } while (Order::where('order_number', '=', $orderNumber)->exists());
@@ -52,7 +52,7 @@ class OrderService
     {
         $date = $this->payload->getDeliveryDate()
             ? Carbon::parse($this->payload->getDeliveryDate())
-            : now();
+            : $this->payload->getTime();
 
         $this->payload->setDate($date);
 
@@ -158,55 +158,13 @@ class OrderService
         return $this;
     }
 
-    public function handleCouponService(): self
-    {
-        $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
-            ->with('categories')
-            ->get();
-
-        $userAddress = UserAddress::find($this->payload->getAddressId());
-
-        if (! $userAddress) {
-            throw new LogicalException('User address is invalid', 'The address does not exist or does not belong to you.');
-        }
-
-        $couponService = new CouponService(
-            Carbon::now(),
-            $userAddress,
-            $this->payload->getUser()->id,
-            $this->payload->getBranchId(),
-            $products->unique('id')->pluck('id')->toArray(),
-            $products->flatMap(fn($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
-        );
-
-        if (empty($this->payload->getCouponCode())) {
-            return $this;
-        }
-
-        $coupon = Coupon::published()
-            ->where('code', $this->payload->getCouponCode())
-            ->first();
-
-        if (! $coupon) {
-            return $this;
-        }
-
-        $this->payload->setCoupon($coupon);
-        $this->payload->setCouponService($couponService);
-
-        return $this;
-    }
-
-    public function calculateCouponItemCount(): self
-    {
-        // future: use this function to apply coupon and manipulate cart items
-        throw new Exception('Not implemented yet');
-        // return $this;
-    }
-
     public function calculateCartWight(): self
     {
-        // future: use this code to calculate the cart wight
+        /*
+            future: use this code to calculate the cart wight
+            weight_per_unit: should be added to products table. The idea is to have the weight of one unit of the product in grams (g)
+            setTotalWeight / getTotalWeight: should be added to OrderPayload
+        */
         throw new Exception('Not implemented yet');
         // $this->payload->setTotalWeight(0);
         // $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
@@ -227,7 +185,9 @@ class OrderService
 
     public function calculateDeliveryPrice(): self
     {
-        // future: use this code to calculate the deliveryFee based on branch or wight
+        /*
+            future: use this code to calculate the deliveryFee based on distance, wight or branch
+        */
         // if (true) {
         //     $this->payload->setDeliveryFee(
         //         ($this->payload->getCartWeight() / 1000) * $this->payload->getPricePerKilogram()
@@ -248,17 +208,40 @@ class OrderService
         return $this;
     }
 
-    public function calculateCouponPriceDiscount(): self
+    public function handleCouponService(): self
     {
-        $coupon = $this->payload->getCoupon();
+        // prepare coupon service dependencies
+        $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
+            ->with('categories')
+            ->get();
+        $userAddress = UserAddress::find($this->payload->getAddressId());
+        if (! $userAddress) {
+            throw new LogicalException('User address is invalid', 'The address does not exist or does not belong to you.');
+        }
+        $couponService = new CouponService(
+            $this->payload->getTime(),
+            $userAddress,
+            $this->payload->getCart(),
+            $this->payload->getUser()->id,
+            $this->payload->getBranchId(),
+            $products->unique('id')->pluck('id')->toArray(),
+            $products->flatMap(fn($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
+        );
+
+        // apply coupon if exists
+        if (empty($this->payload->getCouponCode())) {
+            return $this;
+        }
+        $coupon = Coupon::published()
+            ->where('code', $this->payload->getCouponCode())
+            ->first();
         if (! $coupon) {
             return $this;
         }
 
-        $discount = match ($coupon->type) {
-            CouponType::TIMED => $this->payload->getCouponService()->calculateTimeCoupon($coupon)
-        };
-
+        // calculate discount
+        $this->payload->setCoupon($coupon);
+        $discount = $couponService->calculateDiscount($coupon);
         $this->payload->setCouponDiscount($discount);
 
         return $this;
