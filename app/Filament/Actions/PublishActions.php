@@ -3,6 +3,7 @@
 namespace App\Filament\Actions;
 
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 
 class PublishActions
 {
@@ -11,7 +12,12 @@ class PublishActions
         return [
             Action::make('publish')
                 ->action(function ($record) {
-                    return $record->publish();
+                    $record->publish();
+                    Notification::make()
+                        ->title('Published successfully')
+                        ->body('This record has been published successfully.')
+                        ->success()
+                        ->send();
                 })
                 ->requiresConfirmation()
                 ->visible(function ($record) {
@@ -19,7 +25,12 @@ class PublishActions
                 }),
             Action::make('unpublish')
                 ->action(function ($record) {
-                    return $record->unpublish();
+                    $record->unpublish();
+                    Notification::make()
+                        ->title('Unpublished successfully')
+                        ->body('This record has been unpublished successfully.')
+                        ->success()
+                        ->send();
                 })
                 ->requiresConfirmation()
                 ->visible(function ($record) {

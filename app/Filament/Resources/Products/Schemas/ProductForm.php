@@ -15,6 +15,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductForm
@@ -46,7 +47,7 @@ class ProductForm
                             Select::make('unit')->options(UnitType::class),
                             Select::make('categories')
                                 ->multiple()
-                                ->relationship('categories', 'title')
+                                ->relationship('categories', 'title', fn (Builder $query) => $query->whereNotNull('parent_id'))
                                 ->required(),
                         ]),
                     Section::make('configs')->schema([

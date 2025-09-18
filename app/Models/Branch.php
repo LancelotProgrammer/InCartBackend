@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasIsDefaultAttribute;
 use App\Traits\HasPublishAttribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Branch extends Model
 {
-    use HasPublishAttribute, HasTranslations;
+    use HasPublishAttribute, HasIsDefaultAttribute, HasTranslations;
 
     protected $fillable = ['title', 'description', 'is_default', 'published_at', 'latitude', 'longitude', 'city_id'];
 
