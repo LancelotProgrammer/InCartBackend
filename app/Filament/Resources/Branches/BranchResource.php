@@ -18,7 +18,7 @@ class BranchResource extends Resource
 {
     protected static ?string $model = Branch::class;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Cities and Branches';
+    protected static string|UnitEnum|null $navigationGroup = 'Resources';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::BuildingOffice2;
 

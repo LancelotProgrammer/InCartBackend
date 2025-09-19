@@ -17,7 +17,7 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Category And Products';
+    protected static string|UnitEnum|null $navigationGroup = 'Resources';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::NumberedList;
 
