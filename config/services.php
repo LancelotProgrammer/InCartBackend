@@ -40,4 +40,9 @@ return [
         'auth_token' => env('TWILIO_AUTH_TOKEN'),
         'number' => env('TWILIO_NUMBER'),
     ],
+
+    'moyasar' => [
+        'secret' => env('MOYASAR_SECRET'),
+        'baseUrl' => env('MOYASAR_BASEURL'),
+    ],
 ];

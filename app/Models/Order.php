@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\DeliveryStatus;
 use App\Enums\DeliveryScheduledType;
+use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,14 +11,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Models\Audit;
 
-class Order extends Model
+class Order extends Model  implements AuditableContract
 {
-    use HasFactory;
+    use HasFactory, Auditable;
 
     protected $fillable = [
         'order_number',
         'notes',
+        'cancel_reason',
         'order_status',
         'payment_status',
         'delivery_status',
@@ -52,6 +57,30 @@ class Order extends Model
         'total_price' => 'decimal:2',
         'delivery_scheduled_type' => DeliveryScheduledType::class,
         'delivery_date' => 'datetime',
+    ];
+
+    protected $auditInclude = [
+        'order_number',
+        'notes',
+        'order_status',
+        'payment_status',
+        'delivery_status',
+        'subtotal_price',
+        'coupon_discount',
+        'delivery_fee',
+        'service_fee',
+        'tax_amount',
+        'total_price',
+        'delivery_scheduled_type',
+        'delivery_date',
+        'payment_token',
+        'customer_id',
+        'manager_id',
+        'delivery_id',
+        'branch_id',
+        'coupon_id',
+        'payment_method_id',
+        'user_address_id',
     ];
 
     public function customer(): BelongsTo
@@ -97,5 +126,10 @@ class Order extends Model
     public function cartProducts(): HasManyThrough
     {
         return $this->hasManyThrough(CartProduct::class, Cart::class);
+    }
+
+    public function auditsLogs(): MorphMany
+    {
+        return $this->morphMany(Audit::class, 'auditable');
     }
 }

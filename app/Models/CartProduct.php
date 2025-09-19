@@ -14,7 +14,7 @@ class CartProduct extends Pivot
 
     protected $table = 'cart_product';
 
-    protected $fillable = ['cart_id', 'product_id', 'quantity'];
+    protected $fillable = ['cart_id', 'product_id', 'quantity', 'price'];
 
     protected $casts = [
         'quantity' => 'decimal:2',

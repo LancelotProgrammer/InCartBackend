@@ -32,7 +32,7 @@ class OrderPayload
 
     private float $distance;
 
-    private ?Carbon $date = null;
+    private Carbon $date;
 
     private ?Coupon $coupon = null;
 
@@ -176,12 +176,12 @@ class OrderPayload
         $this->distance = $distance;
     }
 
-    public function getDate(): ?Carbon
+    public function getDate(): Carbon
     {
         return $this->date;
     }
 
-    public function setDate(?Carbon $date): void
+    public function setDate(Carbon $date): void
     {
         $this->date = $date;
     }
@@ -330,7 +330,7 @@ class OrderPayload
         Carbon $time,
         int $addressId,
         ?string $deliveryDate,
-        ?int $paymentMethodId,
+        int $paymentMethodId,
         ?string $couponCode,
         array $cartItems,
         ?string $notes,

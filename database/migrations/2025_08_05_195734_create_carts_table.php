@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('order_id')->nullable();
 
-            $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

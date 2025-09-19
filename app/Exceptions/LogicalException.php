@@ -25,40 +25,34 @@ class LogicalException extends Exception
         $this->context = $this->getDebugPosition();
     }
 
+    public function getDetails(): string
+    {
+        return $this->details;
+    }
+
     public function render(Request $request): Response
     {
-        if (App::environment('production')) {
-            if (count($this->errors) > 0) {
-                return response([
-                    'message' => $this->errorMessage,
-                    'errors' => $this->errors,
-                ])->setStatusCode($this->statusCode);
-            }
-
-            return response([
-                'message' => $this->errorMessage,
-            ])->setStatusCode($this->statusCode);
-        } else {
-            if (count($this->errors) > 0) {
-                return response([
-                    'message' => $this->errorMessage,
-                    'details' => $this->details,
-                    'errors' => $this->errors,
-                ])->setStatusCode($this->statusCode);
-            }
-
+        if (count($this->errors) > 0) {
             return response([
                 'message' => $this->errorMessage,
                 'details' => $this->details,
+                'errors' => $this->errors,
             ])->setStatusCode($this->statusCode);
         }
+
+        return response([
+            'message' => $this->errorMessage,
+            'details' => $this->details,
+        ])->setStatusCode($this->statusCode);
     }
 
     public function report(): void
     {
-        Log::channel('debug')->warning("{$this->errorMessage}. {$this->details}.", [
-            'status' => $this->statusCode,
-            'location' => $this->context,
-        ]);
+        if (App::environment('production')) {
+            Log::channel('debug')->warning("{$this->errorMessage}. {$this->details}.", [
+                'status' => $this->statusCode,
+                'location' => $this->context,
+            ]);
+        }
     }
 }

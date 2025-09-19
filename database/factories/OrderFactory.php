@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\DeliveryStatus;
 use App\Enums\DeliveryScheduledType;
+use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Branch;
@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -67,8 +68,9 @@ class OrderFactory extends Factory
         }
 
         // 5. Random delivery type
-        $date = $this->faker->boolean() ? $this->faker->optional()->dateTimeBetween('+1 days', '+1 month') : null;
-        if ($date === null) {
+        $now = now();
+        $date = $this->faker->boolean() ? Carbon::instance($this->faker->dateTimeBetween('+1 days', '+1 month')) : $now;
+        if ($date->equalTo($now)) {
             $deliveryType = DeliveryScheduledType::IMMEDIATE;
             $deliveryStatus = DeliveryStatus::NOT_SHIPPED;
         } else {

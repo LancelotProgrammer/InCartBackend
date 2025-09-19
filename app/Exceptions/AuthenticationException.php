@@ -25,6 +25,11 @@ class AuthenticationException extends Exception
         $this->context = $this->getDebugPosition();
     }
 
+    public function getDetails(): string
+    {
+        return $this->details;
+    }
+
     public function render(Request $request): Response
     {
         if (App::environment('production')) {
@@ -56,9 +61,11 @@ class AuthenticationException extends Exception
 
     public function report(): void
     {
-        Log::channel('debug')->warning("{$this->errorMessage}. {$this->details}.", [
-            'status' => $this->statusCode,
-            'location' => $this->context,
-        ]);
+        if (App::environment('production')) {
+            Log::channel('debug')->warning("{$this->errorMessage}. {$this->details}.", [
+                'status' => $this->statusCode,
+                'location' => $this->context,
+            ]);
+        }
     }
 }

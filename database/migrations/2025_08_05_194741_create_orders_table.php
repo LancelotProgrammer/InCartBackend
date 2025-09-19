@@ -28,7 +28,7 @@ return new class extends Migration
             $table->decimal('tax_amount', 10, 2)->default(0);      // VAT or other tax
             $table->decimal('total_price', 10, 2)->default(0);     // What the customer pays
 
-            $table->integer('delivery_scheduled_type')->nullable();
+            $table->integer('delivery_scheduled_type');
             $table->timestamp('delivery_date')->nullable();
 
             $table->string('payment_token')->nullable();

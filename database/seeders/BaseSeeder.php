@@ -389,28 +389,37 @@ class BaseSeeder extends Seeder
             ->each(function ($order) {
                 $cart = Cart::factory()->create([
                     'order_number' => $order->order_number,
-                    'order_id' => $order->id
+                    'order_id'     => $order->id,
                 ]);
                 $products = Product::inRandomOrder()
                     ->limit(rand(2, 10))
                     ->get();
                 foreach ($products as $product) {
+                    $branchProduct = BranchProduct::where('branch_id', $order->branch_id)
+                        ->where('product_id', $product->id)
+                        ->first();
                     CartProduct::factory()->create([
                         'cart_id' => $cart->id,
                         'product_id' => $product->id,
+                        'price' => $branchProduct
+                            ? ($branchProduct->discount > 0
+                                ? $branchProduct->price - ($branchProduct->price * ($branchProduct->discount / 100))
+                                : $branchProduct->price)
+                            : 0,
+                        'quantity' => rand(1, 5),
                     ]);
                 }
-                $subtotal = $cart->cartProducts->sum(function ($cartProduct) use ($order) {
-                    $branchProduct = BranchProduct::where('branch_id', $order->branch_id)->where('product_id', $cartProduct->id)->first();
-                    if (! $branchProduct) {
-                        return 0;
-                    }
-
-                    return ($branchProduct->price - $branchProduct->discount ?? 0) * $cartProduct->quantity;
-                });
+                $subtotal = $cart->cartProducts->sum(
+                    fn($cartProduct) =>
+                    $cartProduct->price * $cartProduct->quantity
+                );
                 $order->update([
                     'subtotal_price' => $subtotal,
-                    'total_price' => $subtotal - $order->coupon_discount + $order->delivery_fee + $order->service_fee + $order->tax_amount,
+                    'total_price' => $subtotal
+                        - $order->coupon_discount
+                        + $order->delivery_fee
+                        + $order->service_fee
+                        + $order->tax_amount,
                 ]);
             });
     }

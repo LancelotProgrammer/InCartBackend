@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders;
 
+use App\Enums\OrderStatus;
 use App\Filament\Resources\Orders\Pages\EditOrder;
 use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Filament\Resources\Orders\Pages\ViewOrder;
@@ -14,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
 class OrderResource extends Resource
@@ -45,6 +47,7 @@ class OrderResource extends Resource
     {
         return [
             RelationManagers\CartProductsRelationManager::class,
+            RelationManagers\OrderAuditRelationManager::class,
         ];
     }
 
@@ -55,5 +58,15 @@ class OrderResource extends Resource
             'view' => ViewOrder::route('/{record}'),
             'edit' => EditOrder::route('/{record}/edit'),
         ];
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return self::editPolicy($record);
+    }
+
+    public static function editPolicy(Model $record): bool
+    {
+        return !($record->order_status === OrderStatus::FINISHED || $record->order_status === OrderStatus::CANCELLED);
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Contracts\PaymentGatewayInterface;
-use App\Enums\CouponType;
 use App\Enums\DeliveryStatus;
 use App\Enums\DeliveryScheduledType;
 use App\Enums\OrderStatus;
@@ -50,7 +49,7 @@ class OrderService
 
     public function setOrderDate(): self
     {
-        $date = $this->payload->getDeliveryDate()
+        $date = $this->payload->getDeliveryDate() !== null
             ? Carbon::parse($this->payload->getDeliveryDate())
             : $this->payload->getTime();
 
@@ -143,12 +142,24 @@ class OrderService
             'order_number' => $this->payload->getOrderNumber(),
         ]);
 
+        $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
+            ->with([
+                'branches' => fn($query) => $query
+                    ->where('branches.id', $this->payload->getBranchId())
+                    ->withPivot(['price', 'discount'])
+            ])
+            ->get();
+
         $cartProducts = [];
-        foreach ($this->payload->getCartItems() as $product) {
+        foreach ($this->payload->getCartItems() as $item) {
+            $product = $products->firstWhere('id', $item['id']);
+            $branchProduct = $product?->branches->first()?->pivot;
+            $price = $branchProduct ? BranchProduct::getDiscountPrice($branchProduct) : 0;
             $cartProducts[] = [
                 'cart_id' => $cart->id,
-                'product_id' => $product['id'],
-                'quantity' => $product['quantity'],
+                'product_id' => $item['id'],
+                'quantity' => $item['quantity'],
+                'price' => $price,
             ];
         }
 
@@ -157,6 +168,7 @@ class OrderService
 
         return $this;
     }
+
 
     public function calculateCartWight(): self
     {
@@ -298,7 +310,7 @@ class OrderService
             'notes' => $this->payload->getNotes(),
             'payment_token' => $this->payload->getPaymentToken(),
 
-            'delivery_scheduled_type' => $this->payload->getDate() !== null ? DeliveryScheduledType::SCHEDULED->value : DeliveryScheduledType::IMMEDIATE->value,
+            'delivery_scheduled_type' => $this->payload->getDeliveryDate() !== null ? DeliveryScheduledType::SCHEDULED->value : DeliveryScheduledType::IMMEDIATE->value,
             'delivery_date' => $this->payload->getDate(),
 
             'order_status' => OrderStatus::PENDING->value,
