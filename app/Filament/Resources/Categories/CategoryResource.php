@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Categories;
 
 use App\Filament\Resources\Categories\Pages\ListCategories;
+use App\Filament\Resources\Categories\Pages\ManageCategoryCategories;
+use App\Filament\Resources\Categories\Pages\ManageCategoryProducts;
 use App\Filament\Resources\Categories\Schemas\CategoryForm;
 use App\Filament\Resources\Categories\Tables\CategoriesTable;
 use App\Models\Category;
@@ -49,6 +51,8 @@ class CategoryResource extends Resource
     {
         return [
             'index' => ListCategories::route('/'),
+            'products' => ManageCategoryProducts::route('/{record}/products'),
+            'categories' => ManageCategoryCategories::route('/{record}/categories'),
         ];
     }
 }

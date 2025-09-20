@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Categories\Tables;
 
 use App\Filament\Actions\PublishActions;
+use App\Filament\Resources\Categories\CategoryResource;
 use App\Models\Category;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -43,7 +45,7 @@ class CategoriesTable
             ])
             ->contentGrid([
                 'md' => 2,
-                'xl' => 5,
+                'xl' => 4,
             ])
             ->filters([
                 Filter::make('category_name')
@@ -65,6 +67,13 @@ class CategoriesTable
                     }),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
+                Action::make('products')
+                    ->visible(fn(Category $record) => $record->parent_id !== null)
+                    ->icon(Heroicon::Bars4)
+                    ->url(fn(Category $record) => CategoryResource::getUrl('products', ['record' => $record->id])),
+                Action::make('categories')
+                    ->icon(Heroicon::Bars4)
+                    ->url(fn(Category $record) => CategoryResource::getUrl('categories', ['record' => $record->id])),
                 ...PublishActions::configure(),
             ])
             ->toolbarActions([

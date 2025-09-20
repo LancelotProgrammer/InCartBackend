@@ -2,7 +2,12 @@
 
 namespace App\Filament\Resources\Branches;
 
+use App\Filament\Resources\Branches\Pages\EditBranch;
 use App\Filament\Resources\Branches\Pages\ListBranches;
+use App\Filament\Resources\Branches\RelationManagers\AdvertisementsRelationManager;
+use App\Filament\Resources\Branches\RelationManagers\CouponsRelationManager;
+use App\Filament\Resources\Branches\RelationManagers\PaymentMethodsRelationManager;
+use App\Filament\Resources\Branches\RelationManagers\ProductsRelationManager;
 use App\Filament\Resources\Branches\Schemas\BranchForm;
 use App\Filament\Resources\Branches\Schemas\BranchInfolist;
 use App\Filament\Resources\Branches\Tables\BranchesTable;
@@ -42,7 +47,10 @@ class BranchResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AdvertisementsRelationManager::class,
+            CouponsRelationManager::class,
+            ProductsRelationManager::class,
+            PaymentMethodsRelationManager::class,
         ];
     }
 
@@ -50,6 +58,7 @@ class BranchResource extends Resource
     {
         return [
             'index' => ListBranches::route('/'),
+            'edit' => EditBranch::route('/{record}/edit'),
         ];
     }
 }
