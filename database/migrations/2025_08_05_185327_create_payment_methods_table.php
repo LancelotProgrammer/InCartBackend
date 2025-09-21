@@ -21,6 +21,8 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id');
 
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
+
+            $table->unique(['branch_id', 'code']);
         });
     }
 

@@ -16,14 +16,16 @@ return new class extends Migration
             $table->json('title');
             $table->json('description')->nullable();
             $table->string('code');
-            $table->integer('type'); // timed
-            $table->json('config'); // value, start_date, end_date, use_limit, user_limit
+            $table->integer('type');
+            $table->json('config');
             $table->dateTime('published_at')->nullable();
             $table->timestamps();
 
             $table->unsignedBigInteger('branch_id');
 
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
+
+            $table->unique(['branch_id', 'code']);
         });
     }
 
