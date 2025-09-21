@@ -29,18 +29,20 @@ class GetCategories
         if ($level === 1) {
             $query->whereNull('parent_id');
         } elseif ($level === 2) {
-            $query->whereHas('parent', fn (Builder $query): Builder => $query->whereNull('parent_id'));
+            $query->whereHas('parent', fn(Builder $query): Builder => $query->whereNull('parent_id'));
         } elseif ($level === 3) {
-            $query->whereHas('parent.parent', fn (Builder $query): Builder => $query->whereNull('parent_id'));
+            $query->whereHas('parent.parent', fn(Builder $query): Builder => $query->whereNull('parent_id'));
         }
 
         $categories = $query->get()->map(function (Category $category): array {
             return [
                 'id' => $category->id,
                 'title' => $category->title,
-                'categories' => $category->children->map(fn (Category $child): array => [
+                'image' => optional($category->files->first())->url,
+                'categories' => $category->children->map(fn(Category $child): array => [
                     'id' => $child->id,
                     'title' => $child->title,
+                    'image' => optional($child->files->first())->url,
                 ])->toArray(),
             ];
         });
