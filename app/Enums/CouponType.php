@@ -110,7 +110,7 @@ enum CouponType: int implements HasLabel
         }
 
         $totalUses = Order::where('coupon_id', $coupon->id)->count();
-        $userUses = Order::where('coupon_id', $coupon->id)->where('user_id', $context->userId)->count();
+        $userUses = Order::where('coupon_id', $coupon->id)->where('customer_id', $context->userId)->count();
 
         // Check user limit first
         if (! empty($config['user_limit']) && $userUses >= $config['user_limit']) {

@@ -44,7 +44,6 @@ class CouponService
 
     public function calculateDiscount(Coupon $coupon): float
     {
-        $type = CouponType::from((int) $coupon->type);
-        return $type->calculateDiscount($this, $coupon);
+        return $coupon->type->calculateDiscount($this, $coupon);
     }
 }
