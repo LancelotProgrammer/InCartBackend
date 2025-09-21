@@ -18,7 +18,7 @@ class HomeService
 {
     public static function getHomeContent(Request $request): mixed
     {
-        return Cache::remember(CacheKeys::HOME . App::getLocale(), 3600, function () {
+        return Cache::remember(CacheKeys::HOME . '_' . App::getLocale(), 3600, function () {
             $statuses = DB::table('advertisements')
                 ->where('type', '=', AdvertisementType::STATUS->value)
                 ->branchScope()

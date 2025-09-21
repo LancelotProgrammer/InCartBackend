@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('order_number');
+            $table->string('cancel_reason')->nullable();
             $table->text('notes')->nullable();
 
             $table->integer('order_status');

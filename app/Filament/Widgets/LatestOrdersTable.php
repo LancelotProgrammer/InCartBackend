@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Orders\Tables;
+namespace App\Filament\Widgets;
 
 use App\Enums\DeliveryScheduledType;
 use App\Enums\DeliveryStatus;
@@ -18,33 +18,29 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 
-class OrdersTable
+class LatestOrdersTable extends TableWidget
 {
-    public static function configure(Table $table): Table
+    protected static ?int $sort = 2;
+
+    protected int | string | array $columnSpan = 'full';
+
+    protected ?string $pollingInterval = null;
+
+    public function table(Table $table): Table
     {
         return $table
+            ->query(fn(): Builder => Order::query())
             ->defaultSort('id', 'desc')
             ->columns([
-                TextColumn::make('branch.title')->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('branch.title'),
                 TextColumn::make('order_number')->searchable(),
                 TextColumn::make('customer.name'),
-
                 TextColumn::make('order_status')->badge(),
-                TextColumn::make('payment_status')->badge(),
-                TextColumn::make('delivery_status')->badge(),
-
-                TextColumn::make('total_price')->numeric(),
                 TextColumn::make('delivery_date')->dateTime(),
-
-                TextColumn::make('created_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('delivery.name'),
-                TextColumn::make('coupon.title')->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('paymentMethod.title')->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('userAddress.title')->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('customer.name'),
             ])
             ->filtersTriggerAction(
                 fn(Action $action) => $action
