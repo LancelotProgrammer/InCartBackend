@@ -23,17 +23,14 @@ class MostSellingProductsCart extends ChartWidget
 
     protected function getData(): array
     {
-        // Default to current month if no filter provided
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
         $endDate   = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
 
-        // Cache key with date range
         $cacheKey = CacheKeys::MOST_SELLING_PRODUCTS_CHART . '_' .
             Carbon::parse($startDate)->format('Y-m-d') . '_' .
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
-            // Query top-selling products in the given period
             $products = DB::table('cart_product')
                 ->select('product_id', DB::raw('SUM(quantity) as total_sold'))
                 ->whereBetween('created_at', [$startDate, $endDate])
@@ -65,6 +62,6 @@ class MostSellingProductsCart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'bar'; // better for product ranking
+        return 'bar';
     }
 }

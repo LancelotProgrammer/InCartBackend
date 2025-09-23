@@ -335,12 +335,12 @@ class OrderService
             'order_id' => $order->id,
         ]);
 
-        $this->decrementBranchStock();
+        $this->createOrderAfterHook();
 
         return $order;
     }
 
-    private function decrementBranchStock(): void
+    private function createOrderAfterHook(): void
     {
         foreach ($this->payload->getCart()->cartProducts as $cartProduct) {
             $branchId = $this->payload->getBranchId();
@@ -350,6 +350,8 @@ class OrderService
                 ->where('product_id', $productId)
                 ->decrement('quantity', $cartProduct->quantity);
         }
+
+        Cache::deletePendingOrderCount();
     }
 
     public function createOrderBill(): array

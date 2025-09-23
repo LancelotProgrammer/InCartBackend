@@ -19,6 +19,7 @@ class AdvertisementsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->reorderable('order')
             ->columns([
                 TextColumn::make('id'),
@@ -31,7 +32,7 @@ class AdvertisementsTable
                 TextColumn::make('published_at')->dateTime(),
             ])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )

@@ -50,7 +50,7 @@ class AdvertisementFactory extends Factory
         return [
             'title' => $text,
             'description' => $text,
-            'order' => $this->faker->numberBetween(1, 100),
+            'order' => $this->faker->numberBetween(1, 50),
             'type' => $type->value,
             'url' => $link === AdvertisementLink::EXTERNAL->value ? $this->faker->url() : null,
             'published_at' => $this->faker->dateTimeBetween('-1 year', '-10 days'),

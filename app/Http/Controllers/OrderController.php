@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AuthorizeUser;
+use App\Pipes\CancelOrder;
 use App\Pipes\CreateOrder;
 use App\Pipes\CreateOrderBill;
 use App\Pipes\CreateOrderCheckout;
@@ -105,6 +107,25 @@ class OrderController extends Controller
                 CreateOrderCheckout::class,
             ])
             ->thenReturn());
+    }
+
+    /**
+     * @authenticated
+     *
+     * @bodyParam reason string The city ID. Example: test
+     *
+     * @group Order Actions
+     */
+    public function cancelOrder(Request $request): EmptySuccessfulResponseResource
+    {
+        Pipeline::send($request)
+            ->through([
+                ValidateUser::class,
+                new AuthorizeUser('create-order-checkout'),
+                CancelOrder::class,
+            ])
+            ->thenReturn();
+        return new EmptySuccessfulResponseResource();
     }
 
     /**

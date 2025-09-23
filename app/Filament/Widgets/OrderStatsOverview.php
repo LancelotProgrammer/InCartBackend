@@ -31,11 +31,9 @@ class OrderStatsOverview extends StatsOverviewWidget
 
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
-            // Average order subtotal
             $avgSubtotal = DB::table('orders')->avg('subtotal_price');
             $avgSubtotal = number_format($avgSubtotal, 2);
 
-            // Most used payment method
             $mostPayment = get_translatable_attribute(DB::table('orders')
                 ->join('payment_methods', 'orders.payment_method_id', '=', 'payment_methods.id')
                 ->select('payment_methods.title', DB::raw('COUNT(*) as total'))
@@ -43,14 +41,12 @@ class OrderStatsOverview extends StatsOverviewWidget
                 ->orderByDesc('total')
                 ->value('payment_methods.title')) ?? 'N/A';
 
-            // Most used delivery type
             $mostDeliveryType = DeliveryScheduledType::tryFrom(DB::table('orders')
                 ->select('delivery_scheduled_type', DB::raw('COUNT(*) as total'))
                 ->groupBy('delivery_scheduled_type')
                 ->orderByDesc('total')
                 ->value('delivery_scheduled_type'))->getLabel() ?? 'N/A';
 
-            // Most common cancel reason
             // $mostCancelReason = DB::table('orders')
             //     ->select('cancel_reason', DB::raw('COUNT(*) as total'))
             //     ->whereNotNull('cancel_reason')
@@ -58,7 +54,6 @@ class OrderStatsOverview extends StatsOverviewWidget
             //     ->orderByDesc('total')
             //     ->value('cancel_reason') ?? 'N/A';
 
-            // Most active delivery
             $mostActiveDelivery = DB::table('users')
                 ->select('name', DB::raw('COUNT(*) as total'))
                 ->join('orders', 'orders.delivery_id', '=', 'users.id')
@@ -66,7 +61,6 @@ class OrderStatsOverview extends StatsOverviewWidget
                 ->orderByDesc('total')
                 ->value('name') ?? 'N/A';
 
-            // Most active manager
             $mostActiveManager = DB::table('users')
                 ->select('name', DB::raw('COUNT(*) as total'))
                 ->join('orders', 'orders.manager_id', '=', 'users.id')
@@ -74,7 +68,6 @@ class OrderStatsOverview extends StatsOverviewWidget
                 ->orderByDesc('total')
                 ->value('name') ?? 'N/A';
 
-            // Most active branch
             $mostActiveBranch = get_translatable_attribute(DB::table('branches')
                 ->select('title', DB::raw('COUNT(*) as total'))
                 ->join('orders', 'orders.branch_id', '=', 'branches.id')
@@ -82,7 +75,6 @@ class OrderStatsOverview extends StatsOverviewWidget
                 ->orderByDesc('total')
                 ->value('title')) ?? 'N/A';
 
-            // Most active customer
             $mostActiveCustomer = DB::table('users')
                 ->select('name', DB::raw('COUNT(*) as total'))
                 ->join('orders', 'orders.customer_id', '=', 'users.id')

@@ -16,12 +16,11 @@ use App\Http\Controllers\UserNotificationController;
 use App\Http\Middleware\EnsureHeaderValidation;
 use App\Http\Middleware\SetCurrentBranch;
 use App\Http\Middleware\SetLocal;
-use App\Http\Middleware\UserStateValidation;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware([
-    SetLocal::class,
     // EnsureHeaderValidation::class,
+    SetLocal::class,
     SetCurrentBranch::class,
 ])->group(function () {
 
@@ -39,7 +38,7 @@ Route::middleware([
         Route::post('/reset-forget-password', [AuthenticationController::class, 'resetPasswordRequest']);
     });
 
-    Route::middleware(['auth:sanctum', UserStateValidation::class])->prefix('/auth')->group(function () {
+    Route::middleware(['auth:sanctum'])->prefix('/auth')->group(function () {
         Route::get('/email/request-verify', [AuthenticationController::class, 'getVerifyEmail']);
         Route::get('/user', [AuthenticationController::class, 'getUser']);
         // Route::post('/user/credentials', [AuthenticationController::class, 'addCredentials']);
@@ -48,16 +47,20 @@ Route::middleware([
         Route::post('/logout', [AuthenticationController::class, 'logout']);
     });
 
-    Route::middleware(['auth:sanctum', UserStateValidation::class])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/branches', [BranchController::class, 'getBranches']);
+
+        Route::post('/advertisements/{id}/click', [AdvertisementController::class, 'createAdvertisementClick']);
 
         Route::post('/order/bill', [OrderController::class, 'createOrderBill']);
         Route::post('/order', [OrderController::class, 'createOrder']);
         Route::post('/order/checkout', [OrderController::class, 'createOrderCheckout']);
+        Route::post('/order/{id}/cancel', [OrderController::class, 'cancelOrder']);
         Route::get('/order/{id}', [OrderController::class, 'getOrderDetails']);
-
         Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);
+
         Route::get('/users/notifications', [UserNotificationController::class, 'getUserNotifications']);
+        Route::post('/users/notifications/{id}/read', [UserNotificationController::class, 'markUserNotificationAsRead']);
 
         Route::get('/packages', [PackageController::class, 'getPackages']);
         Route::post('/packages', [PackageController::class, 'createPackage']);

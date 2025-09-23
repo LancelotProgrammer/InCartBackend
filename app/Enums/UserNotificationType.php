@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-enum NotificationType: int implements HasLabel
+enum UserNotificationType: int implements HasLabel
 {
     case GENERAL = 1;
     case SECURITY = 2;

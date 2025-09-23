@@ -32,7 +32,6 @@ class OrderStatusChart extends ChartWidget
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
-            // Get counts grouped by status
             $statusCounts = DB::table('orders')
                 ->select('order_status', DB::raw('COUNT(*) as total'))
                 ->whereBetween('created_at', [$startDate, $endDate])
@@ -40,7 +39,6 @@ class OrderStatusChart extends ChartWidget
                 ->pluck('total', 'order_status')
                 ->toArray();
 
-            // Prepare labels and data using OrderStatus enum
             $labels = [];
             $data = [];
 

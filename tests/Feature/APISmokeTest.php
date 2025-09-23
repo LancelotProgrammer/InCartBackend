@@ -87,7 +87,13 @@ test('branches endpoints', function () {
     $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/branches?city_id=1')->assertStatus(200);
 });
 
-test('orders and branches endpoints', function () {
+test('advertisement click endpoint', function () {
+    $this->actingAs($this->phoneUser, 'sanctum')
+        ->postJson('/api/v1/advertisements/1/click')
+        ->assertStatus(200);
+});
+
+test('orders endpoints', function () {
     $response = $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/users/addresses', [
         'title' => 'test address',
         'description' => 'This is a test address description.',
@@ -124,14 +130,29 @@ test('orders and branches endpoints', function () {
     $orderId = $response->json('data.id');
     $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/order/' . $orderId)->assertStatus(200);
 
+    $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/orders')->assertStatus(200);
+
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson("/api/v1/order/{$orderId}/cancel")->assertStatus(204);
+
     // TODO: not implemented yet
     // $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/order/checkout', [])->assertStatus(200);
 });
 
-test('user resources endpoints', function () {
-    $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/orders')->assertStatus(200);
-
+test('user notifications endpoints', function () {
     $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/notifications')->assertStatus(200);
+
+    $notificationId = DB::table('user_notifications')->insertGetId([
+        'title' => 'Test Notification',
+        'body' => 'This is a test notification',
+        'type' => 1,
+        'deep_link' => null,
+        'mark_as_read' => false,
+        'user_id' => $this->phoneUser->id,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson("/api/v1/users/notifications/{$notificationId}/read")->assertStatus(200);
 });
 
 test('packages endpoints', function () {

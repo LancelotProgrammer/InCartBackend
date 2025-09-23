@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders;
 
+use App\Constants\CacheKeys;
 use App\Enums\OrderStatus;
 use App\Filament\Resources\Orders\Pages\EditOrder;
 use App\Filament\Resources\Orders\Pages\ListOrders;
@@ -16,6 +17,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use UnitEnum;
 
 class OrderResource extends Resource
@@ -68,5 +70,19 @@ class OrderResource extends Resource
     public static function editPolicy(Model $record): bool
     {
         return !($record->order_status === OrderStatus::FINISHED || $record->order_status === OrderStatus::CANCELLED);
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return Cache::remember(CacheKeys::PENDING_ORDER_COUNT, now()->addDay(), function () {
+            return Order::whereDate('delivery_date', now()->toDateString())
+                ->where('order_status', '=', OrderStatus::PENDING->value)
+                ->count();
+        });
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'The number of pending orders for today';
     }
 }

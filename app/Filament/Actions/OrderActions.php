@@ -9,6 +9,9 @@ use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\Cache;
+use App\Services\DatabaseUserNotification;
+use App\Services\FirebaseFCM;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
@@ -37,18 +40,22 @@ class OrderActions
                 ->color('danger')
                 ->requiresConfirmation()
                 ->visible(function (Order $order) {
-                    return !($order->order_status === OrderStatus::FINISHED || $order->order_status === OrderStatus::CANCELLED);
+                    return $order->isCancelable();
                 })
                 ->schema([
                     Textarea::make('cancel_reason')->required()
                 ])
                 ->action(function (Order $order, array $data) {
                     $order->update([
-                        'order_status'     => OrderStatus::CANCELLED,
-                        'payment_status'   => $order->payment_status === PaymentStatus::PAID ? PaymentStatus::REFUNDED  : PaymentStatus::UNPAID,
-                        'delivery_status'  => DeliveryStatus::NOT_SHIPPED,
-                        'cancel_reason'    => $data['cancel_reason'],
+                        'order_status' => OrderStatus::CANCELLED,
+                        'payment_status' => $order->payment_status === PaymentStatus::PAID ? PaymentStatus::REFUNDED  : PaymentStatus::UNPAID,
+                        'delivery_status' => DeliveryStatus::NOT_SHIPPED,
+                        'cancel_reason' => $data['cancel_reason'],
                     ]);
+                    $order->save();
+                    FirebaseFCM::sendOrderStatusNotification($order);
+                    DatabaseUserNotification::sendOrderStatusNotification($order);
+                    Cache::deletePendingOrderCount();
                     Notification::make()
                         ->title("Order #{$order->order_number} has been cancelled.")
                         ->success()
@@ -76,6 +83,10 @@ class OrderActions
                         'order_status' => OrderStatus::PROCESSING,
                         'manager_id' => auth()->user()->id,
                     ]);
+                    $order->save();
+                    FirebaseFCM::sendOrderStatusNotification($order);
+                    DatabaseUserNotification::sendOrderStatusNotification($order);
+                    Cache::deletePendingOrderCount();
                     Notification::make()
                         ->title("Order #{$order->order_number} is approved and currently processing.")
                         ->success()
@@ -99,6 +110,10 @@ class OrderActions
                         'delivery_status' => DeliveryStatus::OUT_FOR_DELIVERY,
                         'delivery_id' => $data['delivery_id']
                     ]);
+                    $order->save();
+                    FirebaseFCM::sendOrderStatusNotification($order);
+                    DatabaseUserNotification::sendOrderStatusNotification($order);
+                    Cache::deletePendingOrderCount();
                     Notification::make()
                         ->title("Order #{$order->order_number} is out for delivery.")
                         ->info()
@@ -119,6 +134,10 @@ class OrderActions
                         'delivery_status' => DeliveryStatus::DELIVERED,
                         'payment_status' => PaymentStatus::PAID
                     ]);
+                    $order->save();
+                    FirebaseFCM::sendOrderStatusNotification($order);
+                    DatabaseUserNotification::sendOrderStatusNotification($order);
+                    Cache::deletePendingOrderCount();
                     Notification::make()
                         ->title("Order #{$order->order_number} has been completed.")
                         ->success()
@@ -155,10 +174,10 @@ class OrderActions
                         'customer'                => $order->customer->toJson(),
                         'delivery'                => $order->delivery?->toJson(),
                         'manager'                 => $order->manager?->toJson(),
-                        'branch'                  => $order->branch?->toJson(),
+                        'branch'                  => $order->branch->toJson(),
                         'coupon'                  => $order->coupon?->toJson(),
-                        'payment_method'          => $order->paymentMethod?->toJson(),
-                        'user_address'            => $order->userAddress?->toJson(),
+                        'payment_method'          => $order->paymentMethod->toJson(),
+                        'user_address'            => $order->userAddress->toJson(),
                         'cart'                    => $order->carts()->with('cartProducts.product')->get()->toJson(),
                     ]);
                     $order->delete();

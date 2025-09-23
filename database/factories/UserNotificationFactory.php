@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Enums\NotificationType;
+use App\Enums\UserNotificationType;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,7 +21,7 @@ class UserNotificationFactory extends Factory
         return [
             'title' => $this->faker->sentence(3),
             'body' => $this->faker->paragraph(),
-            'type' => $this->faker->randomElement(NotificationType::cases())->value,
+            'type' => $this->faker->randomElement(UserNotificationType::cases())->value,
             'deep_link' => $this->faker->url(),
             'mark_as_read' => $this->faker->boolean() ? 'yes' : 'no',
             'file_id' => File::factory(),

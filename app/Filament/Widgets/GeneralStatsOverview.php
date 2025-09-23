@@ -21,17 +21,14 @@ class GeneralStatsOverview extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        // Default to current month if no filter provided
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
         $endDate   = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
 
-        // Cache key (unique per date range)
         $cacheKey = CacheKeys::GENERAL_STATS_OVERVIEW . '_' .
             Carbon::parse($startDate)->format('Y-m-d') . '_' .
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
-            // Example queries (adjust table names if needed)
             $totalOrders   = DB::table('orders')->whereBetween('created_at', [$startDate, $endDate])->count();
             $totalProducts = DB::table('products')->whereBetween('created_at', [$startDate, $endDate])->count();
             $totalUsers    = DB::table('users')->whereBetween('created_at', [$startDate, $endDate])->where('role_id', Role::where('code', '=', 'user')->first()->id)->count();

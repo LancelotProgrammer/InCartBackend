@@ -132,4 +132,9 @@ class Order extends Model  implements AuditableContract
     {
         return $this->morphMany(Audit::class, 'auditable');
     }
+
+    public function isCancelable(): bool
+    {
+        return !($this->order_status === OrderStatus::FINISHED || $this->order_status === OrderStatus::CANCELLED || $this->order_status === OrderStatus::DELIVERING);
+    }
 }

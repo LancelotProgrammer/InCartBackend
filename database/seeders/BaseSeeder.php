@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\CouponType;
 use App\Enums\SettingType;
 use App\Models\Advertisement;
+use App\Models\AdvertisementUser;
 use App\Models\Branch;
 use App\Models\BranchProduct;
 use App\Models\Cart;
@@ -422,5 +423,19 @@ class BaseSeeder extends Seeder
                         + $order->tax_amount,
                 ]);
             });
+
+        $this->command->info('Seeding advertisement users');
+        $advertisements = Advertisement::all()->toArray();
+        $users = User::all();
+        $randomUsers = $users->random(rand(floor($users->count() * 0.3), floor($users->count() * 0.5)));
+        foreach ($randomUsers as $user) {
+            $randomAds = array_rand($advertisements, rand(1, 5));
+            foreach ((array) $randomAds as $adIndex) {
+                AdvertisementUser::firstOrCreate([
+                    'user_id' => $user->id,
+                    'advertisement_id' => $advertisements[$adIndex]['id'],
+                ]);
+            }
+        }
     }
 }

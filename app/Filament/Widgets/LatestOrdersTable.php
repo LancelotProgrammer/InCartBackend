@@ -86,7 +86,9 @@ class LatestOrdersTable extends TableWidget
                 OrderActions::configure(true),
             ])
             ->toolbarActions([
-                //
+                Action::make('Go')
+                    ->color('primary')
+                    ->url(fn() => route('filament.admin.resources.orders.index'), true),
             ]);
     }
 }

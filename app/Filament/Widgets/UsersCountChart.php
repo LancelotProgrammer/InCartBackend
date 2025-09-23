@@ -24,17 +24,14 @@ class UsersCountChart extends ChartWidget
 
     protected function getData(): array
     {
-        // Default to current month if no filter provided
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
         $endDate   = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
 
-        // Cache key with date range suffix
         $cacheKey = CacheKeys::USERS_COUNT_CHART . '_' .
             Carbon::parse($startDate)->format('Y-m-d') . '_' .
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
-            // Query: count new users per day
             $users = DB::table('users')
                 ->selectRaw("DATE(created_at) as date, COUNT(*) as total")
                 ->whereBetween('created_at', [$startDate, $endDate])
@@ -46,7 +43,6 @@ class UsersCountChart extends ChartWidget
             $labels = [];
             $data = [];
 
-            // Fill in every day in the period
             $period = CarbonPeriod::create($startDate, $endDate);
             foreach ($period as $date) {
                 $day = $date->format('Y-m-d');

@@ -21,6 +21,7 @@ class UsersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 Split::make([
                     TextColumn::make('name')

@@ -80,12 +80,12 @@ class OrderTrendChart extends ChartWidget
                     $period = CarbonPeriod::create($startDate, '1 month', $endDate);
                     foreach ($period as $date) {
                         $month = $date->format('Y-m');
-                        $labels[] = $date->format('M Y'); // e.g., Sep 2025
+                        $labels[] = $date->format('M Y');
                         $data[] = $orders[$month] ?? 0;
                     }
                     break;
 
-                default: // per_day with hours
+                default:
                     $ordersPerHour = DB::table('orders')
                         ->selectRaw('HOUR(created_at) as hour, COUNT(*) as total')
                         ->whereBetween('created_at', [$startDate, $endDate])

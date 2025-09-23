@@ -32,25 +32,26 @@ class MostClickedAdvertisements extends ChartWidget
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
-            // Top clicked ads query
-            $ads = DB::table('advertisements')
-                ->select('title', DB::raw('COUNT(*) as total_clicks'))
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->groupBy('title')
+            $ads = DB::table('advertisement_user')
+                ->join('advertisements', 'advertisement_user.advertisement_id', '=', 'advertisements.id')
+                ->select('advertisements.title as title', DB::raw('COUNT(advertisement_user.id) as total_clicks'))
+                ->whereBetween('advertisement_user.created_at', [$startDate, $endDate])
+                ->groupBy('advertisements.id', 'advertisements.title')
                 ->orderByDesc('total_clicks')
                 ->limit(10)
                 ->pluck('total_clicks', 'title')
                 ->toArray();
 
-            $labels = [];
-            $data   = [];
+            $labels = $data = [];
+            $locale = App::getLocale();
 
             foreach ($ads as $titleJson => $clicks) {
                 $titleArray = json_decode($titleJson, true);
-                $locale = App::getLocale();
-                $label = $titleArray[$locale] ?? reset($titleArray) ?? 'Unknown';
+                $label = is_array($titleArray)
+                    ? ($titleArray[$locale] ?? reset($titleArray) ?? $titleJson)
+                    : $titleJson;
                 $labels[] = $label;
-                $data[] = $clicks;
+                $data[] = (int) $clicks;
             }
 
             return [
@@ -67,6 +68,6 @@ class MostClickedAdvertisements extends ChartWidget
 
     protected function getType(): string
     {
-        return 'bar'; // bar chart is better for ranking ads
+        return 'bar';
     }
 }

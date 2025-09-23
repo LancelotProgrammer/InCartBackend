@@ -36,6 +36,11 @@ class Advertisement extends Model
         return $this->belongsToMany(File::class, 'advertisement_file')->using(AdvertisementFile::class);
     }
 
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'advertisement_user')->using(AdvertisementUser::class);
+    }
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
