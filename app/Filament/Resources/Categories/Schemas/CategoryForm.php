@@ -26,6 +26,7 @@ class CategoryForm
                             ->searchable(),
                         FileUpload::make('files')
                             ->columnSpanFull()
+                            ->image()
                             ->multiple()
                             ->disk('public')
                             ->directory('advertisements')

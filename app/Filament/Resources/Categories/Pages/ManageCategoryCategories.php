@@ -35,6 +35,7 @@ class ManageCategoryCategories extends ManageRelatedRecords
                 TranslationComponent::configure('description'),
                 FileUpload::make('files')
                     ->columnSpanFull()
+                    ->image()
                     ->multiple()
                     ->disk('public')
                     ->directory('advertisements')

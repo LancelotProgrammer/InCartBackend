@@ -95,7 +95,7 @@ class ProductForm
                             return $counter - 1 <= 4 ? $counter - 1 : 5;
                         })
                         ->schema([
-                            ...$record !== null ? $entryArray : [FileUpload::make('files')->multiple()->disk('public')->directory('products')->visibility('public')],
+                            ...$record !== null ? $entryArray : [FileUpload::make('files')->image()->multiple()->disk('public')->directory('products')->visibility('public')],
                         ]),
                 ];
 
