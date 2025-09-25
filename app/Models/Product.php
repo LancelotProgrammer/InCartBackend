@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UnitType;
+use App\Services\Cache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -22,6 +23,13 @@ class Product extends Model
     ];
 
     public array $translatable = ['title', 'description'];
+
+    protected static function booted(): void
+    {
+        static::created(fn(Product $product) => Cache::deleteHomeCache());
+        static::updated(fn(Product $product) => Cache::deleteHomeCache());
+        static::deleted(fn(Product $product) => Cache::deleteHomeCache());
+    }
 
     public function files(): BelongsToMany
     {

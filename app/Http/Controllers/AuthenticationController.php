@@ -795,7 +795,7 @@ class AuthenticationController extends Controller
 
     public function validateUserStatus(User $user): void
     {
-        if ($user->blocked_at !== null) {
+        if ($user->isBlocked()) {
             throw new AuthenticationException(
                 trans('auth.user_is_blocked'),
                 'User is blocked'

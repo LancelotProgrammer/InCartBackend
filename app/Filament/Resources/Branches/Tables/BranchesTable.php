@@ -25,7 +25,7 @@ class BranchesTable
                 TextColumn::make('published_at')->dateTime(),
             ])
             ->groups([
-                'city.name',
+                'city.id',
             ])
             ->filters([
                 //

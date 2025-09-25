@@ -7,6 +7,7 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
+use App\Models\PaymentMethod;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Cache;
@@ -71,6 +72,17 @@ class OrderActions
                     return $order->order_status === OrderStatus::PENDING;
                 })
                 ->action(function (Order $order) {
+                    if (
+                        PaymentMethod::where('id', '=', $order->payment_method_id)->value('code') !== 'pay-on-delivery' &&
+                        $order->payment_status === PaymentStatus::UNPAID
+                    ) {
+                        Notification::make()
+                            ->title("Order #{$order->order_number} cannot be approved.")
+                            ->body("Order is not checked out")
+                            ->warning()
+                            ->send();
+                        return;
+                    }
                     if (!$order->delivery_date->isSameDay(now())) {
                         Notification::make()
                             ->title("Order #{$order->order_number} cannot be approved.")

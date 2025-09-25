@@ -25,7 +25,7 @@ class OrdersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->poll('10s')
+            ->poll('30s')
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('branch.title')->toggleable(isToggledHiddenByDefault: true),
@@ -36,7 +36,7 @@ class OrdersTable
                 TextColumn::make('payment_status')->badge(),
                 TextColumn::make('delivery_status')->badge(),
 
-                TextColumn::make('total_price')->numeric(),
+                TextColumn::make('total_price')->money('SAR', 2),
                 TextColumn::make('delivery_date')->dateTime(),
 
                 TextColumn::make('created_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
@@ -53,18 +53,7 @@ class OrdersTable
                     ->label('Filter'),
             )
             ->filters([
-                SelectFilter::make('order_status')->options(OrderStatus::class),
-                SelectFilter::make('payment_status')->options(PaymentStatus::class),
-                SelectFilter::make('delivery_status')->options(DeliveryStatus::class),
-                SelectFilter::make('delivery_scheduled_type')->options(DeliveryScheduledType::class),
-                TernaryFilter::make('today')
-                    ->trueLabel('todays orders')
-                    ->falseLabel('all orders')
-                    ->queries(
-                        true: fn(Builder $query) => $query->whereDate('delivery_date', '=', now()),
-                        false: fn(Builder $query) => $query,
-                        blank: fn(Builder $query) => $query,
-                    ),
+                Filter::make('is_today')->query(fn (Builder $query): Builder => $query->whereDate('delivery_date', '=', now())),
                 Filter::make('created_at')
                     ->schema([
                         DatePicker::make('created_from'),
@@ -81,6 +70,10 @@ class OrdersTable
                                 fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
+                SelectFilter::make('order_status')->options(OrderStatus::class),
+                SelectFilter::make('payment_status')->options(PaymentStatus::class),
+                SelectFilter::make('delivery_status')->options(DeliveryStatus::class),
+                SelectFilter::make('delivery_scheduled_type')->options(DeliveryScheduledType::class),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 ViewAction::make(),

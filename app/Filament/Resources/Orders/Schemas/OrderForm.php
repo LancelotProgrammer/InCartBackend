@@ -32,12 +32,12 @@ class OrderForm
                         TextEntry::make('payment_status')->badge(),
                         TextEntry::make('delivery_status')->badge(),
 
-                        TextEntry::make('subtotal_price')->numeric(),
-                        TextEntry::make('coupon_discount')->numeric(),
-                        TextEntry::make('delivery_fee')->numeric(),
-                        TextEntry::make('service_fee')->numeric(),
-                        TextEntry::make('tax_amount')->numeric(),
-                        TextEntry::make('total_price')->numeric(),
+                        TextEntry::make('subtotal_price')->money('SAR', 2),
+                        TextEntry::make('coupon_discount')->money('SAR', 2),
+                        TextEntry::make('delivery_fee')->money('SAR', 2),
+                        TextEntry::make('service_fee')->money('SAR', 2),
+                        TextEntry::make('tax_amount')->money('SAR', 2),
+                        TextEntry::make('total_price')->money('SAR', 2),
 
                         TextEntry::make('created_at')->dateTime(),
 
@@ -50,13 +50,19 @@ class OrderForm
                         TextEntry::make('manager.name')->label('Manager'),
                         TextEntry::make('branch.title')->label('Branch'),
                         TextEntry::make('coupon.title')->label('Coupon'),
-                        TextEntry::make('paymentMethod.title')->label('Payment Method'),
                     ]),
 
                 Section::make('Edit')
-                    ->columns(2)
+                    ->columns(3)
                     ->schema([
-                        TextInput::make('notes')->columnSpanFull(),
+                        TextInput::make('notes'),
+                        Select::make('payment_method_id')
+                            ->relationship(
+                                'paymentMethod',
+                                'title',
+                                fn(Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
+                            )
+                            ->required(),
                         Select::make('delivery_id')->options(User::where('role_id', '=', Role::where('code', '=', 'delivery')->first()->id)->pluck('name', 'id')),
                         Select::make('delivery_scheduled_type')
                             ->afterStateUpdated(function (Set $set) {
@@ -71,7 +77,8 @@ class OrderForm
                             })
                             ->disabled(function (Get $get) {
                                 return $get('delivery_scheduled_type') === DeliveryScheduledType::IMMEDIATE;
-                            }),
+                            })
+                            ->minDate(now()),
                         Select::make('user_address_id')
                             ->relationship(
                                 'userAddress',

@@ -11,6 +11,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\HtmlString;
@@ -35,11 +36,24 @@ enum CouponType: int implements HasLabel
                     ->columnSpan(2)
                     ->columns(3)
                     ->schema([
-                        TextInput::make('value')->rules(['required', 'integer', 'min:1']),
-                        DateTimePicker::make('start_date')->minDate(now()->subYears(150)),
-                        DateTimePicker::make('end_date')->minDate(now()->subYears(150)),
-                        TextInput::make('use_limit')->rules(['required', 'integer', 'min:1']),
-                        TextInput::make('user_limit')->rules(['required', 'integer', 'min:1']),
+                        TextInput::make('value')
+                            ->required()
+                            ->numeric()
+                            ->minValue(1),
+                        DateTimePicker::make('start_date')
+                            ->required()
+                            ->minDate(now()),
+                        DateTimePicker::make('end_date')
+                            ->required()
+                            ->after(fn(Get $get) => $get('start_date')),
+                        TextInput::make('use_limit')
+                            ->required()
+                            ->numeric()
+                            ->minValue(1),
+                        TextInput::make('user_limit')
+                            ->required()
+                            ->numeric()
+                            ->minValue(1),
                     ]),
                 Fieldset::make('Description')
                     ->columnSpan(1)
@@ -65,7 +79,7 @@ enum CouponType: int implements HasLabel
         return match ($this) {
             self::TIMED => [
                 'value' => ['required', 'integer', 'min:1'],
-                'start_date' => ['required', 'date'],
+                'start_date' => ['required', 'date', 'after_or_equal:now'],
                 'end_date' => ['required', 'date', 'after:start_date'],
                 'use_limit' => ['required', 'integer', 'min:1'],
                 'user_limit' => ['required', 'integer', 'min:1'],

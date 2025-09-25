@@ -26,6 +26,9 @@ class CouponsTable
                 TextColumn::make('branch.title'),
                 TextColumn::make('published_at')->dateTime(),
             ])
+            ->groups([
+                'branch.id',
+            ])
             ->filtersTriggerAction(
                 fn(Action $action) => $action
                     ->button()

@@ -19,6 +19,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class CouponForm
 {
@@ -39,14 +40,13 @@ class CouponForm
                                     $set('code', Str::random(8));
                                 }),
                             ]))
-                            ->rules([
-                                'min:5',
-                                'max:15',
-                                'regex:/^(?!.* {2})[\p{Arabic}a-zA-Z0-9 ]+$/u',
-                            ])
+                            ->minLength(5)
+                            ->maxLength(15)
+                            ->regex('/^(?!.* {2})[\p{Arabic}a-zA-Z0-9 ]+$/u')
+                            ->scopedUnique(modifyQueryUsing: function ($query, $get) {
+                                return $query->where('branch_id', $get('branch_id'));
+                            })
                             ->dehydrateStateUsing(fn(?string $state) => $state ? trim($state) : null)
-                            ->password()
-                            ->revealable()
                             ->required(),
                         Select::make('branch_id')
                             ->relationship('branch', 'title')

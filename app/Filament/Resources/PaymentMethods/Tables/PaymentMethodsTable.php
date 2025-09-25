@@ -24,6 +24,9 @@ class PaymentMethodsTable
                 TextColumn::make('published_at'),
                 TextColumn::make('branch.title'),
             ])
+            ->groups([
+                'branch.id',
+            ])
             ->filtersTriggerAction(
                 fn (Action $action) => $action
                     ->button()
