@@ -5,12 +5,14 @@ namespace App\Filament\Resources\Advertisements\Schemas;
 use App\Enums\AdvertisementLink;
 use App\Enums\AdvertisementType;
 use App\Filament\Components\TranslationComponent;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 
 class AdvertisementForm
@@ -34,10 +36,19 @@ class AdvertisementForm
                         Select::make('type')->options(AdvertisementType::class)
                             ->afterStateUpdated(function (Set $set) {
                                 $set('link', null);
+                                $set('category_id', null);
+                                $set('product_id', null);
+                                $set('url', null);
+                                $set('file', null);
                             })
                             ->live()
                             ->required(),
                         Select::make('link')
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('category_id', null);
+                                $set('product_id', null);
+                                $set('url', null);
+                            })
                             ->options(function (Get $get) {
                                 return match ($get('type')) {
                                     AdvertisementType::STATUS => [
@@ -89,20 +100,44 @@ class AdvertisementForm
                             }),
                     ]),
                 Section::make('Files')
-                    ->hidden(function (Get $get) {
-                        return (int)$get('type') === AdvertisementType::OFFER->value;
-                    })
                     ->columnSpanFull()
+                    ->hidden(function (Get $get) {
+                        return $get('type') === AdvertisementType::OFFER;
+                    })
                     ->schema([
-                        FileUpload::make('files')
-                            ->multiple(function (Get $get) {
-                                return (int)$get('type') !== AdvertisementType::VIDEO->value;
-                            })
+                        FileUpload::make('file')
+                            ->image()
                             ->required()
                             ->disk('public')
                             ->directory('advertisements')
                             ->visibility('public'),
                     ]),
+                Section::make('Preview')
+                    ->columnSpanFull()
+                    ->afterHeader([
+                        Action::make('refresh'),
+                    ])
+                    ->columns(function (Get $get) {
+                        return match ($get('type')) {
+                            AdvertisementType::STATUS => 2,
+                            AdvertisementType::VIDEO => 1,
+                            AdvertisementType::OFFER => 1,
+                            AdvertisementType::CARD => 1,
+                            default => 1,
+                        };
+                    })
+                    ->schema(function (Get $get) {
+                        return match ($get('type')) {
+                            AdvertisementType::STATUS => [
+                                View::make('advertisement-preview.status-circle'),
+                                View::make('advertisement-preview.status'),
+                            ],
+                            AdvertisementType::VIDEO => [View::make('advertisement-preview.video')],
+                            AdvertisementType::OFFER => [View::make('advertisement-preview.offer')],
+                            AdvertisementType::CARD => [View::make('advertisement-preview.card')],
+                            default => ['pleas select a type'],
+                        };
+                    }),
             ]);
     }
 }

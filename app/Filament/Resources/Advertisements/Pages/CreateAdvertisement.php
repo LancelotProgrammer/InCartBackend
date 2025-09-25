@@ -13,9 +13,9 @@ class CreateAdvertisement extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        $uploadedPaths = $data['files'] ?? [];
+        $uploadedPaths = $data['file'] ?? [];
 
-        unset($data['files']);
+        unset($data['file']);
 
         $model = static::getModel()::create($data);
 
