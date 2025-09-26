@@ -12,6 +12,7 @@ use App\Models\Cart;
 use App\Models\CartProduct;
 use App\Models\City;
 use App\Models\Coupon;
+use App\Models\Feedback;
 use App\Models\File;
 use App\Models\Order;
 use App\Models\PaymentMethod;
@@ -19,6 +20,7 @@ use App\Models\Permission;
 use App\Models\Product;
 use App\Models\Role;
 use App\Models\Setting;
+use App\Models\Ticket;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\UserNotification;
@@ -434,6 +436,26 @@ class BaseSeeder extends Seeder
                 AdvertisementUser::firstOrCreate([
                     'user_id' => $user->id,
                     'advertisement_id' => $advertisements[$adIndex]['id'],
+                ]);
+            }
+        }
+
+        $this->command->info('Seeding feedback and tickets');
+        $users = User::all();
+        $randomUsers = $users->random(rand(floor($users->count() * 0.3), floor($users->count() * 0.5)));
+        foreach ($randomUsers as $user) {
+            foreach ((array) $randomAds as $adIndex) {
+                Feedback::create([
+                    'user_id' => $user->id,
+                    'feedback' => $this->faker->sentence(),
+                ]);
+            }
+        }
+        foreach ($randomUsers as $user) {
+            foreach ((array) $randomAds as $adIndex) {
+                Ticket::create([
+                    'user_id' => $user->id,
+                    'question' => $this->faker->sentence(),
                 ]);
             }
         }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\Ticket;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Kreait\Firebase\Messaging\CloudMessage;
@@ -22,7 +23,6 @@ class FirebaseFCM
             return;
         }
 
-        // TODO: add translation
         [$title, $body] = match ($order->order_status->value) {
             2 => ['Order Processing', 'Your order is being processed.'],
             3 => ['Order Delivering', 'Your order is on the way!'],
@@ -31,9 +31,38 @@ class FirebaseFCM
             default => throw new InvalidArgumentException('Can not create FirebaseFCM for this order'),
         };
 
-        $notification = Notification::create($title, $body);
+        $notification = Notification::create(
+            $title,
+            $body
+        );
 
-        // TODO: use bulk
+        foreach ($tokens as $token) {
+            $message = CloudMessage::new()
+                ->withNotification($notification)
+                ->toToken($token);
+            try {
+                $messaging->send($message);
+            } catch (Throwable $e) {
+                Log::channel('error')->error("Firebase notification failed for token {$token}: " . $e->getMessage());
+            }
+        }
+    }
+
+    public static function sendTicketNotification(Ticket $ticket, string $reply): void
+    {
+        $messaging = Firebase::messaging();
+
+        $tokens = $ticket->user->firebaseTokens()->pluck('firebase_token')->toArray();
+
+        if (empty($tokens)) {
+            return;
+        }
+
+        $notification = Notification::create(
+            'We’ve replied to your support request',
+            $reply
+        );
+
         foreach ($tokens as $token) {
             $message = CloudMessage::new()
                 ->withNotification($notification)

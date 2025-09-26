@@ -190,6 +190,18 @@ test('favorites endpoints', function () {
     $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/favorites/products/1')->assertStatus(204);
 });
 
+test('tickets and feedbacks endpoints', function () {
+    $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/tickets')->assertStatus(200);
+
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/users/tickets',[
+        'question' => 'question',
+    ])->assertStatus(204);
+
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/users/feedback', [
+        'feedback' => 'feedback',
+    ])->assertStatus(204);
+});
+
 test('addresses endpoints', function () {
     $response = $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/users/addresses', [
         'title' => 'test address',

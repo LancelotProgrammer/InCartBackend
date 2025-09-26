@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\UserNotificationType;
 use App\Models\Order;
+use App\Models\Ticket;
 use App\Models\UserNotification;
 use InvalidArgumentException;
 
@@ -23,6 +24,18 @@ class DatabaseUserNotification
             'user_id' => $order->customer->id,
             'title' => $title,
             'body' => $body,
+            'type' => UserNotificationType::GENERAL->value,
+            'deep_link' => 'temporarily_link', // TODO: fix deep link
+            'mark_as_read' => false,
+        ]);
+    }
+
+    public static function sendTicketNotification(Ticket $ticket, string $reply): void
+    {
+        UserNotification::create([
+            'user_id' => $ticket->customer->id,
+            'title' => 'We’ve replied to your support request',
+            'body' => $reply,
             'type' => UserNotificationType::GENERAL->value,
             'deep_link' => 'temporarily_link', // TODO: fix deep link
             'mark_as_read' => false,

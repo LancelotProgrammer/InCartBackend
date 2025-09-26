@@ -7,12 +7,17 @@ use Illuminate\Support\Facades\DB;
 
 class Cache
 {
-    public static function deleteHomeCache(): void 
+    public static function deleteHomeCache(): void
     {
         DB::table('cache')->whereLike('key', '%' . CacheKeys::HOME . '%')->delete();
     }
 
-    public static function deletePendingOrderCount(): void 
+    public static function deleteTodaySupportCount(): void
+    {
+        DB::table('cache')->whereLike('key', '%' . CacheKeys::TODAY_SUPPORT_COUNT . '%')->delete();
+    }
+
+    public static function deletePendingOrderCount(): void
     {
         DB::table('cache')->whereLike('key', '%' . CacheKeys::PENDING_ORDER_COUNT . '%')->delete();
     }

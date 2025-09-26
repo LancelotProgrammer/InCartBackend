@@ -11,6 +11,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TicketAndFeedbackController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\UserNotificationController;
 use App\Http\Middleware\EnsureHeaderValidation;
@@ -78,6 +79,10 @@ Route::middleware([
         Route::post('/users/addresses', [UserAddressController::class, 'createUserAddress']);
         Route::put('/users/addresses/{id}', [UserAddressController::class, 'updateUserAddress']);
         Route::delete('/users/addresses/{id}', [UserAddressController::class, 'deleteUserAddress']);
+
+        Route::get('/users/tickets', [TicketAndFeedbackController::class, 'getTickets']);
+        Route::post('/users/tickets', [TicketAndFeedbackController::class, 'createTicket']);
+        Route::post('/users/feedback', [TicketAndFeedbackController::class, 'createFeedback']);
     });
 
     Route::get('/cities', [CityController::class, 'getCities']);

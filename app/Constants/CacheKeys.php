@@ -14,4 +14,5 @@ class CacheKeys
     public const MOST_SELLING_PRODUCTS_CHART = 'most_selling_products_chart';
     public const USERS_COUNT_CHART = 'users_count_chart';
     public const PENDING_ORDER_COUNT = 'pending_order_count';
+    public const TODAY_SUPPORT_COUNT = 'today_support_count';
 }
