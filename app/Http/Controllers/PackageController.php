@@ -21,6 +21,7 @@ class PackageController extends Controller
 {
     /**
      * @authenticated
+     *
      * @group Packages Actions
      *
      * @queryParam product_id int Optional. Filter to check if product exists in packages.
@@ -38,6 +39,7 @@ class PackageController extends Controller
 
     /**
      * @authenticated
+     *
      * @group Packages Actions
      *
      * @bodyParam title string required The package name.
@@ -56,9 +58,11 @@ class PackageController extends Controller
 
     /**
      * @authenticated
+     *
      * @group Packages Actions
      *
      * @urlParam id int required The package ID.
+     *
      * @bodyParam title string optional The package name.
      * @bodyParam description string optional The package description.
      */
@@ -75,6 +79,7 @@ class PackageController extends Controller
 
     /**
      * @authenticated
+     *
      * @group Packages Actions
      *
      * @urlParam id int required The package ID.
@@ -92,6 +97,7 @@ class PackageController extends Controller
 
     /**
      * @authenticated
+     *
      * @group Packages Actions
      *
      * @urlParam id int required The package ID.
@@ -109,6 +115,7 @@ class PackageController extends Controller
 
     /**
      * @authenticated
+     *
      * @group Packages Actions
      *
      * @urlParam package_id int required The package ID.
@@ -124,11 +131,12 @@ class PackageController extends Controller
             ])
             ->thenReturn();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @authenticated
+     *
      * @group Packages Actions
      *
      * @urlParam package_id int required The package ID.
@@ -144,6 +152,6 @@ class PackageController extends Controller
             ])
             ->thenReturn();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 }

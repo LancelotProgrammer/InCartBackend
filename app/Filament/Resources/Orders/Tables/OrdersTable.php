@@ -16,7 +16,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -48,7 +47,7 @@ class OrdersTable
                 TextColumn::make('userAddress.title')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -63,11 +62,11 @@ class OrdersTable
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
                 SelectFilter::make('order_status')->options(OrderStatus::class),
@@ -80,7 +79,7 @@ class OrdersTable
                 Action::make('invoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
-                    ->url(fn(Order $record) => route('order.invoice', ['id' => $record->id]), true),
+                    ->url(fn (Order $record) => route('order.invoice', ['id' => $record->id]), true),
                 OrderActions::configure(true),
             ])
             ->toolbarActions([

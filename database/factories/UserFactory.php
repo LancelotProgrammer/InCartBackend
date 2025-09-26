@@ -6,7 +6,6 @@ use App\Models\City;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Unique;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -22,7 +21,7 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'phone' => '+9665' . fake()->unique()->numerify('########'),
+            'phone' => '+9665'.fake()->unique()->numerify('########'),
             'phone_verified_at' => now(),
             'role_id' => Role::where('code', '=', 'user')->value('id'),
             'city_id' => City::inRandomOrder()->first()->id,
@@ -34,7 +33,7 @@ class UserFactory extends Factory
      */
     public function emailUser(): static
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'phone' => null,
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'), // default password
@@ -48,10 +47,10 @@ class UserFactory extends Factory
      */
     public function phoneUser(): static
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'email' => null,
             'password' => null,
-            'phone' => '+9665' . fake()->unique()->numerify('########'),
+            'phone' => '+9665'.fake()->unique()->numerify('########'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
             'phone_verified_at' => now(),
         ]);

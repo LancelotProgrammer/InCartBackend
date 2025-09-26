@@ -15,7 +15,7 @@ class BranchOrdersChart extends ChartWidget
 
     protected static ?int $sort = 7;
 
-    protected int | string | array $columnSpan = 2;
+    protected int|string|array $columnSpan = 2;
 
     protected ?string $heading = 'Branch Orders Chart';
 
@@ -24,10 +24,10 @@ class BranchOrdersChart extends ChartWidget
     protected function getData(): array
     {
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
-        $endDate   = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
+        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
 
-        $cacheKey = CacheKeys::BRANCH_ORDERS_CHART . '_' .
-            Carbon::parse($startDate)->format('Y-m-d') . '_' .
+        $cacheKey = CacheKeys::BRANCH_ORDERS_CHART.'_'.
+            Carbon::parse($startDate)->format('Y-m-d').'_'.
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
@@ -39,7 +39,7 @@ class BranchOrdersChart extends ChartWidget
                 ->get();
 
             $labels = [];
-            $data   = [];
+            $data = [];
 
             foreach ($orders as $order) {
                 $branchTitle = DB::table('branches')
@@ -47,14 +47,14 @@ class BranchOrdersChart extends ChartWidget
                     ->value('title');
 
                 $labels[] = get_translatable_attribute($branchTitle);
-                $data[]   = $order->total;
+                $data[] = $order->total;
             }
 
             return [
                 'datasets' => [
                     [
                         'label' => 'Orders per Branch',
-                        'data'  => $data,
+                        'data' => $data,
                     ],
                 ],
                 'labels' => $labels,

@@ -42,9 +42,9 @@ class BranchProduct extends Pivot
 
     protected static function booted(): void
     {
-        static::created(fn(BranchProduct $productBranch) => Cache::deleteHomeCache());
-        static::updated(fn(BranchProduct $productBranch) => Cache::deleteHomeCache());
-        static::deleted(fn(BranchProduct $productBranch) => Cache::deleteHomeCache());
+        static::created(fn (BranchProduct $productBranch) => Cache::deleteHomeCache());
+        static::updated(fn (BranchProduct $productBranch) => Cache::deleteHomeCache());
+        static::deleted(fn (BranchProduct $productBranch) => Cache::deleteHomeCache());
     }
 
     public function branch(): BelongsTo

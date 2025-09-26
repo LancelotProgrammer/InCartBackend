@@ -17,7 +17,7 @@ class AddProductToFavorites
 
         $product = Product::find($productId);
 
-        if (!$product) {
+        if (! $product) {
             throw new LogicalException('Product not found.');
         }
 
@@ -27,7 +27,7 @@ class AddProductToFavorites
 
         Favorite::create([
             'user_id' => $userId,
-            'product_id' => $productId
+            'product_id' => $productId,
         ]);
 
         return $next([]);

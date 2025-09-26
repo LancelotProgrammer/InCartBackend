@@ -30,7 +30,7 @@ class ProductForm
                 $counter = 1;
                 if ($record !== null) {
                     foreach ($record->files as $file) {
-                        $entryArray[] = ImageEntry::make('advertisement.file.number.' . $counter)->label('file ' . $counter)->state($file->url);
+                        $entryArray[] = ImageEntry::make('advertisement.file.number.'.$counter)->label('file '.$counter)->state($file->url);
                         $counter++;
                     }
                 }
@@ -78,7 +78,7 @@ class ProductForm
                                 if ($record === null) {
                                     $items = [];
                                     foreach (Branch::all() as $index => $branch) {
-                                        $items['item' . ($index + 1)] = [
+                                        $items['item'.($index + 1)] = [
                                             'branch_id' => $branch->id,
                                         ];
                                     }

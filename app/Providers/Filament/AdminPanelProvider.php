@@ -33,6 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->spa()
+            ->databaseNotifications()
+            ->databaseNotificationsPolling(null)
             ->maxContentWidth(Width::Full)
             ->colors([
                 'primary' => Color::Blue,

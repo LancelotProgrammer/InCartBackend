@@ -6,9 +6,7 @@ use App\Filament\Components\TranslationComponent;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Illuminate\Validation\Rule;
 
 class PaymentMethodForm
 {

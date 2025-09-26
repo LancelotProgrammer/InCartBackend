@@ -3,12 +3,12 @@
 namespace App\Filament\Widgets;
 
 use App\Constants\CacheKeys;
+use Carbon\CarbonPeriod;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Carbon\CarbonPeriod;
 
 class UsersCountChart extends ChartWidget
 {
@@ -16,7 +16,7 @@ class UsersCountChart extends ChartWidget
 
     protected static ?int $sort = 5;
 
-    protected int | string | array $columnSpan = 2;
+    protected int|string|array $columnSpan = 2;
 
     protected ?string $heading = 'Users Count Chart';
 
@@ -25,15 +25,15 @@ class UsersCountChart extends ChartWidget
     protected function getData(): array
     {
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
-        $endDate   = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
+        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
 
-        $cacheKey = CacheKeys::USERS_COUNT_CHART . '_' .
-            Carbon::parse($startDate)->format('Y-m-d') . '_' .
+        $cacheKey = CacheKeys::USERS_COUNT_CHART.'_'.
+            Carbon::parse($startDate)->format('Y-m-d').'_'.
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
             $users = DB::table('users')
-                ->selectRaw("DATE(created_at) as date, COUNT(*) as total")
+                ->selectRaw('DATE(created_at) as date, COUNT(*) as total')
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->groupBy('date')
                 ->orderBy('date')
@@ -54,7 +54,7 @@ class UsersCountChart extends ChartWidget
                 'datasets' => [
                     [
                         'label' => 'Users Count Chart',
-                        'data'  => $data,
+                        'data' => $data,
                     ],
                 ],
                 'labels' => $labels,

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\EmptySuccessfulResponseResource;
-use App\Http\Resources\SuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AddProductToFavorites;
 use App\Pipes\AuthorizeUser;
@@ -17,6 +16,7 @@ class FavoriteController extends Controller
 {
     /**
      * @authenticated
+     *
      * @group Favorites Actions
      */
     public function getFavoriteProducts(Request $request): SuccessfulResponseResourceWithMetadata
@@ -32,6 +32,7 @@ class FavoriteController extends Controller
 
     /**
      * @authenticated
+     *
      * @group Favorites Actions
      *
      * @urlParam id int required The product ID.
@@ -46,11 +47,12 @@ class FavoriteController extends Controller
             ])
             ->thenReturn();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @authenticated
+     *
      * @group Favorites Actions
      *
      * @urlParam id int required The product ID.
@@ -65,6 +67,6 @@ class FavoriteController extends Controller
             ])
             ->thenReturn();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 }

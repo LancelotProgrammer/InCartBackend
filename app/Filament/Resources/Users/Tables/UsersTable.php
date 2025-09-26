@@ -43,7 +43,7 @@ class UsersTable
                         TextColumn::make('phone_verified_at')
                             ->icon(Heroicon::CheckCircle)
                             ->prefix('Phone verified at: ')
-                            ->date()
+                            ->date(),
                     ]),
                     Stack::make([
                         TextColumn::make('blocked_at')->icon(Heroicon::ExclamationCircle)->prefix('Blocked At: ')->date(),
@@ -53,7 +53,7 @@ class UsersTable
                 ]),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )

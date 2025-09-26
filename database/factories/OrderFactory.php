@@ -28,8 +28,8 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         // 1. pick a random user who has addresses AND has role = user
-        $user = User::whereHas('addresses') 
-            ->whereHas('role', fn($query) => $query->where('code', 'user'))
+        $user = User::whereHas('addresses')
+            ->whereHas('role', fn ($query) => $query->where('code', 'user'))
             ->with('addresses')
             ->inRandomOrder()
             ->first();
@@ -79,7 +79,7 @@ class OrderFactory extends Factory
         }
 
         return [
-            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(6)),
+            'order_number' => 'ORD-'.now()->format('YmdHis').'-'.strtoupper(Str::random(6)),
             'notes' => $this->faker->optional()->sentence(),
             'delivery_scheduled_type' => $deliveryType,
             'delivery_date' => $date,

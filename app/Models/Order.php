@@ -16,9 +16,9 @@ use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Models\Audit;
 
-class Order extends Model  implements AuditableContract
+class Order extends Model implements AuditableContract
 {
-    use HasFactory, Auditable;
+    use Auditable, HasFactory;
 
     protected $fillable = [
         'order_number',
@@ -135,6 +135,6 @@ class Order extends Model  implements AuditableContract
 
     public function isCancelable(): bool
     {
-        return !($this->order_status === OrderStatus::FINISHED || $this->order_status === OrderStatus::CANCELLED || $this->order_status === OrderStatus::DELIVERING);
+        return ! ($this->order_status === OrderStatus::FINISHED || $this->order_status === OrderStatus::CANCELLED || $this->order_status === OrderStatus::DELIVERING);
     }
 }

@@ -33,21 +33,21 @@ class TicketsTable
                 TextColumn::make('updated_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
             ->filters([
                 Filter::make('is_important')
                     ->label('Important')
-                    ->query(fn($query) => $query->where('is_important', true)),
+                    ->query(fn ($query) => $query->where('is_important', true)),
                 TernaryFilter::make('processed')
                     ->label('Processed')
                     ->nullable()
                     ->queries(
-                        true: fn($query) => $query->whereNotNull('processed_at'),
-                        false: fn($query) => $query->whereNull('processed_at'),
-                        blank: fn($query) => $query,
+                        true: fn ($query) => $query->whereNotNull('processed_at'),
+                        false: fn ($query) => $query->whereNull('processed_at'),
+                        blank: fn ($query) => $query,
                     ),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
@@ -55,19 +55,19 @@ class TicketsTable
                     ->label('Mark Important')
                     ->icon('heroicon-o-star')
                     ->requiresConfirmation()
-                    ->visible(fn($record) => !$record->is_important)
-                    ->action(fn($record) => $record->update(['is_important' => true])),
+                    ->visible(fn ($record) => ! $record->is_important)
+                    ->action(fn ($record) => $record->update(['is_important' => true])),
                 Action::make('unmark_important')
                     ->label('Unmark Important')
                     ->icon('heroicon-o-star')
                     ->color('secondary')
-                    ->visible(fn($record) => $record->is_important)
-                    ->action(fn($record) => $record->update(['is_important' => false])),
+                    ->visible(fn ($record) => $record->is_important)
+                    ->action(fn ($record) => $record->update(['is_important' => false])),
                 Action::make('process')
                     ->label('Process')
                     ->icon('heroicon-o-check')
                     ->requiresConfirmation()
-                    ->visible(fn($record) => $record->processed_at === null)
+                    ->visible(fn ($record) => $record->processed_at === null)
                     ->schema([
                         Textarea::make('reply')->required(),
                         Checkbox::make('send_notification')->default(true)->required(),
@@ -87,7 +87,7 @@ class TicketsTable
                 ViewAction::make(),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()
+                DeleteBulkAction::make(),
             ]);
     }
 }

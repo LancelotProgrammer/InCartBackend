@@ -2,7 +2,9 @@
 
 namespace App\Pipes;
 
+use App\Services\DatabaseManagerNotification;
 use App\Services\OrderService;
+use App\Services\SettingsService;
 use App\Support\OrderPayload;
 use Closure;
 use Illuminate\Http\Request;
@@ -23,7 +25,7 @@ class CreateOrder
             'notes' => 'nullable|string',
         ]);
 
-        $orderService = new OrderService((new OrderPayload())->fromRequest(
+        $orderService = new OrderService((new OrderPayload)->fromRequest(
             now(),
             $request->input('address_id'),
             $request->input('delivery_date'),
@@ -33,6 +35,11 @@ class CreateOrder
             $request->input('notes'),
             $request->attributes->get('currentBranchId'),
             $request->user(),
+            SettingsService::getServiceFee(),
+            SettingsService::getTaxRate(),
+            SettingsService::getMinDistance(),
+            SettingsService::getMaxDistance(),
+            SettingsService::getPricePerKilometer(),
         ));
 
         $order = DB::transaction(function () use ($orderService) {
@@ -50,6 +57,8 @@ class CreateOrder
                 ->handlePaymentMethod()
                 ->createOrder();
         });
+
+        DatabaseManagerNotification::sendCreatedOrderNotification($order);
 
         return $next([
             'id' => $order->id,

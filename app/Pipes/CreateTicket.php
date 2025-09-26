@@ -4,6 +4,7 @@ namespace App\Pipes;
 
 use App\Models\Ticket;
 use App\Services\Cache;
+use App\Services\SettingsService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -12,8 +13,8 @@ class CreateTicket
 {
     public function __invoke(Request $request, Closure $next): array
     {
-        $key = 'ticket-submit:' . $request->user()->id;
-        if (RateLimiter::tooManyAttempts($key, 5)) { // TODO: get from settings
+        $key = 'ticket-submit:'.$request->user()->id;
+        if (RateLimiter::tooManyAttempts($key, SettingsService::getAllowedTicketCount())) {
             return $next([]);
         }
         RateLimiter::hit($key, 86400);

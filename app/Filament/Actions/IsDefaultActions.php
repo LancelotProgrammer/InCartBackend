@@ -12,7 +12,7 @@ class IsDefaultActions
     {
         return [
             Action::make('mark_as_default')
-                ->visible(fn(Model $row) => $row->is_default === false)
+                ->visible(fn (Model $row) => $row->is_default === false)
                 ->action(function (Model $row) {
                     $alreadyExists = $row->newQuery()
                         ->where('city_id', $row->city_id)
@@ -25,6 +25,7 @@ class IsDefaultActions
                             ->body('A default record already exists for this city.')
                             ->warning()
                             ->send();
+
                         return;
                     }
                     $row->markAsDefault();
@@ -35,7 +36,7 @@ class IsDefaultActions
                         ->send();
                 }),
             Action::make('unmark_as_default')
-                ->visible(fn(Model $row) => $row->is_default === true)
+                ->visible(fn (Model $row) => $row->is_default === true)
                 ->action(function (Model $row) {
                     $row->unmarkAsDefault();
                     Notification::make()

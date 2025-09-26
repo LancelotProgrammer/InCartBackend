@@ -26,9 +26,9 @@ class Product extends Model
 
     protected static function booted(): void
     {
-        static::created(fn(Product $product) => Cache::deleteHomeCache());
-        static::updated(fn(Product $product) => Cache::deleteHomeCache());
-        static::deleted(fn(Product $product) => Cache::deleteHomeCache());
+        static::created(fn (Product $product) => Cache::deleteHomeCache());
+        static::updated(fn (Product $product) => Cache::deleteHomeCache());
+        static::deleted(fn (Product $product) => Cache::deleteHomeCache());
     }
 
     public function files(): BelongsToMany

@@ -32,7 +32,7 @@ class AdvertisementsTable
                 TextColumn::make('published_at')->dateTime(),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )

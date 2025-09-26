@@ -4,22 +4,17 @@ namespace App\Filament\Resources\Coupons\Schemas;
 
 use App\Enums\CouponType;
 use App\Filament\Components\TranslationComponent;
-use App\Rules\TimedCouponType;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class CouponForm
 {
@@ -46,7 +41,7 @@ class CouponForm
                             ->scopedUnique(modifyQueryUsing: function ($query, $get) {
                                 return $query->where('branch_id', $get('branch_id'));
                             })
-                            ->dehydrateStateUsing(fn(?string $state) => $state ? trim($state) : null)
+                            ->dehydrateStateUsing(fn (?string $state) => $state ? trim($state) : null)
                             ->required(),
                         Select::make('branch_id')
                             ->relationship('branch', 'title')
@@ -73,9 +68,10 @@ class CouponForm
     private static function getCouponConfigForm()
     {
         return function (Get $get) {
-            $type = (int)$get('type');
+            $type = (int) $get('type');
+
             return $type
-                ? CouponType::from((int)$type)->getForm()
+                ? CouponType::from((int) $type)->getForm()
                 : [TextEntry::make('no_coupon_has_been_selected')
                     ->columnSpanFull()
                     ->state(new HtmlString('Please select a coupon type.'))];

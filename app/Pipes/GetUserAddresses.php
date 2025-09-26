@@ -2,7 +2,6 @@
 
 namespace App\Pipes;
 
-use App\Exceptions\LogicalException;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;

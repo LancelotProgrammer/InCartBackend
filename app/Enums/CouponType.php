@@ -45,7 +45,7 @@ enum CouponType: int implements HasLabel
                             ->minDate(now()),
                         DateTimePicker::make('end_date')
                             ->required()
-                            ->after(fn(Get $get) => $get('start_date')),
+                            ->after(fn (Get $get) => $get('start_date')),
                         TextInput::make('use_limit')
                             ->required()
                             ->numeric()
@@ -68,7 +68,7 @@ enum CouponType: int implements HasLabel
                                 <li><strong>use_limit</strong> -> <span>عدد المرات المسموح باستخدام الكوبون بشكل عام.</span></li>
                                 <li><strong>user_limit</strong> -> <span>عدد المرات المسموح لكل مستخدم فردي أن يستفيد من الكوبون.</span></li>
                             </ul>
-                        '))
+                        ')),
                     ]),
             ]
         };
@@ -113,7 +113,7 @@ enum CouponType: int implements HasLabel
 
         $validator = Validator::make($config, $this->getValidationRules());
         if ($validator->fails()) {
-            throw new InvalidArgumentException('Invalid coupon config: ' . $validator->errors()->first());
+            throw new InvalidArgumentException('Invalid coupon config: '.$validator->errors()->first());
         }
 
         if (! empty($config['start_date']) && $context->time->lt(Carbon::parse($config['start_date']))) {

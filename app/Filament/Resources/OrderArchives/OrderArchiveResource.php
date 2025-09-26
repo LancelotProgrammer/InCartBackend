@@ -8,7 +8,6 @@ use BackedEnum;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -45,7 +44,7 @@ class OrderArchiveResource extends Resource
                 TextEntry::make('delivery_date')->dateTime(),
                 TextEntry::make('created_at')->dateTime(),
                 TextEntry::make('updated_at')->dateTime(),
-                
+
                 // TODO: add related models
             ]);
     }

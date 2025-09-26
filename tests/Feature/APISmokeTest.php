@@ -23,7 +23,7 @@ test('public auth endpoints', function () {
 
     $this->postJson('/api/v1/auth/send-otp', [
         'type' => 1,
-        'phone' => '+966512345678'
+        'phone' => '+966512345678',
     ])->assertStatus(204);
 
     $this->postJson('/api/v1/auth/phone/register', [
@@ -35,7 +35,7 @@ test('public auth endpoints', function () {
 
     $this->postJson('/api/v1/auth/send-otp', [
         'type' => 2,
-        'phone' => '+966512345678'
+        'phone' => '+966512345678',
     ])->assertStatus(204);
 
     $this->postJson('/api/v1/auth/phone/login', [
@@ -53,7 +53,7 @@ test('public auth endpoints', function () {
     $this->assertNotEmpty($code);
     $this->postJson('/api/v1/auth/verify-forget-password', [
         'email' => 'test@test.com',
-        'code' => (int)$code,
+        'code' => (int) $code,
     ])->assertStatus(200);
 
     $token = DB::table('password_reset_requests')->where('user_id', $userId)->firstOrFail()->token;
@@ -114,13 +114,13 @@ test('orders endpoints', function () {
         'cart' => [
             [
                 'id' => 1,
-                'quantity' => DB::table('branch_product')->where('branch_id', 1)->where('product_id', 1)->firstOrFail()->minimum_order_quantity
+                'quantity' => DB::table('branch_product')->where('branch_id', 1)->where('product_id', 1)->firstOrFail()->minimum_order_quantity,
             ],
             [
                 'id' => 2,
-                'quantity' => DB::table('branch_product')->where('branch_id', 1)->where('product_id', 2)->firstOrFail()->minimum_order_quantity
-            ]
-        ]
+                'quantity' => DB::table('branch_product')->where('branch_id', 1)->where('product_id', 2)->firstOrFail()->minimum_order_quantity,
+            ],
+        ],
     ];
     $response = $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/order/bill', $orderRequest);
 
@@ -128,7 +128,7 @@ test('orders endpoints', function () {
     $response->assertStatus(200);
 
     $orderId = $response->json('data.id');
-    $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/order/' . $orderId)->assertStatus(200);
+    $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/order/'.$orderId)->assertStatus(200);
 
     $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/orders')->assertStatus(200);
 
@@ -168,18 +168,18 @@ test('packages endpoints', function () {
 
     $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/packages')->assertStatus(200);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->putJson('/api/v1/packages/' . $packageId, [
+    $this->actingAs($this->phoneUser, 'sanctum')->putJson('/api/v1/packages/'.$packageId, [
         'title' => 'Updated test package',
         'description' => 'This is an updated test package description.',
     ])->assertStatus(200);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/packages/' . $packageId . '/products/1')->assertStatus(204);
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/packages/'.$packageId.'/products/1')->assertStatus(204);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/packages/' . $packageId . '/products')->assertStatus(200);
+    $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/packages/'.$packageId.'/products')->assertStatus(200);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/' . $packageId . '/products/1')->assertStatus(204);
+    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/'.$packageId.'/products/1')->assertStatus(204);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/' . $packageId)->assertStatus(200);
+    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/'.$packageId)->assertStatus(200);
 });
 
 test('favorites endpoints', function () {
@@ -193,7 +193,7 @@ test('favorites endpoints', function () {
 test('tickets and feedbacks endpoints', function () {
     $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/tickets')->assertStatus(200);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/users/tickets',[
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/users/tickets', [
         'question' => 'question',
     ])->assertStatus(204);
 
@@ -216,7 +216,7 @@ test('addresses endpoints', function () {
     $addressId = $response->json('data.id');
     $this->assertNotEmpty($addressId);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->putJson('/api/v1/users/addresses/' . $addressId, [
+    $this->actingAs($this->phoneUser, 'sanctum')->putJson('/api/v1/users/addresses/'.$addressId, [
         'title' => 'Updated test address',
         'description' => 'This is an updated test address description.',
         'phone' => '+966512345678',
@@ -227,7 +227,7 @@ test('addresses endpoints', function () {
 
     $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/addresses')->assertStatus(200);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/users/addresses/' . $addressId)->assertStatus(200);
+    $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/users/addresses/'.$addressId)->assertStatus(200);
 });
 
 test('public catalog endpoints', function () {
@@ -245,6 +245,8 @@ test('public catalog endpoints', function () {
     $this->getJson('/api/v1/advertisements')->assertStatus(200);
 
     $this->getJson('/api/v1/payment-methods')->assertStatus(200);
+
+    $this->getJson('/api/v1/settings')->assertStatus(200);
 });
 
 // TODO: not implemented yet

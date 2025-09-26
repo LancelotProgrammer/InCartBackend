@@ -11,16 +11,19 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TicketAndFeedbackController;
 use App\Http\Controllers\UserAddressController;
 use App\Http\Controllers\UserNotificationController;
 use App\Http\Middleware\EnsureHeaderValidation;
+use App\Http\Middleware\IsServiceOnline;
 use App\Http\Middleware\SetCurrentBranch;
 use App\Http\Middleware\SetLocal;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware([
     // EnsureHeaderValidation::class,
+    IsServiceOnline::class,
     SetLocal::class,
     SetCurrentBranch::class,
 ])->group(function () {
@@ -92,6 +95,7 @@ Route::middleware([
     Route::get('/categories', [CategoryController::class, 'getCategories']);
     Route::get('/advertisements', [AdvertisementController::class, 'getAdvertisements']);
     Route::get('/payment-methods', [PaymentMethodController::class, 'getPaymentMethods']);
+    Route::get('/settings', [SettingController::class, 'getSettings']);
 
     Route::post('/moyasar/callback', [OrderController::class, 'paymentGatewayCallback'])->name('moyasar.callback');
 });

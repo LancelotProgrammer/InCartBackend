@@ -67,8 +67,8 @@ class CartProductsRelationManager extends RelationManager
 
                         $record->update([
                             'product_id' => $data['product_id'],
-                            'quantity'   => $data['quantity'],
-                            'price'      => $price,
+                            'quantity' => $data['quantity'],
+                            'price' => $price,
                         ]);
 
                         $this->recalculateOrderTotals($order);
@@ -88,6 +88,7 @@ class CartProductsRelationManager extends RelationManager
                                 ->body('You cannot delete the last product in the cart.')
                                 ->warning()
                                 ->send();
+
                             return;
                         }
                         $order = $this->getOwnerRecord();
@@ -118,10 +119,10 @@ class CartProductsRelationManager extends RelationManager
                             : 0;
 
                         CartProduct::create([
-                            'cart_id'    => $data['cart_id'],
+                            'cart_id' => $data['cart_id'],
                             'product_id' => $data['product_id'],
-                            'quantity'   => $data['quantity'],
-                            'price'      => $price,
+                            'quantity' => $data['quantity'],
+                            'price' => $price,
                         ]);
 
                         $this->recalculateOrderTotals($order);
@@ -141,8 +142,7 @@ class CartProductsRelationManager extends RelationManager
     protected function recalculateOrderTotals(Order $order): void
     {
         $subtotal = $order->cartProducts->sum(
-            fn($cartProduct) =>
-            $cartProduct->price * $cartProduct->quantity
+            fn ($cartProduct) => $cartProduct->price * $cartProduct->quantity
         );
 
         $order->update([

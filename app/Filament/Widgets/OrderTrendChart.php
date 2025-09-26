@@ -3,12 +3,12 @@
 namespace App\Filament\Widgets;
 
 use App\Constants\CacheKeys;
+use Carbon\CarbonPeriod;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Carbon\CarbonPeriod;
 
 class OrderTrendChart extends ChartWidget
 {
@@ -18,7 +18,7 @@ class OrderTrendChart extends ChartWidget
 
     protected ?string $heading = 'Order Trend Chart';
 
-    protected int | string | array $columnSpan = 2;
+    protected int|string|array $columnSpan = 2;
 
     protected ?string $pollingInterval = null;
 
@@ -27,8 +27,8 @@ class OrderTrendChart extends ChartWidget
     protected function getFilters(): ?array
     {
         return [
-            'per_day'   => 'Per Day',
-            'per_week'  => 'Per Week',
+            'per_day' => 'Per Day',
+            'per_week' => 'Per Week',
             'per_month' => 'Per Month',
         ];
     }
@@ -38,11 +38,11 @@ class OrderTrendChart extends ChartWidget
         $activeFilter = $this->filter;
 
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfYear();
-        $endDate   = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
+        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
 
-        $cacheKey = CacheKeys::ORDER_TREND_CHART . '_' .
-            $activeFilter . '_' .
-            Carbon::parse($startDate)->format('Y-m-d') . '_' .
+        $cacheKey = CacheKeys::ORDER_TREND_CHART.'_'.
+            $activeFilter.'_'.
+            Carbon::parse($startDate)->format('Y-m-d').'_'.
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate, $activeFilter) {
@@ -52,7 +52,7 @@ class OrderTrendChart extends ChartWidget
             switch ($activeFilter) {
                 case 'per_week':
                     $orders = DB::table('orders')
-                        ->selectRaw("YEAR(created_at) as year, WEEK(created_at, 1) as week, COUNT(*) as total")
+                        ->selectRaw('YEAR(created_at) as year, WEEK(created_at, 1) as week, COUNT(*) as total')
                         ->whereBetween('created_at', [$startDate, $endDate])
                         ->groupBy('year', 'week')
                         ->orderBy('year')
@@ -63,7 +63,7 @@ class OrderTrendChart extends ChartWidget
                     $period = CarbonPeriod::create($startDate, '1 week', $endDate);
                     foreach ($period as $date) {
                         $weekNum = $date->format('W');
-                        $labels[] = 'Week ' . $weekNum;
+                        $labels[] = 'Week '.$weekNum;
                         $data[] = $orders[$weekNum] ?? 0;
                     }
                     break;
@@ -109,7 +109,7 @@ class OrderTrendChart extends ChartWidget
                 'datasets' => [
                     [
                         'label' => 'Order Trend Chart',
-                        'data'  => $data,
+                        'data' => $data,
                     ],
                 ],
                 'labels' => $labels,

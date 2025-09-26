@@ -44,6 +44,7 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @group Authentication Actions
      */
     public function emailRegister(Request $request): SuccessfulResponseResource
@@ -56,7 +57,7 @@ class AuthenticationController extends Controller
         ]);
 
         $roleId = Role::where('code', '=', 'user')->value('id');
-        if (!$roleId) {
+        if (! $roleId) {
             throw new SetupException(
                 trans('auth.something_went_wrong'),
                 'System setup error. Pleas add a user role to the system'
@@ -140,7 +141,7 @@ class AuthenticationController extends Controller
         $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpType::REGISTER->value);
 
         $roleId = Role::where('code', '=', 'user')->value('id');
-        if (!$roleId) {
+        if (! $roleId) {
             throw new SetupException(
                 trans('auth.something_went_wrong'),
                 'System setup error. Pleas add a user role to the system'
@@ -222,7 +223,7 @@ class AuthenticationController extends Controller
                 'token_id' => $request->user()->currentAccessToken()->id,
             ],
             [
-                'firebase_token' => $request->input('firebase_token')
+                'firebase_token' => $request->input('firebase_token'),
             ]
         );
 
@@ -353,15 +354,17 @@ class AuthenticationController extends Controller
 
     /**
      * @unauthenticated
+     *
      * @bodyParam phone string required The user’s phone number. Example: +123456789
      * @bodyParam type string required The OTP screen type 1 => REGISTER, 2 => LOGIN, 3 => UPDATE. Example: 1
+     *
      * @group Send OTP
      */
     public function sendOtp(Request $request): EmptySuccessfulResponseResource
     {
         $request->validate([
             'phone' => 'required|phone:SA',
-            'type' => ['required', new Enum(OtpType::class)]
+            'type' => ['required', new Enum(OtpType::class)],
         ]);
 
         $phone = $request->input('phone');
@@ -398,7 +401,7 @@ class AuthenticationController extends Controller
                 'phone' => $phone,
                 'code' => '123456', // TODO: replace with $this->generateRandomNumber() in production
                 'created_at' => now(),
-                'type' => $type
+                'type' => $type,
             ]);
         }
 
@@ -406,7 +409,7 @@ class AuthenticationController extends Controller
             $verifyCode = PhoneVerificationRequest::where('phone', '=', $phone)->latest()->first()->code;
             Otp::send($phone, $verifyCode);
         } catch (Exception $e) {
-            Log::channel('error')->error('OTP Error: ' . $e->getMessage());
+            Log::channel('error')->error('OTP Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'OTP verification request failed. Check error logs for details.'
@@ -414,6 +417,7 @@ class AuthenticationController extends Controller
         }
 
         RateLimiter::clear($rateLimiterKey);
+
         return new EmptySuccessfulResponseResource;
     }
 
@@ -487,6 +491,7 @@ class AuthenticationController extends Controller
             $this->sendVerifyEmailToEmail($user, $email, true);
         }
     }
+
     public function sendVerifyEmailToEmail(User $user, string $email, bool $isUpdate = false): void
     {
         $link = URL::temporarySignedRoute(
@@ -502,7 +507,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new VerifyEmail($link, $user->name));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error: ' . $e->getMessage());
+            Log::channel('error')->error('Email Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -615,7 +620,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new ForgotPassword($userName, $code));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error: ' . $e->getMessage());
+            Log::channel('error')->error('Email Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -773,7 +778,7 @@ class AuthenticationController extends Controller
     private function isWeakNumber(string $number): bool
     {
         $length = strlen($number);
-        if (preg_match('/^(\d)\1{' . ($length - 1) . '}$/', $number)) {
+        if (preg_match('/^(\d)\1{'.($length - 1).'}$/', $number)) {
             return true;
         }
         for ($patternLength = 1; $patternLength <= $length / 2; $patternLength++) {

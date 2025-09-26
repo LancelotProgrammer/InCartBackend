@@ -18,7 +18,7 @@ class DeleteProductFromPackage
             ->where('user_id', $request->user()->id)
             ->first();
 
-        if (!$package) {
+        if (! $package) {
             throw new LogicalException('Package not found or does not belong to the user.');
         }
 

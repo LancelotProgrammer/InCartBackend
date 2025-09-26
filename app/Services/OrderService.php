@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Contracts\PaymentGatewayInterface;
-use App\Enums\DeliveryStatus;
 use App\Enums\DeliveryScheduledType;
+use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Exceptions\LogicalException;
@@ -62,7 +62,7 @@ class OrderService
     {
         $branch = Branch::find($this->payload->getBranchId());
 
-        if (!$branch) {
+        if (! $branch) {
             throw new LogicalException('Branch is invalid', 'The selected branch does not exist.');
         }
 
@@ -70,7 +70,7 @@ class OrderService
             ->where('user_id', '=', $this->payload->getUser()->id)
             ->first();
 
-        if (!$address) {
+        if (! $address) {
             throw new LogicalException('User address is invalid', 'The address does not exist or does not belong to you.');
         }
 
@@ -98,7 +98,7 @@ class OrderService
         $subtotal = 0;
 
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
-            ->with(['branches' => fn($query) => $query->where('branches.id', $this->payload->getBranchId())->withPivot([
+            ->with(['branches' => fn ($query) => $query->where('branches.id', $this->payload->getBranchId())->withPivot([
                 'price',
                 'quantity',
                 'discount',
@@ -144,9 +144,9 @@ class OrderService
 
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
             ->with([
-                'branches' => fn($query) => $query
+                'branches' => fn ($query) => $query
                     ->where('branches.id', $this->payload->getBranchId())
-                    ->withPivot(['price', 'discount'])
+                    ->withPivot(['price', 'discount']),
             ])
             ->get();
 
@@ -168,7 +168,6 @@ class OrderService
 
         return $this;
     }
-
 
     public function calculateCartWight(): self
     {
@@ -237,7 +236,7 @@ class OrderService
             $this->payload->getUser()->id,
             $this->payload->getBranchId(),
             $products->unique('id')->pluck('id')->toArray(),
-            $products->flatMap(fn($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
+            $products->flatMap(fn ($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
         );
 
         // apply coupon if exists

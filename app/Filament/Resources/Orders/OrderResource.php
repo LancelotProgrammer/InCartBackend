@@ -69,7 +69,7 @@ class OrderResource extends Resource
 
     public static function editPolicy(Model $record): bool
     {
-        return !($record->order_status === OrderStatus::FINISHED || $record->order_status === OrderStatus::CANCELLED);
+        return ! ($record->order_status === OrderStatus::FINISHED || $record->order_status === OrderStatus::CANCELLED);
     }
 
     public static function getNavigationBadge(): ?string

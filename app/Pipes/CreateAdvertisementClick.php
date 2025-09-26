@@ -16,7 +16,7 @@ class CreateAdvertisementClick
         AdvertisementUser::updateOrCreate(
             [
                 'advertisement_id' => $adId,
-                'user_id' => $userId
+                'user_id' => $userId,
             ]
         );
 

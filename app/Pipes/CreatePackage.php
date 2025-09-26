@@ -17,7 +17,7 @@ class CreatePackage
 
         $package = Package::create([
             'user_id' => $request->user()->id,
-            ...$data
+            ...$data,
         ]);
 
         return $next([

@@ -43,7 +43,7 @@ class FirebaseFCM
             try {
                 $messaging->send($message);
             } catch (Throwable $e) {
-                Log::channel('error')->error("Firebase notification failed for token {$token}: " . $e->getMessage());
+                Log::channel('error')->error("Firebase notification failed for token {$token}: ".$e->getMessage());
             }
         }
     }
@@ -70,7 +70,7 @@ class FirebaseFCM
             try {
                 $messaging->send($message);
             } catch (Throwable $e) {
-                Log::channel('error')->error("Firebase notification failed for token {$token}: " . $e->getMessage());
+                Log::channel('error')->error("Firebase notification failed for token {$token}: ".$e->getMessage());
             }
         }
     }

@@ -25,14 +25,14 @@ class LatestOrdersTable extends TableWidget
 {
     protected static ?int $sort = 2;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected ?string $pollingInterval = null;
 
     public function table(Table $table): Table
     {
         return $table
-            ->query(fn(): Builder => Order::query())
+            ->query(fn (): Builder => Order::query())
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('branch.title'),
@@ -43,7 +43,7 @@ class LatestOrdersTable extends TableWidget
                 TextColumn::make('customer.name'),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -56,9 +56,9 @@ class LatestOrdersTable extends TableWidget
                     ->trueLabel('todays orders')
                     ->falseLabel('all orders')
                     ->queries(
-                        true: fn(Builder $query) => $query->whereDate('delivery_date', '=', now()),
-                        false: fn(Builder $query) => $query,
-                        blank: fn(Builder $query) => $query,
+                        true: fn (Builder $query) => $query->whereDate('delivery_date', '=', now()),
+                        false: fn (Builder $query) => $query,
+                        blank: fn (Builder $query) => $query,
                     ),
                 Filter::make('created_at')
                     ->schema([
@@ -69,11 +69,11 @@ class LatestOrdersTable extends TableWidget
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
             ], layout: FiltersLayout::Modal)
@@ -82,13 +82,13 @@ class LatestOrdersTable extends TableWidget
                 Action::make('invoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
-                    ->url(fn(Order $record) => route('order.invoice', ['id' => $record->id]), true),
+                    ->url(fn (Order $record) => route('order.invoice', ['id' => $record->id]), true),
                 OrderActions::configure(true),
             ])
             ->toolbarActions([
                 Action::make('Go')
                     ->color('primary')
-                    ->url(fn() => route('filament.admin.resources.orders.index'), true),
+                    ->url(fn () => route('filament.admin.resources.orders.index'), true),
             ]);
     }
 }

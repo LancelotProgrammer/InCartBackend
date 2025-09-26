@@ -38,7 +38,7 @@ class DeleteLogs extends Command
             return;
         }
 
-        $files = glob($logPath . '/*.log');
+        $files = glob($logPath.'/*.log');
 
         if (empty($files)) {
             $this->info('No log files found.');

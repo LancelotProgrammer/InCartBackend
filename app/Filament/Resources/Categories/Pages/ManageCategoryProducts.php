@@ -49,7 +49,7 @@ class ManageCategoryProducts extends ManageRelatedRecords
             ])
             ->recordActions([
                 Action::make('edit')
-                    ->url(fn(Product $record) => ProductResource::getUrl('edit', ['record' => $record->id])),
+                    ->url(fn (Product $record) => ProductResource::getUrl('edit', ['record' => $record->id])),
             ])
             ->columns([
                 Stack::make([

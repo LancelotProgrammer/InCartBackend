@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\UserAddress;
 use App\Services\DistanceService;
 use App\Services\OrderService;
+use App\Services\SettingsService;
 use App\Support\OrderPayload;
 use Closure;
 use Filament\Actions\Action;
@@ -56,11 +57,11 @@ class CreateOrderAction
                                 ->relationship(
                                     'userAddress',
                                     'title',
-                                    fn(Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
+                                    fn (Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
                                 )
                                 ->required()
                                 ->rules([
-                                    fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                    fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                                         $branch = Branch::where('id', '=', $get('branch_id'))->first();
                                         $address = UserAddress::where('id', '=', $value)->first();
                                         $distance = DistanceService::haversineDistance(
@@ -69,12 +70,13 @@ class CreateOrderAction
                                             $address->latitude,
                                             $address->longitude
                                         );
-                                        // TODO: get from settings
+                                        $minDistance = SettingsService::getMinDistance();
+                                        $maxDistance = SettingsService::getMaxDistance();
                                         if (
-                                            $distance < 0.2
-                                            || $distance > 100
+                                            $distance < $minDistance
+                                            || $distance > $maxDistance
                                         ) {
-                                            $fail("The total destination is {$distance} km, which is outside the allowed range of 0.2 km to 100 km.");
+                                            $fail("The total destination is {$distance} km, which is outside the allowed range of {$minDistance} km to {$maxDistance} km.");
                                         }
                                     },
                                 ]),
@@ -108,6 +110,7 @@ class CreateOrderAction
                                                 $branchProduct = BranchProduct::where('branch_id', '=', $get('../../branch_id'))
                                                     ->where('product_id', '=', $get('product_id'))
                                                     ->first();
+
                                                 return $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity;
                                             }),
                                     ];
@@ -140,7 +143,7 @@ class CreateOrderAction
                                 ->relationship(
                                     'paymentMethod',
                                     'title',
-                                    fn(Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
+                                    fn (Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
                                 )
                                 ->required(),
                             TextInput::make('coupon')
@@ -173,7 +176,7 @@ class CreateOrderAction
                     })
                     ->toArray();
                 try {
-                    $orderService = new OrderService((new OrderPayload())->fromRequest(
+                    $orderService = new OrderService((new OrderPayload)->fromRequest(
                         now(),
                         $data['address_id'],
                         $data['delivery_date'] ?? null,
@@ -183,6 +186,11 @@ class CreateOrderAction
                         $data['notes'],
                         $data['branch_id'],
                         User::where('id', '=', $data['customer_id'])->first(),
+                        SettingsService::getServiceFee(),
+                        SettingsService::getTaxRate(),
+                        SettingsService::getMinDistance(),
+                        SettingsService::getMaxDistance(),
+                        SettingsService::getPricePerKilometer(),
                     ));
                     DB::transaction(function () use ($orderService) {
                         return $orderService

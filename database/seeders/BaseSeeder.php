@@ -83,13 +83,127 @@ class BaseSeeder extends Seeder
         $this->command->info('seeding static data');
 
         $this->command->info('seeding settings');
-        Setting::create([
-            'key' => 'test value',
-            'value' => '100',
-            'type' => SettingType::INT,
-            'group' => 'test group',
-            'is_locked' => false,
-        ]);
+        $settings = [
+            // Service
+            [
+                'key' => 'is_system_online',
+                'value' => '1',
+                'type' => SettingType::BOOL,
+                'group' => 'service',
+                'is_locked' => false,
+            ],
+
+            // Dashboard Managers
+            [
+                'key' => 'dashboard_managers',
+                'value' => '[2,3]',
+                'type' => SettingType::JSON,
+                'group' => 'managers',
+                'is_locked' => false,
+            ],
+
+            // Notifications Managers
+            [
+                'key' => 'notification_managers',
+                'value' => '[2,3]',
+                'type' => SettingType::JSON,
+                'group' => 'managers',
+                'is_locked' => false,
+            ],
+
+            // Social Media
+            [
+                'key' => 'whatsapp',
+                'value' => 'http://localhost:8000/admin/settings',
+                'type' => SettingType::STR,
+                'group' => 'social',
+                'is_locked' => false,
+            ],
+            [
+                'key' => 'telegram',
+                'value' => 'http://localhost:8000/admin/settings',
+                'type' => SettingType::STR,
+                'group' => 'social',
+                'is_locked' => false,
+            ],
+            [
+                'key' => 'facebook',
+                'value' => 'http://localhost:8000/admin/settings',
+                'type' => SettingType::STR,
+                'group' => 'social',
+                'is_locked' => false,
+            ],
+
+            // Order Config
+            [
+                'key' => 'service_fee',
+                'value' => '1',
+                'type' => SettingType::FLOAT,
+                'group' => 'order',
+                'is_locked' => false,
+            ],
+            [
+                'key' => 'tax_rate',
+                'value' => '1',
+                'type' => SettingType::FLOAT,
+                'group' => 'order',
+                'is_locked' => false,
+            ],
+            [
+                'key' => 'min_distance',
+                'value' => '0',
+                'type' => SettingType::FLOAT,
+                'group' => 'order',
+                'is_locked' => false,
+            ],
+            [
+                'key' => 'max_distance',
+                'value' => '100',
+                'type' => SettingType::FLOAT,
+                'group' => 'order',
+                'is_locked' => false,
+            ],
+            [
+                'key' => 'price_per_kilometer',
+                'value' => '2',
+                'type' => SettingType::FLOAT,
+                'group' => 'order',
+                'is_locked' => false,
+            ],
+
+            // Legal
+            [
+                'key' => 'privacy_policy',
+                'value' => 'privacy_policy',
+                'type' => SettingType::STR,
+                'group' => 'legal',
+                'is_locked' => false,
+            ],
+            [
+                'key' => 'terms_of_services',
+                'value' => 'terms_of_services',
+                'type' => SettingType::STR,
+                'group' => 'legal',
+                'is_locked' => false,
+            ],
+
+            // support
+            [
+                'key' => 'allowed_ticket_count',
+                'value' => '5',
+                'type' => SettingType::INT,
+                'group' => 'support',
+                'is_locked' => false,
+            ],
+            [
+                'key' => 'allowed_feedback_count',
+                'value' => '5',
+                'type' => SettingType::INT,
+                'group' => 'support',
+                'is_locked' => false,
+            ],
+        ];
+        Setting::insert($settings);
 
         $this->command->info('seeding cities');
         City::insert([
@@ -114,19 +228,23 @@ class BaseSeeder extends Seeder
         Role::insert([
             [
                 'title' => 'super-admin',
-                'code' => 'super-admin'
+                'code' => 'super-admin',
+            ],
+            [
+                'title' => 'developer',
+                'code' => 'developer',
             ],
             [
                 'title' => 'manager',
-                'code' => 'manager'
+                'code' => 'manager',
             ],
             [
                 'title' => 'delivery',
-                'code' => 'delivery'
+                'code' => 'delivery',
             ],
             [
                 'title' => 'user',
-                'code' => 'user'
+                'code' => 'user',
             ],
         ]);
 
@@ -151,6 +269,15 @@ class BaseSeeder extends Seeder
             'email' => 'owner@owner.com',
             'password' => Hash::make('dc8rqy0f6vasybipb'),
             'role_id' => Role::where('title', '=', 'super-admin')->value('id'),
+            'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
+        ]);
+
+        $this->command->info('seeding developer');
+        User::insert([
+            'name' => 'developer',
+            'email' => 'developer@developer.com',
+            'password' => Hash::make('dc8rqy0f6vasybipb'),
+            'role_id' => Role::where('title', '=', 'developer')->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
         ]);
 
@@ -274,7 +401,7 @@ class BaseSeeder extends Seeder
                 'is_default' => true,
                 'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
                 'published_at' => now(),
-            ]
+            ],
         ]);
         $branches = Branch::all();
 
@@ -377,7 +504,7 @@ class BaseSeeder extends Seeder
         $this->command->info('seeding users');
         User::factory($userCount)
             ->has(UserAddress::factory()->count($userAddressCount), 'addresses')
-            ->has(UserNotification::factory()->count($userNotificationCount), 'notifications')
+            ->has(UserNotification::factory()->count($userNotificationCount), 'userNotifications')
             ->has(
                 FavoriteFactory::new()->count($favoriteCount)->sequence(fn($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
                 'favorites'
@@ -392,7 +519,7 @@ class BaseSeeder extends Seeder
             ->each(function ($order) {
                 $cart = Cart::factory()->create([
                     'order_number' => $order->order_number,
-                    'order_id'     => $order->id,
+                    'order_id' => $order->id,
                 ]);
                 $products = Product::inRandomOrder()
                     ->limit(rand(2, 10))
@@ -413,8 +540,7 @@ class BaseSeeder extends Seeder
                     ]);
                 }
                 $subtotal = $cart->cartProducts->sum(
-                    fn($cartProduct) =>
-                    $cartProduct->price * $cartProduct->quantity
+                    fn($cartProduct) => $cartProduct->price * $cartProduct->quantity
                 );
                 $order->update([
                     'subtotal_price' => $subtotal,

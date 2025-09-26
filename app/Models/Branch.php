@@ -12,7 +12,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Branch extends Model
 {
-    use HasPublishAttribute, HasIsDefaultAttribute, HasTranslations;
+    use HasIsDefaultAttribute, HasPublishAttribute, HasTranslations;
 
     protected $fillable = ['title', 'description', 'is_default', 'published_at', 'latitude', 'longitude', 'city_id'];
 

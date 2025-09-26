@@ -34,7 +34,7 @@ class TicketAndFeedbackController extends Controller
      * @authenticated
      *
      * @queryParam question string The question. Example: what is this app?
-     * 
+     *
      * @group Product Ticket And Feedback
      */
     public function createTicket(Request $request): EmptySuccessfulResponseResource
@@ -47,14 +47,14 @@ class TicketAndFeedbackController extends Controller
             ])
             ->thenReturn();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**
      * @authenticated
      *
      * @queryParam feedback string The feedback. Example: Make more offers
-     * 
+     *
      * @group Product Ticket And Feedback
      */
     public function createFeedback(Request $request): EmptySuccessfulResponseResource
@@ -67,6 +67,6 @@ class TicketAndFeedbackController extends Controller
             ])
             ->thenReturn();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 }

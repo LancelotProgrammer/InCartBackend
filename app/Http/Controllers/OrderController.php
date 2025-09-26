@@ -125,7 +125,8 @@ class OrderController extends Controller
                 CancelOrder::class,
             ])
             ->thenReturn();
-        return new EmptySuccessfulResponseResource();
+
+        return new EmptySuccessfulResponseResource;
     }
 
     /**

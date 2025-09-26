@@ -5,8 +5,8 @@ namespace App\Filament\Pages;
 use App\Services\Cache;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
-use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Actions\FilterAction;
+use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 
 class Dashboard extends BaseDashboard
@@ -28,7 +28,7 @@ class Dashboard extends BaseDashboard
         ];
     }
 
-    public function getColumns(): int | array
+    public function getColumns(): int|array
     {
         return 4;
     }

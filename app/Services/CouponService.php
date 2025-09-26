@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\CouponType;
 use App\Models\Cart;
 use App\Models\Coupon;
 use App\Models\UserAddress;

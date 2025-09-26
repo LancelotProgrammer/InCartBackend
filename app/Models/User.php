@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -67,7 +66,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasMany(UserAddress::class);
     }
 
-    public function notifications(): HasMany
+    public function userNotifications(): HasMany
     {
         return $this->hasMany(UserNotification::class);
     }

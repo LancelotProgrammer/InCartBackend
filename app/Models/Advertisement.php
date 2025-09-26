@@ -34,9 +34,9 @@ class Advertisement extends Model
 
     protected static function booted(): void
     {
-        static::created(fn(Advertisement $advertisement) => Cache::deleteHomeCache());
-        static::updated(fn(Advertisement $advertisement) => Cache::deleteHomeCache());
-        static::deleted(fn(Advertisement $advertisement) => Cache::deleteHomeCache());
+        static::created(fn (Advertisement $advertisement) => Cache::deleteHomeCache());
+        static::updated(fn (Advertisement $advertisement) => Cache::deleteHomeCache());
+        static::deleted(fn (Advertisement $advertisement) => Cache::deleteHomeCache());
     }
 
     public function files(): BelongsToMany

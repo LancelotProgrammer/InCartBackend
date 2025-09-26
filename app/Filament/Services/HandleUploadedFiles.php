@@ -14,7 +14,7 @@ class HandleUploadedFiles
     {
         $fileIds = [];
 
-        if (!is_array($uploadedPaths)) {
+        if (! is_array($uploadedPaths)) {
             if ($uploadedPaths instanceof TemporaryUploadedFile) {
                 $pathOnPublicDisk = $uploadedPaths->store($folderName, 'public');
             } else {
@@ -37,7 +37,7 @@ class HandleUploadedFiles
                 } else {
                     $pathOnPublicDisk = $uploadedFile;
                 }
-    
+
                 $file = File::create([
                     'name' => basename($pathOnPublicDisk),
                     'type' => FileType::IMAGE->value,
@@ -45,7 +45,7 @@ class HandleUploadedFiles
                     'size' => Storage::disk('public')->size($pathOnPublicDisk),
                     'url' => Storage::disk('public')->url($pathOnPublicDisk),
                 ]);
-    
+
                 $fileIds[] = $file->id;
             }
         }

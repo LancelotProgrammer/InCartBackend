@@ -3,6 +3,7 @@
 namespace App\Pipes;
 
 use App\Services\OrderService;
+use App\Services\SettingsService;
 use App\Support\OrderPayload;
 use Closure;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class CreateOrderBill
             'notes' => 'nullable|string',
         ]);
 
-        $orderService = new OrderService((new OrderPayload())->fromRequest(
+        $orderService = new OrderService((new OrderPayload)->fromRequest(
             now(),
             $request->input('address_id'),
             $request->input('delivery_date'),
@@ -33,6 +34,11 @@ class CreateOrderBill
             $request->input('notes'),
             $request->attributes->get('currentBranchId'),
             $request->user(),
+            SettingsService::getServiceFee(),
+            SettingsService::getTaxRate(),
+            SettingsService::getMinDistance(),
+            SettingsService::getMaxDistance(),
+            SettingsService::getPricePerKilometer(),
         ));
 
         $orderBill = DB::transaction(function () use ($orderService) {

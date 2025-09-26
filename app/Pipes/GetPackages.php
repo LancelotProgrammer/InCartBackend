@@ -20,13 +20,15 @@ class GetPackages
                 $package->contains_product = $productId ? $package->products->contains('id', $productId) : false;
                 $package->product_images = $package->products
                     ->take(4)
-                    ->map(fn($product) => $product->files->first()?->url)
+                    ->map(fn ($product) => $product->files->first()?->url)
                     ->filter()
                     ->values()
                     ->all();
                 unset($package->products);
+
                 return $package;
             });
+
         return $next($packages);
     }
 }

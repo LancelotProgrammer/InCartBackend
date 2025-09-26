@@ -52,7 +52,7 @@ class TicketResource extends Resource
         return Cache::remember(
             CacheKeys::TODAY_SUPPORT_COUNT,
             now()->addDay(),
-            fn() => Ticket::whereDate('created_at', now()->toDateString())->count()
+            fn () => Ticket::whereDate('created_at', now()->toDateString())->count()
         );
     }
 

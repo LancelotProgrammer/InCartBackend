@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 class OrderAuditRelationManager extends RelationManager
 {
     protected static string $relationship = 'auditsLogs';
+
     protected static ?string $title = 'Audit Trail';
 
     public function table(Table $table): Table
@@ -21,7 +22,7 @@ class OrderAuditRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('event')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'created' => 'success',
                         'updated' => 'warning',
                         'deleted' => 'danger',
@@ -29,10 +30,10 @@ class OrderAuditRelationManager extends RelationManager
                     }),
                 TextColumn::make('old_values')
                     ->label('Old Values')
-                    ->formatStateUsing(fn($state) => json_encode($state)),
+                    ->formatStateUsing(fn ($state) => json_encode($state)),
                 TextColumn::make('new_values')
                     ->label('New Values')
-                    ->formatStateUsing(fn($state) => json_encode($state)),
+                    ->formatStateUsing(fn ($state) => json_encode($state)),
                 TextColumn::make('created_at')
                     ->label('When')
                     ->dateTime(),

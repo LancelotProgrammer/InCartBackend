@@ -17,6 +17,7 @@ class InvoiceController extends Controller
         if ($validator->fails()) {
             abort(422);
         }
+
         return Pdf::loadView(
             'pdf.invoice',
             [

@@ -21,7 +21,7 @@ class DeleteUserAddress
             ->where('user_id', $request->user()->id)
             ->first();
 
-        if (!$address) {
+        if (! $address) {
             throw new LogicalException('Address not found or does not belong to the user.');
         }
 

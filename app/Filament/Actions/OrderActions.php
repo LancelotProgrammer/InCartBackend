@@ -44,12 +44,12 @@ class OrderActions
                     return $order->isCancelable();
                 })
                 ->schema([
-                    Textarea::make('cancel_reason')->required()
+                    Textarea::make('cancel_reason')->required(),
                 ])
                 ->action(function (Order $order, array $data) {
                     $order->update([
                         'order_status' => OrderStatus::CANCELLED,
-                        'payment_status' => $order->payment_status === PaymentStatus::PAID ? PaymentStatus::REFUNDED  : PaymentStatus::UNPAID,
+                        'payment_status' => $order->payment_status === PaymentStatus::PAID ? PaymentStatus::REFUNDED : PaymentStatus::UNPAID,
                         'delivery_status' => DeliveryStatus::NOT_SHIPPED,
                         'cancel_reason' => $data['cancel_reason'],
                     ]);
@@ -78,17 +78,19 @@ class OrderActions
                     ) {
                         Notification::make()
                             ->title("Order #{$order->order_number} cannot be approved.")
-                            ->body("Order is not checked out")
+                            ->body('Order is not checked out')
                             ->warning()
                             ->send();
+
                         return;
                     }
-                    if (!$order->delivery_date->isSameDay(now())) {
+                    if (! $order->delivery_date->isSameDay(now())) {
                         Notification::make()
                             ->title("Order #{$order->order_number} cannot be approved.")
-                            ->body("Order cannot be approved because it was not created today.")
+                            ->body('Order cannot be approved because it was not created today.')
                             ->warning()
                             ->send();
+
                         return;
                     }
                     $order->update([
@@ -114,13 +116,13 @@ class OrderActions
                     return $order->order_status === OrderStatus::PROCESSING;
                 })
                 ->schema([
-                    Select::make('delivery_id')->options(User::where('role_id', '=', Role::where('code', '=', 'delivery')->first()->id)->pluck('name', 'id'))
+                    Select::make('delivery_id')->options(User::where('role_id', '=', Role::where('code', '=', 'delivery')->first()->id)->pluck('name', 'id')),
                 ])
                 ->action(function (Order $order, array $data) {
                     $order->update([
                         'order_status' => OrderStatus::DELIVERING,
                         'delivery_status' => DeliveryStatus::OUT_FOR_DELIVERY,
-                        'delivery_id' => $data['delivery_id']
+                        'delivery_id' => $data['delivery_id'],
                     ]);
                     $order->save();
                     FirebaseFCM::sendOrderStatusNotification($order);
@@ -144,7 +146,7 @@ class OrderActions
                     $order->update([
                         'order_status' => OrderStatus::FINISHED,
                         'delivery_status' => DeliveryStatus::DELIVERED,
-                        'payment_status' => PaymentStatus::PAID
+                        'payment_status' => PaymentStatus::PAID,
                     ]);
                     $order->save();
                     FirebaseFCM::sendOrderStatusNotification($order);
@@ -166,31 +168,31 @@ class OrderActions
                 })
                 ->action(function (Order $order) {
                     DB::table('order_archives')->insert([
-                        'archived_at'             => now(),
-                        'order_number'            => $order->order_number,
-                        'notes'                   => $order->notes,
-                        'order_status'            => $order->order_status->value,
-                        'payment_status'          => $order->payment_status->value,
-                        'delivery_status'         => $order->delivery_status->value,
-                        'subtotal_price'          => $order->subtotal_price,
-                        'coupon_discount'         => $order->coupon_discount,
-                        'delivery_fee'            => $order->delivery_fee,
-                        'service_fee'             => $order->service_fee,
-                        'tax_amount'              => $order->tax_amount,
-                        'total_price'             => $order->total_price,
+                        'archived_at' => now(),
+                        'order_number' => $order->order_number,
+                        'notes' => $order->notes,
+                        'order_status' => $order->order_status->value,
+                        'payment_status' => $order->payment_status->value,
+                        'delivery_status' => $order->delivery_status->value,
+                        'subtotal_price' => $order->subtotal_price,
+                        'coupon_discount' => $order->coupon_discount,
+                        'delivery_fee' => $order->delivery_fee,
+                        'service_fee' => $order->service_fee,
+                        'tax_amount' => $order->tax_amount,
+                        'total_price' => $order->total_price,
                         'delivery_scheduled_type' => $order->delivery_scheduled_type->value,
-                        'delivery_date'           => $order->delivery_date,
-                        'payment_token'           => $order->payment_token,
-                        'created_at'              => $order->created_at,
-                        'updated_at'              => $order->updated_at,
-                        'customer'                => $order->customer->toJson(),
-                        'delivery'                => $order->delivery?->toJson(),
-                        'manager'                 => $order->manager?->toJson(),
-                        'branch'                  => $order->branch->toJson(),
-                        'coupon'                  => $order->coupon?->toJson(),
-                        'payment_method'          => $order->paymentMethod->toJson(),
-                        'user_address'            => $order->userAddress->toJson(),
-                        'cart'                    => $order->carts()->with('cartProducts.product')->get()->toJson(),
+                        'delivery_date' => $order->delivery_date,
+                        'payment_token' => $order->payment_token,
+                        'created_at' => $order->created_at,
+                        'updated_at' => $order->updated_at,
+                        'customer' => $order->customer->toJson(),
+                        'delivery' => $order->delivery?->toJson(),
+                        'manager' => $order->manager?->toJson(),
+                        'branch' => $order->branch->toJson(),
+                        'coupon' => $order->coupon?->toJson(),
+                        'payment_method' => $order->paymentMethod->toJson(),
+                        'user_address' => $order->userAddress->toJson(),
+                        'cart' => $order->carts()->with('cartProducts.product')->get()->toJson(),
                     ]);
                     $order->delete();
                     Notification::make()

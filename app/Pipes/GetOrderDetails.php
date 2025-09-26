@@ -22,31 +22,30 @@ class GetOrderDetails
             ->where('customer_id', $request->user()->id)
             ->first();
 
-
         if (! $order) {
             throw new LogicalException('Order not found', 'The order ID does not exist or does not belong to the current user.');
         }
 
         $cartList = $order->carts
-            ->flatMap(fn($cart) => $cart->cartProducts)
-            ->map(fn($cartProduct) => [
-                'title'    => $cartProduct->product->title,
+            ->flatMap(fn ($cart) => $cart->cartProducts)
+            ->map(fn ($cartProduct) => [
+                'title' => $cartProduct->product->title,
                 'quantity' => $cartProduct->quantity,
             ])
             ->values();
 
         $details = [
-            'order_number'         => $order->order_number,
-            'status'               => $order->order_status,
-            'cancelable'           => $order->isCancelable(),
-            'delivery_date'        => $order->delivery_date?->toDateTimeString(),
+            'order_number' => $order->order_number,
+            'status' => $order->order_status,
+            'cancelable' => $order->isCancelable(),
+            'delivery_date' => $order->delivery_date?->toDateTimeString(),
             'address_phone_number' => $order->userAddress->phone,
-            'cart_list'            => $cartList,
-            'address_title'        => $order->userAddress->title,
+            'cart_list' => $cartList,
+            'address_title' => $order->userAddress->title,
             'payment_method_title' => $order->paymentMethod->title,
-            'discount_price'       => $order->coupon_discount,
-            'total_price'          => $order->total_price,
-            'created_at'           => $order->created_at,
+            'discount_price' => $order->coupon_discount,
+            'total_price' => $order->total_price,
+            'created_at' => $order->created_at,
         ];
 
         return $next($details);

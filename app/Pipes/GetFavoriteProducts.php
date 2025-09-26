@@ -18,6 +18,7 @@ class GetFavoriteProducts
                 $product = $favorite->product;
                 $branchProduct = $product->branchProducts->first();
                 $image = $product->files->first()?->url;
+
                 return [
                     'id' => $product->id,
                     'title' => $product->title,

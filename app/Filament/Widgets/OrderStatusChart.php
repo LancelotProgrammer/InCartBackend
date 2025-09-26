@@ -18,7 +18,7 @@ class OrderStatusChart extends ChartWidget
 
     protected ?string $heading = 'Order Status Chart';
 
-    protected int | string | array $columnSpan = 2;
+    protected int|string|array $columnSpan = 2;
 
     protected ?string $pollingInterval = null;
 
@@ -27,8 +27,8 @@ class OrderStatusChart extends ChartWidget
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
         $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
 
-        $cacheKey = CacheKeys::ORDER_STATUS_CHART . '_' .
-            Carbon::parse($startDate)->format('Y-m-d') . '_' .
+        $cacheKey = CacheKeys::ORDER_STATUS_CHART.'_'.
+            Carbon::parse($startDate)->format('Y-m-d').'_'.
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {

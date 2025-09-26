@@ -52,15 +52,15 @@ class OrderPayload
 
     private float $totalPrice = 0;
 
-    private float $serviceFee = 2; // TODO: get from settings
+    private float $serviceFee;
 
-    private float $taxRate = 2; // TODO: get from settings
+    private float $taxRate;
 
-    private float $minDistance = 0.2; // TODO: get from settings
+    private float $minDistance;
 
-    private float $maxDistance = 100; // TODO: get from settings
+    private float $maxDistance;
 
-    private float $pricePerKilometer = 1; // TODO: get from settings
+    private float $pricePerKilometer;
 
     // -------------------------------
     // Getters & Setters
@@ -336,6 +336,11 @@ class OrderPayload
         ?string $notes,
         int $branchId,
         User $user,
+        float $serviceFee,
+        float $taxRate,
+        float $minDistance,
+        float $maxDistance,
+        float $pricePerKilometer,
     ): self {
         $this->setTime($time);
         $this->setAddressId($addressId);
@@ -346,6 +351,11 @@ class OrderPayload
         $this->setNotes($notes);
         $this->setBranchId($branchId);
         $this->setUser($user);
+        $this->setServiceFee($serviceFee);
+        $this->setTaxRate($taxRate);
+        $this->setMinDistance($minDistance);
+        $this->setMaxDistance($maxDistance);
+        $this->setPricePerKilometer($pricePerKilometer);
 
         return $this;
     }

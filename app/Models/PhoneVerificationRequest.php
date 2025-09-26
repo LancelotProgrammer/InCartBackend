@@ -13,6 +13,6 @@ class PhoneVerificationRequest extends Model
 
     protected $casts = [
         'type' => OtpType::class,
-        'created_at' => 'datetime'
+        'created_at' => 'datetime',
     ];
 }

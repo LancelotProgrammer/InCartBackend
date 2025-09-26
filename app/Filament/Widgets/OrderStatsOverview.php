@@ -14,7 +14,7 @@ class OrderStatsOverview extends StatsOverviewWidget
 {
     protected static ?int $sort = 3;
 
-    protected int | array | null $columns = 4;
+    protected int|array|null $columns = 4;
 
     protected ?string $pollingInterval = null;
 
@@ -22,15 +22,14 @@ class OrderStatsOverview extends StatsOverviewWidget
     {
         // Default to current month if no filter provided
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
-        $endDate   = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
+        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
 
         // Cache key with date range
-        $cacheKey = CacheKeys::ORDER_STATS_OVERVIEW . '_' .
-            Carbon::parse($startDate)->format('Y-m-d') . '_' .
+        $cacheKey = CacheKeys::ORDER_STATS_OVERVIEW.'_'.
+            Carbon::parse($startDate)->format('Y-m-d').'_'.
             Carbon::parse($endDate)->format('Y-m-d');
 
-
-        return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
+        return Cache::remember($cacheKey, now()->addHour(), function () {
             $avgSubtotal = DB::table('orders')->avg('subtotal_price');
             $avgSubtotal = number_format($avgSubtotal, 2);
 

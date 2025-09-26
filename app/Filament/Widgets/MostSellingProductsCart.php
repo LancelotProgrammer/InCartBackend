@@ -15,7 +15,7 @@ class MostSellingProductsCart extends ChartWidget
 
     protected static ?int $sort = 9;
 
-    protected int | string | array $columnSpan = 2;
+    protected int|string|array $columnSpan = 2;
 
     protected ?string $heading = 'Most Selling Products Cart';
 
@@ -24,10 +24,10 @@ class MostSellingProductsCart extends ChartWidget
     protected function getData(): array
     {
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
-        $endDate   = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
+        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
 
-        $cacheKey = CacheKeys::MOST_SELLING_PRODUCTS_CHART . '_' .
-            Carbon::parse($startDate)->format('Y-m-d') . '_' .
+        $cacheKey = CacheKeys::MOST_SELLING_PRODUCTS_CHART.'_'.
+            Carbon::parse($startDate)->format('Y-m-d').'_'.
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
