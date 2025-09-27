@@ -14,7 +14,9 @@ class DatabaseManagerNotification
     public static function getManagers(Order $order): Collection
     {
         return User::where('role_id', Role::where('code', '=', 'manager')->first()->id)
-            ->where('branch_id', $order->branch_id)
+            ->whereHas('branches', function ($query) use ($order) {
+                $query->where('branches.id', $order->branch_id);
+            })
             ->get();
     }
 
