@@ -16,6 +16,7 @@ class GetSettings
             'facebook' => SettingsService::getFacebook(),
             'privacy_policy' => SettingsService::getPrivacyPolicy(),
             'terms_of_services' => SettingsService::getTermsOfServices(),
+            'faqs' => SettingsService::getFaqs(),
         ]);
     }
 }

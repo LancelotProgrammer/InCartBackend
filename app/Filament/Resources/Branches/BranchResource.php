@@ -8,6 +8,7 @@ use App\Filament\Resources\Branches\RelationManagers\AdvertisementsRelationManag
 use App\Filament\Resources\Branches\RelationManagers\CouponsRelationManager;
 use App\Filament\Resources\Branches\RelationManagers\PaymentMethodsRelationManager;
 use App\Filament\Resources\Branches\RelationManagers\ProductsRelationManager;
+use App\Filament\Resources\Branches\RelationManagers\UsersRelationManager;
 use App\Filament\Resources\Branches\Schemas\BranchForm;
 use App\Filament\Resources\Branches\Schemas\BranchInfolist;
 use App\Filament\Resources\Branches\Tables\BranchesTable;
@@ -51,6 +52,7 @@ class BranchResource extends Resource
             CouponsRelationManager::class,
             ProductsRelationManager::class,
             PaymentMethodsRelationManager::class,
+            UsersRelationManager::class,
         ];
     }
 

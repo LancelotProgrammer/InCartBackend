@@ -45,9 +45,9 @@ class CreateOrderAction
                         ]),
                     Step::make('Customer')
                         ->schema([
-                            Select::make('customer_id')
+                            Select::make('customer_id')->label('Customer')
                                 ->options(
-                                    User::where('role_id', '=', Role::where('code', '=', 'user')->first()->id)
+                                    User::where('role_id', '=', Role::where('code', '=', User::ROLE_USER_CODE)->first()->id)
                                         ->pluck('name', 'id')
                                 )
                                 ->searchable()

@@ -42,10 +42,12 @@ class AdminPanelProvider extends PanelProvider
             ->navigationItems([
                 NavigationItem::make('API documentation')
                     ->group('Developers')
+                    ->visible(fn (): bool => request()->user() && str_ends_with(request()->user()->email, '@developer.com'))
                     ->icon(Heroicon::ClipboardDocumentList)
                     ->url($appUrl.'/docs', true),
                 NavigationItem::make('Telescope')
                     ->group('Developers')
+                    ->visible(fn (): bool => request()->user() && str_ends_with(request()->user()->email, '@developer.com'))
                     ->icon(Heroicon::CommandLine)
                     ->url($appUrl.'/telescope', true),
             ])
@@ -67,7 +69,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                CheckBlockedUser::class,
             ]);
     }
 }

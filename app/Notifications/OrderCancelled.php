@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Order;
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Notifications\Notification;
 
@@ -27,6 +28,12 @@ class OrderCancelled extends Notification
                 "Customer {$this->order->customer?->name}'s order totaling {$this->order->total_price} has been cancelled."
                 .($this->order->cancel_reason ? " Reason: {$this->order->cancel_reason}" : '')
             )
+            ->actions([
+                Action::make('manage')
+                    ->label('Manage Order')
+                    ->url(route('filament.admin.resources.orders.edit', $this->order->id))
+                    ->openUrlInNewTab(),
+            ])
             ->getDatabaseMessage();
     }
 }

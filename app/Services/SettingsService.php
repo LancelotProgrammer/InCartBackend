@@ -5,6 +5,10 @@ namespace App\Services;
 use App\Constants\CacheKeys;
 use App\Exceptions\SetupException;
 use App\Models\Setting;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -35,19 +39,53 @@ class SettingsService
         return $setting->value;
     }
 
+    public static function getSettingsComponents(): array
+    {
+        return [
+            Section::make('Service')
+                ->description('Is system online or offline')
+                ->components([
+                    Checkbox::make('is_system_online'),
+                ]),
+            Section::make('Social Media Links')
+                ->description('User who will receive system notifications')
+                ->columns(3)
+                ->components([
+                    TextInput::make('whatsapp')->url(),
+                    TextInput::make('telegram')->url(),
+                    TextInput::make('facebook')->url(),
+                ]),
+            Section::make('Order Config')
+                ->description('Is is system online')
+                ->columns(5)
+                ->components([
+                    TextInput::make('service_fee')->numeric(),
+                    TextInput::make('tax_rate')->numeric(),
+                    TextInput::make('min_distance')->numeric(),
+                    TextInput::make('max_distance')->numeric(),
+                    TextInput::make('price_per_kilometer')->numeric(),
+                ]),
+            Section::make('Support')
+                ->description('Support and feedback allowed for user per day')
+                ->columns(2)
+                ->components([
+                    TextInput::make('allowed_ticket_count')->integer(),
+                    TextInput::make('allowed_feedback_count')->integer(),
+                ]),
+            Section::make('Legal')
+                ->description('Legal text')
+                ->columnSpanFull()
+                ->components([
+                    RichEditor::make('privacy_policy'),
+                    RichEditor::make('terms_of_services'),
+                    RichEditor::make('faqs'),
+                ]),
+        ];
+    }
+
     public static function isSystemOnline(): bool
     {
         return (bool) self::getValue('is_system_online');
-    }
-
-    public static function getDashboardManagers(): array
-    {
-        return json_decode(self::getValue('dashboard_managers'), true) ?? [];
-    }
-
-    public static function getNotificationManagers(): array
-    {
-        return json_decode(self::getValue('notification_managers'), true) ?? [];
     }
 
     public static function getWhatsapp(): ?string
@@ -98,6 +136,11 @@ class SettingsService
     public static function getTermsOfServices(): ?string
     {
         return self::getValue('terms_of_services', false);
+    }
+
+    public static function getFaqs(): ?string
+    {
+        return self::getValue('faqs', false);
     }
 
     public static function getAllowedTicketCount(): ?int

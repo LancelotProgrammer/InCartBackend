@@ -93,24 +93,6 @@ class BaseSeeder extends Seeder
                 'is_locked' => false,
             ],
 
-            // Dashboard Managers
-            [
-                'key' => 'dashboard_managers',
-                'value' => '[2,3]',
-                'type' => SettingType::JSON,
-                'group' => 'managers',
-                'is_locked' => false,
-            ],
-
-            // Notifications Managers
-            [
-                'key' => 'notification_managers',
-                'value' => '[2,3]',
-                'type' => SettingType::JSON,
-                'group' => 'managers',
-                'is_locked' => false,
-            ],
-
             // Social Media
             [
                 'key' => 'whatsapp',
@@ -186,6 +168,13 @@ class BaseSeeder extends Seeder
                 'group' => 'legal',
                 'is_locked' => false,
             ],
+            [
+                'key' => 'faqs',
+                'value' => 'faqs',
+                'type' => SettingType::STR,
+                'group' => 'legal',
+                'is_locked' => false,
+            ],
 
             // support
             [
@@ -240,11 +229,11 @@ class BaseSeeder extends Seeder
             ],
             [
                 'title' => 'delivery',
-                'code' => 'delivery',
+                'code' => User::ROLE_DELIVERY_CODE,
             ],
             [
                 'title' => 'user',
-                'code' => 'user',
+                'code' => User::ROLE_USER_CODE,
             ],
         ]);
 
@@ -267,8 +256,8 @@ class BaseSeeder extends Seeder
         User::insert([
             'name' => 'owner',
             'email' => 'owner@owner.com',
-            'password' => Hash::make('dc8rqy0f6vasybipb'),
-            'role_id' => Role::where('title', '=', 'super-admin')->value('id'),
+            'password' => Hash::make('owndc8rqy0f6vasybipb'),
+            'role_id' => Role::where('code', '=', 'super-admin')->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
         ]);
 
@@ -276,77 +265,77 @@ class BaseSeeder extends Seeder
         User::insert([
             'name' => 'developer',
             'email' => 'developer@developer.com',
-            'password' => Hash::make('dc8rqy0f6vasybipb'),
-            'role_id' => Role::where('title', '=', 'developer')->value('id'),
+            'password' => Hash::make('bvyaer68r3pq68bvp86s'),
+            'role_id' => Role::where('code', '=', 'developer')->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
         ]);
 
         $this->command->info('seeding managers');
-        $managerPassword = Hash::make('man123456');
+        $managerPassword = Hash::make('mandc8rqy0f6vasybipb');
         User::insert([
             'name' => 'manager 1',
             'email' => 'manager1@manager1.com',
             'password' => $managerPassword,
-            'role_id' => Role::where('title', '=', 'manager')->value('id'),
+            'role_id' => Role::where('code', '=', 'manager')->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
         ]);
         User::insert([
             'name' => 'manager 2',
             'email' => 'manager2@manager2.com',
             'password' => $managerPassword,
-            'role_id' => Role::where('title', '=', 'manager')->value('id'),
+            'role_id' => Role::where('code', '=', 'manager')->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Riyadh')->value('id'),
         ]);
         User::insert([
             'name' => 'manager 3',
             'email' => 'manager3@manager3.com',
             'password' => $managerPassword,
-            'role_id' => Role::where('title', '=', 'manager')->value('id'),
+            'role_id' => Role::where('code', '=', 'manager')->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
         ]);
 
-        $this->command->info('seeding delivery employees');
-        $deliveryPassword = Hash::make('del123456');
+        $this->command->info('seeding delivery');
+        $deliveryPassword = Hash::make('deldc8rqy0f6vasybipb');
         User::insert([
             'name' => 'delivery 1',
             'email' => 'delivery1@delivery1.com',
             'password' => $deliveryPassword,
-            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'role_id' => Role::where('code', '=', User::ROLE_DELIVERY_CODE)->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
         ]);
         User::insert([
             'name' => 'delivery 2',
             'email' => 'delivery2@delivery2.com',
             'password' => $deliveryPassword,
-            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'role_id' => Role::where('code', '=', User::ROLE_DELIVERY_CODE)->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
         ]);
         User::insert([
             'name' => 'delivery 3',
             'email' => 'delivery3@delivery3.com',
             'password' => $deliveryPassword,
-            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'role_id' => Role::where('code', '=', User::ROLE_DELIVERY_CODE)->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Riyadh')->value('id'),
         ]);
         User::insert([
             'name' => 'delivery 4',
             'email' => 'delivery4@delivery4.com',
             'password' => $deliveryPassword,
-            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'role_id' => Role::where('code', '=', User::ROLE_DELIVERY_CODE)->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Riyadh')->value('id'),
         ]);
         User::insert([
             'name' => 'delivery 5',
             'email' => 'delivery5@delivery5.com',
             'password' => $deliveryPassword,
-            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'role_id' => Role::where('code', '=', User::ROLE_DELIVERY_CODE)->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
         ]);
         User::insert([
             'name' => 'delivery 6',
             'email' => 'delivery6@delivery6.com',
             'password' => $deliveryPassword,
-            'role_id' => Role::where('title', '=', 'delivery')->value('id'),
+            'role_id' => Role::where('code', '=', User::ROLE_DELIVERY_CODE)->value('id'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Makkah')->value('id'),
         ]);
 
@@ -425,6 +414,22 @@ class BaseSeeder extends Seeder
                 ->for($branch)
                 ->has(File::factory()->count($advertisementFileCount), 'files')
                 ->create();
+        }
+
+        $this->command->info('seeding branches users');
+        foreach (Branch::all() as $branch) {
+            $managers = User::where('role_id', '=', Role::where('code', '=', 'manager')->value('id'))
+                ->where('city_id', '=', $branch->city_id)
+                ->get();
+            foreach ($managers as $manager) {
+                $branch->users()->attach($manager->id);
+            }
+            $deliveries = User::where('role_id', '=', Role::where('code', '=', User::ROLE_DELIVERY_CODE)->value('id'))
+                ->where('city_id', '=', $branch->city_id)
+                ->get();
+            foreach ($deliveries as $delivery) {
+                $branch->users()->attach($delivery->id);
+            }
         }
 
         $this->command->info('seeding coupons');

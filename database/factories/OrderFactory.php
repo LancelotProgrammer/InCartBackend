@@ -29,7 +29,7 @@ class OrderFactory extends Factory
     {
         // 1. pick a random user who has addresses AND has role = user
         $user = User::whereHas('addresses')
-            ->whereHas('role', fn ($query) => $query->where('code', 'user'))
+            ->whereHas('role', fn ($query) => $query->where('code', User::ROLE_USER_CODE))
             ->with('addresses')
             ->inRandomOrder()
             ->first();

@@ -78,12 +78,11 @@ class LatestOrdersTable extends TableWidget
                     }),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
-                ViewAction::make(),
                 Action::make('invoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
                     ->url(fn (Order $record) => route('order.invoice', ['id' => $record->id]), true),
-                OrderActions::configure(true),
+                OrderActions::configure(false),
             ])
             ->toolbarActions([
                 Action::make('Go')

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\City;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,7 +24,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'phone' => '+9665'.fake()->unique()->numerify('########'),
             'phone_verified_at' => now(),
-            'role_id' => Role::where('code', '=', 'user')->value('id'),
+            'role_id' => Role::where('code', '=', User::ROLE_USER_CODE)->value('id'),
             'city_id' => City::inRandomOrder()->first()->id,
         ];
     }

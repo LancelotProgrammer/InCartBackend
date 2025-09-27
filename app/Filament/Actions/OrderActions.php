@@ -6,6 +6,7 @@ use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Filament\Resources\Orders\OrderResource;
+use App\Models\Branch;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Role;
@@ -19,8 +20,10 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class OrderActions
@@ -51,6 +54,7 @@ class OrderActions
                         'order_status' => OrderStatus::CANCELLED,
                         'payment_status' => $order->payment_status === PaymentStatus::PAID ? PaymentStatus::REFUNDED : PaymentStatus::UNPAID,
                         'delivery_status' => DeliveryStatus::NOT_SHIPPED,
+                        'manager_id' => auth()->user()->id,
                         'cancel_reason' => $data['cancel_reason'],
                     ]);
                     $order->save();
@@ -108,7 +112,7 @@ class OrderActions
                 }),
 
             // Send to delivery
-            Action::make('delivery')
+            Action::make('select_delivery')
                 ->icon(Heroicon::Truck)
                 ->color('info')
                 ->requiresConfirmation()
@@ -116,13 +120,23 @@ class OrderActions
                     return $order->order_status === OrderStatus::PROCESSING;
                 })
                 ->schema([
-                    Select::make('delivery_id')->options(User::where('role_id', '=', Role::where('code', '=', 'delivery')->first()->id)->pluck('name', 'id')),
+                    Select::make('delivery_id')->options(function ($record) {
+                        return User::where('role_id', '=', Role::where('code', '=', User::ROLE_DELIVERY_CODE)->first()->id)
+                            ->where(function (Builder $query) use ($record) {
+                                $branch = Branch::find($record->branch_id);
+                                $query->whereHas('branches', function (Builder $q) use ($branch) {
+                                    $q->where('branch_id', '=', $branch->id);
+                                });
+                            })
+                            ->pluck('name', 'id');
+                    })
                 ])
                 ->action(function (Order $order, array $data) {
                     $order->update([
                         'order_status' => OrderStatus::DELIVERING,
                         'delivery_status' => DeliveryStatus::OUT_FOR_DELIVERY,
                         'delivery_id' => $data['delivery_id'],
+                        'manager_id' => auth()->user()->id,
                     ]);
                     $order->save();
                     FirebaseFCM::sendOrderStatusNotification($order);
@@ -147,6 +161,7 @@ class OrderActions
                         'order_status' => OrderStatus::FINISHED,
                         'delivery_status' => DeliveryStatus::DELIVERED,
                         'payment_status' => PaymentStatus::PAID,
+                        'manager_id' => auth()->user()->id,
                     ]);
                     $order->save();
                     FirebaseFCM::sendOrderStatusNotification($order);

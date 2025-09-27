@@ -11,6 +11,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
@@ -46,7 +47,7 @@ class CartProductsRelationManager extends RelationManager
                 Action::make('edit')
                     ->icon(Heroicon::PencilSquare)
                     ->visible(function () {
-                        return self::isEnabled($this->getOwnerRecord());
+                        return self::isEnabled($this->getOwnerRecord(), $this->pageClass);
                     })
                     ->schema(function () {
                         return [
@@ -78,7 +79,7 @@ class CartProductsRelationManager extends RelationManager
                     ->icon(Heroicon::OutlinedTrash)
                     ->requiresConfirmation()
                     ->visible(function () {
-                        return self::isEnabled($this->getOwnerRecord());
+                        return self::isEnabled($this->getOwnerRecord(), $this->pageClass);
                     })
                     ->action(function (CartProduct $record) {
                         $cart = $record->cart;
@@ -99,7 +100,7 @@ class CartProductsRelationManager extends RelationManager
             ->toolbarActions([
                 Action::make('create')
                     ->visible(function () {
-                        return self::isEnabled($this->getOwnerRecord());
+                        return self::isEnabled($this->getOwnerRecord(), $this->pageClass);
                     })
                     ->schema(function () {
                         return [
@@ -130,13 +131,13 @@ class CartProductsRelationManager extends RelationManager
             ]);
     }
 
-    public static function isEnabled(Order $order): bool
+    public static function isEnabled(Order $order, $pageClass): bool
     {
         return $order->paymentMethod?->code === 'pay-on-delivery'
             && in_array($order->order_status, [
                 OrderStatus::PENDING,
                 OrderStatus::PROCESSING,
-            ], true);
+            ], true) && !(app($pageClass) instanceof ViewRecord);
     }
 
     protected function recalculateOrderTotals(Order $order): void

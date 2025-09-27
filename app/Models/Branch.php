@@ -37,6 +37,11 @@ class Branch extends Model
         return $this->belongsToMany(Product::class, 'branch_product')->using(BranchProduct::class);
     }
 
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'branch_user')->using(BranchUser::class);
+    }
+
     public function advertisements(): HasMany
     {
         return $this->hasMany(Advertisement::class);

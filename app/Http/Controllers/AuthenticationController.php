@@ -56,7 +56,7 @@ class AuthenticationController extends Controller
             'city_id' => 'required|int|exists:cities,id',
         ]);
 
-        $roleId = Role::where('code', '=', 'user')->value('id');
+        $roleId = Role::where('code', '=', User::ROLE_USER_CODE)->value('id');
         if (! $roleId) {
             throw new SetupException(
                 trans('auth.something_went_wrong'),
@@ -140,7 +140,7 @@ class AuthenticationController extends Controller
 
         $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpType::REGISTER->value);
 
-        $roleId = Role::where('code', '=', 'user')->value('id');
+        $roleId = Role::where('code', '=', User::ROLE_USER_CODE)->value('id');
         if (! $roleId) {
             throw new SetupException(
                 trans('auth.something_went_wrong'),

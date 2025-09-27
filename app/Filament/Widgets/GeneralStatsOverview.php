@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Constants\CacheKeys;
 use App\Models\Role;
+use App\Models\User;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -31,7 +32,7 @@ class GeneralStatsOverview extends StatsOverviewWidget
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
             $totalOrders = DB::table('orders')->whereBetween('created_at', [$startDate, $endDate])->count();
             $totalProducts = DB::table('products')->whereBetween('created_at', [$startDate, $endDate])->count();
-            $totalUsers = DB::table('users')->whereBetween('created_at', [$startDate, $endDate])->where('role_id', Role::where('code', '=', 'user')->first()->id)->count();
+            $totalUsers = DB::table('users')->whereBetween('created_at', [$startDate, $endDate])->where('role_id', '=', Role::where('code', '=', User::ROLE_USER_CODE)->first()->id)->count();
             $totalAds = DB::table('advertisements')->whereBetween('created_at', [$startDate, $endDate])->count();
 
             return [

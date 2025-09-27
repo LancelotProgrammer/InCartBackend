@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Enums\DeliveryScheduledType;
+use App\Models\Branch;
 use App\Models\Role;
 use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
@@ -60,10 +61,19 @@ class OrderForm
                             ->relationship(
                                 'paymentMethod',
                                 'title',
-                                fn (Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
+                                fn(Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
                             )
                             ->required(),
-                        Select::make('delivery_id')->options(User::where('role_id', '=', Role::where('code', '=', 'delivery')->first()->id)->pluck('name', 'id')),
+                        Select::make('delivery_id')->options(function (Get $get) {
+                            return User::where('role_id', '=', Role::where('code', '=', User::ROLE_DELIVERY_CODE)->first()->id)
+                                ->where(function (Builder $query) use ($get) {
+                                    $branch = Branch::find($get('branch_id'));
+                                    $query->whereHas('branches', function (Builder $q) use ($branch) {
+                                        $q->where('branch_id', '=', $branch->id);
+                                    });
+                                })
+                                ->pluck('name', 'id');
+                        }),
                         Select::make('delivery_scheduled_type')
                             ->afterStateUpdated(function (Set $set) {
                                 $set('delivery_date', null);
@@ -83,7 +93,7 @@ class OrderForm
                             ->relationship(
                                 'userAddress',
                                 'title',
-                                fn (Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
+                                fn(Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
                             )
                             ->required(),
                     ]),

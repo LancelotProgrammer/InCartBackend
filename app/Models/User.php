@@ -19,6 +19,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
+    const ROLE_USER_CODE = 'user';
+    const ROLE_DELIVERY_CODE = 'delivery';
+
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
@@ -59,6 +62,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function advertisements(): BelongsToMany
     {
         return $this->belongsToMany(Advertisement::class, 'advertisement_user')->using(AdvertisementUser::class);
+    }
+
+    public function branches(): BelongsToMany
+    {
+        return $this->belongsToMany(Branch::class, 'branch_user')->using(BranchUser::class);
     }
 
     public function addresses(): HasMany
@@ -118,11 +126,15 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if ($this->email === null) {
+        if ($this->isBlocked()) {
             return false;
         }
 
-        return str_ends_with($this->email, '@owner.com');
+        if ($this->role->code === self::ROLE_USER_CODE) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function ensureHasBlockedAt(): void
