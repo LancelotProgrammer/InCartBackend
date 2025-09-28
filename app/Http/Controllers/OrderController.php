@@ -138,6 +138,8 @@ class OrderController extends Controller
     {
         return new JsonResource(Pipeline::send($request)
             ->through([
+                ValidateUser::class,
+                new AuthorizeUser('get-order-details'),
                 GetOrderDetails::class,
             ])
             ->thenReturn());
