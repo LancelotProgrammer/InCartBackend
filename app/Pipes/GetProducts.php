@@ -36,6 +36,12 @@ class GetProducts
             });
         }
 
+        if ($request->boolean('discounted')) {
+            $query->whereHas('branchProducts', function ($query) {
+                $query->where('discount', '>', 0);
+            });
+        }
+
         $products = $query->simplePaginate();
 
         return $next(collect($products->items())->map(function (Product $product): array {

@@ -14,9 +14,10 @@ class ProductController extends Controller
     /**
      * @unauthenticated
      *
-     * @queryParam category_id integer The city ID. Example: 1
-     * @queryParam search string The city ID. Example: product name in english or arabic
-     * @queryParam page integer The city ID. Example: 1
+     * @queryParam category_id integer The category ID. Example: 1
+     * @queryParam search string The English or Arabic name of the product. Example: name
+     * @queryParam page integer The page number. Example: 1
+     * @queryParam discounted boolean Discounted products. Example: 1
      *
      * @group Product Actions
      */

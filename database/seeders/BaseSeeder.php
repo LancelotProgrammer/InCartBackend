@@ -401,7 +401,7 @@ class BaseSeeder extends Seeder
                 $maximumQuantity = fake()->numberBetween($minimumQuantity + 10, 50);
                 $branch->products()->attach($product->id, [
                     'price' => fake()->randomFloat(2, 10, 500),
-                    'discount' => fake()->numberBetween(0, 50),
+                    'discount' => $this->faker->boolean(20) ? fake()->numberBetween(5, 30) : 0,
                     'minimum_order_quantity' => $minimumQuantity,
                     'maximum_order_quantity' => $maximumQuantity,
                     'quantity' => fake()->numberBetween(100, 10000),
