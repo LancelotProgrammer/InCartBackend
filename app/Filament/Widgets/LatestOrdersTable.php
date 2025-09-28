@@ -48,18 +48,7 @@ class LatestOrdersTable extends TableWidget
                     ->label('Filter'),
             )
             ->filters([
-                SelectFilter::make('order_status')->options(OrderStatus::class),
-                SelectFilter::make('payment_status')->options(PaymentStatus::class),
-                SelectFilter::make('delivery_status')->options(DeliveryStatus::class),
-                SelectFilter::make('delivery_scheduled_type')->options(DeliveryScheduledType::class),
-                TernaryFilter::make('today')
-                    ->trueLabel('todays orders')
-                    ->falseLabel('all orders')
-                    ->queries(
-                        true: fn (Builder $query) => $query->whereDate('delivery_date', '=', now()),
-                        false: fn (Builder $query) => $query,
-                        blank: fn (Builder $query) => $query,
-                    ),
+                Filter::make('is_today')->query(fn(Builder $query): Builder => $query->whereDate('delivery_date', '=', now())),
                 Filter::make('created_at')
                     ->schema([
                         DatePicker::make('created_from'),
@@ -76,6 +65,10 @@ class LatestOrdersTable extends TableWidget
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
+                SelectFilter::make('order_status')->options(OrderStatus::class),
+                SelectFilter::make('payment_status')->options(PaymentStatus::class),
+                SelectFilter::make('delivery_status')->options(DeliveryStatus::class),
+                SelectFilter::make('delivery_scheduled_type')->options(DeliveryScheduledType::class),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 Action::make('invoice')
