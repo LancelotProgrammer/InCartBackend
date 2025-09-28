@@ -39,6 +39,7 @@ class FirebaseFCM
         foreach ($tokens as $token) {
             $message = CloudMessage::new()
                 ->withNotification($notification)
+                ->withData(['route' => "/order-details/$order->id"])
                 ->toToken($token);
             try {
                 $messaging->send($message);
@@ -66,6 +67,7 @@ class FirebaseFCM
         foreach ($tokens as $token) {
             $message = CloudMessage::new()
                 ->withNotification($notification)
+                ->withData(['route' => "/ticket-details/$ticket->id"])
                 ->toToken($token);
             try {
                 $messaging->send($message);

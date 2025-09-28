@@ -25,7 +25,7 @@ class DatabaseUserNotification
             'title' => $title,
             'body' => $body,
             'type' => UserNotificationType::GENERAL->value,
-            'deep_link' => 'temporarily_link', // TODO: fix deep link
+            'deep_link' => "/order-details/$order->id",
             'mark_as_read' => false,
         ]);
     }
@@ -37,7 +37,7 @@ class DatabaseUserNotification
             'title' => 'We’ve replied to your support request',
             'body' => $reply,
             'type' => UserNotificationType::GENERAL->value,
-            'deep_link' => 'temporarily_link', // TODO: fix deep link
+            'deep_link' => "/ticket-details/$ticket->id",
             'mark_as_read' => false,
         ]);
     }

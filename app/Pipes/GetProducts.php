@@ -16,6 +16,7 @@ class GetProducts
             'category_id' => 'nullable|integer|exists:categories,id',
             'search' => 'nullable|string',
             'page' => 'nullable|integer|min:1',
+            'discounted' => 'nullable|boolean',
         ]);
 
         $query = Product::query();
