@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AuthorizeUser;
@@ -34,14 +35,15 @@ class UserNotificationController extends Controller
      *
      * @group Profile Actions
      */
-    public function markUserNotificationAsRead(Request $request): SuccessfulResponseResource
+    public function markUserNotificationAsRead(Request $request): EmptySuccessfulResponseResource
     {
-        return new SuccessfulResponseResource(Pipeline::send($request)
+        Pipeline::send($request)
             ->through([
                 ValidateUser::class,
                 new AuthorizeUser('mark-user-notification-as-read'),
                 MarkUserNotificationAsRead::class,
             ])
-            ->thenReturn());
+            ->thenReturn();
+        return new EmptySuccessfulResponseResource();
     }
 }

@@ -6,7 +6,7 @@ beforeEach(function () {
     $this->admin = User::where('email', 'owner@owner.com')->first();
 });
 
-describe('API smoke test', function () {
+describe('Dashboard smoke test', function () {
     test('the application returns a successful response', function () {
         $this->get('/')->assertStatus(200);
     });

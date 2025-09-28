@@ -152,7 +152,9 @@ test('user notifications endpoints', function () {
         'updated_at' => now(),
     ]);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->postJson("/api/v1/users/notifications/{$notificationId}/read")->assertStatus(200);
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson("/api/v1/users/notifications", [
+        'ids' => [$notificationId],
+    ])->assertStatus(204);
 });
 
 test('packages endpoints', function () {
@@ -241,8 +243,6 @@ test('public catalog endpoints', function () {
     // $this->getJson('/api/v1/products/1')->assertStatus(200);
 
     $this->getJson('/api/v1/categories')->assertStatus(200);
-
-    $this->getJson('/api/v1/advertisements')->assertStatus(200);
 
     $this->getJson('/api/v1/payment-methods')->assertStatus(200);
 

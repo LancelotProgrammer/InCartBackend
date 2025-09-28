@@ -11,17 +11,23 @@ class MarkUserNotificationAsRead
 {
     public function __invoke(Request $request, Closure $next): array
     {
-        $notificationId = $request->route('id');
+        $request->validate([
+            'ids'   => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'distinct'],
+        ]);
 
-        $notification = UserNotification::where('id', $notificationId)
+        $ids = $request->input('ids', []);
+
+        $count = UserNotification::whereIn('id', $ids)
             ->where('user_id', $request->user()->id)
-            ->first();
+            ->update(['mark_as_read' => true]);
 
-        if (! $notification) {
-            throw new LogicalException('Notification not found', 'The notification ID does not exist or does not belong to the current user.');
+        if ($count === 0) {
+            throw new LogicalException(
+                'Notification not found',
+                'None of the provided notification IDs exist or belong to the current user.'
+            );
         }
-
-        $notification->update(['mark_as_read' => true]);
 
         return $next([]);
     }

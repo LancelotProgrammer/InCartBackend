@@ -63,7 +63,7 @@ Route::middleware([
         Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);
 
         Route::get('/users/notifications', [UserNotificationController::class, 'getUserNotifications']);
-        Route::post('/users/notifications/{id}/read', [UserNotificationController::class, 'markUserNotificationAsRead']);
+        Route::post('/users/notifications', [UserNotificationController::class, 'markUserNotificationAsRead']);
 
         Route::get('/packages', [PackageController::class, 'getPackages']);
         Route::post('/packages', [PackageController::class, 'createPackage']);
