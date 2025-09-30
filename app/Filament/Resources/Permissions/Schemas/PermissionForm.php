@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Permissions\Schemas;
 
+use App\Filament\Components\TranslationComponent;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -16,7 +17,8 @@ class PermissionForm
                     ->columnSpanFull()
                     ->columns(1)
                     ->schema([
-                        TextInput::make('title')->required(),
+                        TranslationComponent::configure('title')->required(),
+                        TextInput::make('code')->required(),
                     ]),
             ]);
     }

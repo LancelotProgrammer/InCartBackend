@@ -25,8 +25,6 @@ class UserAddressController extends Controller
     {
         return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('get-user-address'),
                 GetUserAddresses::class,
             ])
             ->thenReturn());
@@ -48,8 +46,6 @@ class UserAddressController extends Controller
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('add-user-address'),
                 CreateUserAddress::class,
             ])
             ->thenReturn());
@@ -71,8 +67,6 @@ class UserAddressController extends Controller
     {
         Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('update-user-address'),
                 UpdateUserAddress::class,
             ])
             ->thenReturn();
@@ -89,8 +83,6 @@ class UserAddressController extends Controller
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('delete-user-address'),
                 DeleteUserAddress::class,
             ])
             ->thenReturn());

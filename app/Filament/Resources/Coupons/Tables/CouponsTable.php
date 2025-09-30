@@ -64,6 +64,7 @@ class CouponsTable
                 ViewAction::make(),
                 ...PublishActions::configure(),
                 Action::make('show_code')
+                    ->authorize('showCode')
                     ->schema([
                         TextEntry::make('code'),
                     ])

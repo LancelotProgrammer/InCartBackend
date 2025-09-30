@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Icons\Heroicon;
@@ -71,8 +72,10 @@ class UsersTable
                 ActionGroup::make([
                     DeleteAction::make(),
                     EditAction::make(),
+                    ViewAction::make(),
                 ]),
                 Action::make('Block')
+                    ->authorize('block')
                     ->requiresConfirmation()
                     ->visible(function (User $record) {
                         return ! $record->isBlocked();
@@ -86,6 +89,7 @@ class UsersTable
                             ->send();
                     }),
                 Action::make('un-block')
+                    ->authorize('unblock')
                     ->requiresConfirmation()
                     ->visible(function (User $record) {
                         return $record->isBlocked();

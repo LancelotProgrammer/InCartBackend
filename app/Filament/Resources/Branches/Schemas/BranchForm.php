@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Branches\Schemas;
 
 use App\Filament\Components\TranslationComponent;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class BranchForm
@@ -13,14 +13,15 @@ class BranchForm
     {
         return $schema
             ->components([
-                TranslationComponent::configure('title'),
-                TranslationComponent::configure('description'),
-                TextInput::make('latitude'),
-                TextInput::make('longitude'),
-                Select::make('city_id')
+                Section::make('Branch Details')
                     ->columnSpanFull()
-                    ->relationship('city', 'name')
-                    ->required(),
+                    ->columns(2)
+                    ->schema([
+                        TranslationComponent::configure('title'),
+                        TranslationComponent::configure('description'),
+                        TextInput::make('latitude'),
+                        TextInput::make('longitude'),
+                    ])
             ]);
     }
 }

@@ -37,6 +37,7 @@ class CreateOrderAction
     public static function configure(): Action
     {
         return Action::make('create')
+            ->authorize('create')
             ->schema([
                 Wizard::make([
                     Step::make('Branch')
@@ -47,7 +48,7 @@ class CreateOrderAction
                         ->schema([
                             Select::make('customer_id')->label('Customer')
                                 ->options(
-                                    User::where('role_id', '=', Role::where('code', '=', User::ROLE_USER_CODE)->first()->id)
+                                    User::where('role_id', '=', Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->first()->id)
                                         ->pluck('name', 'id')
                                 )
                                 ->searchable()

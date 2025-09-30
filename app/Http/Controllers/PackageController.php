@@ -30,8 +30,6 @@ class PackageController extends Controller
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('get-packages'),
                 GetPackages::class,
             ])
             ->thenReturn());
@@ -49,8 +47,6 @@ class PackageController extends Controller
     {
         return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('create-package'),
                 CreatePackage::class,
             ])
             ->thenReturn());
@@ -70,8 +66,6 @@ class PackageController extends Controller
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('update-package'),
                 UpdatePackage::class,
             ])
             ->thenReturn());
@@ -88,8 +82,6 @@ class PackageController extends Controller
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('delete-package'),
                 DeletePackage::class,
             ])
             ->thenReturn());
@@ -106,8 +98,6 @@ class PackageController extends Controller
     {
         return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('get-package-products'),
                 GetPackageProducts::class,
             ])
             ->thenReturn());
@@ -125,8 +115,6 @@ class PackageController extends Controller
     {
         Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('add-product-to-package'),
                 AddProductToPackage::class,
             ])
             ->thenReturn();
@@ -146,8 +134,6 @@ class PackageController extends Controller
     {
         Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('delete-product-from-package'),
                 DeleteProductFromPackage::class,
             ])
             ->thenReturn();

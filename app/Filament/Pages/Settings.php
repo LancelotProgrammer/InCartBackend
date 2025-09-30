@@ -80,4 +80,9 @@ class Settings extends Page
             ->columns(2)
             ->components(SettingsService::getSettingsComponents());
     }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->canManageSettings();
+    }
 }

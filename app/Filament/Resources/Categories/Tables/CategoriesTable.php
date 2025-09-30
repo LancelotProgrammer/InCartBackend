@@ -6,7 +6,9 @@ use App\Filament\Actions\PublishActions;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Models\Category;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\TextInput;
+use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
@@ -24,7 +26,7 @@ class CategoriesTable
         return $table
             ->paginationPageOptions([100])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -32,14 +34,14 @@ class CategoriesTable
             ->groups([
                 Group::make('parent_id')
                     ->label('Parent Category')
-                    ->getTitleFromRecordUsing(fn ($record) => optional($record->parent)->title ?? 'Root')
+                    ->getTitleFromRecordUsing(fn($record) => optional($record->parent)->title ?? 'Root')
                     ->collapsible(),
             ])
             ->columns([
                 Stack::make([
                     ImageColumn::make('url')
                         ->label('Image')
-                        ->state(fn ($record) => $record->files->first()->url ?? null),
+                        ->state(fn($record) => $record->files->first()->url ?? null),
                     TextColumn::make('title')->searchable(),
                     TextColumn::make('published_at')->dateTime(),
                 ]),
@@ -59,7 +61,7 @@ class CategoriesTable
                         if ($category) {
                             return $query->when(
                                 $data['title'],
-                                fn (Builder $query, $date): Builder => $query->where('id', '=', $category->id)->orWhere('parent_id', '=', $category->id),
+                                fn(Builder $query, $date): Builder => $query->where('id', '=', $category->id)->orWhere('parent_id', '=', $category->id),
                             );
                         }
 
@@ -69,12 +71,16 @@ class CategoriesTable
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 Action::make('products')
-                    ->visible(fn (Category $record) => $record->parent_id !== null)
-                    ->icon(Heroicon::Bars4)
-                    ->url(fn (Category $record) => CategoryResource::getUrl('products', ['record' => $record->id])),
+                    ->authorize('viewProducts')
+                    ->visible(fn(Category $record) => $record->parent_id !== null)
+                    ->icon(Heroicon::Cube)
+                    ->iconButton()
+                    ->url(fn(Category $record) => CategoryResource::getUrl('products', ['record' => $record->id])),
                 Action::make('categories')
-                    ->icon(Heroicon::Bars4)
-                    ->url(fn (Category $record) => CategoryResource::getUrl('categories', ['record' => $record->id])),
+                    ->authorize('viewCategories')
+                    ->icon(Heroicon::NumberedList)
+                    ->iconButton()
+                    ->url(fn(Category $record) => CategoryResource::getUrl('categories', ['record' => $record->id])),
                 ...PublishActions::configure(),
             ])
             ->toolbarActions([

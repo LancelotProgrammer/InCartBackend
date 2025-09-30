@@ -55,8 +55,8 @@ class UsersRelationManager extends RelationManager
                 Action::make('add')
                     ->schema([
                         Select::make('user_id')
-                            ->options(User::where('role_id', '!=', Role::where('code', '=', User::ROLE_USER_CODE)->first()->id)
-                                ->where('city_id', '=', $this->ownerRecord->city_id)
+                            ->options(User::where('city_id', '=', $this->ownerRecord->city_id)
+                                ->getUsersWhoCanBeAssignedBranch()
                                 ->pluck('name', 'id'))
                             ->required(),
                     ])

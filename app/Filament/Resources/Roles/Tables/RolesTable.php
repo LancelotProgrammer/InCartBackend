@@ -15,7 +15,6 @@ class RolesTable
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('title'),
-                TextColumn::make('permissions.title'),
             ])
             ->filters([
                 //

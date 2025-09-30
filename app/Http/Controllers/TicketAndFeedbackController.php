@@ -23,8 +23,6 @@ class TicketAndFeedbackController extends Controller
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('get-tickets'),
                 GetTickets::class,
             ])
             ->thenReturn());
@@ -41,8 +39,6 @@ class TicketAndFeedbackController extends Controller
     {
         Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('create-ticket'),
                 CreateTicket::class,
             ])
             ->thenReturn();
@@ -61,8 +57,6 @@ class TicketAndFeedbackController extends Controller
     {
         Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('create-feedback'),
                 CreateFeedback::class,
             ])
             ->thenReturn();

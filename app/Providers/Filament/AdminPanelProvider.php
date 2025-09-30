@@ -42,12 +42,12 @@ class AdminPanelProvider extends PanelProvider
             ->navigationItems([
                 NavigationItem::make('API documentation')
                     ->group('Developers')
-                    ->visible(fn (): bool => request()->user() && str_ends_with(request()->user()->email, '@developer.com'))
+                    ->visible(fn (): bool => auth()->user()->canManageDeveloperSettings())
                     ->icon(Heroicon::ClipboardDocumentList)
                     ->url($appUrl.'/docs', true),
                 NavigationItem::make('Telescope')
                     ->group('Developers')
-                    ->visible(fn (): bool => request()->user() && str_ends_with(request()->user()->email, '@developer.com'))
+                    ->visible(fn (): bool => auth()->user()->canManageDeveloperSettings())
                     ->icon(Heroicon::CommandLine)
                     ->url($appUrl.'/telescope', true),
             ])

@@ -16,7 +16,7 @@ class GeneralStatsOverview extends StatsOverviewWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 2;
 
     protected ?string $pollingInterval = null;
 
@@ -32,7 +32,7 @@ class GeneralStatsOverview extends StatsOverviewWidget
         return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
             $totalOrders = DB::table('orders')->whereBetween('created_at', [$startDate, $endDate])->count();
             $totalProducts = DB::table('products')->whereBetween('created_at', [$startDate, $endDate])->count();
-            $totalUsers = DB::table('users')->whereBetween('created_at', [$startDate, $endDate])->where('role_id', '=', Role::where('code', '=', User::ROLE_USER_CODE)->first()->id)->count();
+            $totalUsers = DB::table('users')->whereBetween('created_at', [$startDate, $endDate])->where('role_id', '=', Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->first()->id)->count();
             $totalAds = DB::table('advertisements')->whereBetween('created_at', [$startDate, $endDate])->count();
 
             return [

@@ -56,11 +56,11 @@ class AuthenticationController extends Controller
             'city_id' => 'required|int|exists:cities,id',
         ]);
 
-        $roleId = Role::where('code', '=', User::ROLE_USER_CODE)->value('id');
+        $roleId = Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->value('id');
         if (! $roleId) {
             throw new SetupException(
                 trans('auth.something_went_wrong'),
-                'System setup error. Pleas add a user role to the system'
+                'System setup error. Pleas add a customer role to the system'
             );
         }
 
@@ -140,11 +140,11 @@ class AuthenticationController extends Controller
 
         $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpType::REGISTER->value);
 
-        $roleId = Role::where('code', '=', User::ROLE_USER_CODE)->value('id');
+        $roleId = Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->value('id');
         if (! $roleId) {
             throw new SetupException(
                 trans('auth.something_went_wrong'),
-                'System setup error. Pleas add a user role to the system'
+                'System setup error. Pleas add a customer role to the system'
             );
         }
 

@@ -29,8 +29,6 @@ class OrderController extends Controller
     {
         return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('get-user-previous-orders'),
                 GetUserPreviousOrders::class,
             ])
             ->thenReturn());
@@ -54,8 +52,6 @@ class OrderController extends Controller
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('create-order-bill'),
                 CreateOrderBill::class,
             ])
             ->thenReturn());
@@ -79,8 +75,6 @@ class OrderController extends Controller
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('create-order'),
                 CreateOrder::class,
             ])
             ->thenReturn());
@@ -102,8 +96,6 @@ class OrderController extends Controller
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('create-order-checkout'),
                 CreateOrderCheckout::class,
             ])
             ->thenReturn());
@@ -120,8 +112,6 @@ class OrderController extends Controller
     {
         Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('create-order-checkout'),
                 CancelOrder::class,
             ])
             ->thenReturn();
@@ -138,8 +128,6 @@ class OrderController extends Controller
     {
         return new JsonResource(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('get-order-details'),
                 GetOrderDetails::class,
             ])
             ->thenReturn());

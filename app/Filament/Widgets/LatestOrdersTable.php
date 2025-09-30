@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class LatestOrdersTable extends TableWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 1;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -71,10 +71,6 @@ class LatestOrdersTable extends TableWidget
                 SelectFilter::make('delivery_scheduled_type')->options(DeliveryScheduledType::class),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
-                Action::make('invoice')
-                    ->icon(Heroicon::OutlinedArrowDownCircle)
-                    ->color('primary')
-                    ->url(fn (Order $record) => route('order.invoice', ['id' => $record->id]), true),
                 OrderActions::configure(false),
             ])
             ->toolbarActions([

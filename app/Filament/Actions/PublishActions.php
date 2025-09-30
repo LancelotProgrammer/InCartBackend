@@ -11,6 +11,7 @@ class PublishActions
     {
         return [
             Action::make('publish')
+                ->authorize('publish')
                 ->action(function ($record) {
                     $record->publish();
                     Notification::make()
@@ -24,6 +25,7 @@ class PublishActions
                     return ! $record->isPublished();
                 }),
             Action::make('unpublish')
+                ->authorize('unpublish')
                 ->action(function ($record) {
                     $record->unpublish();
                     Notification::make()

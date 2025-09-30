@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\Session;
+use App\Traits\CanManagePermissions;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -19,10 +20,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    const ROLE_USER_CODE = 'user';
-    const ROLE_DELIVERY_CODE = 'delivery';
-
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, CanManagePermissions;
 
     protected $fillable = [
         'name',
@@ -130,7 +128,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             return false;
         }
 
-        if ($this->role->code === self::ROLE_USER_CODE) {
+        if ($this->role->code === Role::ROLE_CUSTOMER_CODE) {
             return false;
         }
 

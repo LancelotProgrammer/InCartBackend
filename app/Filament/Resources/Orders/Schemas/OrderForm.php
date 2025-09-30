@@ -3,8 +3,9 @@
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Enums\DeliveryScheduledType;
+use App\Enums\OrderStatus;
 use App\Models\Branch;
-use App\Models\Role;
+use App\Models\Order;
 use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -64,16 +65,18 @@ class OrderForm
                                 fn(Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
                             )
                             ->required(),
-                        Select::make('delivery_id')->options(function (Get $get) {
-                            return User::where('role_id', '=', Role::where('code', '=', User::ROLE_DELIVERY_CODE)->first()->id)
-                                ->where(function (Builder $query) use ($get) {
+                        Select::make('delivery_id')
+                            ->visible(function (Order $order) {
+                                return $order->order_status === OrderStatus::PROCESSING;
+                            })
+                            ->options(function (Get $get) {
+                                return User::getUsersWhoCanBeAssignedToTakeOrders()->where(function (Builder $query) use ($get) {
                                     $branch = Branch::find($get('branch_id'));
                                     $query->whereHas('branches', function (Builder $q) use ($branch) {
                                         $q->where('branch_id', '=', $branch->id);
                                     });
-                                })
-                                ->pluck('name', 'id');
-                        }),
+                                })->pluck('name', 'id');
+                            }),
                         Select::make('delivery_scheduled_type')
                             ->afterStateUpdated(function (Set $set) {
                                 $set('delivery_date', null);

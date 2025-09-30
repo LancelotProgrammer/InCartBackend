@@ -24,7 +24,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'phone' => '+9665'.fake()->unique()->numerify('########'),
             'phone_verified_at' => now(),
-            'role_id' => Role::where('code', '=', User::ROLE_USER_CODE)->value('id'),
+            'role_id' => Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->value('id'),
             'city_id' => City::inRandomOrder()->first()->id,
         ];
     }

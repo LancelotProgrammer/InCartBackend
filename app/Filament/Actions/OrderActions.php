@@ -20,7 +20,6 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,6 +39,7 @@ class OrderActions
 
             // Cancel order
             Action::make('cancel')
+                ->authorize('cancel')
                 ->icon(Heroicon::XCircle)
                 ->color('danger')
                 ->requiresConfirmation()
@@ -69,6 +69,7 @@ class OrderActions
 
             // Approve order
             Action::make('approve')
+                ->authorize('approve')
                 ->icon(Heroicon::CheckCircle)
                 ->color('success')
                 ->requiresConfirmation()
@@ -113,6 +114,7 @@ class OrderActions
 
             // Send to delivery
             Action::make('select_delivery')
+                ->authorize('selectDelivery')
                 ->icon(Heroicon::Truck)
                 ->color('info')
                 ->requiresConfirmation()
@@ -121,14 +123,12 @@ class OrderActions
                 })
                 ->schema([
                     Select::make('delivery_id')->options(function ($record) {
-                        return User::where('role_id', '=', Role::where('code', '=', User::ROLE_DELIVERY_CODE)->first()->id)
-                            ->where(function (Builder $query) use ($record) {
+                        return User::getUsersWhoCanBeAssignedToTakeOrders()->where(function (Builder $query) use ($record) {
                                 $branch = Branch::find($record->branch_id);
                                 $query->whereHas('branches', function (Builder $q) use ($branch) {
                                     $q->where('branch_id', '=', $branch->id);
                                 });
-                            })
-                            ->pluck('name', 'id');
+                            })->pluck('name', 'id');
                     })
                 ])
                 ->action(function (Order $order, array $data) {
@@ -150,6 +150,7 @@ class OrderActions
 
             // Mark as finished
             Action::make('finish')
+                ->authorize('finish')
                 ->icon(Heroicon::DocumentCheck)
                 ->color('success')
                 ->requiresConfirmation()
@@ -175,6 +176,7 @@ class OrderActions
 
             // Archive order
             Action::make('archive')
+                ->authorize('archive')
                 ->icon(Heroicon::ArchiveBox)
                 ->color('warning')
                 ->requiresConfirmation()

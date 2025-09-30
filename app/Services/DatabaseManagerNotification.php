@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Order;
-use App\Models\Role;
 use App\Models\User;
 use App\Notifications\OrderCancelled;
 use App\Notifications\OrderCreated;
@@ -13,11 +12,10 @@ class DatabaseManagerNotification
 {
     public static function getManagers(Order $order): Collection
     {
-        return User::where('role_id', Role::where('code', '=', 'manager')->first()->id)
-            ->whereHas('branches', function ($query) use ($order) {
+        return User::whereHas('branches', function ($query) use ($order) {
                 $query->where('branches.id', $order->branch_id);
             })
-            ->get();
+            ->getUsersWhoCanReceiveOrderNotifications();
     }
 
     public static function sendCreatedOrderNotification(Order $order): void

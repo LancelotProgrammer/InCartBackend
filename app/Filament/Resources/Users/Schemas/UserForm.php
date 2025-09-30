@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Models\Role;
+use App\Policies\RolePolicy;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -27,7 +29,12 @@ class UserForm
                         Select::make('city_id')
                             ->relationship('city', 'name'),
                         Select::make('role_id')
-                            ->relationship('role', 'title'),
+                            ->relationship(
+                                'role',
+                                'title',
+                                fn($query) => RolePolicy::filterOwnerAndDeveloper($query)
+                                
+                            ),
                     ]),
             ]);
     }

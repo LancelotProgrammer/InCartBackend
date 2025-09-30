@@ -23,8 +23,6 @@ class UserNotificationController extends Controller
     {
         return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('get-user-notifications'),
                 GetUserNotifications::class,
             ])
             ->thenReturn());
@@ -39,8 +37,6 @@ class UserNotificationController extends Controller
     {
         Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('mark-user-notification-as-read'),
                 MarkUserNotificationAsRead::class,
             ])
             ->thenReturn();

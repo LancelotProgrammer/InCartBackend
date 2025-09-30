@@ -32,4 +32,9 @@ class Dashboard extends BaseDashboard
     {
         return 4;
     }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->canViewDashboard();
+    }
 }

@@ -23,8 +23,6 @@ class FavoriteController extends Controller
     {
         return new SuccessfulResponseResourceWithMetadata(Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('get-favorite-products'),
                 GetFavoriteProducts::class,
             ])
             ->thenReturn());
@@ -41,8 +39,6 @@ class FavoriteController extends Controller
     {
         Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('add-product-to-favorite'),
                 AddProductToFavorites::class,
             ])
             ->thenReturn();
@@ -61,8 +57,6 @@ class FavoriteController extends Controller
     {
         Pipeline::send($request)
             ->through([
-                ValidateUser::class,
-                new AuthorizeUser('delete-product-from-favorite'),
                 DeleteProductFromFavorites::class,
             ])
             ->thenReturn();

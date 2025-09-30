@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use App\Traits\HasPublishAttribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class BranchUser extends Pivot
 {
-    use HasPublishAttribute;
-
     public $incrementing = true;
 
     protected $table = 'branch_user';

@@ -77,6 +77,7 @@ class OrdersTable
             ->recordActions([
                 ViewAction::make(),
                 Action::make('invoice')
+                    ->authorize('viewInvoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
                     ->url(fn (Order $record) => route('order.invoice', ['id' => $record->id]), true),
