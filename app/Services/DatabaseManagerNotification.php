@@ -15,7 +15,7 @@ class DatabaseManagerNotification
         return User::whereHas('branches', function ($query) use ($order) {
                 $query->where('branches.id', $order->branch_id);
             })
-            ->getUsersWhoCanReceiveOrderNotifications();
+            ->getUsersWhoCanReceiveOrderNotifications()->get();
     }
 
     public static function sendCreatedOrderNotification(Order $order): void
