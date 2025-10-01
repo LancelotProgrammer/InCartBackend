@@ -77,7 +77,7 @@ trait CanManagePermissions
         });
     }
 
-    public function scopeGetUsersWhoCanBeAssignedBranch(Builder $query): Builder
+    public function scopeGetUsersWhoCanBeAssignedToBranch(Builder $query): Builder
     {
         return $query->whereHas('role.permissions', function ($q) {
             $q->where('code', 'can-be-assigned-to-branch');

@@ -56,7 +56,7 @@ class UsersRelationManager extends RelationManager
                     ->schema([
                         Select::make('user_id')
                             ->options(User::where('city_id', '=', $this->ownerRecord->city_id)
-                                ->getUsersWhoCanBeAssignedBranch()
+                                ->getUsersWhoCanBeAssignedToBranch()
                                 ->pluck('name', 'id'))
                             ->required(),
                     ])
