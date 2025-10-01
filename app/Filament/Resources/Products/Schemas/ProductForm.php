@@ -76,6 +76,11 @@ class ProductForm
                                     ->visible(function () {
                                         return auth()->user()->canPublishProduct();
                                     })
+                                    ->afterStateHydrated(function (Toggle $component, ?Model $record) {
+                                        if ($record !== null && $record->published_at !== null) {
+                                            $component->state(true);
+                                        }
+                                    })
                                     ->dehydrateStateUsing(
                                         function ($state) {
                                             return $state ? Carbon::now() : null;
