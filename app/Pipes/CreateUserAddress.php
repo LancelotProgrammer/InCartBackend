@@ -7,7 +7,6 @@ use App\Exceptions\LogicalException;
 use App\Models\City;
 use App\Models\UserAddress;
 use App\Services\DistanceService;
-use App\Services\SettingsService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
@@ -27,22 +26,18 @@ class CreateUserAddress
 
         $city = City::where('id', '=', $request->user()->city_id)->first();
 
-        $distance = DistanceService::haversineDistance(
-            $validated['latitude'],
-            $validated['longitude'],
-            $city->latitude,
-            $city->longitude
+        $isPointInsideRectangle = DistanceService::isPointInsideRectangle(
+            [
+                'latitude' => $validated['latitude'],
+                'longitude' => $validated['longitude']
+            ],
+            $city->boundary,
         );
 
-        $minDistance = SettingsService::getMinDistance();
-        $maxDistance = SettingsService::getMaxDistance();
-        if (
-            $distance < $minDistance
-            || $distance > $maxDistance
-        ) {
+        if ($isPointInsideRectangle) {
             throw new LogicalException(
-                'Address is too far from the city center.',
-                "The total destination is {$distance} km, which is outside the allowed range of {$minDistance} km to {$maxDistance} km."
+                'Address is far from the city boundary.',
+                "The selected coordinates are outside the allowed city boundary."
             );
         }
 

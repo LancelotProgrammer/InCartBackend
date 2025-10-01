@@ -15,6 +15,7 @@ class GetCities
             return [
                 'id' => $city->id,
                 'name' => $city->name,
+                'boundary' => $city->boundary,
             ];
         }));
     }

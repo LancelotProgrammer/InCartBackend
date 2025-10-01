@@ -14,8 +14,6 @@ class CitiesTable
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('name')->searchable(),
-                TextColumn::make('latitude'),
-                TextColumn::make('longitude'),
             ])
             ->filters([
                 //

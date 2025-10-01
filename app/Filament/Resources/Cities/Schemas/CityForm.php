@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Cities\Schemas;
 
 use App\Filament\Components\TranslationComponent;
-use Filament\Forms\Components\TextInput;
+use App\Filament\Forms\Components\MapBoundary;
 use Filament\Schemas\Schema;
 
 class CityForm
@@ -13,8 +13,7 @@ class CityForm
         return $schema
             ->components([
                 TranslationComponent::configure('name')->columnSpanFull(),
-                TextInput::make('latitude'),
-                TextInput::make('longitude'),
+                MapBoundary::make('boundary')->label('City Boundary')->columnSpanFull()->required(),
             ]);
     }
 }

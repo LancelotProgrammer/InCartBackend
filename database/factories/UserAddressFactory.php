@@ -20,17 +20,21 @@ class UserAddressFactory extends Factory
     {
         $city = City::inRandomOrder()->first();
 
-        // Random offset for latitude/longitude (±0.02 degrees ~ ~2km)
-        $latOffset = fake()->randomFloat(5, -0.02, 0.02);
-        $lngOffset = fake()->randomFloat(5, -0.02, 0.02);
+        $boundary = $city->boundary;
+
+        $bl = collect($boundary)->firstWhere('name', 'bl');
+        $tr = collect($boundary)->firstWhere('name', 'tr');
+
+        $latitude = fake()->randomFloat(6, $bl['latitude'], $tr['latitude']);
+        $longitude = fake()->randomFloat(6, $bl['longitude'], $tr['longitude']);
 
         return [
             'title' => $this->faker->streetName(),
             'description' => $this->faker->optional()->sentence(),
             'type' => $this->faker->randomElement(UserAddressType::cases())->value,
             'phone' => fake()->unique()->phoneNumber(),
-            'latitude' => $city->latitude + $latOffset,
-            'longitude' => $city->longitude + $lngOffset,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
             'city_id' => $city->id,
         ];
     }

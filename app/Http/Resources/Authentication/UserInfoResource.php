@@ -30,6 +30,7 @@ class UserInfoResource extends JsonResource
             'city' => [
                 'id' => $this->city->id,
                 'name' => $this->city->name,
+                'boundary' => $this->city->boundary,
             ]
         ];
     }

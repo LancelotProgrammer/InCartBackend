@@ -13,12 +13,11 @@ class City extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['name', 'latitude', 'longitude'];
+    protected $fillable = ['name', 'boundary'];
 
     public $casts = [
         'name' => 'array',
-        'latitude' => 'double',
-        'longitude' => 'double',
+        'boundary' => 'array',
     ];
 
     public array $translatable = ['name'];

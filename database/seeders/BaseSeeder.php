@@ -198,18 +198,15 @@ class BaseSeeder extends Seeder
         City::insert([
             [
                 'name' => json_encode(Factory::translations(['en', 'ar'], ['Jeddah', 'جدة']), JSON_UNESCAPED_UNICODE),
-                'latitude' => 21.5292,
-                'longitude' => 39.1611,
+                'boundary' => '[{"latitude": 21.24586234991347, "longitude": 38.97399902343751, "name": "bl"}, {"latitude": 21.879341082799023, "longitude": 38.97399902343751, "name": "tl"}, {"latitude": 21.879341082799023, "longitude": 39.32281494140626, "name": "tr"}, {"latitude": 21.24586234991347, "longitude": 39.32281494140626, "name": "br"}, {"latitude": 21.562601716356248, "longitude": 39.14840698242188, "name": "c"}]',
             ],
             [
                 'name' => json_encode(Factory::translations(['en', 'ar'], ['Riyadh', 'رياض']), JSON_UNESCAPED_UNICODE),
-                'latitude' => 24.7136,
-                'longitude' => 46.6753,
+                'boundary' => '[{"latitude": 24.37211730011131, "longitude": 46.39251708984376, "name": "bl"}, {"latitude": 25.07316070640961, "longitude": 46.39251708984376, "name": "tl"}, {"latitude": 25.07316070640961, "longitude": 46.97479248046876, "name": "tr"}, {"latitude": 24.37211730011131, "longitude": 46.97479248046876, "name": "br"}, {"latitude": 24.72263900326046, "longitude": 46.68365478515626, "name": "c"}]',
             ],
             [
                 'name' => json_encode(Factory::translations(['en', 'ar'], ['Makkah', 'مكة']), JSON_UNESCAPED_UNICODE),
-                'latitude' => 21.4241,
-                'longitude' => 39.8173,
+                'boundary' => '[{"latitude": 21.33926933366899, "longitude": 39.72793579101563, "name": "bl"}, {"latitude": 21.52718223333923, "longitude": 39.72793579101563, "name": "tl"}, {"latitude": 21.52718223333923, "longitude": 39.90234375000001, "name": "tr"}, {"latitude": 21.33926933366899, "longitude": 39.90234375000001, "name": "br"}, {"latitude": 21.433225783504113, "longitude": 39.81513977050782, "name": "c"}]',
             ],
         ]);
 

@@ -13,4 +13,22 @@ class DistanceService
 
         return $earthRadius * (2 * atan2(sqrt($a), sqrt(1 - $a)));
     }
+
+    public static function isPointInsideRectangle(array $point, array $rectangle): bool
+    {
+        $bl = null;
+        $tr = null;
+        foreach ($rectangle as $corner) {
+            if ($corner['name'] === 'bl') {
+                $bl = $corner;
+            } elseif ($corner['name'] === 'tr') {
+                $tr = $corner;
+            }
+        }
+        if (!$bl || !$tr) {
+            return false;
+        }
+
+        return !($point['latitude'] >= $bl['latitude'] && $point['latitude'] <= $tr['latitude'] && $point['longitude'] >= $bl['longitude'] && $point['longitude'] <= $tr['longitude']);
+    }
 }

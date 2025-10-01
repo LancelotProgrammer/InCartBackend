@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
@@ -28,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configureModel();
         $this->configureBuilder();
         $this->configureFilamentTable();
-        $this->configureGate();
+        $this->configureFilamentAsset();
         $this->configureDB();
         $this->configureURL();
     }
@@ -59,26 +62,16 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    private function configureGate(): void
+    private function configureFilamentAsset(): void
     {
-        // $roles = Role::with('permissions')->get();
-        // $permissionsArray = [];
-        // foreach ($roles as $role) {
-        //     foreach ($role->permissions as $permissions) {
-        //         $permissionsArray[$permissions->title][] = $role->id;
-        //     }
-        // }
-        // foreach ($permissionsArray as $title => $roles) {
-        //     Gate::define($title, function ($user) use ($roles) {
-        //         return count(array_intersect([$user->role_id], $roles)) > 0;
-
-        //         // NOTE:
-        //         // use this code if user has multiple roles
-        //         // return count(array_intersect($user->roles->pluck('id')->toArray(), $roles)) > 0;
-        //         // add roles function to user model
-
-        //     });
-        // }
+        FilamentAsset::register([
+            Css::make('leaflet-stylesheet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'),
+            Css::make('leaflet-draw-plugin-stylesheet', 'https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css'),
+            Css::make('leaflet-search-plugin-stylesheet', 'https://unpkg.com/leaflet.pinsearch/src/Leaflet.PinSearch.css'),
+            Js::make('leaflet-script', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'),
+            Js::make('leaflet-draw-plugin-script', 'https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js'),
+            Js::make('leaflet-search-plugin-script', 'https://unpkg.com/leaflet.pinsearch/src/Leaflet.PinSearch.js'),
+        ]);
     }
 
     private function configureDB(): void
