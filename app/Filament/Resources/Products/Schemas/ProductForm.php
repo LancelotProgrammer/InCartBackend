@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Products\Schemas;
 use App\Enums\UnitType;
 use App\Filament\Components\TranslationComponent;
 use App\Models\Branch;
+use App\Models\Category;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -45,9 +46,17 @@ class ProductForm
                             TextInput::make('brand'),
                             TextInput::make('sku'),
                             Select::make('unit')->options(UnitType::class),
-                            Select::make('categories')
+                            Select::make('category_id')
                                 ->multiple()
-                                ->relationship('categories', 'title', fn (Builder $query) => $query->whereNotNull('parent_id'))
+                                ->relationship('categories', 'title')
+                                ->searchable()
+                                ->getSearchResultsUsing(fn(string $search): array => Category::query()
+                                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                    ->whereNotNull('parent_id')
+                                    ->limit(50)
+                                    ->pluck('title', 'id')
+                                    ->all())
+                                ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title)
                                 ->required(),
                         ]),
                     Section::make('configs')->schema([

@@ -7,6 +7,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use App\Models\Category;
 
 class CategoryForm
 {
@@ -21,9 +22,14 @@ class CategoryForm
                         TranslationComponent::configure('title'),
                         TranslationComponent::configure('description'),
                         Select::make('parent_id')
-                            ->relationship('parent', 'title')
-                            ->columnSpanFull()
-                            ->searchable(),
+                            ->searchable()
+                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
+                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                ->limit(50)
+                                ->pluck('title', 'id')
+                                ->all())
+                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title)
+                            ->columnSpanFull(),
                         FileUpload::make('files')
                             ->columnSpanFull()
                             ->image()

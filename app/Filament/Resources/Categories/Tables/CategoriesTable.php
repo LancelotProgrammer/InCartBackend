@@ -57,7 +57,7 @@ class CategoriesTable
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         $search = $data['title'];
-                        $category = Category::where('title->en', 'like', "%{$search}%")->orWhere('title->ar', 'like', "%{$search}%")->first();
+                        $category = Category::whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])->first();
                         if ($category) {
                             return $query->when(
                                 $data['title'],

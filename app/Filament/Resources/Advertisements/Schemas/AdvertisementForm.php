@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Advertisements\Schemas;
 use App\Enums\AdvertisementLink;
 use App\Enums\AdvertisementType;
 use App\Filament\Components\TranslationComponent;
+use App\Models\Category;
+use App\Models\Product;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -86,11 +88,35 @@ class AdvertisementForm
                             ->schema(function (Get $get) {
                                 return match ((int) $get('link')) {
                                     AdvertisementLink::CATEGORY->value => [
-                                        Select::make('category_id')->relationship('category', 'title'),
+                                        Select::make('category_id')
+                                            ->relationship('category', 'title')
+                                            ->searchable()
+                                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
+                                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                                ->limit(50)
+                                                ->pluck('title', 'id')
+                                                ->all())
+                                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title),
                                     ],
                                     AdvertisementLink::PRODUCT->value => [
-                                        Select::make('product_id')->relationship('product', 'title'),
-                                        Select::make('category_id')->relationship('category', 'title'),
+                                        Select::make('product_id')
+                                            ->relationship('product', 'title')
+                                            ->searchable()
+                                            ->getSearchResultsUsing(fn(string $search): array => Product::query()
+                                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                                ->limit(50)
+                                                ->pluck('title', 'id')
+                                                ->all())
+                                            ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title),
+                                        Select::make('category_id')
+                                            ->relationship('category', 'title')
+                                            ->searchable()
+                                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
+                                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                                ->limit(50)
+                                                ->pluck('title', 'id')
+                                                ->all())
+                                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title),
                                     ],
                                     AdvertisementLink::EXTERNAL->value => [
                                         TextInput::make('url')->url(),

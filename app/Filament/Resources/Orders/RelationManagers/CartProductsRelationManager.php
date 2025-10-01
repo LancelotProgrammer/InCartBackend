@@ -6,6 +6,7 @@ use App\Enums\OrderStatus;
 use App\Models\BranchProduct;
 use App\Models\CartProduct;
 use App\Models\Order;
+use App\Models\Product;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -49,11 +50,30 @@ class CartProductsRelationManager extends RelationManager
                     ->visible(function () {
                         return self::isEnabled($this->getOwnerRecord(), $this->pageClass);
                     })
+                    ->fillForm(function (CartProduct $record): array {
+                        return [
+                            'cart_id' => $record->cart_id,
+                            'product_id' => $record->product_id,
+                            'quantity' => $record->quantity,
+                        ];
+                    })
                     ->schema(function () {
                         return [
-                            Hidden::make('cart_id')->default($this->getOwnerRecord()->carts->first()->id),
-                            Select::make('product_id')->relationship('product', 'title')->required(),
-                            TextInput::make('quantity')->numeric()->required(),
+                            Hidden::make('cart_id')
+                                ->default($this->getOwnerRecord()->carts->first()->id),
+                            Select::make('product_id')
+                                ->relationship('product', 'title')
+                                ->searchable()
+                                ->getSearchResultsUsing(fn(string $search): array => Product::query()
+                                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                    ->limit(50)
+                                    ->pluck('title', 'id')
+                                    ->all())
+                                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
+                                ->required(),
+                            TextInput::make('quantity')
+                                ->numeric()
+                                ->required(),
                         ];
                     })
                     ->action(function (array $data, CartProduct $record) {
@@ -104,9 +124,21 @@ class CartProductsRelationManager extends RelationManager
                     })
                     ->schema(function () {
                         return [
-                            Hidden::make('cart_id')->default($this->getOwnerRecord()->carts->first()->id),
-                            Select::make('product_id')->relationship('product', 'title')->required(),
-                            TextInput::make('quantity')->numeric()->required(),
+                            Hidden::make('cart_id')
+                                ->default($this->getOwnerRecord()->carts->first()->id),
+                            Select::make('product_id')
+                                ->relationship('product', 'title')
+                                ->searchable()
+                                ->getSearchResultsUsing(fn(string $search): array => Product::query()
+                                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                    ->limit(50)
+                                    ->pluck('title', 'id')
+                                    ->all())
+                                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
+                                ->required(),
+                            TextInput::make('quantity')
+                                ->numeric()
+                                ->required(),
                         ];
                     })
                     ->action(function (array $data) {
@@ -143,7 +175,7 @@ class CartProductsRelationManager extends RelationManager
     protected function recalculateOrderTotals(Order $order): void
     {
         $subtotal = $order->cartProducts->sum(
-            fn ($cartProduct) => $cartProduct->price * $cartProduct->quantity
+            fn($cartProduct) => $cartProduct->price * $cartProduct->quantity
         );
 
         $order->update([
