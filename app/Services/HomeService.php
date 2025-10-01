@@ -18,7 +18,7 @@ class HomeService
 {
     public static function getHomeContent(Request $request): mixed
     {
-        return Cache::remember(CacheKeys::HOME.'_'.App::getLocale(), 3600, function () {
+        return Cache::remember(CacheKeys::HOME . '_' . App::getLocale() . '_' . request()->attributes->get('currentBranchId'), 3600, function () {
             $statuses = DB::table('advertisements')
                 ->where('type', '=', AdvertisementType::STATUS->value)
                 ->branchScope()
@@ -55,38 +55,53 @@ class HomeService
             $statusesResult = [];
             foreach ($statuses as $status) {
                 $statusLinkType = Advertisement::getLinkValue($status);
-                $statusesResult[] = match ($statusLinkType) {
+                $status = match ($statusLinkType) {
                     AdvertisementLink::PRODUCT => self::getAdvertisementProduct($status),
                     AdvertisementLink::CATEGORY => self::getCategory($status),
                     AdvertisementLink::EXTERNAL => self::getImageExternalUrl($status),
                     default => throw new InvalidArgumentException('Advertisement link is not supported'),
                 };
+                if (!empty($status)) {
+                    $statusesResult[] = $status;
+                }
             }
 
             $videosResult = [];
             foreach ($videos as $video) {
-                $videosResult[] = self::getVideoExternalUrl($video);
+                $video = self::getVideoExternalUrl($video);
+                if (!empty($video)) {
+                    $videosResult[] = $video;
+                }
             }
 
             $offersResult = [];
             foreach ($offers as $offer) {
-                $offersResult[] = self::getAdvertisementOfferProduct($offer);
+                $offer = self::getAdvertisementOfferProduct($offer);
+                if (!empty($offer)) {
+                    $offersResult[] = $offer;
+                }
             }
 
             $cardsResult = [];
             foreach ($cards as $card) {
                 $cardLinkType = Advertisement::getLinkValue($card);
-                $cardsResult[] = match ($cardLinkType) {
+                $card = match ($cardLinkType) {
                     AdvertisementLink::PRODUCT => self::getAdvertisementProduct($card),
                     AdvertisementLink::CATEGORY => self::getCategory($card),
                     AdvertisementLink::EXTERNAL => self::getImageExternalUrl($card),
                     default => throw new InvalidArgumentException('Advertisement link is not supported'),
                 };
+                if (!empty($card)) {
+                    $cardsResult[] = $card;
+                }
             }
 
             $newProductsResult = [];
             foreach ($products as $product) {
-                $newProductsResult[] = self::getProductDetails($product);
+                $product = self::getProductDetails($product);
+                if (!empty($product)) {
+                    $newProductsResult[] = $product;
+                }
             }
 
             return [
@@ -163,6 +178,10 @@ class HomeService
 
         $category = DB::table('categories')->publishedScope()->where('id', '=', $advertisement->id)->first();
 
+        if (! $category) {
+            return [];
+        }
+
         $categoryImage = DB::table('category_file')
             ->join('files', 'category_file.id', '=', 'files.id')
             ->where('category_file.id', '=', $category->id)
@@ -228,6 +247,10 @@ class HomeService
             ->where('id', $advertisement->product_id)
             ->first();
 
+        if (! $product) {
+            return [];
+        }
+
         $productImage = DB::table('product_file')
             ->join('files', 'files.id', '=', 'product_file.file_id')
             ->where('product_file.product_id', $product->id)
@@ -240,6 +263,10 @@ class HomeService
             ->publishedScope()
             ->where('branch_product.product_id', $product->id)
             ->first();
+
+        if (! $branchProduct) {
+            return [];
+        }
 
         $productCategory = DB::table('product_category')
             ->join('categories', 'categories.id', '=', 'product_category.category_id')
@@ -278,6 +305,10 @@ class HomeService
             ->publishedScope()
             ->where('branch_product.product_id', $product->id)
             ->first();
+
+        if (! $branchProduct) {
+            return [];
+        }
 
         $productCategory = DB::table('product_category')
             ->join('categories', 'categories.id', '=', 'product_category.category_id')

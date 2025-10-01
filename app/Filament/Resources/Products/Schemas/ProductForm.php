@@ -50,7 +50,6 @@ class ProductForm
                                 ->relationship('categories', 'title', fn (Builder $query) => $query->whereNotNull('parent_id'))
                                 ->required(),
                         ]),
-                        // TODO: handle scope
                     Section::make('configs')->schema([
                         Repeater::make('branches')
                             ->label('Branches Configs')
@@ -64,7 +63,6 @@ class ProductForm
                                 TextInput::make('minimum_order_quantity')->numeric(),
                                 TextInput::make('quantity')->numeric(),
                                 DatePicker::make('expires_at'),
-                                // TODO: fix this
                                 Toggle::make('published_at')
                                     ->visible(function () {
                                         return auth()->user()->canPublishProduct();

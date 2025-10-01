@@ -21,20 +21,22 @@ class GetPackageProducts
             throw new LogicalException('Package not found or does not belong to the user.');
         }
 
-        $products = $package->products->map(function (Product $product) {
+        $products = $package->products->filter(function (Product $product) {
+            return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
+        })->map(function (Product $product) {
             $branchProduct = $product->branchProducts->first();
-            $image = $product->files->first()?->url;
+            $image = $product->files->first()->url;
 
             return [
                 'id' => $product->id,
                 'title' => $product->title,
                 'image' => $image,
                 'created_at' => $product->created_at,
-                'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
-                'min_limit' => $branchProduct?->minimum_order_quantity,
+                'max_limit' => $branchProduct->maximum_order_quantity > $branchProduct->quantity ? $branchProduct->quantity : $branchProduct->maximum_order_quantity,
+                'min_limit' => $branchProduct->minimum_order_quantity,
                 'price' => $branchProduct->price,
-                'discount' => $branchProduct?->discount,
-                'discount_price' => $branchProduct?->discount_price,
+                'discount' => $branchProduct->discount,
+                'discount_price' => $branchProduct->discount_price,
                 'expired_at' => $branchProduct->expires_at,
             ];
         });

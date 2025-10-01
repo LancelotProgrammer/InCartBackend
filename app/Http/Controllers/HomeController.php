@@ -12,6 +12,8 @@ class HomeController extends Controller
     /**
      * @unauthenticated
      *
+     * @header Authorization Bearer {YOUR_AUTH_KEY}
+     * 
      * @group Home Actions
      */
     public function getHome(Request $request): SuccessfulResponseResource

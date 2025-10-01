@@ -34,6 +34,9 @@ class GetProductDetails
             ->inRandomOrder()
             ->limit(10)
             ->get()
+            ->filter(function (Product $product) {
+                return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
+            })
             ->map(function (Product $related): array {
                 $branchProduct = $related->branchProducts->first();
                 $image = $related->files->first();
@@ -42,11 +45,11 @@ class GetProductDetails
                     'id' => $related->id,
                     'title' => $related->title,
                     'image' => $image->url,
-                    'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
-                    'min_limit' => $branchProduct?->minimum_order_quantity,
+                    'max_limit' => $branchProduct->maximum_order_quantity > $branchProduct->quantity ? $branchProduct->quantity : $branchProduct->maximum_order_quantity,
+                    'min_limit' => $branchProduct->minimum_order_quantity,
                     'price' => $branchProduct->price,
-                    'discount' => $branchProduct?->discount,
-                    'discount_price' => $branchProduct?->discount_price,
+                    'discount' => $branchProduct->discount,
+                    'discount_price' => $branchProduct->discount_price,
                     'expired_at' => $branchProduct->expires_at,
                 ];
             });
@@ -56,13 +59,13 @@ class GetProductDetails
             'title' => $product->title,
             'description' => $product->description,
             'image' => $imagesResult,
-            'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
-            'min_limit' => $branchProduct?->minimum_order_quantity,
+            'max_limit' => $branchProduct->maximum_order_quantity > $branchProduct->quantity ? $branchProduct->quantity : $branchProduct->maximum_order_quantity,
+            'min_limit' => $branchProduct->minimum_order_quantity,
             'price' => $branchProduct->price,
-            'discount' => $branchProduct?->discount,
-            'discount_price' => $branchProduct?->discount_price,
+            'discount' => $branchProduct->discount,
+            'discount_price' => $branchProduct->discount_price,
             'expired_at' => $branchProduct->expires_at,
-            'is_favorite' => auth('sanctum')->user()?->id !== null ? FavoriteService::isProductFavorite($product->id, auth('sanctum')->user()->id) : false,
+            'is_favorite' => auth('sanctum')->user()->id !== null ? FavoriteService::isProductFavorite($product->id, auth('sanctum')->user()->id) : false,
             'related' => $relatedProducts,
         ]);
     }

@@ -19,7 +19,7 @@ class GetCategories
 
         $level = (int) $request->query('level', 1);
 
-        $query = Category::query();
+        $query = Category::query()->published();
 
         $id = (int) $request->query('id', 1);
         if ($id && $level > 1) {

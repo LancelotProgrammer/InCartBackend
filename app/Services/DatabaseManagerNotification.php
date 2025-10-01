@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\SetupException;
 use App\Models\Order;
 use App\Models\User;
 use App\Notifications\OrderCancelled;
@@ -12,10 +13,19 @@ class DatabaseManagerNotification
 {
     public static function getManagers(Order $order): Collection
     {
-        return User::whereHas('branches', function ($query) use ($order) {
-                $query->where('branches.id', $order->branch_id);
-            })
+        $users = User::whereHas('branches', function ($query) use ($order) {
+            $query->where('branches.id', $order->branch_id);
+        })
             ->getUsersWhoCanReceiveOrderNotifications()->get();
+
+        if ($users->isEmpty()) {
+            throw new SetupException(
+                'something_went_wrong',
+                'System setup error. Pleas attach the {can-receive-order-notifications} permission to a role and assign it to a user.'
+            );
+        }
+
+        return $users;
     }
 
     public static function sendCreatedOrderNotification(Order $order): void
