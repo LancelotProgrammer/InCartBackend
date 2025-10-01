@@ -13,7 +13,7 @@ class CitiesTable
         return $table
             ->columns([
                 TextColumn::make('id'),
-                TextColumn::make('name')->searchable(),
+                TextColumn::make('name'),
             ])
             ->filters([
                 //

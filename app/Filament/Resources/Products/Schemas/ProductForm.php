@@ -66,8 +66,8 @@ class ProductForm
                             ->relationship('branchProducts')
                             ->schema([
                                 Select::make('branch_id')->disabled()->relationship('branch', 'title'),
-                                TextInput::make('price'),
-                                TextInput::make('discount'),
+                                TextInput::make('price')->numeric(),
+                                TextInput::make('discount')->numeric(),
                                 TextInput::make('maximum_order_quantity')->numeric(),
                                 TextInput::make('minimum_order_quantity')->numeric(),
                                 TextInput::make('quantity')->numeric(),
