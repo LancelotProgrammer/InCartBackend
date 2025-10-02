@@ -2,10 +2,8 @@
 
 namespace App\Filament\Resources\Branches\RelationManagers;
 
-use App\Models\Role;
 use App\Models\User;
 use Filament\Actions\Action;
-use Filament\Actions\AttachAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -66,6 +64,7 @@ class UsersRelationManager extends RelationManager
                                 ->title('User already attached')
                                 ->warning()
                                 ->send();
+
                             return;
                         }
                         $this->getRelationship()->attach($data['user_id']);

@@ -12,9 +12,13 @@ class Role extends Model
     use HasFactory, HasTranslations;
 
     const ROLE_SUPER_ADMIN_CODE = 'super-admin';
+
     const ROLE_DEVELOPER_CODE = 'developer';
+
     const ROLE_MANAGER_CODE = 'manager';
+
     const ROLE_DELIVERY_CODE = 'delivery';
+
     const ROLE_CUSTOMER_CODE = 'customer';
 
     public $timestamps = false;
@@ -22,7 +26,7 @@ class Role extends Model
     protected $fillable = ['title', 'code'];
 
     protected $casts = [
-        'title' => 'array'
+        'title' => 'array',
     ];
 
     public array $translatable = ['title'];

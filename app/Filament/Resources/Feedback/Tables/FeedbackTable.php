@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Feedback\Tables;
 
-use App\Filament\Actions\TicketAndFeedbackActions;
+use App\Filament\Actions\MarkImportantActions;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -49,9 +49,22 @@ class FeedbackTable
                     ),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
-                ...TicketAndFeedbackActions::configure('Feedback'),
                 DeleteAction::make(),
                 ViewAction::make(),
+                ...MarkImportantActions::configure(),
+                Action::make('process')
+                    ->authorize('process')
+                    ->label('Process')
+                    ->icon('heroicon-o-check')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->processed_at === null)
+                    ->action(function ($record) {
+                        $record->update(['processed_at' => now()]);
+                        Notification::make()
+                            ->success()
+                            ->title("Feedback #{$record->id} marked as processed")
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),

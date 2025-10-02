@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Facades\File;
 use ReflectionClass;
 
 class ListModels extends Command
@@ -35,9 +35,9 @@ class ListModels extends Command
         $models = [];
 
         foreach ($files as $file) {
-            $class = 'App\\Models\\' . $file->getFilenameWithoutExtension();
+            $class = 'App\\Models\\'.$file->getFilenameWithoutExtension();
 
-            if (!class_exists($class)) {
+            if (! class_exists($class)) {
                 continue;
             }
 
@@ -45,19 +45,20 @@ class ListModels extends Command
 
             if (
                 $reflection->isSubclassOf(Model::class) &&
-                !$reflection->isSubclassOf(Pivot::class) &&
-                !$reflection->isAbstract()
+                ! $reflection->isSubclassOf(Pivot::class) &&
+                ! $reflection->isAbstract()
             ) {
                 $models[] = $reflection->getShortName();
             }
         }
 
         if (empty($models)) {
-            $this->warn("No models found.");
+            $this->warn('No models found.');
+
             return 0;
         }
 
-        $this->info("Models found:");
+        $this->info('Models found:');
         foreach ($models as $model) {
             $this->line($model);
         }

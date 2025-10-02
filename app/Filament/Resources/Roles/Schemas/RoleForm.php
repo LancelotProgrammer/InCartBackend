@@ -26,7 +26,7 @@ class RoleForm
                             ->relationship(
                                 'permissions',
                                 'title',
-                                fn($query) => PermissionPolicy::filterDeveloperSittings($query)
+                                fn ($query) => PermissionPolicy::filterDeveloperSittings($query)
                             )
                             ->required(),
                     ]),

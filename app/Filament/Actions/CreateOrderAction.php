@@ -121,23 +121,23 @@ class CreateOrderAction
             Select::make('customer_id')->label('Customer')
                 ->required()
                 ->searchable()
-                ->getSearchResultsUsing(fn(string $search): array => User::query()
+                ->getSearchResultsUsing(fn (string $search): array => User::query()
                     ->where('role_id', '=', Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->first()->id)
-                    ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
+                    ->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%'])
                     ->limit(50)
                     ->pluck('name', 'id')
                     ->all())
-                ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name)
+                ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name)
                 ->live(),
             Select::make('address_id')
                 ->required()
                 ->relationship(
                     'userAddress',
                     'title',
-                    fn(Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
+                    fn (Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
                 )
                 ->rules([
-                    fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                    fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                         $branch = Branch::where('id', '=', $get('branch_id'))->first();
                         $address = UserAddress::where('id', '=', $value)->first();
                         $distance = DistanceService::haversineDistance(
@@ -169,12 +169,12 @@ class CreateOrderAction
                         Select::make('product_id')
                             ->required()
                             ->searchable()
-                            ->getSearchResultsUsing(fn(string $search): array => Product::query()
-                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                            ->getSearchResultsUsing(fn (string $search): array => Product::query()
+                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                 ->limit(50)
                                 ->pluck('title', 'id')
                                 ->all())
-                            ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
+                            ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title)
                             ->distinct()
                             ->live(),
                         TextInput::make('quantity')
@@ -189,6 +189,7 @@ class CreateOrderAction
                                 $branchProduct = BranchProduct::where('branch_id', '=', $get('../../branch_id'))
                                     ->where('product_id', '=', $get('product_id'))
                                     ->first();
+
                                 return $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity;
                             }),
                     ];
@@ -228,7 +229,7 @@ class CreateOrderAction
                 ->relationship(
                     'paymentMethod',
                     'title',
-                    fn(Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
+                    fn (Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
                 ),
             TextInput::make('coupon')
                 ->belowContent(Schema::between([

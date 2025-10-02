@@ -13,12 +13,12 @@ describe('Distance service test', function () {
     test('The distance service correctly identifies a point inside the rectangle', function () {
         $validated = [
             'latitude' => 21.58005,
-            'longitude' => 39.17493
+            'longitude' => 39.17493,
         ];
         $isPointInsideRectangle = DistanceService::isPointInsideRectangle(
             [
                 'latitude' => $validated['latitude'],
-                'longitude' => $validated['longitude']
+                'longitude' => $validated['longitude'],
             ],
             $this->boundary,
         );
@@ -28,12 +28,12 @@ describe('Distance service test', function () {
     test('The distance service correctly identifies a point outside the rectangle. The point is in the right', function () {
         $validated = [
             'latitude' => 21.60559,
-            'longitude' => 39.69674
+            'longitude' => 39.69674,
         ];
         $isPointInsideRectangle = DistanceService::isPointInsideRectangle(
             [
                 'latitude' => $validated['latitude'],
-                'longitude' => $validated['longitude']
+                'longitude' => $validated['longitude'],
             ],
             $this->boundary,
         );
@@ -43,12 +43,12 @@ describe('Distance service test', function () {
     test('The distance service correctly identifies a point outside the rectangle. The point is in the bottom', function () {
         $validated = [
             'latitude' => 20.95988,
-            'longitude' => 39.30989
+            'longitude' => 39.30989,
         ];
         $isPointInsideRectangle = DistanceService::isPointInsideRectangle(
             [
                 'latitude' => $validated['latitude'],
-                'longitude' => $validated['longitude']
+                'longitude' => $validated['longitude'],
             ],
             $this->boundary,
         );
@@ -58,12 +58,12 @@ describe('Distance service test', function () {
     test('The distance service correctly identifies a point outside the rectangle. The point is in the left', function () {
         $validated = [
             'latitude' => 21.58949,
-            'longitude' => 38.50521
+            'longitude' => 38.50521,
         ];
         $isPointInsideRectangle = DistanceService::isPointInsideRectangle(
             [
                 'latitude' => $validated['latitude'],
-                'longitude' => $validated['longitude']
+                'longitude' => $validated['longitude'],
             ],
             $this->boundary,
         );
@@ -73,12 +73,12 @@ describe('Distance service test', function () {
     test('The distance service correctly identifies a point outside the rectangle. The point is in the top', function () {
         $validated = [
             'latitude' => 22.17244,
-            'longitude' => 39.06531
+            'longitude' => 39.06531,
         ];
         $isPointInsideRectangle = DistanceService::isPointInsideRectangle(
             [
                 'latitude' => $validated['latitude'],
-                'longitude' => $validated['longitude']
+                'longitude' => $validated['longitude'],
             ],
             $this->boundary,
         );

@@ -24,9 +24,9 @@ class ListUsers extends ListRecords
         return [
             'all' => Tab::make(),
             'active' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => $query->whereNull('blocked_at')),
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereNull('blocked_at')),
             'blocked' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => $query->whereNotNull('blocked_at')),
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereNotNull('blocked_at')),
         ];
     }
 }

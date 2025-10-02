@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources\Tickets\Tables;
 
-use App\Filament\Actions\TicketAndFeedbackActions;
+use App\ExternalServices\FirebaseFCM;
+use App\Filament\Actions\MarkImportantActions;
+use App\Models\Ticket;
 use App\Services\DatabaseUserNotification;
-use App\Services\FirebaseFCM;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
@@ -53,9 +53,33 @@ class TicketsTable
                     ),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
-                ...TicketAndFeedbackActions::configure('Ticket'),
                 DeleteAction::make(),
                 ViewAction::make(),
+                ...MarkImportantActions::configure(),
+                Action::make('process')
+                    ->authorize('process')
+                    ->label('Process')
+                    ->icon('heroicon-o-check')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->processed_at === null)
+                    ->form([
+                        Textarea::make('reply')->required(),
+                    ])
+                    ->action(function (Ticket $record, array $data) {
+                        $reply = $data['reply'];
+                        $record->update(
+                            [
+                                'processed_at' => now(),
+                                'reply' => $data['reply'],
+                            ]
+                        );
+                        FirebaseFCM::sendTicketNotification($record, $reply);
+                        DatabaseUserNotification::sendTicketNotification($record, $reply);
+                        Notification::make()
+                            ->success()
+                            ->title("Ticket #{$record->id} marked as processed")
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),

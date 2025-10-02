@@ -21,7 +21,7 @@ class BranchForm
                         TranslationComponent::configure('description'),
                         TextInput::make('latitude'),
                         TextInput::make('longitude'),
-                    ])
+                    ]),
             ]);
     }
 }

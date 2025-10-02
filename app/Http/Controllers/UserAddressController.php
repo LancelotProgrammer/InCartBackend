@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
-use App\Pipes\AuthorizeUser;
 use App\Pipes\CreateUserAddress;
 use App\Pipes\DeleteUserAddress;
 use App\Pipes\GetUserAddresses;
 use App\Pipes\UpdateUserAddress;
-use App\Pipes\ValidateUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Pipeline;
 

@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResource;
-use App\Pipes\AuthorizeUser;
 use App\Pipes\CreateFeedback;
 use App\Pipes\CreateTicket;
 use App\Pipes\GetTickets;
-use App\Pipes\ValidateUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Pipeline;
 

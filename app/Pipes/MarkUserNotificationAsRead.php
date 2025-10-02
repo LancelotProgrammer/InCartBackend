@@ -12,7 +12,7 @@ class MarkUserNotificationAsRead
     public function __invoke(Request $request, Closure $next): array
     {
         $request->validate([
-            'ids'   => ['required', 'array', 'min:1'],
+            'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'distinct'],
         ]);
 

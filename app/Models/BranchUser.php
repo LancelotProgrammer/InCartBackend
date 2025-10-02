@@ -13,7 +13,7 @@ class BranchUser extends Pivot
 
     protected $fillable = [
         'branch_id',
-        'user_id'
+        'user_id',
     ];
 
     public function branch(): BelongsTo

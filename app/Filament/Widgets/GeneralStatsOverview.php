@@ -4,7 +4,6 @@ namespace App\Filament\Widgets;
 
 use App\Constants\CacheKeys;
 use App\Models\Role;
-use App\Models\User;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;

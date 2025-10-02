@@ -3,9 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Permission;
-use App\Models\Role;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Builder;
 
 class PermissionPolicy

@@ -11,10 +11,10 @@ class CategoryController extends Controller
 {
     /**
      * @unauthenticated
-     * 
+     *
      * @queryParam level integer The level of the category. Example: 1, 2, 3
      * @queryParam id integer The category ID. Example: 1
-     * 
+     *
      * @group Category Actions
      */
     public function getCategories(Request $request): SuccessfulResponseResourceWithMetadata

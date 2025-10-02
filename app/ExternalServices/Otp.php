@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\ExternalServices;
 
 use Illuminate\Support\Facades\Log;
 use Twilio\Rest\Client;

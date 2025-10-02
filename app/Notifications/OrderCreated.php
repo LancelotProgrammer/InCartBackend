@@ -26,7 +26,7 @@ class OrderCreated extends Notification
             ->title("New Order #{$this->order->order_number}")
             ->body(
                 "Customer {$this->order->customer?->name} placed an order with a total of {$this->order->total_price}."
-                    . ($this->order->delivery_date ? " Scheduled for {$this->order->delivery_date->format('Y-m-d H:i')}." : '')
+                    .($this->order->delivery_date ? " Scheduled for {$this->order->delivery_date->format('Y-m-d H:i')}." : '')
             )
             ->actions([
                 Action::make('manage')

@@ -29,7 +29,7 @@ class CreateUserAddress
         $isPointInsideRectangle = DistanceService::isPointInsideRectangle(
             [
                 'latitude' => $validated['latitude'],
-                'longitude' => $validated['longitude']
+                'longitude' => $validated['longitude'],
             ],
             $city->boundary,
         );
@@ -37,7 +37,7 @@ class CreateUserAddress
         if ($isPointInsideRectangle) {
             throw new LogicalException(
                 'Address is far from the city boundary.',
-                "The selected coordinates are outside the allowed city boundary."
+                'The selected coordinates are outside the allowed city boundary.'
             );
         }
 

@@ -11,8 +11,7 @@ class InvoiceController extends Controller
 {
     public function __invoke(Request $request)
     {
-        if (!request()->user()->hasPermission('view-invoice-order'))
-        {
+        if (! request()->user()->hasPermission('view-invoice-order')) {
             abort(403);
         }
 

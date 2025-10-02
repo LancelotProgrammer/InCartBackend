@@ -2,7 +2,7 @@
 
 namespace App\Pipes;
 
-use App\Services\MoyasarPaymentGateway;
+use App\ExternalServices\MoyasarPaymentGateway;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;

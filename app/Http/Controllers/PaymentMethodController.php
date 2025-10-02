@@ -11,7 +11,7 @@ class PaymentMethodController extends Controller
 {
     /**
      * @unauthenticated
-     * 
+     *
      * @header Authorization Bearer {YOUR_AUTH_KEY}
      *
      * @group Payment Method Actions

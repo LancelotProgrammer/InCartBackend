@@ -62,7 +62,7 @@ class OrderForm
                             ->relationship(
                                 'paymentMethod',
                                 'title',
-                                fn(Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
+                                fn (Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
                             )
                             ->required(),
                         Select::make('delivery_id')
@@ -96,7 +96,7 @@ class OrderForm
                             ->relationship(
                                 'userAddress',
                                 'title',
-                                fn(Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
+                                fn (Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
                             )
                             ->required(),
                     ]),

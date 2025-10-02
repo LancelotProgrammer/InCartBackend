@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Builder;
 
 class RolePolicy
@@ -49,7 +48,7 @@ class RolePolicy
             [
                 Role::ROLE_SUPER_ADMIN_CODE,
                 Role::ROLE_DEVELOPER_CODE,
-                Role::ROLE_CUSTOMER_CODE
+                Role::ROLE_CUSTOMER_CODE,
             ]
         );
     }

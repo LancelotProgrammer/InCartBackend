@@ -16,7 +16,7 @@ class Permission extends Model
     protected $fillable = ['title', 'code'];
 
     protected $casts = [
-        'title' => 'array'
+        'title' => 'array',
     ];
 
     public array $translatable = ['title'];

@@ -10,6 +10,10 @@ use InvalidArgumentException;
 
 class DatabaseUserNotification
 {
+    private const ORDER_DEEP_LINK = '/order-details';
+
+    private const TICKET_DEEP_LINK = '/ticket-details';
+
     public static function sendOrderStatusNotification(Order $order): void
     {
         [$title, $body] = match ($order->order_status->value) {
@@ -17,7 +21,7 @@ class DatabaseUserNotification
             3 => ['Order Delivering', 'Your order is on the way!'],
             4 => ['Order Finished', 'Your order has been delivered successfully.'],
             5 => ['Order Cancelled', 'Your order has been cancelled.'],
-            default => throw new InvalidArgumentException('Can not create FirebaseFCM for this order'),
+            default => throw new InvalidArgumentException('Can not create message for this order'),
         };
 
         UserNotification::create([
@@ -25,7 +29,7 @@ class DatabaseUserNotification
             'title' => $title,
             'body' => $body,
             'type' => UserNotificationType::GENERAL->value,
-            'deep_link' => "/order-details/$order->id",
+            'deep_link' => self::ORDER_DEEP_LINK."/$order->id",
             'mark_as_read' => false,
         ]);
     }
@@ -37,7 +41,7 @@ class DatabaseUserNotification
             'title' => 'We’ve replied to your support request',
             'body' => $reply,
             'type' => UserNotificationType::GENERAL->value,
-            'deep_link' => "/ticket-details/$ticket->id",
+            'deep_link' => self::TICKET_DEEP_LINK."/$ticket->id",
             'mark_as_read' => false,
         ]);
     }

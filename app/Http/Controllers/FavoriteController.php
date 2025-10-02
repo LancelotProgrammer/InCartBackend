@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AddProductToFavorites;
-use App\Pipes\AuthorizeUser;
 use App\Pipes\DeleteProductFromFavorites;
 use App\Pipes\GetFavoriteProducts;
-use App\Pipes\ValidateUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Pipeline;
 

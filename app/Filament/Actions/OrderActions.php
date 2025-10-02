@@ -5,15 +5,14 @@ namespace App\Filament\Actions;
 use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
+use App\ExternalServices\FirebaseFCM;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Branch;
 use App\Models\Order;
 use App\Models\PaymentMethod;
-use App\Models\Role;
 use App\Models\User;
 use App\Services\Cache;
 use App\Services\DatabaseUserNotification;
-use App\Services\FirebaseFCM;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
@@ -124,12 +123,12 @@ class OrderActions
                 ->schema([
                     Select::make('delivery_id')->options(function ($record) {
                         return User::getUsersWhoCanBeAssignedToTakeOrders()->where(function (Builder $query) use ($record) {
-                                $branch = Branch::find($record->branch_id);
-                                $query->whereHas('branches', function (Builder $q) use ($branch) {
-                                    $q->where('branch_id', '=', $branch->id);
-                                });
-                            })->pluck('name', 'id');
-                    })
+                            $branch = Branch::find($record->branch_id);
+                            $query->whereHas('branches', function (Builder $q) use ($branch) {
+                                $q->where('branch_id', '=', $branch->id);
+                            });
+                        })->pluck('name', 'id');
+                    }),
                 ])
                 ->action(function (Order $order, array $data) {
                     $order->update([

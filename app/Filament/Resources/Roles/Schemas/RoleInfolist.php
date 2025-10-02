@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Roles\Schemas;
 
-use App\Filament\Components\TranslationComponent;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 

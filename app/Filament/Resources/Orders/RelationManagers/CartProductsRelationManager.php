@@ -64,12 +64,12 @@ class CartProductsRelationManager extends RelationManager
                             Select::make('product_id')
                                 ->relationship('product', 'title')
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Product::query()
-                                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                ->getSearchResultsUsing(fn (string $search): array => Product::query()
+                                    ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                     ->limit(50)
                                     ->pluck('title', 'id')
                                     ->all())
-                                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
+                                ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title)
                                 ->required(),
                             TextInput::make('quantity')
                                 ->numeric()
@@ -129,12 +129,12 @@ class CartProductsRelationManager extends RelationManager
                             Select::make('product_id')
                                 ->relationship('product', 'title')
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Product::query()
-                                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                ->getSearchResultsUsing(fn (string $search): array => Product::query()
+                                    ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                     ->limit(50)
                                     ->pluck('title', 'id')
                                     ->all())
-                                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
+                                ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title)
                                 ->required(),
                             TextInput::make('quantity')
                                 ->numeric()
@@ -169,13 +169,13 @@ class CartProductsRelationManager extends RelationManager
             && in_array($order->order_status, [
                 OrderStatus::PENDING,
                 OrderStatus::PROCESSING,
-            ], true) && !(app($pageClass) instanceof ViewRecord);
+            ], true) && ! (app($pageClass) instanceof ViewRecord);
     }
 
     protected function recalculateOrderTotals(Order $order): void
     {
         $subtotal = $order->cartProducts->sum(
-            fn($cartProduct) => $cartProduct->price * $cartProduct->quantity
+            fn ($cartProduct) => $cartProduct->price * $cartProduct->quantity
         );
 
         $order->update([

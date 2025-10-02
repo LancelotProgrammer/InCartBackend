@@ -152,7 +152,7 @@ test('user notifications endpoints', function () {
         'updated_at' => now(),
     ]);
 
-    $this->actingAs($this->phoneUser, 'sanctum')->postJson("/api/v1/users/notifications", [
+    $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/users/notifications', [
         'ids' => [$notificationId],
     ])->assertStatus(204);
 });

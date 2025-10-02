@@ -66,7 +66,7 @@ class Settings extends Page
                     SettingType::FLOAT => (float) $setting->value,
                     SettingType::JSON => json_decode($setting->value, true),
                     default => $setting->value,
-                }
+                },
             ];
         })->toArray();
 

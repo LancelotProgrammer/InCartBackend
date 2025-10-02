@@ -7,7 +7,6 @@ use App\Exceptions\LogicalException;
 use App\Models\City;
 use App\Models\UserAddress;
 use App\Services\DistanceService;
-use App\Services\SettingsService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -33,7 +32,7 @@ class UpdateUserAddress
         $isPointInsideRectangle = DistanceService::isPointInsideRectangle(
             [
                 'latitude' => $validated['latitude'],
-                'longitude' => $validated['longitude']
+                'longitude' => $validated['longitude'],
             ],
             $city->boundary,
         );
@@ -41,7 +40,7 @@ class UpdateUserAddress
         if ($isPointInsideRectangle) {
             throw new LogicalException(
                 'Address is far from the city boundary.',
-                "The selected coordinates are outside the allowed city boundary."
+                'The selected coordinates are outside the allowed city boundary.'
             );
         }
 

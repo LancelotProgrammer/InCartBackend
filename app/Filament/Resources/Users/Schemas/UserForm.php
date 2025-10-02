@@ -23,9 +23,9 @@ class UserForm
                         TextInput::make('email')->email()->unique(ignoreRecord: true),
                         TextInput::make('password')
                             ->password()
-                            ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
-                            ->dehydrated(fn(?string $state): bool => filled($state))
-                            ->required(fn(string $operation): bool => $operation === 'create'),
+                            ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                            ->dehydrated(fn (?string $state): bool => filled($state))
+                            ->required(fn (string $operation): bool => $operation === 'create'),
                         TextInput::make('phone')->tel()->unique(ignoreRecord: true),
                         Select::make('city_id')
                             ->relationship('city', 'name'),
@@ -33,7 +33,7 @@ class UserForm
                             ->relationship(
                                 'role',
                                 'title',
-                                fn($query) => RolePolicy::filterOwnerAndDeveloper($query)
+                                fn ($query) => RolePolicy::filterOwnerAndDeveloper($query)
                             ),
                     ]),
             ]);

@@ -33,6 +33,7 @@ class SettingsService
                     "System setup error. Please configure the `{$key}` setting."
                 );
             }
+
             return null;
         }
 

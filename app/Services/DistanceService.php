@@ -25,10 +25,10 @@ class DistanceService
                 $tr = $corner;
             }
         }
-        if (!$bl || !$tr) {
+        if (! $bl || ! $tr) {
             return false;
         }
 
-        return !($point['latitude'] >= $bl['latitude'] && $point['latitude'] <= $tr['latitude'] && $point['longitude'] >= $bl['longitude'] && $point['longitude'] <= $tr['longitude']);
+        return ! ($point['latitude'] >= $bl['latitude'] && $point['latitude'] <= $tr['latitude'] && $point['longitude'] >= $bl['longitude'] && $point['longitude'] <= $tr['longitude']);
     }
 }

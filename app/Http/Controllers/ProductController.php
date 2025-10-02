@@ -15,7 +15,7 @@ class ProductController extends Controller
      * @unauthenticated
      *
      * @header Authorization Bearer {YOUR_AUTH_KEY}
-     * 
+     *
      * @queryParam category_id integer The category ID. Example: 1
      * @queryParam search string The English or Arabic name of the product. Example: name
      * @queryParam page integer The page number. Example: 1

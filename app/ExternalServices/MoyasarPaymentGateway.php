@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\ExternalServices;
 
 use App\Contracts\PaymentGatewayInterface;
 use App\Models\Order;
+use App\Services\BasePaymentGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -48,6 +49,11 @@ class MoyasarPaymentGateway extends BasePaymentGateway implements PaymentGateway
      */
     public function callback(Request $request): void
     {
+        $orderId = $request->input('order_id');
+        $paymentMethodId = $request->input('payment_method_id');
+        $token = $request->input('token');
+        $metadata = $request->input('metadata');
+
         // process...
 
         // $this->payOrder(Order::where('payment_token', '=', $token)->first());

@@ -20,7 +20,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, CanManagePermissions;
+    use CanManagePermissions, HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',

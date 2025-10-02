@@ -18,7 +18,7 @@ class HomeService
 {
     public static function getHomeContent(Request $request): mixed
     {
-        return Cache::remember(CacheKeys::HOME . '_' . App::getLocale() . '_' . request()->attributes->get('currentBranchId'), 3600, function () {
+        return Cache::remember(CacheKeys::HOME.'_'.App::getLocale().'_'.request()->attributes->get('currentBranchId'), 3600, function () {
             $statuses = DB::table('advertisements')
                 ->where('type', '=', AdvertisementType::STATUS->value)
                 ->branchScope()
@@ -61,7 +61,7 @@ class HomeService
                     AdvertisementLink::EXTERNAL => self::getImageExternalUrl($status),
                     default => throw new InvalidArgumentException('Advertisement link is not supported'),
                 };
-                if (!empty($status)) {
+                if (! empty($status)) {
                     $statusesResult[] = $status;
                 }
             }
@@ -69,7 +69,7 @@ class HomeService
             $videosResult = [];
             foreach ($videos as $video) {
                 $video = self::getVideoExternalUrl($video);
-                if (!empty($video)) {
+                if (! empty($video)) {
                     $videosResult[] = $video;
                 }
             }
@@ -77,7 +77,7 @@ class HomeService
             $offersResult = [];
             foreach ($offers as $offer) {
                 $offer = self::getAdvertisementOfferProduct($offer);
-                if (!empty($offer)) {
+                if (! empty($offer)) {
                     $offersResult[] = $offer;
                 }
             }
@@ -91,7 +91,7 @@ class HomeService
                     AdvertisementLink::EXTERNAL => self::getImageExternalUrl($card),
                     default => throw new InvalidArgumentException('Advertisement link is not supported'),
                 };
-                if (!empty($card)) {
+                if (! empty($card)) {
                     $cardsResult[] = $card;
                 }
             }
@@ -99,7 +99,7 @@ class HomeService
             $newProductsResult = [];
             foreach ($products as $product) {
                 $product = self::getProductDetails($product);
-                if (!empty($product)) {
+                if (! empty($product)) {
                     $newProductsResult[] = $product;
                 }
             }

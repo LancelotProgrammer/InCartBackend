@@ -24,10 +24,10 @@ class ListAdvertisements extends ListRecords
     {
         return [
             'all' => Tab::make(),
-            'statuses' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('type', '=',AdvertisementType::STATUS->value)),
-            'videos' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('type', '=',AdvertisementType::VIDEO->value)),
-            'cards' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('type', '=',AdvertisementType::CARD->value)),
-            'offers' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('type', '=',AdvertisementType::OFFER->value)),
+            'statuses' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('type', '=', AdvertisementType::STATUS->value)),
+            'videos' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('type', '=', AdvertisementType::VIDEO->value)),
+            'cards' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('type', '=', AdvertisementType::CARD->value)),
+            'offers' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('type', '=', AdvertisementType::OFFER->value)),
         ];
     }
 }

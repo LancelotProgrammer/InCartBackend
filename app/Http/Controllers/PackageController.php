@@ -6,14 +6,12 @@ use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AddProductToPackage;
-use App\Pipes\AuthorizeUser;
 use App\Pipes\CreatePackage;
 use App\Pipes\DeletePackage;
 use App\Pipes\DeleteProductFromPackage;
 use App\Pipes\GetPackageProducts;
 use App\Pipes\GetPackages;
 use App\Pipes\UpdatePackage;
-use App\Pipes\ValidateUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Pipeline;
 

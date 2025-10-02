@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\Categories\Schemas;
 
 use App\Filament\Components\TranslationComponent;
+use App\Models\Category;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use App\Models\Category;
 
 class CategoryForm
 {
@@ -23,12 +23,12 @@ class CategoryForm
                         TranslationComponent::configure('description'),
                         Select::make('parent_id')
                             ->searchable()
-                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
-                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                            ->getSearchResultsUsing(fn (string $search): array => Category::query()
+                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                 ->limit(50)
                                 ->pluck('title', 'id')
                                 ->all())
-                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title)
+                            ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->title)
                             ->columnSpanFull(),
                         FileUpload::make('file')
                             ->directory('categories')

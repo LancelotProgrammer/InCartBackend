@@ -104,6 +104,7 @@ class OrderService
                 'discount',
                 'maximum_order_quantity',
                 'minimum_order_quantity',
+                'published_at',
             ])])
             ->get();
 

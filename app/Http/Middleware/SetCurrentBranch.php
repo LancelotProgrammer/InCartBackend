@@ -40,7 +40,7 @@ class SetCurrentBranch
             return $this->getDefaultBranchForCity($user->city_id, 'The default branch for your city is not found');
         }
         if (auth('sanctum')->user()?->city_id !== null) {
-            return $this->getDefaultBranchForCity(auth('sanctum')->user()->city_id , 'The default branch for your city is not found');
+            return $this->getDefaultBranchForCity(auth('sanctum')->user()->city_id, 'The default branch for your city is not found');
         }
 
         // future: uncomment this if you want to get the branch from ip location service

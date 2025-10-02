@@ -37,7 +37,7 @@ class BranchesTable
                 DeleteAction::make(),
                 Action::make('mark_as_default')
                     ->authorize('markAsDefault')
-                    ->visible(fn(Branch $row) => $row->is_default === false)
+                    ->visible(fn (Branch $row) => $row->is_default === false)
                     ->action(function (Branch $row) {
                         $alreadyExists = $row->newQuery()
                             ->where('city_id', $row->city_id)
@@ -62,7 +62,7 @@ class BranchesTable
                     }),
                 Action::make('unmark_as_default')
                     ->authorize('unmarkAsDefault')
-                    ->visible(fn(Branch $row) => $row->is_default === true)
+                    ->visible(fn (Branch $row) => $row->is_default === true)
                     ->action(function (Branch $row) {
                         $row->unmarkAsDefault();
                         Notification::make()

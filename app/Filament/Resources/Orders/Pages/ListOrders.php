@@ -23,8 +23,8 @@ class ListOrders extends ListRecords
     {
         return [
             'all' => Tab::make(),
-            'today' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->whereDate('delivery_date', '=', now())),
-            'to archive' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->whereDate('delivery_date', '<', now())),
+            'today' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->whereDate('delivery_date', '=', now())),
+            'to archive' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->whereDate('delivery_date', '<', now())),
         ];
     }
 }

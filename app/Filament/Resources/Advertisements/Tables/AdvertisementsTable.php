@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Advertisements\Tables;
 
 use App\Enums\AdvertisementLink;
-use App\Enums\AdvertisementType;
 use App\Filament\Actions\PublishActions;
 use App\Filament\Filters\BranchSelectFilter;
 use Filament\Actions\Action;

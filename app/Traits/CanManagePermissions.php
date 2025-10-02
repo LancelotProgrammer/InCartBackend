@@ -3,7 +3,6 @@
 namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 trait CanManagePermissions

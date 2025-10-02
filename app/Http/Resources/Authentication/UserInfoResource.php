@@ -31,7 +31,7 @@ class UserInfoResource extends JsonResource
                 'id' => $this->city->id,
                 'name' => $this->city->name,
                 'boundary' => $this->city->boundary,
-            ]
+            ],
         ];
     }
 }

@@ -16,7 +16,7 @@ class IsServiceOnline
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!(SettingsService::isSystemOnline())) {
+        if (! (SettingsService::isSystemOnline())) {
             abort(503);
         }
 
