@@ -32,6 +32,21 @@ trait CanManagePermissions
         return $this->role->permissions->contains('code', 'view-dashboard');
     }
 
+    public function canViewDeliveryOrders(): bool
+    {
+        return $this->role->permissions->contains('code', 'view-delivery-orders-page');
+    }
+
+    public function canViewTodaysOrders(): bool
+    {
+        return $this->role->permissions->contains('code', 'view-todays-orders-page');
+    }
+
+    public function canViewTodayTickets(): bool
+    {
+        return $this->role->permissions->contains('code', 'view-todays-tickets-page');
+    }
+
     public function canManageDeveloperSettings(): bool
     {
         return $this->role->permissions->contains('code', 'manage-developer-settings');

@@ -556,6 +556,18 @@ class BaseSeeder extends Seeder
                 'code' => 'view-dashboard',
             ],
             [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Delivery Orders Page', 'عرض صفحة طلبات التوصيل']), JSON_UNESCAPED_UNICODE),
+                'code' => 'view-delivery-orders-page',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Today\'s Orders Page', 'عرض صفحة طلبات اليوم']), JSON_UNESCAPED_UNICODE),
+                'code' => 'view-todays-orders-page',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Today\'s Tickets Page', 'عرض صفحة التذاكر اليوم']), JSON_UNESCAPED_UNICODE),
+                'code' => 'view-todays-tickets-page',
+            ],
+            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Manage Settings', 'إدارة الإعدادات']), JSON_UNESCAPED_UNICODE),
                 'code' => 'manage-settings',
             ],
@@ -699,6 +711,7 @@ class BaseSeeder extends Seeder
                         'can-be-assigned-to-take-orders',
                         'can-be-assigned-to-branch',
                         'manage-developer-settings',
+                        'view-delivery-orders-page'
                     ]
                 )
                 ->pluck('code')->toArray(),
@@ -709,6 +722,7 @@ class BaseSeeder extends Seeder
                         'can-receive-order-notifications',
                         'can-be-assigned-to-take-orders',
                         'can-be-assigned-to-branch',
+                        'view-delivery-orders-page'
                     ]
                 )
                 ->pluck('code')->toArray(),
@@ -718,6 +732,7 @@ class BaseSeeder extends Seeder
                     [
                         'can-be-assigned-to-take-orders',
                         'manage-developer-settings',
+                        'view-delivery-orders-page'
                     ]
                 )
                 ->pluck('code')->toArray(),
@@ -727,8 +742,7 @@ class BaseSeeder extends Seeder
                     [
                         'can-be-assigned-to-take-orders',
                         'can-be-assigned-to-branch',
-                        'view-any-order',
-                        'view-order',
+                        'view-delivery-orders-page',
                     ]
                 )
                 ->pluck('code')->toArray(),
@@ -1001,7 +1015,7 @@ class BaseSeeder extends Seeder
             ->has(UserAddress::factory()->count($userAddressCount), 'addresses')
             ->has(UserNotification::factory()->count($userNotificationCount), 'userNotifications')
             ->has(
-                FavoriteFactory::new()->count($favoriteCount)->sequence(fn ($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
+                FavoriteFactory::new()->count($favoriteCount)->sequence(fn($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
                 'favorites'
             )
             ->has(PackageFactory::new()->hasAttached($products->random(rand(3, 7))->values())->count($packageProductCount), 'packages')
@@ -1035,7 +1049,7 @@ class BaseSeeder extends Seeder
                     ]);
                 }
                 $subtotal = $cart->cartProducts->sum(
-                    fn ($cartProduct) => $cartProduct->price * $cartProduct->quantity
+                    fn($cartProduct) => $cartProduct->price * $cartProduct->quantity
                 );
                 $order->update([
                     'subtotal_price' => $subtotal,

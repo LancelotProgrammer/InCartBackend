@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Tickets;
 
-use App\Constants\CacheKeys;
 use App\Filament\Resources\Tickets\Pages\ListTickets;
 use App\Filament\Resources\Tickets\Schemas\TicketInfolist;
 use App\Filament\Resources\Tickets\Tables\TicketsTable;
@@ -12,7 +11,6 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Cache;
 use UnitEnum;
 
 class TicketResource extends Resource
@@ -45,15 +43,6 @@ class TicketResource extends Resource
         return [
             //
         ];
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return Cache::remember(
-            CacheKeys::TODAY_SUPPORT_COUNT,
-            now()->addDay(),
-            fn () => Ticket::whereDate('created_at', now()->toDateString())->count()
-        );
     }
 
     public static function getPages(): array

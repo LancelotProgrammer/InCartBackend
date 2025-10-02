@@ -11,6 +11,7 @@ use App\Models\Branch;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\User;
+use App\Notifications\DeliveryOrderNotification;
 use App\Services\Cache;
 use App\Services\DatabaseUserNotification;
 use Filament\Actions\Action;
@@ -29,10 +30,7 @@ class OrderActions
     public static function configure(bool $hasEditAction): ActionGroup
     {
         // Edit order
-        $editAction = EditAction::make()
-            ->visible(function (Order $order) {
-                return OrderResource::editPolicy($order);
-            });
+        $editAction = EditAction::make();
 
         $actions = [
 
@@ -140,6 +138,7 @@ class OrderActions
                     $order->save();
                     FirebaseFCM::sendOrderStatusNotification($order);
                     DatabaseUserNotification::sendOrderStatusNotification($order);
+                    User::where('id', '=',$data['delivery_id'])->first()->notify(new DeliveryOrderNotification($order));
                     Cache::deletePendingOrderCount();
                     Notification::make()
                         ->title("Order #{$order->order_number} is out for delivery.")

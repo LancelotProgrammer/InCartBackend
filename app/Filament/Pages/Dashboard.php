@@ -30,7 +30,7 @@ class Dashboard extends BaseDashboard
 
     public function getColumns(): int|array
     {
-        return 6;
+        return 4;
     }
 
     public static function canAccess(): bool

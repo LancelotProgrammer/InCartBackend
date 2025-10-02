@@ -2,17 +2,16 @@
 
 namespace App\Filament\Resources\Orders\RelationManagers;
 
-use App\Enums\OrderStatus;
 use App\Models\BranchProduct;
 use App\Models\CartProduct;
-use App\Models\Order;
 use App\Models\Product;
+use App\Policies\OrderPolicy;
+use App\Services\OrderService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
@@ -48,7 +47,7 @@ class CartProductsRelationManager extends RelationManager
                 Action::make('edit')
                     ->icon(Heroicon::PencilSquare)
                     ->visible(function () {
-                        return self::isEnabled($this->getOwnerRecord(), $this->pageClass);
+                        return OrderPolicy::isEnabled($this->getOwnerRecord(), $this->pageClass);
                     })
                     ->fillForm(function (CartProduct $record): array {
                         return [
@@ -92,14 +91,14 @@ class CartProductsRelationManager extends RelationManager
                             'price' => $price,
                         ]);
 
-                        $this->recalculateOrderTotals($order);
+                        OrderService::recalculateOrderTotals($order);
                     }),
                 Action::make('delete')
                     ->color('danger')
                     ->icon(Heroicon::OutlinedTrash)
                     ->requiresConfirmation()
                     ->visible(function () {
-                        return self::isEnabled($this->getOwnerRecord(), $this->pageClass);
+                        return OrderPolicy::isEnabled($this->getOwnerRecord(), $this->pageClass);
                     })
                     ->action(function (CartProduct $record) {
                         $cart = $record->cart;
@@ -114,13 +113,13 @@ class CartProductsRelationManager extends RelationManager
                         }
                         $order = $this->getOwnerRecord();
                         $record->delete();
-                        $this->recalculateOrderTotals($order);
+                        OrderService::recalculateOrderTotals($order);
                     }),
             ])
             ->toolbarActions([
                 Action::make('create')
                     ->visible(function () {
-                        return self::isEnabled($this->getOwnerRecord(), $this->pageClass);
+                        return OrderPolicy::isEnabled($this->getOwnerRecord(), $this->pageClass);
                     })
                     ->schema(function () {
                         return [
@@ -158,32 +157,8 @@ class CartProductsRelationManager extends RelationManager
                             'price' => $price,
                         ]);
 
-                        $this->recalculateOrderTotals($order);
+                        OrderService::recalculateOrderTotals($order);
                     }),
             ]);
-    }
-
-    public static function isEnabled(Order $order, $pageClass): bool
-    {
-        return $order->paymentMethod?->code === 'pay-on-delivery'
-            && in_array($order->order_status, [
-                OrderStatus::PENDING,
-                OrderStatus::PROCESSING,
-            ], true) && ! (app($pageClass) instanceof ViewRecord);
-    }
-
-    protected function recalculateOrderTotals(Order $order): void
-    {
-        $subtotal = $order->cartProducts->sum(
-            fn ($cartProduct) => $cartProduct->price * $cartProduct->quantity
-        );
-
-        $order->update([
-            'subtotal_price' => $subtotal,
-            'total_price' => $subtotal - $order->coupon_discount
-                + $order->delivery_fee
-                + $order->service_fee
-                + $order->tax_amount,
-        ]);
     }
 }

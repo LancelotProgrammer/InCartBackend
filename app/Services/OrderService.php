@@ -98,7 +98,7 @@ class OrderService
         $subtotal = 0;
 
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
-            ->with(['branches' => fn ($query) => $query->where('branches.id', $this->payload->getBranchId())->withPivot([
+            ->with(['branches' => fn($query) => $query->where('branches.id', $this->payload->getBranchId())->withPivot([
                 'price',
                 'quantity',
                 'discount',
@@ -150,7 +150,7 @@ class OrderService
 
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
             ->with([
-                'branches' => fn ($query) => $query
+                'branches' => fn($query) => $query
                     ->where('branches.id', $this->payload->getBranchId())
                     ->withPivot(['price', 'discount']),
             ])
@@ -242,7 +242,7 @@ class OrderService
             $this->payload->getUser()->id,
             $this->payload->getBranchId(),
             $products->unique('id')->pluck('id')->toArray(),
-            $products->flatMap(fn ($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
+            $products->flatMap(fn($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
         );
 
         // apply coupon if exists
@@ -369,5 +369,20 @@ class OrderService
             'total' => $this->payload->getTotalPrice(),
             'coupon' => $this->payload->getCoupon()?->code,
         ];
+    }
+
+    public static function recalculateOrderTotals(Order $order): void
+    {
+        $subtotal = $order->cartProducts->sum(
+            fn($cartProduct) => $cartProduct->price * $cartProduct->quantity
+        );
+
+        $order->update([
+            'subtotal_price' => $subtotal,
+            'total_price' => $subtotal - $order->coupon_discount
+                + $order->delivery_fee
+                + $order->service_fee
+                + $order->tax_amount,
+        ]);
     }
 }

@@ -35,6 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling(null)
             ->maxContentWidth(Width::Full)
+            ->globalSearch(false)
             ->colors([
                 'primary' => Color::Blue,
             ])

@@ -43,7 +43,7 @@ class OrderInfolist
                         TextEntry::make('coupon.title')->label('Coupon'),
                     ]),
 
-                Section::make('Edit')
+                Section::make('Config')
                     ->columns(3)
                     ->schema([
                         TextEntry::make('notes'),
