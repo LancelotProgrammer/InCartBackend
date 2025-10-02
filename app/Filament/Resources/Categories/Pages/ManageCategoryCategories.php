@@ -6,6 +6,7 @@ use App\Filament\Actions\PublishActions;
 use App\Filament\Components\TranslationComponent;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Services\HandleUploadedFiles;
+use App\Models\Category;
 use BackedEnum;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\FileUpload;
@@ -33,9 +34,10 @@ class ManageCategoryCategories extends ManageRelatedRecords
             ->components([
                 TranslationComponent::configure('title'),
                 TranslationComponent::configure('description'),
-                FileUpload::make('file')
+                FileUpload::make('files')
+                    ->columnSpanFull()
                     ->directory('categories')
-                    ->minSize(512)
+                    ->minSize(1)
                     ->maxSize(1024)
                     ->minFiles(1)
                     ->maxFiles(1)
@@ -62,6 +64,13 @@ class ManageCategoryCategories extends ManageRelatedRecords
             ->recordTitleAttribute('title')
             ->headerActions([
                 CreateAction::make()
+                    ->visible(function () {
+                        if (Category::where('id', '=', $this->getOwnerRecord()->id)->first()->depth === 3) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    })
                     ->using(function (array $data, string $model): Model {
                         $uploadedPaths = $data['files'] ?? [];
 
@@ -81,7 +90,7 @@ class ManageCategoryCategories extends ManageRelatedRecords
                 Stack::make([
                     ImageColumn::make('url')
                         ->label('Image')
-                        ->state(fn ($record) => $record->files->first()->url ?? null),
+                        ->state(fn($record) => $record->files->first()->url ?? null),
                     TextColumn::make('title')->searchable(),
                     TextColumn::make('published_at')->dateTime(),
                 ]),

@@ -70,7 +70,7 @@ class ProductForm
                             ...$record !== null ? $entryArray : [
                                 FileUpload::make('files')
                                     ->directory('products')
-                                    ->minSize(512)
+                                    ->minSize(1)
                                     ->maxSize(1024)
                                     ->minFiles(1)
                                     ->maxFiles(5)

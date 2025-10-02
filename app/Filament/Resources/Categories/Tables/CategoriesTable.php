@@ -78,6 +78,13 @@ class CategoriesTable
                     ->authorize('viewCategories')
                     ->icon(Heroicon::NumberedList)
                     ->iconButton()
+                    ->visible(function ($record) {
+                        if (Category::where('id', '=', $record->id)->first()->depth === 3) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    })
                     ->url(fn (Category $record) => CategoryResource::getUrl('categories', ['record' => $record->id])),
                 ...PublishActions::configure(),
             ])

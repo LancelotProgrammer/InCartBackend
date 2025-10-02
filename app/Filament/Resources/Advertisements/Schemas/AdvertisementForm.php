@@ -131,9 +131,10 @@ class AdvertisementForm
                         return $get('type') === AdvertisementType::OFFER;
                     })
                     ->schema([
-                        FileUpload::make('file')
+                        FileUpload::make('files')
+                            ->columnSpanFull()
                             ->directory('advertisements')
-                            ->minSize(512)
+                            ->minSize(1)
                             ->maxSize(1024)
                             ->minFiles(1)
                             ->maxFiles(5)
