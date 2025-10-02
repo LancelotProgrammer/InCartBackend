@@ -664,8 +664,8 @@ class BaseSeeder extends Seeder
                 'code' => 'view-invoice-order',
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Audit Order', 'مراجعة سجل الطلب']), JSON_UNESCAPED_UNICODE),
-                'code' => 'audit-order',
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Can Audit', 'يستطيع مراجعة السجلات']), JSON_UNESCAPED_UNICODE),
+                'code' => 'can-audit',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Block User', 'حظر المستخدم']), JSON_UNESCAPED_UNICODE),

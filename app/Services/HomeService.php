@@ -18,7 +18,7 @@ class HomeService
 {
     public static function getHomeContent(Request $request): mixed
     {
-        return Cache::remember(CacheKeys::HOME.'_'.App::getLocale().'_'.request()->attributes->get('currentBranchId'), 3600, function () {
+        return Cache::remember(CacheKeys::HOME . '_' . App::getLocale() . '_' . request()->attributes->get('currentBranchId'), 3600, function () {
             $statuses = DB::table('advertisements')
                 ->where('type', '=', AdvertisementType::STATUS->value)
                 ->branchScope()
@@ -139,6 +139,10 @@ class HomeService
             ->where('branch_product.product_id', $product->id)
             ->first();
 
+        if (! $branchProduct) {
+            return [];
+        }
+
         $productCategory = DB::table('product_category')
             ->join('categories', 'categories.id', '=', 'product_category.category_id')
             ->where('product_category.product_id', $product->id)
@@ -176,11 +180,7 @@ class HomeService
             ->where('advertisement_file.id', '=', $advertisement->id)
             ->first();
 
-        $category = DB::table('categories')->publishedScope()->where('id', '=', $advertisement->id)->first();
-
-        if (! $category) {
-            return [];
-        }
+        $category = DB::table('categories')->publishedScope()->where('id', '=', $advertisement->category_id)->first();
 
         $categoryImage = DB::table('category_file')
             ->join('files', 'category_file.id', '=', 'files.id')
@@ -246,10 +246,6 @@ class HomeService
         $product = DB::table('products')
             ->where('id', $advertisement->product_id)
             ->first();
-
-        if (! $product) {
-            return [];
-        }
 
         $productImage = DB::table('product_file')
             ->join('files', 'files.id', '=', 'product_file.file_id')

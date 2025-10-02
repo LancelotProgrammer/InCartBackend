@@ -34,7 +34,6 @@ class BranchesTable
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
                 Action::make('mark_as_default')
                     ->authorize('markAsDefault')
                     ->visible(fn (Branch $row) => $row->is_default === false)

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Policies\AuditPolicy;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
@@ -9,8 +10,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use OwenIt\Auditing\Models\Audit;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->bindServices();
+        $this->registerPolicies();
         $this->configureModel();
         $this->configureBuilder();
         $this->configureFilamentTable();
@@ -37,6 +41,11 @@ class AppServiceProvider extends ServiceProvider
     }
 
     private function bindServices(): void {}
+
+    private function registerPolicies(): void
+    {
+        Gate::policy(Audit::class, AuditPolicy::class);
+    }
 
     private function configureModel(): void
     {

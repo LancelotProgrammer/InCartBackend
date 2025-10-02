@@ -40,9 +40,4 @@ class OrderAuditRelationManager extends RelationManager
             ])
             ->defaultSort('created_at', 'desc');
     }
-
-    public static function canAccess(): bool
-    {
-        return false; // TODO: Handle authorization. This function is not working. We need to find another way to restrict access to this relation manager.
-    }
 }

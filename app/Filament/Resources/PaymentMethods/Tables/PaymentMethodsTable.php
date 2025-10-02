@@ -37,7 +37,6 @@ class PaymentMethodsTable
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
                 ...PublishActions::configure(),
             ])
             ->toolbarActions([
