@@ -478,26 +478,6 @@ class BaseSeeder extends Seeder
                 'code' => 'delete-role',
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Any Setting', 'عرض أي إعداد']), JSON_UNESCAPED_UNICODE),
-                'code' => 'view-any-setting',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Setting', 'عرض تفاصيل الإعداد']), JSON_UNESCAPED_UNICODE),
-                'code' => 'view-setting',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Create Setting', 'إنشاء إعداد']), JSON_UNESCAPED_UNICODE),
-                'code' => 'create-setting',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Update Setting', 'تحديث الإعداد']), JSON_UNESCAPED_UNICODE),
-                'code' => 'update-setting',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Delete Setting', 'حذف الإعداد']), JSON_UNESCAPED_UNICODE),
-                'code' => 'delete-setting',
-            ],
-            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['View Any Ticket', 'عرض أي تذكرة']), JSON_UNESCAPED_UNICODE),
                 'code' => 'view-any-ticket',
             ],

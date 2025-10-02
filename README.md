@@ -1,61 +1,69 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+docs:
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- home page is cached based on {key, localization and branch_id}. The cache will be cleared when advertisement / product / branches product is created or updated or deleted
+- manager role will receive the order notification by default
+- api content is filtered based on branch and published_at
+- DB builder is used in {home service + cache service + session service + filament widgets + transactions + insert order archive}
+- optional authentication is used in {set the default branch + favorite product}
+- default branch is set in {SetCurrentBranch middleware} and effect {BranchScope + AppServiceProvider -> configureBuilder}
+- advertisements / coupons / branches products / payment are scoped based on the branch id
+- advertisement model has a getter propriety called link: which means the advertisement can be connected to {product and category, category, external link}
+- categories are build like a tree and they follow these rules:
+    - a category can only connect to a parent category
+    - category hierarchy depth cannot exceed 3 levels.
+    - a product can not connect to root categories
+- city model has a boundary field, it saves five points each point has three keys: {name, latitude, longitude} these point represent a rectangular shape. they are saved as json string. The points are:
+    - bl: bottom left
+    - br: bottom right
+    - tr: top right
+    - tr: top right
+    - c: center
+- coupon model has one type which is TIMED other types can be added and configured in the CouponType enum
+- multiPaymentMethods can be added and configured using a class that follows this declaration {class ThePaymentGateway extends BasePaymentGateway implements PaymentGatewayInterface}
+- translation fields are handled by laravel spatie translation spatie/laravel-translatable
+    - there is a custom component called TranslationComponent that handles translation 
+    - there is a custom helper function get_translatable_attribute() which is used when the db builder is used instead of eloquent
+- third party services:
+    - twilio/sdk: handle OTP
+    - stevebauman/location: handle IP info
+    - kreait/laravel-firebase: handle firebase notifications
+    - MoyasarPaymentGateway: handle payment methods
+- a SetupException will be fired if:
+    - there is no customer role
+    - there is no default branch
+    - there is no user who has {can-receive-order-notifications} permission
+    - one of the required settings keys are missing
+- publish logic
+    - payment methods can be created and published per branch | unpublished is denied for pay-on-delivery payment method
+    - coupons can be created and published per branch | unpublished is ok
+    - advertisement can be created and published per branch | unpublished is ok
+    - categories can be created and published per branch | unpublished will not be cascaded to products
+    - branches can be published only if:
+        1- at least one delivery user attached
+        2- at least one user to receive notification order
+        3- pay-on-delivery payment method is published
+        - unpublished will be cascaded to products
+    - branches products can be published only if: they have their config set | unpublished is ok
+    - any publishable model will not be appear in the api if its not published
+    - for advertisement which are connected to unpublished will not be appear in the api
+    - effected api:
+        - GetFavoriteProducts
+        - GetOrderDetails
+        - GetPackageProducts
+        - GetProductDetails
+        - GetProducts
+        - GetHome
+- notification
+    - notification send to users
+        - when order status change the system send in-app (mobile) / firebase (mobile) notification
+        - when a reply is created for a ticket the system send in-app / firebase notification
+    - notification send to delivery
+        - when an order status is attached to delivery the system send in-app (dashboard) notification
+    - notification send to manager / users who has the {can-receive-order-notifications} permission
+        - when an order is created the system send in-app (dashboard) notification
+        - when an order is cancelled the system send in-app (dashboard) notification
+- policy
+    - app policy is handled by policies classes
+    - role permissions are handled by trait called CanManagePermissions
+- settings 
+    - SettingsService is responsible to define the getter of each setting, the form component of each setting, the cast of each setting and to cache them all
