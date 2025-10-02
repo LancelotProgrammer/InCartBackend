@@ -117,8 +117,8 @@ class UsersTable
                             ->send();
                     }),
 
-                Action::make('un-approve')
-                    ->authorize('unapprove')
+                Action::make('disapprove')
+                    ->authorize('disapprove')
                     ->color('danger')
                     ->icon(Heroicon::ExclamationTriangle)
                     ->requiresConfirmation()

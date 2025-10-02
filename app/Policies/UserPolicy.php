@@ -58,6 +58,24 @@ class UserPolicy
         return $user->hasPermission('unblock-user');
     }
 
+    public function approve(User $user, User $model): bool
+    {
+        if ($this->isSuperAdminOrDeveloper($model)) {
+            return false;
+        }
+
+        return $user->hasPermission('approve-user');
+    }
+
+    public function disapprove(User $user, User $model): bool
+    {
+        if ($this->isSuperAdminOrDeveloper($model)) {
+            return false;
+        }
+
+        return $user->hasPermission('disapprove-user');
+    }
+
     private function isSuperAdminOrDeveloper(User $model): bool
     {
         return $model->role->code === Role::ROLE_SUPER_ADMIN_CODE || $model->role->code === Role::ROLE_DEVELOPER_CODE;

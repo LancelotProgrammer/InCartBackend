@@ -676,6 +676,14 @@ class BaseSeeder extends Seeder
                 'code' => 'unblock-user',
             ],
             [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Approve User', 'الموافقة على المستخدم']), JSON_UNESCAPED_UNICODE),
+                'code'  => 'approve-user',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Disapprove User', 'رفض المستخدم']), JSON_UNESCAPED_UNICODE),
+                'code'  => 'disapprove-user',
+            ],
+            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Mark Important Feedback', 'تعيين ملاحظة كمهمة']), JSON_UNESCAPED_UNICODE),
                 'code' => 'mark-important-feedback',
             ],
