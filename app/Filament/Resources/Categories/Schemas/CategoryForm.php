@@ -30,13 +30,17 @@ class CategoryForm
                                 ->all())
                             ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title)
                             ->columnSpanFull(),
-                        FileUpload::make('files')
-                            ->columnSpanFull()
+                        FileUpload::make('file')
+                            ->directory('categories')
+                            ->minSize(512)
+                            ->maxSize(1024)
+                            ->minFiles(1)
+                            ->maxFiles(1)
                             ->image()
                             ->multiple()
                             ->disk('public')
-                            ->directory('advertisements')
-                            ->visibility('public'),
+                            ->visibility('public')
+                            ->required(),
                     ]),
             ]);
     }

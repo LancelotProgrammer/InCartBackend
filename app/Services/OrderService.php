@@ -114,17 +114,22 @@ class OrderService
             }
 
             $branchProduct = $product->branches->first()->pivot;
+            $productTitle = $product->title;
 
             if ($item['quantity'] > $branchProduct->quantity) {
-                throw new LogicalException("Quantity exceeds storage for product {$product->id}, quantity allowed is: {$branchProduct->quantity}");
+                throw new LogicalException("Quantity exceeds storage for {$productTitle}, quantity allowed is: {$branchProduct->quantity}");
             }
 
             if ($item['quantity'] > $branchProduct->maximum_order_quantity) {
-                throw new LogicalException("Quantity exceeds maximum allowed for product {$product->id}, maximum order quantity allowed is: {$branchProduct->maximum_order_quantity}");
+                throw new LogicalException("Quantity exceeds maximum allowed for {$productTitle}, maximum order quantity allowed is: {$branchProduct->maximum_order_quantity}");
             }
 
             if ($item['quantity'] < $branchProduct->minimum_order_quantity) {
-                throw new LogicalException("Quantity is below minimum allowed for product {$product->id}, minimum order quantity allowed is: {$branchProduct->minimum_order_quantity}");
+                throw new LogicalException("Quantity is below minimum allowed for {$productTitle}, minimum order quantity allowed is: {$branchProduct->minimum_order_quantity}");
+            }
+
+            if ($branchProduct->published_at === null) {
+                throw new LogicalException("{$productTitle} is not available for sale.");
             }
 
             $price = BranchProduct::getDiscountPrice($branchProduct);

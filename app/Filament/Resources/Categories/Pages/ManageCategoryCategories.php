@@ -33,13 +33,17 @@ class ManageCategoryCategories extends ManageRelatedRecords
             ->components([
                 TranslationComponent::configure('title'),
                 TranslationComponent::configure('description'),
-                FileUpload::make('files')
-                    ->columnSpanFull()
+                FileUpload::make('file')
+                    ->directory('categories')
+                    ->minSize(512)
+                    ->maxSize(1024)
+                    ->minFiles(1)
+                    ->maxFiles(1)
                     ->image()
                     ->multiple()
                     ->disk('public')
-                    ->directory('advertisements')
-                    ->visibility('public'),
+                    ->visibility('public')
+                    ->required(),
                 Hidden::make('parent_id')->default($this->getOwnerRecord()->id),
             ]);
     }
@@ -77,7 +81,7 @@ class ManageCategoryCategories extends ManageRelatedRecords
                 Stack::make([
                     ImageColumn::make('url')
                         ->label('Image')
-                        ->state(fn ($record) => $record->files->first()->url ?? null),
+                        ->state(fn($record) => $record->files->first()->url ?? null),
                     TextColumn::make('title')->searchable(),
                     TextColumn::make('published_at')->dateTime(),
                 ]),

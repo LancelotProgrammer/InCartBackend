@@ -132,11 +132,16 @@ class AdvertisementForm
                     })
                     ->schema([
                         FileUpload::make('file')
-                            ->image()
-                            ->required()
-                            ->disk('public')
                             ->directory('advertisements')
-                            ->visibility('public'),
+                            ->minSize(512)
+                            ->maxSize(1024)
+                            ->minFiles(1)
+                            ->maxFiles(5)
+                            ->image()
+                            ->multiple()
+                            ->disk('public')
+                            ->visibility('public')
+                            ->required()
                     ]),
                 Section::make('Preview')
                     ->columnSpanFull()

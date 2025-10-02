@@ -8,16 +8,16 @@ enum UnitType: int implements HasLabel
 {
     case PIECE = 1;
     case GRAM = 2;
-    case LITER = 3;
-    case METER = 4;
+    case MILLILITERS = 3;
+    case MILLIMETERS = 4;
 
     public function getLabel(): string
     {
         return match ($this) {
             self::PIECE => 'Piece',
             self::GRAM => 'Gram',
-            self::LITER => 'Liter',
-            self::METER => 'Meter',
+            self::MILLILITERS => 'Milliliter',
+            self::MILLIMETERS => 'Millimeter',
         };
     }
 }
