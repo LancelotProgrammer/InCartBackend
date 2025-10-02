@@ -15,6 +15,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Enums\PaginationMode;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -25,6 +26,7 @@ class TicketsTable
     {
         return $table
             // TODO: handle scope
+            ->paginationMode(PaginationMode::Simple)
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('user.name')->label('User'),

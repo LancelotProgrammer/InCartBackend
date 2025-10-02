@@ -31,6 +31,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'email_verified_at',
         'phone_verified_at',
         'blocked_at',
+        'approved_at',
         'role_id',
         'city_id',
         'file_id',
@@ -44,6 +45,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
         'blocked_at' => 'datetime',
+        'approved_at' => 'datetime',
         'password' => 'hashed',
     ];
 
@@ -175,5 +177,44 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function isBlocked(): bool
     {
         return ! is_null($this->blocked_at);
+    }
+
+    protected function ensureHasApprovedAt(): void
+    {
+        if (! array_key_exists('approved_at', $this->attributes)) {
+            throw new InvalidArgumentException(sprintf(
+                "The model %s does not have a 'approved_at' attribute.",
+                static::class
+            ));
+        }
+    }
+
+    public function approve(): void
+    {
+        $this->ensureHasApprovedAt();
+        $this->approved_at = now();
+        $this->save();
+    }
+
+    public function unApprove(): void
+    {
+        $this->ensureHasApprovedAt();
+        $this->approved_at = null;
+        $this->save();
+    }
+
+    public function scopeApproved(Builder $query): void
+    {
+        $query->whereNotNull('approved_at');
+    }
+
+    public function scopeUnapproved(Builder $query): void
+    {
+        $query->whereNull('approved_at');
+    }
+
+    public function isApproved(): bool
+    {
+        return ! is_null($this->approved_at);
     }
 }

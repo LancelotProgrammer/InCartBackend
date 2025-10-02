@@ -47,14 +47,15 @@ class UsersTable
                             ->date(),
                     ]),
                     Stack::make([
-                        TextColumn::make('blocked_at')->icon(Heroicon::ExclamationCircle)->prefix('Blocked At: ')->date(),
+                        TextColumn::make('blocked_at')->icon(Heroicon::Star)->prefix('Blocked At: ')->date(),
+                        TextColumn::make('approved_at')->icon(Heroicon::ExclamationCircle)->prefix('Approved At: ')->date(),
                         TextColumn::make('city.name')->icon(Heroicon::OutlinedGlobeAlt),
                         TextColumn::make('role.title')->icon(Heroicon::UserGroup),
                     ]),
                 ]),
             ])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -64,8 +65,6 @@ class UsersTable
                 TernaryFilter::make('email_verified_at')->label('Email verified')
                     ->nullable(),
                 TernaryFilter::make('phone_verified_at')->label('Phone verified')
-                    ->nullable(),
-                TernaryFilter::make('blocked_at')->label('Phone verified')
                     ->nullable(),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
@@ -100,6 +99,35 @@ class UsersTable
                         Notification::make()
                             ->title('User is unblocked')
                             ->body('This user has been unblocked from the system.')
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('approve')
+                    ->authorize('approve')
+                    ->color('success')
+                    ->icon(Heroicon::CheckCircle)
+                    ->requiresConfirmation()
+                    ->visible(fn(User $record) => ! $record->isApproved())
+                    ->action(function (User $record) {
+                        $record->approve();
+                        Notification::make()
+                            ->title('User Approved')
+                            ->body('This user has been approved successfully.')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('un-approve')
+                    ->authorize('unapprove')
+                    ->color('danger')
+                    ->icon(Heroicon::ExclamationTriangle)
+                    ->requiresConfirmation()
+                    ->visible(fn(User $record) => $record->isApproved())
+                    ->action(function (User $record) {
+                        $record->unApprove();
+                        Notification::make()
+                            ->title('User Unapproved')
+                            ->body('This user has been unapproved successfully.')
                             ->success()
                             ->send();
                     }),

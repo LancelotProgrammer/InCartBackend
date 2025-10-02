@@ -27,6 +27,8 @@ class ListUsers extends ListRecords
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereNull('blocked_at')),
             'blocked' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereNotNull('blocked_at')),
+            'approved' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereNotNull('approved_at')),
         ];
     }
 }

@@ -19,7 +19,6 @@ class OrdersTable
     {
         return $table
             ->paginationMode(PaginationMode::Simple)
-            ->poll('30s')
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('branch.title')->toggleable(isToggledHiddenByDefault: true),
