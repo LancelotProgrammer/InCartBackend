@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
-use App\Models\Role;
 use App\Policies\RolePolicy;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -20,12 +19,14 @@ class UserForm
                 Section::make('Information')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('name'),
-                        TextInput::make('email'),
-                        TextInput::make('password')->password()->revealable()->dehydrateStateUsing(function ($state) {
-                            return Hash::make($state);
-                        }),
-                        TextInput::make('phone'),
+                        TextInput::make('name')->required(),
+                        TextInput::make('email')->email()->unique(ignoreRecord: true),
+                        TextInput::make('password')
+                            ->password()
+                            ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
+                            ->dehydrated(fn(?string $state): bool => filled($state))
+                            ->required(fn(string $operation): bool => $operation === 'create'),
+                        TextInput::make('phone')->tel()->unique(ignoreRecord: true),
                         Select::make('city_id')
                             ->relationship('city', 'name'),
                         Select::make('role_id')
@@ -33,7 +34,6 @@ class UserForm
                                 'role',
                                 'title',
                                 fn($query) => RolePolicy::filterOwnerAndDeveloper($query)
-                                
                             ),
                     ]),
             ]);

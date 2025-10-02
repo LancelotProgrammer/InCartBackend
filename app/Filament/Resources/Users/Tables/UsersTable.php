@@ -4,8 +4,6 @@ namespace App\Filament\Resources\Users\Tables;
 
 use App\Models\User;
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
@@ -71,13 +69,12 @@ class UsersTable
                     ->nullable(),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
-                ActionGroup::make([
-                    DeleteAction::make(),
-                    EditAction::make(),
-                    ViewAction::make(),
-                ]),
+                EditAction::make(),
+                ViewAction::make(),
                 Action::make('Block')
                     ->authorize('block')
+                    ->color('danger')
+                    ->icon(Heroicon::ExclamationTriangle)
                     ->requiresConfirmation()
                     ->visible(function (User $record) {
                         return ! $record->isBlocked();
@@ -92,6 +89,8 @@ class UsersTable
                     }),
                 Action::make('un-block')
                     ->authorize('unblock')
+                    ->color('success')
+                    ->icon(Heroicon::CheckCircle)
                     ->requiresConfirmation()
                     ->visible(function (User $record) {
                         return $record->isBlocked();

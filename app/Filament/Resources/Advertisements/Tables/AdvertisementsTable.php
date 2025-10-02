@@ -38,7 +38,6 @@ class AdvertisementsTable
             )
             ->filters([
                 BranchSelectFilter::configure(),
-                SelectFilter::make('type')->options(collect(AdvertisementType::cases())->pluck('name', 'value')->toArray()),
                 SelectFilter::make('link')->options(collect(AdvertisementLink::cases())->pluck('name', 'value')->toArray())
                     ->query(function (Builder $query, array $data) {
                         return match ((int) $data['value']) {
