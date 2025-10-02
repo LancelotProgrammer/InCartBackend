@@ -21,10 +21,9 @@ class CouponForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->columns(3)
+            ->columns(1)
             ->components([
                 Section::make('Information')
-                    ->columnSpan(1)
                     ->columns(2)
                     ->schema([
                         TranslationComponent::configure('title'),
@@ -59,7 +58,6 @@ class CouponForm
                         //     ->required(),
                     ]),
                 Section::make('Config')
-                    ->columnSpan(2)
                     ->columns(3)
                     ->schema(self::getCouponConfigForm()),
             ]);
