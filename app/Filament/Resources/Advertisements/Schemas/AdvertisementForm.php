@@ -28,7 +28,7 @@ class AdvertisementForm
                     ->columns(2)
                     ->schema([
                         TranslationComponent::configure('title'),
-                        TranslationComponent::configure('description'),
+                        TranslationComponent::configure('description', false),
                         Select::make('branch_id')->relationship('branch', 'title')->required(),
                         TextInput::make('order')->required()->numeric(),
                     ]),

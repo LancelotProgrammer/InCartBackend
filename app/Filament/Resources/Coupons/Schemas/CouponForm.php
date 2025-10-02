@@ -27,7 +27,7 @@ class CouponForm
                     ->columns(2)
                     ->schema([
                         TranslationComponent::configure('title'),
-                        TranslationComponent::configure('description'),
+                        TranslationComponent::configure('description', false),
                         TextInput::make('code')
                             ->belowContent(Schema::between([
                                 Action::make('generate')->action(function (Set $set) {

@@ -18,7 +18,7 @@ class PaymentMethodForm
                     ->columnSpanFull()
                     ->columns(2)
                     ->schema([
-                        TranslationComponent::configure('title')->required(),
+                        TranslationComponent::configure('title'),
                         TextInput::make('code')
                             ->required()
                             ->scopedUnique(modifyQueryUsing: function ($query, $get) {

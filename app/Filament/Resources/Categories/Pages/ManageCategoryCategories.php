@@ -32,8 +32,8 @@ class ManageCategoryCategories extends ManageRelatedRecords
     {
         return $schema
             ->components([
-                TranslationComponent::configure('title'),
-                TranslationComponent::configure('description'),
+                        TranslationComponent::configure('title'),
+                        TranslationComponent::configure('description', false),
                 FileUpload::make('files')
                     ->columnSpanFull()
                     ->directory('categories')

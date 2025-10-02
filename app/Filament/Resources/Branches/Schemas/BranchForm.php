@@ -18,7 +18,7 @@ class BranchForm
                     ->columns(2)
                     ->schema([
                         TranslationComponent::configure('title'),
-                        TranslationComponent::configure('description'),
+                        TranslationComponent::configure('description', false),
                         TextInput::make('latitude'),
                         TextInput::make('longitude'),
                     ]),

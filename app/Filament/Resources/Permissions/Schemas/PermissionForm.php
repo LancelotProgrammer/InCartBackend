@@ -17,7 +17,7 @@ class PermissionForm
                     ->columnSpanFull()
                     ->columns(1)
                     ->schema([
-                        TranslationComponent::configure('title')->required(),
+                        TranslationComponent::configure('title'),
                         TextInput::make('code')->required(),
                     ]),
             ]);

@@ -2,14 +2,15 @@
 
 namespace App\Filament\Components;
 
+use Closure;
 use Filament\Forms\Components\KeyValue;
 use Filament\Support\Enums\Operation;
 
 class TranslationComponent
 {
-    public static function configure(string $key): KeyValue
+    public static function configure(string $key, ?bool $isRequired = true): KeyValue
     {
-        return KeyValue::make($key)
+        $component = KeyValue::make($key)
             ->addable(false)
             ->deletable(false)
             ->editableKeys(false)
@@ -20,6 +21,19 @@ class TranslationComponent
                 if ($operation === Operation::Create->value) {
                     $component->state('{"en":"","ar":""}');
                 }
-            })->required();
+            })
+            ->required();
+
+        if ($isRequired) {
+            $component->rules([
+                fn(): Closure => function (string $attribute, $value, Closure $fail) {
+                    if (empty($data['en'] ?? '') || empty($data['ar'] ?? '')) {
+                        $fail('Both English and Arabic values are required.');
+                    }
+                },
+            ]);
+        }
+
+        return $component;
     }
 }

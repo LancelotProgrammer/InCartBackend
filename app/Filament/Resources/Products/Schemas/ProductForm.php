@@ -31,7 +31,7 @@ class ProductForm
                 $counter = 1;
                 if ($record !== null) {
                     foreach ($record->files as $file) {
-                        $entryArray[] = ImageEntry::make('advertisement.file.number.'.$counter)->label('file '.$counter)->state($file->url);
+                        $entryArray[] = ImageEntry::make('advertisement.file.number.' . $counter)->label('file ' . $counter)->state($file->url);
                         $counter++;
                     }
                 }
@@ -40,9 +40,8 @@ class ProductForm
                     Section::make('information')
                         ->columns(2)
                         ->schema([
-                            TranslationComponent::configure('title')
-                                ->required(),
-                            TranslationComponent::configure('description'),
+                            TranslationComponent::configure('title'),
+                            TranslationComponent::configure('description', false),
                             TextInput::make('brand'),
                             TextInput::make('sku'),
                             Select::make('unit')
@@ -52,13 +51,13 @@ class ProductForm
                                 ->multiple()
                                 ->relationship('categories', 'title')
                                 ->searchable()
-                                ->getSearchResultsUsing(fn (string $search): array => Category::query()
-                                    ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
+                                ->getSearchResultsUsing(fn(string $search): array => Category::query()
+                                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
                                     ->whereNotNull('parent_id')
                                     ->limit(50)
                                     ->pluck('title', 'id')
                                     ->all())
-                                ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->title)
+                                ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title)
                                 ->required(),
                         ]),
                     self::productConfigs(),
@@ -155,7 +154,7 @@ class ProductForm
                     if ($record === null) {
                         $items = [];
                         foreach (Branch::all() as $index => $branch) {
-                            $items['item'.($index + 1)] = [
+                            $items['item' . ($index + 1)] = [
                                 'branch_id' => $branch->id,
                             ];
                         }
