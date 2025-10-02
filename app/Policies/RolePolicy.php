@@ -26,7 +26,7 @@ class RolePolicy
 
     public function update(User $user, Role $role): bool
     {
-        if ($this->isSuperAdminOrDeveloper($role)) {
+        if ($this->isSuperAdminOrDeveloperOrCustomer($role)) {
             return false;
         }
 
@@ -35,20 +35,29 @@ class RolePolicy
 
     public function delete(User $user, Role $role): bool
     {
-        if ($this->isSuperAdminOrDeveloper($role)) {
+        if ($this->isSuperAdminOrDeveloperOrCustomer($role)) {
             return false;
         }
 
         return $user->hasPermission('delete-role');
     }
 
-    private function isSuperAdminOrDeveloper(Role $role): bool
+    private function isSuperAdminOrDeveloperOrCustomer(Role $role): bool
     {
-        return in_array($role->code, [Role::ROLE_SUPER_ADMIN_CODE, Role::ROLE_DEVELOPER_CODE]);
+        return in_array(
+            $role->code,
+            [
+                Role::ROLE_SUPER_ADMIN_CODE,
+                Role::ROLE_DEVELOPER_CODE,
+                Role::ROLE_CUSTOMER_CODE
+            ]
+        );
     }
 
     public static function filterOwnerAndDeveloper(Builder $query): Builder
     {
-        return $query->where('code', '!=', Role::ROLE_DEVELOPER_CODE)->where('code', '!=', Role::ROLE_SUPER_ADMIN_CODE);
+        return $query->where('code', '!=', Role::ROLE_DEVELOPER_CODE)
+            ->where('code', '!=', Role::ROLE_SUPER_ADMIN_CODE)
+            ->where('code', '!=', Role::ROLE_CUSTOMER_CODE);
     }
 }
