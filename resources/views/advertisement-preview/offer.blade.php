@@ -109,31 +109,40 @@
     use App\Models\BranchProduct;
 
     $product = Product::where('id', '=', $get('product_id'))->first();
-    if ($product !== null) {
+    $branchProduct = BranchProduct::where('product_id', '=', $get('product_id'))
+        ->where('branch_id', '=', $get('branch_id'))
+        ->first();
+
+    if ($product !== null && $branchProduct !== null) {
         $productImageUrl = $product->files->first()?->url;
-        $productTile = $product->title;
-    }
-
-    $branchProduct = BranchProduct::where('product_id', '=', $get('product_id'))->where('branch_id', '=', $get('branch_id'))->first();
-    if ($branchProduct !== null) {
+        $productTitle = $product->title;
         $price = $branchProduct->price;
-        $discountPrice = $branchProduct->price - $branchProduct->price * ($branchProduct->discount / 100);
+        $discount = $branchProduct->discount;
+        $hasDiscount = $discount > 0;
+        $discountPrice = $hasDiscount ? $price - ($price * ($discount / 100)) : $price;
     }
-
 @endphp
 
 @if ($product !== null && $branchProduct !== null)
     <div class="preview-container">
         <div class="offer-ad-preview">
-            <div class="discount-badge">% {{ $branchProduct->discount }} -</div>
+            @if($hasDiscount)
+                <div class="discount-badge">% {{ $discount }} -</div>
+            @endif
+
             <div class="image-container">
-                <img src="{{ $productImageUrl }}" alt="عرض خاص">
+                <img src="{{ $productImageUrl }}" alt="{{ $productTitle }}" class="center-image">
             </div>
+
             <div class="offer-footer">
                 <div class="add-button">+</div>
                 <div class="price-section">
-                    <div class="old-price">{{ $price }}</div>
-                    <div class="new-price">{{ number_format($discountPrice, 2) }}</div>
+                    @if($hasDiscount)
+                        <div class="old-price">{{ number_format($price, 2) }}</div>
+                        <div class="new-price">{{ number_format($discountPrice, 2) }}</div>
+                    @else
+                        <div class="new-price">{{ number_format($price, 2) }}</div>
+                    @endif
                 </div>
             </div>
         </div>
