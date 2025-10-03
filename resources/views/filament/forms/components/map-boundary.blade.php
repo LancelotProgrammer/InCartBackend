@@ -24,6 +24,8 @@
         width: 100%;
         background: #fff !important;
         color: #333 !important;
+        direction: ltr !important;
+        text-align: left !important;
     }
 
     .leaflet-control-pinsearch {
@@ -84,12 +86,135 @@
 
 <script>
     function initMap(el, data) {
+        // detect current locale from Laravel
+        const locale = '{{ App::getLocale() }}';
 
         // initialize map
-        data.map = L.map(el).setView([23.8859, 45.0792], 6);
+        data.map = L.map(el, {
+            zoomControl: false,
+        }).setView([23.8859, 45.0792], 6);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href=\'https://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors',
+            attribution: locale === 'ar'
+                ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> المساهمون'
+                : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(data.map);
+
+        // 🔹 Translate draw controls
+        if (locale === 'ar') {
+            L.drawLocal = {
+                draw: {
+                    toolbar: {
+                        actions: {
+                            title: "إلغاء الرسم",
+                            text: "إلغاء"
+                        },
+                        finish: {
+                            title: "إنهاء الرسم",
+                            text: "إنهاء"
+                        },
+                        undo: {
+                            title: "حذف آخر نقطة مرسومة",
+                            text: "تراجع"
+                        },
+                        buttons: {
+                            polyline: "ارسم خطًا",
+                            polygon: "ارسم مضلعًا",
+                            rectangle: "ارسم مستطيلاً",
+                            circle: "ارسم دائرة",
+                            marker: "ضع علامة",
+                            circlemarker: "ضع دائرة صغيرة"
+                        }
+                    },
+                    handlers: {
+                        circle: {
+                            tooltip: {
+                                start: "انقر واسحب لرسم دائرة."
+                            },
+                            radius: "نصف القطر"
+                        },
+                        circlemarker: {
+                            tooltip: {
+                                start: "انقر على الخريطة لوضع دائرة صغيرة."
+                            }
+                        },
+                        marker: {
+                            tooltip: {
+                                start: "انقر على الخريطة لوضع علامة."
+                            }
+                        },
+                        polygon: {
+                            tooltip: {
+                                start: "انقر لبدء رسم الشكل.",
+                                cont: "انقر للمتابعة في رسم الشكل.",
+                                end: "انقر على النقطة الأولى لإغلاق الشكل."
+                            }
+                        },
+                        polyline: {
+                            error: "<strong>خطأ:</strong> لا يمكن أن تتقاطع حواف الشكل!",
+                            tooltip: {
+                                start: "انقر لبدء رسم الخط.",
+                                cont: "انقر للمتابعة في رسم الخط.",
+                                end: "انقر على آخر نقطة لإنهاء الخط."
+                            }
+                        },
+                        rectangle: {
+                            tooltip: {
+                                start: "انقر واسحب لرسم مستطيل."
+                            }
+                        },
+                        simpleshape: {
+                            tooltip: {
+                                end: "حرر زر الفأرة لإنهاء الرسم."
+                            }
+                        }
+                    }
+                },
+                edit: {
+                    toolbar: {
+                        actions: {
+                            save: {
+                                title: "حفظ التغييرات",
+                                text: "حفظ"
+                            },
+                            cancel: {
+                                title: "إلغاء التعديلات والتراجع عن كل التغييرات",
+                                text: "إلغاء"
+                            },
+                            clearAll: {
+                                title: "مسح جميع الطبقات",
+                                text: "مسح الكل"
+                            }
+                        },
+                        buttons: {
+                            edit: "تعديل الطبقات",
+                            editDisabled: "لا توجد طبقات للتعديل",
+                            remove: "حذف الطبقات",
+                            removeDisabled: "لا توجد طبقات للحذف"
+                        }
+                    },
+                    handlers: {
+                        edit: {
+                            tooltip: {
+                                text: "اسحب المقابض أو العلامات لتعديل العناصر.",
+                                subtext: "انقر على إلغاء للتراجع عن التغييرات."
+                            }
+                        },
+                        remove: {
+                            tooltip: {
+                                text: "انقر على عنصر لإزالته."
+                            }
+                        }
+                    }
+                }
+            };
+
+            L.control.zoom({
+                zoomInTitle: 'تكبير الخريطة',
+                zoomOutTitle: 'تصغير الخريطة',
+            }).addTo(data.map);
+        } else {
+            L.control.zoom().addTo(data.map);
+        }
 
         // initialize draw plugin
         data.drawnItems = new L.FeatureGroup().addTo(data.map);
@@ -142,14 +267,15 @@
             { en: 'Al Bahah', ar: 'الباحة', lat: 20.015, lng: 41.467 }
         ];
         saudiCities.forEach(city => {
-            L.marker([city.lat, city.lng], { title: '{{ App::getLocale() }}' === 'ar' ? city.ar : city.en }).addTo(data.map);
+            L.marker([city.lat, city.lng], { title: locale === 'ar' ? city.ar : city.en }).addTo(data.map);
         });
+
         var searchBar = L.control.pinSearch({
             position: 'topright',
-            placeholder: 'Search...',
-            buttonText: 'Search',
+            placeholder: locale === 'ar' ? 'ابحث...' : 'Search...',
+            buttonText: locale === 'ar' ? 'بحث' : 'Search',
             onSearch: function (query) {
-                console.log('Search query:', query);
+                //
             },
             searchBarWidth: '200px',
             searchBarHeight: '30px',
