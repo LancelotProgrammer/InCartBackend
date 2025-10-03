@@ -49,7 +49,5 @@
         </div>
     </div>
 @else
-    <div class="missing-preview">
-        Cannot create preview because some information is missing.
-    </div>
+    <x-missing-preview message="Please upload an image to generate a preview" />
 @endif

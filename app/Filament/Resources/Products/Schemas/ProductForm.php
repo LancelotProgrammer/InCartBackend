@@ -113,12 +113,12 @@ class ProductForm
                     TextInput::make('minimum_order_quantity')
                         ->label('Min Order Qty')
                         ->required()
-                        ->integer()
+                        ->numeric()
                         ->rule('gt:0'),
                     TextInput::make('maximum_order_quantity')
                         ->label('Max Order Qty')
                         ->required()
-                        ->integer()
+                        ->numeric()
                         ->rule(function (Get $get) {
                             $minimumOrderQuantity = $get('minimum_order_quantity');
                             if ($minimumOrderQuantity === null || $minimumOrderQuantity < 1) {

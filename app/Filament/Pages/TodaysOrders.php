@@ -22,7 +22,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
-class TodaysOrders  extends Page implements HasActions, HasSchemas, HasTable
+class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
 {
     use InteractsWithActions;
     use InteractsWithSchemas;
@@ -89,9 +89,7 @@ class TodaysOrders  extends Page implements HasActions, HasSchemas, HasTable
     public static function getNavigationBadge(): ?string
     {
         return Cache::remember(CacheKeys::PENDING_ORDER_COUNT, now()->addDay(), function () {
-            return Order::whereDate('delivery_date', now()->toDateString())
-                ->where('order_status', '=', OrderStatus::PENDING->value)
-                ->count();
+            return Order::whereDate('delivery_date', now()->toDateString())->count();
         });
     }
 

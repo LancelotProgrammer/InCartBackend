@@ -1,17 +1,4 @@
 <style>
-    .missing-preview {
-        border: 1px solid #f5c6cb;
-        background-color: #f8d7da;
-        color: #721c24;
-        padding: 16px;
-        border-radius: 8px;
-        text-align: center;
-        font-weight: bold;
-        max-width: 400px;
-        margin: 20px auto;
-        font-family: Arial, sans-serif;
-    }
-
     .preview-container {
         direction: rtl;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -101,7 +88,5 @@
         </div>
     </div>
 @else
-    <div class="missing-preview">
-        Cannot create preview because some information is missing.
-    </div>
+    <x-missing-preview message="Please upload an image and fill the title and the description fields to generate a preview" />
 @endif

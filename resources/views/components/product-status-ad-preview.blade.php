@@ -1,5 +1,4 @@
 <style>
-
     .preview-container {
         direction: rtl;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -155,8 +154,12 @@
 
         <div class="status-footer">
             <div class="price-section">
-                <span class="discount-price">{{ $discountPrice }}</span>
-                <span class="original-price">{{ $price}}</span>
+                @if($hasDiscount)
+                    <div class="original-price">{{ number_format($price, 2) }}</div>
+                    <div class="discount-price">{{ number_format($discountPrice, 2) }}</div>
+                @else
+                    <div class="discount-price">{{ number_format($price, 2) }}</div>
+                @endif
             </div>
             <button class="add-button">+</button>
         </div>

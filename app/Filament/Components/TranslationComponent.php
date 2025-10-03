@@ -21,11 +21,12 @@ class TranslationComponent
                 if ($operation === Operation::Create->value) {
                     $component->state('{"en":"","ar":""}');
                 }
-            })
-            ->required();
+            });
 
         if ($isRequired) {
-            $component->rules([
+            $component
+            ->required()
+            ->rules([
                 fn(): Closure => function (string $attribute, $value, Closure $fail) {
                     if (empty($value[0]['value'] ?? '') || empty($value[1]['value'] ?? '')) {
                         $fail('Both English and Arabic values are required.');

@@ -12,7 +12,7 @@ class TestSeeder extends BaseSeeder
         $this->generateData(
             rootCategoryCount: 3,
             productCount: 20,
-            productCategoryCount: 10,
+            productCategoryCount: 2,
             branchAdvertisementCount: 5,
             userCount: 20,
             userAddressCount: 3,

@@ -1,18 +1,3 @@
-<style>
-    .missing-preview {
-        border: 1px solid #f5c6cb;
-        background-color: #f8d7da;
-        color: #721c24;
-        padding: 16px;
-        border-radius: 8px;
-        text-align: center;
-        font-weight: bold;
-        max-width: 400px;
-        margin: 20px auto;
-        font-family: Arial, sans-serif;
-    }
-</style>
-
 @php
     use App\Enums\AdvertisementLink;
     use App\Models\Category;
@@ -32,9 +17,13 @@
     }
 
     $branchProduct = BranchProduct::where('product_id', '=', $get('product_id'))->where('branch_id', '=', $get('branch_id'))->first();
-    if ($branchProduct !== null) {
+    if ($product !== null && $branchProduct !== null) {
+        $productImageUrl = $product->files->first()?->url;
+        $productTitle = $product->title;
         $price = $branchProduct->price;
-        $discountPrice = $branchProduct->price - $branchProduct->price * ($branchProduct->discount / 100);
+        $discount = $branchProduct->discount;
+        $hasDiscount = $discount > 0;
+        $discountPrice = $hasDiscount ? $price - ($price * ($discount / 100)) : $price;
     }
 
     $image = $get('file');
@@ -48,31 +37,23 @@
     @if ($product !== null && $branchProduct !== null && $category !== null && $image !== null)
         <x-product-status-ad-preview productImageUrl="{{ $productImageUrl }}" productTile="{{ $productTile }}"
             categoryTitle="{{ $categoryTitle }}" imageUrl="{{ $imageUrl }}" discountPrice="{{ $discountPrice }}"
-            price="{{ $price }}" />
+            price="{{ $price }}" hasDiscount="{{ $hasDiscount }}" />
     @else
-        <div class="missing-preview">
-            Cannot create preview because some information is missing.
-        </div>
+        <x-missing-preview message="Cannot create preview because some information is missing." />
     @endif
 @elseif ($get('link') === AdvertisementLink::CATEGORY->value)
     @if ($category !== null && $image !== null)
         <x-category-status-ad-preview categoryImageUrl="{{ $categoryImageUrl }}" categoryTitle="{{ $categoryTitle }} "
             imageUrl="{{ $imageUrl }}" />
     @else
-        <div class="missing-preview">
-            Cannot create preview because some information is missing.
-        </div>
+        <x-missing-preview message="Cannot create preview because some information is missing." />
     @endif
 @elseif ($get('link') === AdvertisementLink::EXTERNAL->value)
     @if ($image !== null)
         <x-external-status-ad-preview imageUrl="{{ $imageUrl }}" />
     @else
-        <div class="missing-preview">
-            Cannot create preview because some information is missing.
-        </div>
+        <x-missing-preview message="Cannot create preview because some information is missing." />
     @endif
 @else
-    <div class="missing-preview">
-        Cannot create preview. Link type is not selected.
-    </div>
+    <x-missing-preview message="Cannot create preview. Link type is not selected." />
 @endif
