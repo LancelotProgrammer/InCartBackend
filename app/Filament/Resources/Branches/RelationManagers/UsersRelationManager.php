@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Branches\RelationManagers;
 
 use App\Models\User;
 use Filament\Actions\Action;
+use Filament\Actions\DetachAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -73,6 +74,8 @@ class UsersRelationManager extends RelationManager
                             ->success()
                             ->send();
                     }),
+            ])->recordActions([
+                DetachAction::make()
             ]);
     }
 }
