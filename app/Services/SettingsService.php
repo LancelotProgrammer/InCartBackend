@@ -46,17 +46,28 @@ class SettingsService
             Section::make('Service')
                 ->description('Is system online or offline')
                 ->components([
-                    Checkbox::make('is_system_online'),
+                    Checkbox::make('is_system_online')->inline(false),
+                ]),
+            Section::make('Support')
+                ->description('Support and feedback allowed for user per day')
+                ->columns(2)
+                ->components([
+                    TextInput::make('allowed_ticket_count')->integer(),
+                    TextInput::make('allowed_feedback_count')->integer(),
                 ]),
             Section::make('Social Media Links')
+                ->columnSpanFull()
                 ->description('User who will receive system notifications')
-                ->columns(3)
+                ->columns(5)
                 ->components([
                     TextInput::make('whatsapp')->url(),
-                    TextInput::make('telegram')->url(),
+                    TextInput::make('tiktok')->url(),
                     TextInput::make('facebook')->url(),
+                    TextInput::make('twitter')->url(),
+                    TextInput::make('instagram')->url(),
                 ]),
             Section::make('Order Config')
+                ->columnSpanFull()
                 ->description('Is is system online')
                 ->columns(5)
                 ->components([
@@ -66,13 +77,6 @@ class SettingsService
                     TextInput::make('max_distance')->numeric(),
                     TextInput::make('price_per_kilometer')->numeric(),
                 ]),
-            Section::make('Support')
-                ->description('Support and feedback allowed for user per day')
-                ->columns(2)
-                ->components([
-                    TextInput::make('allowed_ticket_count')->integer(),
-                    TextInput::make('allowed_feedback_count')->integer(),
-                ]),
             Section::make('Legal')
                 ->description('Legal text')
                 ->columnSpanFull()
@@ -80,6 +84,9 @@ class SettingsService
                     RichEditor::make('privacy_policy'),
                     RichEditor::make('terms_of_services'),
                     RichEditor::make('faqs'),
+                    RichEditor::make('loyalty_policy'),
+                    RichEditor::make('about_us'),
+                    RichEditor::make('return_policy'),
                 ]),
         ];
     }
@@ -94,14 +101,24 @@ class SettingsService
         return self::getValue('whatsapp', false);
     }
 
-    public static function getTelegram(): ?string
+    public static function getTiktok(): ?string
     {
-        return self::getValue('telegram', false);
+        return self::getValue('tiktok', false);
     }
 
     public static function getFacebook(): ?string
     {
         return self::getValue('facebook', false);
+    }
+
+    public static function getTwitter(): ?string
+    {
+        return self::getValue('twitter', false);
+    }
+
+    public static function getInstagram(): ?string
+    {
+        return self::getValue('instagram', false);
     }
 
     public static function getServiceFee(): float
@@ -142,6 +159,21 @@ class SettingsService
     public static function getFaqs(): ?string
     {
         return self::getValue('faqs', false);
+    }
+
+    public static function getLoyaltyPolicy(): ?string
+    {
+        return self::getValue('loyalty_policy', false);
+    }
+
+    public static function getAboutUs(): ?string
+    {
+        return self::getValue('about_us', false);
+    }
+
+    public static function getReturnPolicy(): ?string
+    {
+        return self::getValue('return_policy', false);
     }
 
     public static function getAllowedTicketCount(): ?int

@@ -12,11 +12,16 @@ class GetSettings
     {
         return $next([
             'whatsapp' => SettingsService::getWhatsapp(),
-            'telegram' => SettingsService::getTelegram(),
+            'tiktok' => SettingsService::getTiktok(),
             'facebook' => SettingsService::getFacebook(),
+            'twitter' => SettingsService::getTwitter(),
+            'instagram' => SettingsService::getInstagram(),
             'privacy_policy' => SettingsService::getPrivacyPolicy(),
             'terms_of_services' => SettingsService::getTermsOfServices(),
             'faqs' => SettingsService::getFaqs(),
+            'loyalty_policy' => SettingsService::getLoyaltyPolicy(),
+            'about_us' => SettingsService::getAboutUs(),
+            'return_policy' => SettingsService::getReturnPolicy(),
         ]);
     }
 }
