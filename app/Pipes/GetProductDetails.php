@@ -2,6 +2,7 @@
 
 namespace App\Pipes;
 
+use App\Exceptions\LogicalException;
 use App\Models\Product;
 use App\Services\FavoriteService;
 use Closure;
@@ -18,8 +19,15 @@ class GetProductDetails
             'id' => 'required|integer|exists:products,id',
         ]);
 
-        $product = Product::where('id', '=', $request->route('id'))->first();
+        $product = Product::where('id', '=', $request->route('id'))
+            ->first();
         $branchProduct = $product->branchProducts->first();
+
+        if ($branchProduct->published_at === null)
+        {
+            throw new LogicalException('product is not active', 'You are trying to get a product which is not active for the selected branch');
+        }
+
         $images = $product->files()->get();
         $imagesResult = [];
         foreach ($images as $image) {
@@ -65,7 +73,7 @@ class GetProductDetails
             'discount' => $branchProduct->discount,
             'discount_price' => $branchProduct->discount_price,
             'expired_at' => $branchProduct->expires_at,
-            'is_favorite' => auth('sanctum')->user()->id !== null ? FavoriteService::isProductFavorite($product->id, auth('sanctum')->user()->id) : false,
+            'is_favorite' => auth('sanctum')->user()?->id !== null ? FavoriteService::isProductFavorite($product->id, auth('sanctum')->user()->id) : false,
             'related' => $relatedProducts,
         ]);
     }
