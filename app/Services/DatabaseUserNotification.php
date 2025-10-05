@@ -12,7 +12,7 @@ class DatabaseUserNotification
 {
     private const ORDER_DEEP_LINK = '/order-details';
 
-    private const TICKET_DEEP_LINK = '/ticket-details';
+    private const TICKET_DEEP_LINK = '/support';
 
     public static function sendOrderStatusNotification(Order $order): void
     {
