@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Enums\OtpType;
 use App\Exceptions\AuthenticationException;
 use App\Exceptions\SetupException;

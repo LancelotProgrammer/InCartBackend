@@ -52,7 +52,7 @@ class OrdersTable
                     ->authorize('viewInvoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
-                    ->url(fn (Order $record) => route('order.invoice', ['id' => $record->id]), true),
+                    ->url(fn (Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
                 OrderActions::configure(true),
             ])
             ->toolbarActions([

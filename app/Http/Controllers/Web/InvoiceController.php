@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
+use App\Http\Controllers\Controller;
 use App\Models\Order;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,11 +23,9 @@ class InvoiceController extends Controller
             abort(422);
         }
 
-        return Pdf::loadView(
-            'pdf.invoice',
-            [
-                'order' => Order::where('id', $request->id)->first(),
-            ]
-        )->stream();
+        $order = Order::where('id', $request->id)
+            ->first();
+
+        return InvoiceService::generateInvoice($order);
     }
 }

@@ -191,10 +191,6 @@ describe('Dashboard smoke test', function () {
             test('the Archive orders list page returns a successful response', function () {});
         });
 
-        describe('Archive order smoke test', function () {
-            test('the Archive orders list page returns a successful response', function () {});
-        });
-
         describe('Order smoke test', function () {
             test('the orders list page returns a successful response', function () {});
             test('the orders list tabs works', function () {});

@@ -1,20 +1,21 @@
 <?php
 
-use App\Http\Controllers\AdvertisementController;
-use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\BranchController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CityController;
-use App\Http\Controllers\FavoriteController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\PackageController;
-use App\Http\Controllers\PaymentMethodController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\TicketAndFeedbackController;
-use App\Http\Controllers\UserAddressController;
-use App\Http\Controllers\UserNotificationController;
+use App\Http\Controllers\Api\AdvertisementController;
+use App\Http\Controllers\Api\AuthenticationController;
+use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\PackageController;
+use App\Http\Controllers\Api\PaymentMethodController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\TicketAndFeedbackController;
+use App\Http\Controllers\Api\UserAddressController;
+use App\Http\Controllers\Api\UserNotificationController;
 use App\Http\Middleware\EnsureHeaderValidation;
 use App\Http\Middleware\IsServiceOnline;
 use App\Http\Middleware\SetCurrentBranch;
@@ -61,6 +62,7 @@ Route::middleware([
         Route::post('/order/{id}/cancel', [OrderController::class, 'cancelOrder'])->middleware(IsServiceOnline::class);
         Route::get('/order/{id}', [OrderController::class, 'getOrderDetails']);
         Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);
+        Route::get('/orders/{id}/invoice', InvoiceController::class)->name('api.order.invoice');
 
         Route::get('/users/notifications', [UserNotificationController::class, 'getUserNotifications']);
         Route::post('/users/notifications', [UserNotificationController::class, 'markUserNotificationAsRead']);

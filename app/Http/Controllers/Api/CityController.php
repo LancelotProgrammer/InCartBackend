@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\SuccessfulResponseResource;
-use App\Pipes\GetSettings;
+use App\Pipes\GetCities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Pipeline;
 
-class SettingController extends Controller
+class CityController extends Controller
 {
     /**
      * @unauthenticated
      *
-     * @group Setting Actions
+     * @group Cities Actions
      */
-    public function getSettings(Request $request): SuccessfulResponseResource
+    public function getCities(Request $request): SuccessfulResponseResource
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                GetSettings::class,
+                GetCities::class,
             ])
             ->thenReturn());
     }

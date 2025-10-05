@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\EmptySuccessfulResponseResource;
 use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\AddProductToFavorites;

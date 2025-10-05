@@ -1,26 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\SuccessfulResponseResource;
-use App\Pipes\GetHome;
+use App\Pipes\GetSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Pipeline;
 
-class HomeController extends Controller
+class SettingController extends Controller
 {
     /**
      * @unauthenticated
      *
-     * @header Authorization Bearer {YOUR_AUTH_KEY}
-     *
-     * @group Home Actions
+     * @group Setting Actions
      */
-    public function getHome(Request $request): SuccessfulResponseResource
+    public function getSettings(Request $request): SuccessfulResponseResource
     {
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
-                GetHome::class,
+                GetSettings::class,
             ])
             ->thenReturn());
     }
