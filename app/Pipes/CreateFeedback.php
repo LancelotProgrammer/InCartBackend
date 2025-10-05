@@ -2,6 +2,7 @@
 
 namespace App\Pipes;
 
+use App\Exceptions\LogicalException;
 use App\Models\Feedback;
 use App\Services\SettingsService;
 use Closure;
@@ -13,8 +14,9 @@ class CreateFeedback
     public function __invoke(Request $request, Closure $next): array
     {
         $key = 'feedback-submit:'.$request->user()->id;
-        if (RateLimiter::tooManyAttempts($key, SettingsService::getAllowedFeedbackCount())) {
-            return $next([]);
+        $maxAttempts = SettingsService::getAllowedTicketCount();
+        if (RateLimiter::tooManyAttempts($key,$maxAttempts)) {
+            throw new LogicalException("Limit reached", "The user has submitted more than $maxAttempts feedback");
         }
         RateLimiter::hit($key, 86400);
 
