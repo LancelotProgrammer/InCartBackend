@@ -29,7 +29,7 @@ class DatabaseUserNotification
             'title' => $title,
             'body' => $body,
             'type' => UserNotificationType::GENERAL->value,
-            'deep_link' => self::ORDER_DEEP_LINK."/$order->id",
+            'config' => ['route' => self::ORDER_DEEP_LINK."/$order->id"],
             'mark_as_read' => false,
         ]);
     }
@@ -41,7 +41,7 @@ class DatabaseUserNotification
             'title' => 'We’ve replied to your support request',
             'body' => $reply,
             'type' => UserNotificationType::GENERAL->value,
-            'deep_link' => self::TICKET_DEEP_LINK."/$ticket->id",
+            'config' => ['route' => self::TICKET_DEEP_LINK."/$ticket->id"],
             'mark_as_read' => false,
         ]);
     }

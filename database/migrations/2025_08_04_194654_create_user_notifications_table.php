@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('body');
             $table->integer('type');
-            $table->string('deep_link')->nullable();
+            $table->json('config')->nullable();
             $table->string('mark_as_read');
             $table->timestamps();
 

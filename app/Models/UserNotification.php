@@ -11,10 +11,11 @@ class UserNotification extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'body', 'type', 'deep_link', 'mark_as_read', 'user_id', 'file_id'];
+    protected $fillable = ['title', 'body', 'type', 'config', 'mark_as_read', 'user_id', 'file_id'];
 
     protected $casts = [
         'type' => UserNotificationType::class,
+        'config' => 'array'
     ];
 
     public function user(): BelongsTo
