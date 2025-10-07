@@ -34,11 +34,11 @@ class PaymentMethodPolicy
 
     public function publish(User $user, PaymentMethod $paymentMethod): bool
     {
-        return $user->hasPermission('publish-payment-method');
+        return $user->hasPermission('publish-payment-method') && $user->canManageDeveloperSettings();
     }
 
     public function unpublish(User $user, PaymentMethod $paymentMethod): bool
     {
-        return $user->hasPermission('unpublish-payment-method');
+        return $user->hasPermission('unpublish-payment-method') && $user->canManageDeveloperSettings();
     }
 }

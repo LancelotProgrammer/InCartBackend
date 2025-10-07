@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\Categories\Pages;
 
+use App\Filament\Actions\CategoriesActions;
 use App\Filament\Actions\PublishActions;
 use App\Filament\Components\TranslationComponent;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Services\HandleUploadedFiles;
 use App\Models\Category;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -32,8 +34,8 @@ class ManageCategoryCategories extends ManageRelatedRecords
     {
         return $schema
             ->components([
-                        TranslationComponent::configure('title'),
-                        TranslationComponent::configure('description', false),
+                TranslationComponent::configure('title'),
+                TranslationComponent::configure('description', false),
                 FileUpload::make('files')
                     ->columnSpanFull()
                     ->directory('categories')
@@ -50,18 +52,11 @@ class ManageCategoryCategories extends ManageRelatedRecords
             ]);
     }
 
-    public function infolist(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                //
-            ]);
-    }
-
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('title')
+            ->defaultPaginationPageOption(25)
             ->headerActions([
                 CreateAction::make()
                     ->visible(function () {
@@ -84,20 +79,24 @@ class ManageCategoryCategories extends ManageRelatedRecords
                     }),
             ])
             ->recordActions([
+                CategoriesActions::configureViewProductsAction()->iconButton(),
+                CategoriesActions::configureViewCategoriesAction()->iconButton(),
+                Action::make('go')->url(fn(Category $record) => CategoryResource::getUrl('edit', ['record' => $record->id])),
                 ...PublishActions::configure(),
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')
-                        ->label('Image')
-                        ->state(fn($record) => $record->files->first()->url ?? null),
+                    ImageColumn::make('url')->label('Image')->state(fn($record) => $record->files->first()->url ?? null)->imageSize(200),
                     TextColumn::make('title')->searchable(),
                     TextColumn::make('published_at')->dateTime(),
                 ]),
             ])
             ->contentGrid([
+                'sm' => 1,
                 'md' => 2,
-                'xl' => 4,
+                'lg' => 2,
+                'xl' => 3,
+                '2xl' => 5,
             ]);
     }
 }

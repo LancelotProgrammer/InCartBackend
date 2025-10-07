@@ -14,7 +14,7 @@ class PermissionsTable
         return $table
             ->columns([
                 TextColumn::make('id'),
-                TextColumn::make('title'),
+                TextColumn::make('title')->searchable(),
             ])
             ->filters([
                 //

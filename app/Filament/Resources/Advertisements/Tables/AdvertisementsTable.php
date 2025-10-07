@@ -6,6 +6,7 @@ use App\Enums\AdvertisementLink;
 use App\Filament\Actions\PublishActions;
 use App\Filament\Filters\BranchSelectFilter;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -49,6 +50,7 @@ class AdvertisementsTable
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 ViewAction::make(),
+                DeleteAction::make(),
                 ...PublishActions::configure(),
             ])
             ->toolbarActions([

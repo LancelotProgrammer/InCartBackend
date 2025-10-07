@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
+use App\Filament\Actions\CategoriesActions;
 use App\Filament\Actions\PublishActions;
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Models\Category;
 use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
@@ -22,7 +24,7 @@ class CategoriesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->paginationPageOptions([100])
+            ->paginationPageOptions([50])
             ->filtersTriggerAction(
                 fn (Action $action) => $action
                     ->button()
@@ -37,16 +39,17 @@ class CategoriesTable
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')
-                        ->label('Image')
-                        ->state(fn ($record) => $record->files->first()->url ?? null),
+                    ImageColumn::make('url')->label('Image')->state(fn ($record) => $record->files->first()->url ?? null)->imageSize(200),
                     TextColumn::make('title')->searchable(),
                     TextColumn::make('published_at')->dateTime(),
                 ]),
             ])
             ->contentGrid([
+                'sm' => 1,
                 'md' => 2,
-                'xl' => 4,
+                'lg' => 2,
+                'xl' => 3,
+                '2xl' => 5,
             ])
             ->filters([
                 Filter::make('category_name')
@@ -68,25 +71,10 @@ class CategoriesTable
                     }),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
-                Action::make('products')
-                    ->authorize('viewProducts')
-                    ->visible(fn (Category $record) => $record->parent_id !== null)
-                    ->icon(Heroicon::Cube)
-                    ->iconButton()
-                    ->url(fn (Category $record) => CategoryResource::getUrl('products', ['record' => $record->id])),
-                Action::make('categories')
-                    ->authorize('viewCategories')
-                    ->icon(Heroicon::NumberedList)
-                    ->iconButton()
-                    ->visible(function ($record) {
-                        if (Category::where('id', '=', $record->id)->first()->depth === 3) {
-                            return false;
-                        } else {
-                            return true;
-                        }
-                    })
-                    ->url(fn (Category $record) => CategoryResource::getUrl('categories', ['record' => $record->id])),
+                CategoriesActions::configureViewProductsAction()->iconButton(),
+                CategoriesActions::configureViewCategoriesAction()->iconButton(),
                 ...PublishActions::configure(),
+                EditAction::make(),
             ])
             ->toolbarActions([
                 //

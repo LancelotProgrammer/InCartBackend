@@ -22,17 +22,23 @@ class CategoryForm
                         TranslationComponent::configure('title'),
                         TranslationComponent::configure('description'),
                         Select::make('parent_id')
+                            ->disabled(function ($operation) {
+                                return $operation === 'edit';
+                            })
                             ->searchable()
-                            ->getSearchResultsUsing(fn (string $search): array => Category::query()
-                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
+                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
+                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
                                 ->limit(50)
                                 ->get()
-                                ->filter(fn ($category) => $category->depth < 3)
+                                ->filter(fn($category) => $category->depth < 3)
                                 ->pluck('title', 'id')
                                 ->all())
-                            ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->title)
+                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title)
                             ->columnSpanFull(),
                         FileUpload::make('files')
+                            ->visible(function ($operation) {
+                                return $operation === 'create';
+                            })
                             ->columnSpanFull()
                             ->directory('categories')
                             ->minSize(1)

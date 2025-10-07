@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Coupons\Tables;
 use App\Filament\Actions\PublishActions;
 use App\Filament\Filters\BranchSelectFilter;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Columns\TextColumn;
@@ -62,6 +63,7 @@ class CouponsTable
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 ViewAction::make(),
+                DeleteAction::make(),
                 ...PublishActions::configure(),
                 Action::make('show_code')
                     ->authorize('showCode')

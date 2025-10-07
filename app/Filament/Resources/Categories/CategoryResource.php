@@ -2,9 +2,12 @@
 
 namespace App\Filament\Resources\Categories;
 
+use App\Filament\Resources\Categories\Pages\CreateCategory;
+use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Filament\Resources\Categories\Pages\ListCategories;
 use App\Filament\Resources\Categories\Pages\ManageCategoryCategories;
 use App\Filament\Resources\Categories\Pages\ManageCategoryProducts;
+use App\Filament\Resources\Categories\RelationManagers\FilesRelationManager;
 use App\Filament\Resources\Categories\Schemas\CategoryForm;
 use App\Filament\Resources\Categories\Tables\CategoriesTable;
 use App\Models\Category;
@@ -43,7 +46,7 @@ class CategoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            FilesRelationManager::class
         ];
     }
 
@@ -51,6 +54,8 @@ class CategoryResource extends Resource
     {
         return [
             'index' => ListCategories::route('/'),
+            'create' => CreateCategory::route('/create'),
+            'edit' => EditCategory::route('/{record}/edit'),
             'products' => ManageCategoryProducts::route('/{record}/products'),
             'categories' => ManageCategoryCategories::route('/{record}/categories'),
         ];

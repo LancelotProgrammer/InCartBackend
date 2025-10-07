@@ -43,18 +43,20 @@ class ManageCategoryProducts extends ManageRelatedRecords
     {
         return $table
             ->recordTitleAttribute('title')
+            ->defaultPaginationPageOption(25)
             ->contentGrid([
+                'sm' => 1,
                 'md' => 2,
-                'xl' => 5,
+                'lg' => 2,
+                'xl' => 3,
+                '2xl' => 5,
             ])
             ->recordActions([
-                Action::make('go')->url(fn (Product $record) => ProductResource::getUrl('edit', ['record' => $record->id])),
+                Action::make('go')->url(fn(Product $record) => ProductResource::getUrl('edit', ['record' => $record->id])),
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')->label('Image')->state(function ($record) {
-                        return $record->files->first()->url;
-                    }),
+                    ImageColumn::make('url')->label('Image')->state(fn($record) => $record->files->first()->url ?? null)->imageSize(200),
                     TextColumn::make('title')->searchable(),
                     TextColumn::make('unit')->badge(),
                     TextColumn::make('brand'),

@@ -67,3 +67,10 @@ docs:
     - role permissions are handled by trait called CanManagePermissions
 - settings 
     - SettingsService is responsible to define the getter of each setting, the form component of each setting, the cast of each setting and to cache them all
+- CRUD policy
+    - coupons and advertisements can not be edited. They can be deleted, published and unpublished
+    - cities can be deleted if there are no users connected to it. but they can be edited
+    - roles can be deleted if there are no users connected to it. but they can be edited 
+    - feedback and tickets can be deleted and processed
+    - orders can not be deleted but they can be archived
+    - categories and products can be deleted, edited, published and unpublished

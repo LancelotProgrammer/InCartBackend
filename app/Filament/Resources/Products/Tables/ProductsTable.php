@@ -14,15 +14,17 @@ class ProductsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultPaginationPageOption(25)
             ->contentGrid([
+                'sm' => 1,
                 'md' => 2,
-                'xl' => 5,
+                'lg' => 2,
+                'xl' => 3,
+                '2xl' => 5,
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')->label('Image')->state(function ($record) {
-                        return $record->files->first()->url;
-                    }),
+                    ImageColumn::make('url')->label('Image')->state(fn($record) => $record->files->first()->url ?? null)->imageSize(200),
                     TextColumn::make('title')->searchable(),
                     TextColumn::make('unit')->badge(),
                     TextColumn::make('brand'),

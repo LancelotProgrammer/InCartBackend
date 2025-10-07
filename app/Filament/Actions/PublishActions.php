@@ -4,6 +4,7 @@ namespace App\Filament\Actions;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 
 class PublishActions
 {
@@ -12,6 +13,9 @@ class PublishActions
         return [
             Action::make('publish')
                 ->authorize('publish')
+                ->label('activate')
+                ->color('success')
+                ->icon(Heroicon::Bolt)
                 ->action(function ($record) {
                     $record->publish();
                     Notification::make()
@@ -26,6 +30,9 @@ class PublishActions
                 }),
             Action::make('unpublish')
                 ->authorize('unpublish')
+                ->label('deactivate')
+                ->color('warning')
+                ->icon(Heroicon::BoltSlash)
                 ->action(function ($record) {
                     $record->unpublish();
                     Notification::make()

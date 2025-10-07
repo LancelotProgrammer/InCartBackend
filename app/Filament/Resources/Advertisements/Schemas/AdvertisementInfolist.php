@@ -62,11 +62,11 @@ class AdvertisementInfolist
                         ]),
                     Fieldset::make('Advertisement Links')
                         ->columnSpanFull()
-                        ->columns(4)
+                        ->columns(3)
                         ->schema($typeArray),
                     Fieldset::make('Advertisement Files')
                         ->columnSpanFull()
-                        ->columns(4)
+                        ->columns(3)
                         ->schema($fileArray),
                 ];
             });
