@@ -44,6 +44,7 @@ return new class extends Migration
             $table->json('payment_method');
             $table->json('user_address');
             $table->json('cart');
+            $table->json('audit');
         });
     }
 

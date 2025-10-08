@@ -24,7 +24,7 @@ return new class extends Migration
             $table->unsignedBigInteger('file_id')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('file_id')->references('id')->on('files')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('file_id')->references('id')->on('files')->onUpdate('cascade')->onDelete('restrict');
         });
     }
 

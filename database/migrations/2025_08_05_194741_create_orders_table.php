@@ -35,21 +35,21 @@ return new class extends Migration
             $table->string('payment_token')->nullable();
             $table->timestamps();
 
-            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('customer_id')->nullable();
             $table->unsignedBigInteger('delivery_id')->nullable();
             $table->unsignedBigInteger('manager_id')->nullable();
             $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('coupon_id')->nullable();
             $table->unsignedBigInteger('payment_method_id');
-            $table->unsignedBigInteger('user_address_id');
+            $table->unsignedBigInteger('user_address_id')->nullable();
 
-            $table->foreign('customer_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('delivery_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('manager_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('customer_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
+            $table->foreign('delivery_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
+            $table->foreign('manager_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('coupon_id')->references('id')->on('coupons')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('payment_method_id')->references('id')->on('payment_methods')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('user_address_id')->references('id')->on('user_addresses')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('user_address_id')->references('id')->on('user_addresses')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

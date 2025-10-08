@@ -52,6 +52,11 @@ class Branch extends Model
         return $this->hasMany(Coupon::class);
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function paymentMethods(): HasMany
     {
         return $this->hasMany(PaymentMethod::class);

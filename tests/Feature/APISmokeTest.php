@@ -147,7 +147,7 @@ describe('API smoke test', function () {
             'title' => 'Test Notification',
             'body' => 'This is a test notification',
             'type' => 1,
-            'config' => ['route' => 'deep_link_test'],
+            'config' => json_encode(['route' => 'deep_link_test']),
             'mark_as_read' => false,
             'user_id' => $this->phoneUser->id,
             'created_at' => now(),

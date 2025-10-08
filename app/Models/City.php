@@ -22,6 +22,11 @@ class City extends Model
 
     public array $translatable = ['name'];
 
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
     public function userAddresses(): HasMany
     {
         return $this->hasMany(UserAddress::class);

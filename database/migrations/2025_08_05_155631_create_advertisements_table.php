@@ -26,8 +26,8 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id')->nullable();
 
             $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

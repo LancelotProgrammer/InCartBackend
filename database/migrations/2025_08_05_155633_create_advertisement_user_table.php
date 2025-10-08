@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('advertisement_id');
             $table->unsignedBigInteger('user_id');
 
-            $table->foreign('advertisement_id')->references('id')->on('advertisements')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('advertisement_id')->references('id')->on('advertisements')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->unique(['advertisement_id', 'user_id']);
         });
     }

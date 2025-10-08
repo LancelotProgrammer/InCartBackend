@@ -18,8 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('category_id');
 
-            $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('restrict');
-            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->unique(['product_id', 'category_id']);
         });
     }
