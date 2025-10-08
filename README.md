@@ -1,15 +1,15 @@
 docs:
 
 - home page is cached based on {key, localization and branch_id}. The cache will be cleared when advertisement / product / branches product is created or updated or deleted
-- manager role will receive the order notification by default
-- api content is filtered based on branch and published_at
+- role with {can-receive-order-notifications} permission will receive the order notification by default
+- there is two global scopes for the api content {branch scope and published_at scope}
 - DB builder is used in {home service + cache service + session service + filament widgets + transactions + insert order archive}
 - optional authentication is used in {set the default branch + favorite product}
 - default branch is set in {SetCurrentBranch middleware} and effect {BranchScope + AppServiceProvider -> configureBuilder}
 - advertisements / coupons / branches products / payment are scoped based on the branch id
 - advertisement model has a getter propriety called link: which means the advertisement can be connected to {product and category, category, external link}
 - categories are build like a tree and they follow these rules:
-    - a category can only connect to a parent category
+    - a category can not edit it's parent id
     - category hierarchy depth cannot exceed 3 levels.
     - a product can not connect to root categories
 - city model has a boundary field, it saves five points each point has three keys: {name, latitude, longitude} these point represent a rectangular shape. they are saved as json string. The points are:
@@ -69,10 +69,3 @@ docs:
     - role permissions are handled by trait called CanManagePermissions
 - settings 
     - SettingsService is responsible to define the getter of each setting, the form component of each setting, the cast of each setting and to cache them all
-- CRUD policy
-    - coupons and advertisements can not be edited. They can be deleted, published and unpublished
-    - cities can be deleted if there are no users connected to it. but they can be edited
-    - roles can be deleted if there are no users connected to it. but they can be edited 
-    - feedback and tickets can be deleted and processed
-    - orders can not be deleted but they can be archived
-    - categories and products can be deleted, edited, published and unpublished
