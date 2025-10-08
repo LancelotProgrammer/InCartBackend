@@ -22,7 +22,7 @@ class UserNotificationFactory extends Factory
             'title' => $this->faker->sentence(3),
             'body' => $this->faker->paragraph(),
             'type' => $this->faker->randomElement(UserNotificationType::cases())->value,
-            'deep_link' => $this->faker->url(),
+            'config' => ['route' => 'deep_link_test'],
             'mark_as_read' => $this->faker->boolean() ? 'yes' : 'no',
             'file_id' => File::factory(),
         ];
