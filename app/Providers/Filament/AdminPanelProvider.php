@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->spa()
+            ->unsavedChangesAlerts()
             ->databaseNotifications()
             ->databaseNotificationsPolling(null)
             ->maxContentWidth(Width::Full)
