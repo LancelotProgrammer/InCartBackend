@@ -182,6 +182,10 @@ class HomeService
 
         $category = DB::table('categories')->publishedScope()->where('id', '=', $advertisement->category_id)->first();
 
+        if (! $category) {
+            return [];
+        }
+
         $categoryImage = DB::table('category_file')
             ->join('files', 'category_file.id', '=', 'files.id')
             ->where('category_file.id', '=', $category->id)
