@@ -55,9 +55,9 @@ class SettingsService
                     TextInput::make('allowed_ticket_count')->integer(),
                     TextInput::make('allowed_feedback_count')->integer(),
                 ]),
-            Section::make('Social Media Links')
+            Section::make('Social')
                 ->columnSpanFull()
-                ->description('User who will receive system notifications')
+                ->description('Social media links')
                 ->columns(5)
                 ->components([
                     TextInput::make('whatsapp')->url(),
@@ -68,7 +68,7 @@ class SettingsService
                 ]),
             Section::make('Order Config')
                 ->columnSpanFull()
-                ->description('Is is system online')
+                ->description('General order configs for the system')
                 ->columns(5)
                 ->components([
                     TextInput::make('service_fee')->numeric(),
