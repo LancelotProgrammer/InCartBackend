@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Branches\Tables;
 use App\Filament\Actions\PublishActions;
 use App\Models\Branch;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
@@ -36,6 +35,7 @@ class BranchesTable
                 EditAction::make(),
                 Action::make('mark_as_default')
                     ->authorize('markAsDefault')
+                    ->requiresConfirmation()
                     ->visible(fn (Branch $row) => $row->is_default === false)
                     ->action(function (Branch $row) {
                         $alreadyExists = $row->newQuery()
@@ -61,14 +61,17 @@ class BranchesTable
                     }),
                 Action::make('unmark_as_default')
                     ->authorize('unmarkAsDefault')
+                    ->requiresConfirmation()
                     ->visible(fn (Branch $row) => $row->is_default === true)
                     ->action(function (Branch $row) {
                         $row->unmarkAsDefault();
+                        $cityName = $row->city->name;
                         Notification::make()
-                            ->title('Marked as not default')
-                            ->body('This record is no longer the default for its city.')
-                            ->success()
+                            ->title('Unmarked as default')
+                            ->body("{$cityName} currently has no default branch assigned.")
+                            ->warning()
                             ->send();
+                        return;
                     }),
                 ...PublishActions::configure(),
             ])
