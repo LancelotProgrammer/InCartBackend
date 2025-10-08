@@ -37,22 +37,24 @@ docs:
     - payment methods can be created and published per branch | unpublished is denied for pay-on-delivery payment method
     - coupons can be created and published per branch | unpublished is ok
     - advertisement can be created and published per branch | unpublished is ok
+    - for advertisement which are connected to unpublished will not be appear in the api
     - categories can be created and published per branch | unpublished will not be cascaded to products
+    - branches products can be published | unpublished is ok
     - branches can be published only if:
         1- at least one delivery user attached
         2- at least one user to receive notification order
         3- pay-on-delivery payment method is published
         - unpublished will be cascaded to products
-    - branches products can be published only if: they have their config set | unpublished is ok
-    - any publishable model will not be appear in the api if its not published
-    - for advertisement which are connected to unpublished will not be appear in the api
     - effected api:
+        - GetPaymentMethods
+        - GetCategories
+        - GetBranches
+        - GetHome
         - GetFavoriteProducts
         - GetOrderDetails
         - GetPackageProducts
         - GetProductDetails
         - GetProducts
-        - GetHome
 - notification
     - notification send to users
         - when order status change the system send in-app (mobile) / firebase (mobile) notification
