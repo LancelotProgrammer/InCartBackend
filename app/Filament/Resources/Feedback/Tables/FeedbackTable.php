@@ -21,7 +21,6 @@ class FeedbackTable
     public static function configure(Table $table): Table
     {
         return $table
-            // TODO: handle scope
             ->paginationMode(PaginationMode::Simple)
             ->defaultSort('id', 'desc')
             ->columns([

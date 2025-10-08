@@ -44,8 +44,6 @@ class OrderArchiveResource extends Resource
                 TextEntry::make('delivery_date')->dateTime(),
                 TextEntry::make('created_at')->dateTime(),
                 TextEntry::make('updated_at')->dateTime(),
-
-                // TODO: add related models
             ]);
     }
 
