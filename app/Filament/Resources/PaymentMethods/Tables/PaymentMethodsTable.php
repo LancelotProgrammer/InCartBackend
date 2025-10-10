@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PaymentMethods\Tables;
 
 use App\Filament\Actions\PublishActions;
+use App\Models\PaymentMethod;
 use App\Traits\HandleDeleteDependencies;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -27,7 +28,7 @@ class PaymentMethodsTable
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()->using(fn ($record, $action) => (new static)->deleteWithDependencyCheck()($record, $action)),
-                ...PublishActions::configure(),
+                ...PublishActions::configure(PaymentMethod::class),
             ])
             ->toolbarActions([
                 //

@@ -61,4 +61,18 @@ class Branch extends Model
     {
         return $this->hasMany(PaymentMethod::class);
     }
+
+    public function deliveryUsers(): BelongsToMany
+    {
+        return $this->users()->whereHas('role', function ($query) {
+            $query->where('roles.code', Role::ROLE_DELIVERY_CODE);
+        });
+    }
+
+    public function notificationUsers(): BelongsToMany
+    {
+        return $this->users()->whereHas('role.permissions', function ($query) {
+            $query->where('permissions.code', 'can-receive-order-notifications');
+        });
+    }
 }

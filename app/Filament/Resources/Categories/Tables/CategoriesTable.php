@@ -73,7 +73,7 @@ class CategoriesTable
             ->recordActions([
                 CategoriesActions::configureViewProductsAction()->iconButton(),
                 CategoriesActions::configureViewCategoriesAction()->iconButton(),
-                ...PublishActions::configure(),
+                ...PublishActions::configure(Category::class),
                 EditAction::make(),
             ])
             ->toolbarActions([

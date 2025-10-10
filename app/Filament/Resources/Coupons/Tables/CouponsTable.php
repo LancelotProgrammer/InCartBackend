@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Coupons\Tables;
 
 use App\Filament\Actions\PublishActions;
 use App\Filament\Filters\BranchSelectFilter;
+use App\Models\Coupon;
 use App\Traits\HandleDeleteDependencies;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -67,7 +68,7 @@ class CouponsTable
             ->recordActions([
                 ViewAction::make(),
                 DeleteAction::make()->using(fn ($record, $action) => (new static)->deleteWithDependencyCheck()($record, $action)),
-                ...PublishActions::configure(),
+                ...PublishActions::configure(Coupon::class),
                 Action::make('show_code')
                     ->authorize('showCode')
                     ->schema([

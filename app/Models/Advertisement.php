@@ -69,6 +69,57 @@ class Advertisement extends Model
         return self::getLink($this);
     }
 
+    public function getCanBePublishedAttribute(): bool
+    {
+        $condition1 = $this->category !== null ? $this->category->published_at !== null : true;
+        $condition2 = $this->product !== null ? $this->product->branchProducts()->where('branch_id', '=', $this->branch_id)->whereNotNull('published_at')->exists() : true;
+
+        return $condition1 && $condition2;
+    }
+
+    public function getCanNotBePublishedReasonAttribute(): string
+    {
+        if ($this->can_be_published) {
+            return trans('This advertisement can be published.');
+        }
+
+        $reasons = [];
+
+        if ($this->category === null) {
+            $reasons[] = trans('This advertisement has no category assigned.');
+        } elseif ($this->category->published_at === null) {
+            $reasons[] = trans('The category ":name" is not published.', [
+                'name' => $this->category->getTranslation('title', app()->getLocale()) ?? trans('(Unnamed Category)'),
+            ]);
+        }
+
+        if ($this->product === null) {
+            $reasons[] = trans('This advertisement has no product assigned.');
+        } else {
+            $isProductPublishedInBranch = $this->product
+                ->branchProducts()
+                ->where('branch_id', $this->branch_id)
+                ->whereNotNull('published_at')
+                ->exists();
+
+            if (! $isProductPublishedInBranch) {
+                $reasons[] = trans('The product ":name" is not published in this branch.', [
+                    'name' => $this->product->getTranslation('title', app()->getLocale()) ?? trans('(Unnamed Product)'),
+                ]);
+            }
+        }
+
+        if (empty($reasons)) {
+            return trans('This advertisement cannot be published due to unknown reasons.');
+        }
+
+        return implode("\n• ", array_merge(
+            [trans('This advertisement cannot be published because:')],
+            $reasons
+        ));
+    }
+
+
     public static function getLinkValue(stdClass $advertisement): mixed
     {
         return self::getLink($advertisement);

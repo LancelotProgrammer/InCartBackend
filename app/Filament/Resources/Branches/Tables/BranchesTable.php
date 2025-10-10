@@ -73,7 +73,7 @@ class BranchesTable
                             ->send();
                         return;
                     }),
-                ...PublishActions::configure(),
+                ...PublishActions::configure(Branch::class),
             ])
             ->toolbarActions([
                 //

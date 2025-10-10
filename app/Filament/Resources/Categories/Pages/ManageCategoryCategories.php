@@ -82,7 +82,7 @@ class ManageCategoryCategories extends ManageRelatedRecords
                 CategoriesActions::configureViewProductsAction()->iconButton(),
                 CategoriesActions::configureViewCategoriesAction()->iconButton(),
                 Action::make('go')->url(fn(Category $record) => CategoryResource::getUrl('edit', ['record' => $record->id])),
-                ...PublishActions::configure(),
+                ...PublishActions::configure(Category::class),
             ])
             ->columns([
                 Stack::make([
