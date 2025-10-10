@@ -17,6 +17,10 @@ use OwenIt\Auditing\Models\Audit;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public $singletons = [
+        \Filament\Auth\Http\Responses\Contracts\LoginResponse::class => \App\Http\Responses\LoginResponse::class,
+    ];
+
     /**
      * Register any application services.
      */
