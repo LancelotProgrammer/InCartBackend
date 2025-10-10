@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Categories\Pages;
 
 use App\Filament\Resources\Categories\CategoryResource;
-use App\Filament\Services\HandleUploadedFiles;
+use App\Services\HandleUploadedFiles;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 

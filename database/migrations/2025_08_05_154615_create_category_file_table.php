@@ -17,6 +17,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('file_id');
+            $table->integer('order')->default(1);
 
             $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('file_id')->references('id')->on('files')->onUpdate('cascade')->onDelete('restrict');

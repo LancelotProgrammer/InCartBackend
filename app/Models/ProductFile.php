@@ -11,7 +11,7 @@ class ProductFile extends Pivot
 
     protected $table = 'product_file';
 
-    protected $fillable = ['product_id', 'file_id'];
+    protected $fillable = ['product_id', 'file_id', 'order'];
 
     public function product(): BelongsTo
     {

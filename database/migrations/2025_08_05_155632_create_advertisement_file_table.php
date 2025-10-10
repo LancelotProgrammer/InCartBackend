@@ -17,6 +17,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('advertisement_id');
             $table->unsignedBigInteger('file_id');
+            $table->integer('order')->default(1);
 
             $table->foreign('advertisement_id')->references('id')->on('advertisements')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('file_id')->references('id')->on('files')->onUpdate('cascade')->onDelete('restrict');

@@ -2,7 +2,7 @@
 
 namespace App\Filament\RelationManagers;
 
-use App\Filament\Services\HandleUploadedFiles;
+use App\Services\HandleUploadedFiles;
 use Filament\Actions\Action;
 use Filament\Actions\DetachAction;
 use Filament\Forms\Components\FileUpload;
@@ -10,6 +10,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class BaseFilesRelationManager extends RelationManager
@@ -21,6 +22,10 @@ class BaseFilesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->heading('Manage your resource files here')
+            ->description('There must be at least one file attached to the model')
+            ->reorderable('order')
+            ->defaultSort('order')
             ->contentGrid([
                 'sm' => 1,
                 'md' => 2,
@@ -30,11 +35,13 @@ class BaseFilesRelationManager extends RelationManager
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')->imageSize(250)
+                    TextColumn::make('order')->prefix('Order: '),
+                    ImageColumn::make('url')->imageSize(200),
                 ]),
             ])
             ->recordActions([
-                DetachAction::make('delete'),
+                DetachAction::make('delete')
+                    ->disabled(fn() => $this->getOwnerRecord()->files()->get()->count() <= 1),
             ])
             ->headerActions([
                 Action::make('create')

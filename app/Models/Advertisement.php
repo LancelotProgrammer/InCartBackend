@@ -41,7 +41,7 @@ class Advertisement extends Model
 
     public function files(): BelongsToMany
     {
-        return $this->belongsToMany(File::class, 'advertisement_file')->using(AdvertisementFile::class);
+        return $this->belongsToMany(File::class, 'advertisement_file')->withPivot(['order'])->using(AdvertisementFile::class);
     }
 
     public function users(): BelongsToMany

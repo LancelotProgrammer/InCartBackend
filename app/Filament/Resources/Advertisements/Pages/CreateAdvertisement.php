@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Advertisements\Pages;
 
 use App\Filament\Resources\Advertisements\AdvertisementResource;
-use App\Filament\Services\HandleUploadedFiles;
+use App\Services\HandleUploadedFiles;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 

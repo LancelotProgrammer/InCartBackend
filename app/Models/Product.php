@@ -33,7 +33,7 @@ class Product extends Model
 
     public function files(): BelongsToMany
     {
-        return $this->belongsToMany(File::class, 'product_file')->using(ProductFile::class);
+        return $this->belongsToMany(File::class, 'product_file')->withPivot(['order'])->using(ProductFile::class);
     }
 
     public function categories(): BelongsToMany

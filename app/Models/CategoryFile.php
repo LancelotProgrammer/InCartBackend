@@ -11,7 +11,7 @@ class CategoryFile extends Pivot
 
     protected $table = 'category_file';
 
-    protected $fillable = ['category_id', 'file_id'];
+    protected $fillable = ['category_id', 'file_id', 'order'];
 
     public function category(): BelongsTo
     {

@@ -6,7 +6,7 @@ use App\Filament\Actions\CategoriesActions;
 use App\Filament\Actions\PublishActions;
 use App\Filament\Components\TranslationComponent;
 use App\Filament\Resources\Categories\CategoryResource;
-use App\Filament\Services\HandleUploadedFiles;
+use App\Services\HandleUploadedFiles;
 use App\Models\Category;
 use BackedEnum;
 use Filament\Actions\Action;

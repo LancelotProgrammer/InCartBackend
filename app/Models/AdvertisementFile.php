@@ -11,7 +11,7 @@ class AdvertisementFile extends Pivot
 
     protected $table = 'advertisement_file';
 
-    protected $fillable = ['advertisement_id', 'file_id'];
+    protected $fillable = ['advertisement_id', 'file_id', 'order'];
 
     public function advertisement(): BelongsTo
     {
