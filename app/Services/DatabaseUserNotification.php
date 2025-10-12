@@ -37,7 +37,7 @@ class DatabaseUserNotification
     public static function sendTicketNotification(Ticket $ticket, string $reply): void
     {
         UserNotification::create([
-            'user_id' => $ticket->customer->id,
+            'user_id' => $ticket->user->id,
             'title' => 'We’ve replied to your support request',
             'body' => $reply,
             'type' => UserNotificationType::GENERAL->value,
