@@ -106,7 +106,7 @@ class OrderPayload
         $this->paymentMethodId = $id;
     }
 
-    public function getCouponCode(): ?string
+    public function getCode(): ?string
     {
         return $this->couponCode;
     }
@@ -251,7 +251,7 @@ class OrderPayload
         return $this->couponDiscount;
     }
 
-    public function setCouponDiscount(float $discount): void
+    public function setDiscount(float $discount): void
     {
         $this->couponDiscount = $discount;
     }

@@ -13,6 +13,7 @@ use App\Models\BranchProduct;
 use App\Models\Cart;
 use App\Models\CartProduct;
 use App\Models\Coupon;
+use App\Models\Gift;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Product;
@@ -246,11 +247,11 @@ class OrderService
         );
 
         // apply coupon if exists
-        if (empty($this->payload->getCouponCode())) {
+        if (empty($this->payload->getCode())) {
             return $this;
         }
         $coupon = Coupon::published()
-            ->where('code', $this->payload->getCouponCode())
+            ->where('code', $this->payload->getCode())
             ->first();
         if (! $coupon) {
             return $this;
@@ -259,7 +260,29 @@ class OrderService
         // calculate discount
         $this->payload->setCoupon($coupon);
         $discount = $couponService->calculateDiscount($coupon);
-        $this->payload->setCouponDiscount($discount);
+        $this->payload->setDiscount($discount);
+
+        return $this;
+    }
+
+    public function handleGiftRedemption(): self
+    {
+        $giftCode = $this->payload->getCode();
+
+        // apply gift if exists
+        if (empty($this->payload->getCode())) {
+            return $this;
+        }
+        $gift = Gift::published()
+            ->where('code', $this->payload->getCode())
+            ->first();
+        if (! $gift) {
+            return $this;
+        }
+
+        // calculate discount
+        $gift = LoyaltyService::validateCode($this->payload->getUser(), $giftCode, $this->payload->getSubtotal());
+        $this->payload->setDiscount($gift->discount);
 
         return $this;
     }
@@ -350,7 +373,6 @@ class OrderService
         foreach ($this->payload->getCart()->cartProducts as $cartProduct) {
             $branchId = $this->payload->getBranchId();
             $productId = $cartProduct->product_id;
-
             BranchProduct::where('branch_id', $branchId)
                 ->where('product_id', $productId)
                 ->decrement('quantity', $cartProduct->quantity);

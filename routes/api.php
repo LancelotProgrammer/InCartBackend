@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\GiftController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\OrderController;
@@ -87,6 +88,10 @@ Route::middleware([
         Route::get('/users/tickets', [TicketAndFeedbackController::class, 'getTickets']);
         Route::post('/users/tickets', [TicketAndFeedbackController::class, 'createTicket']);
         Route::post('/users/feedback', [TicketAndFeedbackController::class, 'createFeedback']);
+
+        Route::get('/gifts', [GiftController::class, 'getGifts']);
+        Route::get('/gifts/{id}/details', [GiftController::class, 'getGiftDetail']);
+        Route::post('/gifts/{id}redeem', [GiftController::class, 'redeemGift']);
     });
 
     Route::get('/cities', [CityController::class, 'getCities']);

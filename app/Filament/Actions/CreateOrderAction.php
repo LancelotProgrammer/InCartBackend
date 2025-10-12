@@ -86,6 +86,7 @@ class CreateOrderAction
                             ->createCart()
                             // ->calculateCartWight()
                             ->calculateDeliveryPrice()
+                            ->handleGiftRedemption()
                             ->handleCouponService()
                             ->calculateFeesAndTotals()
                             ->handlePaymentMethod()

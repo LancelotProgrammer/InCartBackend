@@ -51,6 +51,7 @@ class CreateOrderBill
                 ->createCart()
                 // ->calculateCartWight()
                 ->calculateDeliveryPrice()
+                ->handleGiftRedemption()
                 ->handleCouponService()
                 ->calculateFeesAndTotals()
                 ->handlePaymentMethod()

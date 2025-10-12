@@ -96,6 +96,26 @@ class PermissionsSeeder extends Seeder
                 'code' => 'delete-city',
             ],
             [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Any Gift', 'عرض أي هديه']), JSON_UNESCAPED_UNICODE),
+                'code' => 'view-any-gift',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Gift', 'عرض تفاصيل الهديه']), JSON_UNESCAPED_UNICODE),
+                'code' => 'view-gift',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Create Gift', 'إنشاء هديه']), JSON_UNESCAPED_UNICODE),
+                'code' => 'create-gift',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Update Gift', 'تحديث الهديه']), JSON_UNESCAPED_UNICODE),
+                'code' => 'update-gift',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Delete Gift', 'حذف الهديه']), JSON_UNESCAPED_UNICODE),
+                'code' => 'delete-gift',
+            ],
+            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['View Any Coupon', 'عرض أي كوبون']), JSON_UNESCAPED_UNICODE),
                 'code' => 'view-any-coupon',
             ],
@@ -366,10 +386,6 @@ class PermissionsSeeder extends Seeder
                 'code' => 'unpublish-payment-method',
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Show Code Coupon', 'عرض كود الكوبون']), JSON_UNESCAPED_UNICODE),
-                'code' => 'show-code-coupon',
-            ],
-            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Publish Product', 'نشر المنتج']), JSON_UNESCAPED_UNICODE),
                 'code' => 'publish-product',
             ],
@@ -380,6 +396,22 @@ class PermissionsSeeder extends Seeder
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Unpublish Coupon', 'إلغاء نشر الكوبون']), JSON_UNESCAPED_UNICODE),
                 'code' => 'unpublish-coupon',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Show Code Coupon', 'عرض كود الكوبون']), JSON_UNESCAPED_UNICODE),
+                'code' => 'show-code-coupon',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Publish Gift', 'نشر الهديه']), JSON_UNESCAPED_UNICODE),
+                'code' => 'publish-gift',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Unpublish Gift', 'إلغاء نشر الهديه']), JSON_UNESCAPED_UNICODE),
+                'code' => 'unpublish-gift',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Show Code Gift', 'عرض كود الهديه']), JSON_UNESCAPED_UNICODE),
+                'code' => 'show-code-gift',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Publish Category', 'نشر الفئة']), JSON_UNESCAPED_UNICODE),

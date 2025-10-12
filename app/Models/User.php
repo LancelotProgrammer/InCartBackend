@@ -75,6 +75,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->belongsToMany(Branch::class, 'branch_user')->using(BranchUser::class);
     }
 
+    public function gifts(): BelongsToMany
+    {
+        return $this->belongsToMany(Gift::class, 'user_gift')->using(UserGift::class);
+    }
+
+    public function loyalty(): HasOne
+    {
+        return $this->hasOne(Loyalty::class);
+    }
+
     public function addresses(): HasMany
     {
         return $this->hasMany(UserAddress::class);

@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Coupons\Schemas;
 
 use App\Enums\CouponType;
 use App\Filament\Components\TranslationComponent;
+use App\Models\Gift;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -40,7 +42,14 @@ class CouponForm
                             ->scopedUnique(modifyQueryUsing: function ($query, $get) {
                                 return $query->where('branch_id', $get('branch_id'));
                             })
-                            ->dehydrateStateUsing(fn (?string $state) => $state ? trim($state) : null)
+                            ->rules([
+                                fn(): Closure => function (string $attribute, $value, Closure $fail) {
+                                    if (Gift::where('code', $value)->exists()) {
+                                        $fail("The code is used in gifts");
+                                    }
+                                },
+                            ])
+                            ->dehydrateStateUsing(fn(?string $state) => $state ? trim($state) : null)
                             ->required(),
                         Select::make('branch_id')
                             ->relationship('branch', 'title')

@@ -13,6 +13,7 @@ use App\Models\City;
 use App\Models\Coupon;
 use App\Models\Feedback;
 use App\Models\File;
+use App\Models\Gift;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Permission;
@@ -126,7 +127,7 @@ class BaseSeeder extends Seeder
 
         $this->command->info('seeding permissions');
         $this->call(PermissionsSeeder::class, true);
-        
+
         $this->command->info('seeding roles permissions');
         $rolesPermissions = [
             Role::ROLE_SUPER_ADMIN_CODE => Permission::all()
@@ -136,8 +137,36 @@ class BaseSeeder extends Seeder
                         'can-receive-order-notifications',
                         'can-be-assigned-to-take-orders',
                         'can-be-assigned-to-branch',
+                        'view-delivery-orders-page',
+
                         'manage-developer-settings',
-                        'view-delivery-orders-page'
+                        'view-any-branch',
+                        'view-branch',
+                        'create-branch',
+                        'update-branch',
+                        'delete-branch',
+                        'mark-default-branch',
+                        'unmark-default-branch',
+                        'publish-branch',
+                        'unpublish-branch',
+                        'view-any-gift',
+                        'view-gift',
+                        'create-gift',
+                        'update-gift',
+                        'delete-gift',
+                        'publish-gift',
+                        'unpublish-gift',
+                        'show-code-gift',
+                        'view-any-permission',
+                        'view-permission',
+                        'create-permission',
+                        'update-permission',
+                        'delete-permission',
+                        'view-any-payment-method',
+                        'view-payment-method',
+                        'create-payment-method',
+                        'update-payment-method',
+                        'delete-payment-method',
                     ]
                 )
                 ->pluck('code')->toArray(),
@@ -157,8 +186,36 @@ class BaseSeeder extends Seeder
                     'code',
                     [
                         'can-be-assigned-to-take-orders',
+                        'view-delivery-orders-page',
+
                         'manage-developer-settings',
-                        'view-delivery-orders-page'
+                        'view-any-branch',
+                        'view-branch',
+                        'create-branch',
+                        'update-branch',
+                        'delete-branch',
+                        'mark-default-branch',
+                        'unmark-default-branch',
+                        'publish-branch',
+                        'unpublish-branch',
+                        'view-any-gift',
+                        'view-gift',
+                        'create-gift',
+                        'update-gift',
+                        'delete-gift',
+                        'publish-gift',
+                        'unpublish-gift',
+                        'show-code-gift',
+                        'view-any-permission',
+                        'view-permission',
+                        'create-permission',
+                        'update-permission',
+                        'delete-permission',
+                        'view-any-payment-method',
+                        'view-payment-method',
+                        'create-payment-method',
+                        'update-payment-method',
+                        'delete-payment-method',
                     ]
                 )
                 ->pluck('code')->toArray(),
@@ -394,6 +451,64 @@ class BaseSeeder extends Seeder
                 ],
             ]);
         }
+
+        $this->command->info('seeding gifts');
+        Gift::insert([
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['3 Riyal gift', 'هديه بقيمة 3 ريالات']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['3 Riyal gift', 'هديه بقيمة 3 ريالات']), JSON_UNESCAPED_UNICODE),
+                'points' => '150',
+                'code' => 'gift123',
+                'discount' => '3',
+                'allowed_sub_total_price' => '150',
+                'published_at' => now(),
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['6 Riyal gift', 'هديه بقيمة 6 ريالات']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['6 Riyal gift', 'هديه بقيمة 6 ريالات']), JSON_UNESCAPED_UNICODE),
+                'points' => '300',
+                'code' => 'gift1234',
+                'discount' => '6',
+                'allowed_sub_total_price' => '300',
+                'published_at' => now(),
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['10 Riyal gift', 'هديه بقيمة 10 ريالات']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['10 Riyal gift', 'هديه بقيمة 10 ريالات']), JSON_UNESCAPED_UNICODE),
+                'points' => '500',
+                'code' => 'gift12345',
+                'discount' => '10',
+                'allowed_sub_total_price' => '500',
+                'published_at' => now(),
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['20 Riyal gift', 'هديه بقيمة 20 ريال']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['20 Riyal gift', 'هديه بقيمة 20 ريال']), JSON_UNESCAPED_UNICODE),
+                'points' => '1000',
+                'code' => 'gift123456',
+                'discount' => '20',
+                'allowed_sub_total_price' => '1000',
+                'published_at' => now(),
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['30 Riyal gift', 'هديه بقيمة 30 ريال']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['30 Riyal gift', 'هديه بقيمة 30 ريالات']), JSON_UNESCAPED_UNICODE),
+                'points' => '1500',
+                'code' => 'gift1234567',
+                'discount' => '30',
+                'allowed_sub_total_price' => '1500',
+                'published_at' => now(),
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['50 Riyal gift', 'هديه بقيمة 50 ريال']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['50 Riyal gift', 'هديه بقيمة 50 ريال']), JSON_UNESCAPED_UNICODE),
+                'points' => '2500',
+                'code' => 'gift12345678',
+                'discount' => '50',
+                'allowed_sub_total_price' => '2500',
+                'published_at' => now(),
+            ],
+        ]);
 
         $this->command->info('seeding payment methods');
         foreach ($branches as $branch) {

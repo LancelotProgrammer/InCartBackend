@@ -6,7 +6,6 @@ use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\ExternalServices\FirebaseFCM;
-use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Branch;
 use App\Models\Order;
 use App\Models\PaymentMethod;
@@ -14,6 +13,7 @@ use App\Models\User;
 use App\Notifications\DeliveryOrderNotification;
 use App\Services\Cache;
 use App\Services\DatabaseUserNotification;
+use App\Services\LoyaltyService;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
@@ -163,6 +163,7 @@ class OrderActions
                         'manager_id' => auth()->user()->id,
                     ]);
                     $order->save();
+                    LoyaltyService::addPoints($order->customer, $order->sub_total);
                     FirebaseFCM::sendOrderStatusNotification($order);
                     DatabaseUserNotification::sendOrderStatusNotification($order);
                     Cache::deletePendingOrderCount();
