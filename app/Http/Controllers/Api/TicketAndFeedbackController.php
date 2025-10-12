@@ -16,7 +16,7 @@ class TicketAndFeedbackController extends Controller
     /**
      * @authenticated
      *
-     * @group Product Ticket And Feedback
+     * @group Ticket And Feedback Actions
      */
     public function getTickets(Request $request): SuccessfulResponseResource
     {
@@ -32,7 +32,7 @@ class TicketAndFeedbackController extends Controller
      *
      * @queryParam question string The question. Example: what is this app?
      *
-     * @group Product Ticket And Feedback
+     * @group Ticket And Feedback Actions
      */
     public function createTicket(Request $request): EmptySuccessfulResponseResource
     {
@@ -50,7 +50,7 @@ class TicketAndFeedbackController extends Controller
      *
      * @queryParam feedback string The feedback. Example: Make more offers
      *
-     * @group Product Ticket And Feedback
+     * @group Ticket And Feedback Actions
      */
     public function createFeedback(Request $request): EmptySuccessfulResponseResource
     {
