@@ -27,7 +27,7 @@ class ThirdLevelCategoryFactory extends Factory
         return [
             'title' => $text,
             'description' => $text,
-            'published_at' => $this->faker->optional()->dateTimeBetween('-1 years', 'now'),
+            'published_at' => $this->faker->boolean(70) ? now() : null,
             'parent_id' => $parent?->id,
         ];
     }

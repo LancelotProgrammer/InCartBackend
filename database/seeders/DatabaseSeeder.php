@@ -13,7 +13,7 @@ class DatabaseSeeder extends BaseSeeder
             rootCategoryCount: 3,
             productCount: 200,
             productCategoryCount: 10,
-            branchAdvertisementCount: 30,
+            branchAdvertisementCount: 20,
             userCount: 100,
             userAddressCount: 3,
             userNotificationCount: 3,
@@ -22,7 +22,7 @@ class DatabaseSeeder extends BaseSeeder
             productFileCount: 3,
             categoryFileCount: 1,
             advertisementFileCount: 1,
-            orderCount: 200
+            orderCount: 500
         );
     }
 }

@@ -52,41 +52,42 @@ class SettingsService
                 ->description('Support and feedback allowed for user per day')
                 ->columns(2)
                 ->components([
-                    TextInput::make('allowed_ticket_count')->integer(),
-                    TextInput::make('allowed_feedback_count')->integer(),
+                    TextInput::make('allowed_ticket_count')->required()->integer()->rule('min:1'),
+                    TextInput::make('allowed_feedback_count')->required()->integer()->rule('min:1'),
                 ]),
             Section::make('Social')
                 ->columnSpanFull()
                 ->description('Social media links')
-                ->columns(5)
+                ->columns(6)
                 ->components([
-                    TextInput::make('whatsapp')->url(),
-                    TextInput::make('tiktok')->url(),
-                    TextInput::make('facebook')->url(),
-                    TextInput::make('twitter')->url(),
-                    TextInput::make('instagram')->url(),
+                    TextInput::make('whatsapp')->required()->url(),
+                    TextInput::make('tiktok')->required()->url(),
+                    TextInput::make('facebook')->required()->url(),
+                    TextInput::make('twitter')->required()->url(),
+                    TextInput::make('instagram')->required()->url(),
+                    TextInput::make('phone')->required()->rule('phone:SA'),
                 ]),
             Section::make('Order Config')
                 ->columnSpanFull()
                 ->description('General order configs for the system')
                 ->columns(5)
                 ->components([
-                    TextInput::make('service_fee')->numeric(),
-                    TextInput::make('tax_rate')->numeric(),
-                    TextInput::make('min_distance')->numeric(),
-                    TextInput::make('max_distance')->numeric(),
-                    TextInput::make('price_per_kilometer')->numeric(),
+                    TextInput::make('service_fee')->required()->numeric()->rule('min:0'),
+                    TextInput::make('tax_rate')->required()->numeric()->rule('min:0'),
+                    TextInput::make('min_distance')->required()->numeric()->rule('min:0'),
+                    TextInput::make('max_distance')->required()->numeric()->rule('min:0'),
+                    TextInput::make('price_per_kilometer')->required()->numeric()->rule('min:0'),
                 ]),
             Section::make('Legal')
                 ->description('Legal text')
                 ->columnSpanFull()
                 ->components([
-                    RichEditor::make('privacy_policy'),
-                    RichEditor::make('terms_of_services'),
-                    RichEditor::make('faqs'),
-                    RichEditor::make('loyalty_policy'),
-                    RichEditor::make('about_us'),
-                    RichEditor::make('return_policy'),
+                    RichEditor::make('privacy_policy')->required(),
+                    RichEditor::make('terms_of_services')->required(),
+                    RichEditor::make('faqs')->required(),
+                    RichEditor::make('loyalty_policy')->required(),
+                    RichEditor::make('about_us')->required(),
+                    RichEditor::make('return_policy')->required(),
                 ]),
         ];
     }
@@ -119,6 +120,11 @@ class SettingsService
     public static function getInstagram(): ?string
     {
         return self::getValue('instagram', false);
+    }
+
+    public static function getPhone(): ?string
+    {
+        return self::getValue('phone', false);
     }
 
     public static function getServiceFee(): float

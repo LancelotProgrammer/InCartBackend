@@ -22,7 +22,7 @@ class SecondLevelCategoryFactory extends Factory
         return [
             'title' => $text,
             'description' => $text,
-            'published_at' => now(),
+            'published_at' => $this->faker->boolean(80) ? now() : null,
             'parent_id' => Category::whereNull('parent_id')->inRandomOrder()->first()?->id,
         ];
     }

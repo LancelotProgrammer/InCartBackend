@@ -2,16 +2,21 @@
 
 namespace Database\Factories;
 
-use App\Enums\DeliveryScheduledType;
-use App\Enums\DeliveryStatus;
-use App\Enums\OrderStatus;
-use App\Enums\PaymentStatus;
-use App\Models\Branch;
-use App\Models\Coupon;
-use App\Models\Order;
-use App\Models\PaymentMethod;
-use App\Models\Role;
-use App\Models\User;
+use App\Enums\{
+    OrderStatus,
+    PaymentStatus,
+    DeliveryStatus,
+    DeliveryScheduledType
+};
+use App\Models\{
+    User,
+    Role,
+    Branch,
+    BranchUser,
+    Coupon,
+    PaymentMethod,
+    Order
+};
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -42,64 +47,135 @@ class OrderFactory extends Factory
             ->inRandomOrder()
             ->first();
 
-        // 3. Coupon logic (50% chance)
-        $applyCoupon = $this->faker->boolean(50);
-        $coupon = null;
-        $couponDiscount = 0;
+        // 3. Coupon logic (30%)
+        $applyCoupon = fake()->boolean(30);
+        $coupon = $applyCoupon ? Coupon::inRandomOrder()->first() : null;
+        $couponDiscount = $coupon?->config['value'] ?? 0;
 
-        if ($applyCoupon) {
-            $coupon = Coupon::inRandomOrder()->first();
-            if ($coupon) {
-                $couponDiscount = $coupon->config['value'] ?? 0;
-            }
-        }
-
-        // 4. Random fees
-        $deliveryFee = $this->faker->randomFloat(2, 0, 20);
-        $serviceFee = $this->faker->randomFloat(2, 0, 10);
-        $taxAmount = $this->faker->randomFloat(2, 0, 15);
-
-        // 5. Random payment method
-        $payment = PaymentMethod::inRandomOrder()->first();
+        // 4. Fees
+        $deliveryFee = fake()->randomFloat(2, 3, 20);
+        $serviceFee = 2;
+        $taxAmount = 2;
+        
+        // 5. Payment method
+        $wasPaid = fake()->boolean(40);
+        $payment = PaymentMethod::where('branch_id', $branch->id)->inRandomOrder()->first();
         $token = null;
-        if ($payment->code !== 'pay-on-delivery') {
+        if ($payment && $payment->code !== 'pay-on-delivery') {
             do {
                 $token = Str::random(32);
-            } while (Order::where('payment_token', '=', $token)->exists());
+            } while (Order::where('payment_token', $token)->exists());
         }
 
-        // 5. Random delivery type
+        // 6. Delivery scheduling
         $now = now();
-        $date = $this->faker->boolean() ? Carbon::instance($this->faker->dateTimeBetween('+1 days', '+1 month')) : $now;
-        if ($date->equalTo($now)) {
-            $deliveryType = DeliveryScheduledType::IMMEDIATE;
-            $deliveryStatus = DeliveryStatus::NOT_SHIPPED;
-        } else {
-            $deliveryType = DeliveryScheduledType::SCHEDULED;
-            $deliveryStatus = DeliveryStatus::SCHEDULED;
-        }
+        $date = fake()->boolean(30)
+            ? Carbon::instance(fake()->dateTimeBetween('+1 days', '+1 month'))
+            : $now;
 
-        return [
+        $deliveryType = $date->equalTo($now)
+            ? DeliveryScheduledType::IMMEDIATE
+            : DeliveryScheduledType::SCHEDULED;
+
+        $deliveryStatus = $date->equalTo($now)
+            ? DeliveryStatus::NOT_SHIPPED
+            : DeliveryStatus::SCHEDULED;
+
+        // 7. Base order
+        $order = [
             'order_number' => 'ORD-'.now()->format('YmdHis').'-'.strtoupper(Str::random(6)),
-            'notes' => $this->faker->optional()->sentence(),
+            'notes' => fake()->optional()->sentence(),
             'delivery_scheduled_type' => $deliveryType,
             'delivery_date' => $date,
             'payment_token' => $token,
-
-            'order_status' => OrderStatus::PENDING->value,
-            'payment_status' => PaymentStatus::UNPAID->value,
-            'delivery_status' => $deliveryStatus,
-
             'coupon_discount' => $couponDiscount,
             'delivery_fee' => $deliveryFee,
             'service_fee' => $serviceFee,
             'tax_amount' => $taxAmount,
-
             'customer_id' => $user->id,
             'branch_id' => $branch->id,
             'coupon_id' => $coupon?->id,
-            'payment_method_id' => $payment->id,
+            'payment_method_id' => $payment?->id,
             'user_address_id' => $address->id,
         ];
+
+        // 8. Assign random valid status set
+        $status = fake()->randomElement([
+            OrderStatus::PENDING,
+            OrderStatus::CANCELLED,
+            OrderStatus::PROCESSING,
+            OrderStatus::DELIVERING,
+            OrderStatus::FINISHED,
+        ]);
+
+        // 9. Manager & delivery users for this branch
+        $manager = BranchUser::where('branch_id', $branch->id)
+            ->whereHas('user.role', fn ($q) => $q->where('code', Role::ROLE_MANAGER_CODE))
+            ->inRandomOrder()
+            ->first();
+
+        $delivery = BranchUser::where('branch_id', $branch->id)
+            ->whereHas('user.role', fn ($q) => $q->where('code', Role::ROLE_DELIVERY_CODE))
+            ->inRandomOrder()
+            ->first();
+
+        // 10. Apply status-based logic
+        switch ($status) {
+            case OrderStatus::PENDING:
+                $order += [
+                    'order_status' => OrderStatus::PENDING->value,
+                    'payment_status' => $wasPaid
+                        ? PaymentStatus::PAID->value
+                        : PaymentStatus::UNPAID->value,
+                    'delivery_status' => $deliveryStatus,
+                ];
+                break;
+
+            case OrderStatus::CANCELLED:
+                $order += [
+                    'order_status' => OrderStatus::CANCELLED->value,
+                    'payment_status' => $wasPaid
+                        ? ($payment && $payment->code !== 'pay-on-delivery' ? PaymentStatus::REFUNDED->value : PaymentStatus::UNPAID->value)
+                        : PaymentStatus::UNPAID->value,
+                    'delivery_status' => DeliveryStatus::NOT_SHIPPED->value,
+                    'manager_id' => $manager?->user_id,
+                    'cancel_reason' => fake()->sentence(),
+                ];
+                break;
+
+            case OrderStatus::PROCESSING:
+                $order += [
+                    'order_status' => OrderStatus::PROCESSING->value,
+                    'payment_status' => $wasPaid
+                        ? PaymentStatus::PAID->value
+                        : PaymentStatus::UNPAID->value,
+                    'delivery_status' => DeliveryStatus::NOT_SHIPPED->value,
+                    'manager_id' => $manager?->user_id,
+                ];
+                break;
+
+            case OrderStatus::DELIVERING:
+                $order += [
+                    'order_status' => OrderStatus::DELIVERING->value,
+                    'payment_status' => $wasPaid
+                        ? PaymentStatus::PAID->value
+                        : PaymentStatus::UNPAID->value,
+                    'delivery_status' => DeliveryStatus::OUT_FOR_DELIVERY->value,
+                    'delivery_id' => $delivery?->user_id,
+                    'manager_id' => $manager?->user_id,
+                ];
+                break;
+
+            case OrderStatus::FINISHED:
+                $order += [
+                    'order_status' => OrderStatus::FINISHED->value,
+                    'payment_status' => PaymentStatus::PAID->value,
+                    'delivery_status' => DeliveryStatus::DELIVERED->value,
+                    'manager_id' => $manager?->user_id,
+                ];
+                break;
+        }
+
+        return $order;
     }
 }

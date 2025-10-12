@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\City;
 use App\Models\Role;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,7 +21,7 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'phone' => '+9665'.fake()->unique()->numerify('########'),
+            'phone' => fake()->unique()->regexify('(009665|9665|\\+9665|05|5)(5|0|3|6|4|9|1|8|7)[0-9]{7}'),
             'phone_verified_at' => now(),
             'role_id' => Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->value('id'),
             'city_id' => City::inRandomOrder()->first()->id,
@@ -51,7 +50,7 @@ class UserFactory extends Factory
         return $this->state(fn () => [
             'email' => null,
             'password' => null,
-            'phone' => '+9665'.fake()->unique()->numerify('########'),
+            'phone' => fake()->unique()->regexify('(009665|9665|\\+9665|05|5)(5|0|3|6|4|9|1|8|7)[0-9]{7}'),
             'city_id' => City::whereJsonContainsLocales('name', ['en'], 'Jeddah')->value('id'),
             'phone_verified_at' => now(),
         ]);
