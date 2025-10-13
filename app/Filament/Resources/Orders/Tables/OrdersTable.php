@@ -12,6 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Enums\PaginationMode;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class OrdersTable
 {
@@ -23,7 +24,15 @@ class OrdersTable
             ->columns([
                 TextColumn::make('branch.title')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('order_number')->searchable(),
-                TextColumn::make('customer.name'),
+                TextColumn::make('customer.name')
+                    ->label('Customer')
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('customer', function (Builder $q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%")
+                                ->orWhere('phone', 'like', "%{$search}%");
+                        });
+                    }),
 
                 TextColumn::make('order_status')->badge(),
                 TextColumn::make('payment_status')->badge(),
@@ -41,7 +50,7 @@ class OrdersTable
                 TextColumn::make('userAddress.title')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -52,7 +61,7 @@ class OrdersTable
                     ->authorize('viewInvoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
-                    ->url(fn (Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
+                    ->url(fn(Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
                 OrderActions::configure(true),
             ])
             ->toolbarActions([
