@@ -32,7 +32,7 @@ class UserAddressFactory extends Factory
             'title' => $this->faker->streetName(),
             'description' => $this->faker->optional()->sentence(),
             'type' => $this->faker->randomElement(UserAddressType::cases())->value,
-            'phone' => fake()->unique()->phoneNumber(),
+            'phone' => fake()->unique()->regexify('(009665|9665|\\+9665|05|5)(5|0|3|6|4|9|1|8|7)[0-9]{7}'),
             'latitude' => $latitude,
             'longitude' => $longitude,
             'city_id' => $city->id,
