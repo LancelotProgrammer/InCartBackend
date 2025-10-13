@@ -50,7 +50,7 @@ class OrderActions
                     $order->update([
                         'order_status' => OrderStatus::CANCELLED,
                         'payment_status' => $order->payment_status === PaymentStatus::PAID ? PaymentStatus::REFUNDED : PaymentStatus::UNPAID,
-                        'delivery_status' => DeliveryStatus::NOT_SHIPPED,
+                        'delivery_status' => DeliveryStatus::NOT_DELIVERED,
                         'manager_id' => auth()->user()->id,
                         'cancel_reason' => $data['cancel_reason'],
                     ]);

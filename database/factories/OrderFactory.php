@@ -33,9 +33,9 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        // 1. pick a random user who has addresses AND has role = user
+        // 1. pick a random user who has addresses AND has role = customer
         $user = User::whereHas('addresses')
-            ->whereHas('role', fn ($query) => $query->where('code', Role::ROLE_CUSTOMER_CODE))
+            ->whereHas('role', fn($query) => $query->where('code', Role::ROLE_CUSTOMER_CODE))
             ->with('addresses')
             ->inRandomOrder()
             ->first();
@@ -56,7 +56,7 @@ class OrderFactory extends Factory
         $deliveryFee = fake()->randomFloat(2, 3, 20);
         $serviceFee = 2;
         $taxAmount = 2;
-        
+
         // 5. Payment method
         $wasPaid = fake()->boolean(40);
         $payment = PaymentMethod::where('branch_id', $branch->id)->inRandomOrder()->first();
@@ -67,23 +67,39 @@ class OrderFactory extends Factory
             } while (Order::where('payment_token', $token)->exists());
         }
 
-        // 6. Delivery scheduling
-        $now = now();
-        $date = fake()->boolean(30)
-            ? Carbon::instance(fake()->dateTimeBetween('+1 days', '+1 month'))
-            : $now;
+        // 6. Delivery scheduling ratio
+        $rand = fake()->numberBetween(1, 100);
 
-        $deliveryType = $date->equalTo($now)
-            ? DeliveryScheduledType::IMMEDIATE
-            : DeliveryScheduledType::SCHEDULED;
+        if ($rand <= 40) {
+            // 40% past
+            $timeContext = 'past';
+            $date = Carbon::instance(fake()->dateTimeBetween('-1 month', '-1 day'));
+        } elseif ($rand <= 60) {
+            // 20% present
+            $timeContext = 'present';
+            $date = now();
+        } else {
+            // 40% future
+            $timeContext = 'future';
+            $date = Carbon::instance(fake()->dateTimeBetween('+1 day', '+1 month'));
+        }
 
-        $deliveryStatus = $date->equalTo($now)
-            ? DeliveryStatus::NOT_SHIPPED
-            : DeliveryStatus::SCHEDULED;
+        // Delivery type
+        $deliveryType = fake()->boolean(50)
+            ? DeliveryScheduledType::SCHEDULED
+            : DeliveryScheduledType::IMMEDIATE;
 
-        // 7. Base order
+        // Delivery status
+        $deliveryStatus = match ($deliveryType) {
+            DeliveryScheduledType::IMMEDIATE => ($timeContext === 'past'
+                ? DeliveryStatus::DELIVERED
+                : DeliveryStatus::NOT_DELIVERED),
+            DeliveryScheduledType::SCHEDULED => DeliveryStatus::SCHEDULED,
+        };
+
+        // 7. Prepare base order
         $order = [
-            'order_number' => 'ORD-'.now()->format('YmdHis').'-'.strtoupper(Str::random(6)),
+            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(6)),
             'notes' => fake()->optional()->sentence(),
             'delivery_scheduled_type' => $deliveryType,
             'delivery_date' => $date,
@@ -99,23 +115,36 @@ class OrderFactory extends Factory
             'user_address_id' => $address->id,
         ];
 
-        // 8. Assign random valid status set
-        $status = fake()->randomElement([
-            OrderStatus::PENDING,
-            OrderStatus::CANCELLED,
-            OrderStatus::PROCESSING,
-            OrderStatus::DELIVERING,
-            OrderStatus::FINISHED,
-        ]);
+        // 8. Status logic (based on time context)
+        $status = match ($timeContext) {
+            'past' => (
+                $deliveryType === DeliveryScheduledType::SCHEDULED
+                ? OrderStatus::PENDING
+                : fake()->randomElement([
+                    OrderStatus::FINISHED,
+                    OrderStatus::CANCELLED,
+                ])
+            ),
+            'present' => (
+                $deliveryType === DeliveryScheduledType::SCHEDULED
+                ? OrderStatus::PENDING
+                : fake()->randomElement([
+                    OrderStatus::PENDING,
+                    OrderStatus::PROCESSING,
+                    OrderStatus::DELIVERING,
+                ])
+            ),
+            'future' => OrderStatus::PENDING,
+        };
 
         // 9. Manager & delivery users for this branch
         $manager = BranchUser::where('branch_id', $branch->id)
-            ->whereHas('user.role', fn ($q) => $q->where('code', Role::ROLE_MANAGER_CODE))
+            ->whereHas('user.role', fn($q) => $q->where('code', Role::ROLE_MANAGER_CODE))
             ->inRandomOrder()
             ->first();
 
         $delivery = BranchUser::where('branch_id', $branch->id)
-            ->whereHas('user.role', fn ($q) => $q->where('code', Role::ROLE_DELIVERY_CODE))
+            ->whereHas('user.role', fn($q) => $q->where('code', Role::ROLE_DELIVERY_CODE))
             ->inRandomOrder()
             ->first();
 
@@ -124,9 +153,7 @@ class OrderFactory extends Factory
             case OrderStatus::PENDING:
                 $order += [
                     'order_status' => OrderStatus::PENDING->value,
-                    'payment_status' => $wasPaid
-                        ? PaymentStatus::PAID->value
-                        : PaymentStatus::UNPAID->value,
+                    'payment_status' => $wasPaid ? PaymentStatus::PAID->value : PaymentStatus::UNPAID->value,
                     'delivery_status' => $deliveryStatus,
                 ];
                 break;
@@ -137,7 +164,7 @@ class OrderFactory extends Factory
                     'payment_status' => $wasPaid
                         ? ($payment && $payment->code !== 'pay-on-delivery' ? PaymentStatus::REFUNDED->value : PaymentStatus::UNPAID->value)
                         : PaymentStatus::UNPAID->value,
-                    'delivery_status' => DeliveryStatus::NOT_SHIPPED->value,
+                    'delivery_status' => DeliveryStatus::NOT_DELIVERED->value,
                     'manager_id' => $manager?->user_id,
                     'cancel_reason' => fake()->sentence(),
                 ];
@@ -146,10 +173,8 @@ class OrderFactory extends Factory
             case OrderStatus::PROCESSING:
                 $order += [
                     'order_status' => OrderStatus::PROCESSING->value,
-                    'payment_status' => $wasPaid
-                        ? PaymentStatus::PAID->value
-                        : PaymentStatus::UNPAID->value,
-                    'delivery_status' => DeliveryStatus::NOT_SHIPPED->value,
+                    'payment_status' => $wasPaid ? PaymentStatus::PAID->value : PaymentStatus::UNPAID->value,
+                    'delivery_status' => DeliveryStatus::NOT_DELIVERED->value,
                     'manager_id' => $manager?->user_id,
                 ];
                 break;
@@ -157,9 +182,7 @@ class OrderFactory extends Factory
             case OrderStatus::DELIVERING:
                 $order += [
                     'order_status' => OrderStatus::DELIVERING->value,
-                    'payment_status' => $wasPaid
-                        ? PaymentStatus::PAID->value
-                        : PaymentStatus::UNPAID->value,
+                    'payment_status' => $wasPaid ? PaymentStatus::PAID->value : PaymentStatus::UNPAID->value,
                     'delivery_status' => DeliveryStatus::OUT_FOR_DELIVERY->value,
                     'delivery_id' => $delivery?->user_id,
                     'manager_id' => $manager?->user_id,

@@ -35,7 +35,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
     {
         return $table
             ->paginationMode(PaginationMode::Simple)
-            ->query(fn(): Builder => Order::query()->whereDate('delivery_date', '=', now()))
+            ->query(fn(): Builder => Order::query()->whereDate('delivery_date', '=', now()->toDateString()))
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('branch.title')->toggleable(isToggledHiddenByDefault: true),
@@ -88,9 +88,11 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
 
     public static function getNavigationBadge(): ?string
     {
-        return Cache::remember(CacheKeys::PENDING_ORDER_COUNT, now()->addDay(), function () {
-            return Order::whereDate('delivery_date', now()->toDateString())->count();
-        });
+        return Cache::remember(
+            CacheKeys::PENDING_ORDER_COUNT,
+            now()->addDay(),
+            fn () => Order::whereDate('delivery_date', now()->toDateString())->count()
+        );
     }
 
     public static function getNavigationBadgeTooltip(): ?string

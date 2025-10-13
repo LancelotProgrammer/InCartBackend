@@ -343,7 +343,7 @@ class OrderService
 
             'order_status' => OrderStatus::PENDING->value,
             'payment_status' => PaymentStatus::UNPAID->value,
-            'delivery_status' => $this->payload->getDate() !== null ? DeliveryStatus::SCHEDULED->value : DeliveryStatus::NOT_SHIPPED->value,
+            'delivery_status' => $this->payload->getDate() !== null ? DeliveryStatus::SCHEDULED->value : DeliveryStatus::NOT_DELIVERED->value,
 
             'subtotal_price' => $this->payload->getSubtotal(),
             'coupon_discount' => $this->payload->getCouponDiscount(),

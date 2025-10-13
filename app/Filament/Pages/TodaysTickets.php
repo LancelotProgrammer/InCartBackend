@@ -40,7 +40,7 @@ class TodaysTickets  extends Page implements HasActions, HasSchemas, HasTable
         return $table
             ->paginationMode(PaginationMode::Simple)
             ->query(fn(): Builder => Ticket::query()
-                ->whereDate('created_at', '=', now())
+                ->whereDate('created_at', '=', now()->toDateString())
                 ->whereNull('processed_at')
             )
             ->defaultSort('id', 'desc')

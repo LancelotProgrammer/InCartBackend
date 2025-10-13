@@ -35,7 +35,7 @@ class CancelOrder
         $order->update([
             'order_status' => OrderStatus::CANCELLED,
             'payment_status' => $order->payment_status === PaymentStatus::PAID ? PaymentStatus::REFUNDED : PaymentStatus::UNPAID,
-            'delivery_status' => DeliveryStatus::NOT_SHIPPED,
+            'delivery_status' => DeliveryStatus::NOT_DELIVERED,
             'cancel_reason' => $request->input('cancel_reason'),
         ]);
         $order->save();
