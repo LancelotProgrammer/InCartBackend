@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Validator;
 
 class InvoiceController extends Controller
 {
+    /**
+     * @authenticated
+     *
+     * @group Order Actions
+     */
     public function __invoke(Request $request)
     {
         $validator = Validator::make($request->route()->parameters(), [

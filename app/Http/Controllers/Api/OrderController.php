@@ -132,6 +132,9 @@ class OrderController extends Controller
             ->thenReturn());
     }
 
+    /**
+     * @group Webhook Actions
+     */
     public function paymentGatewayCallback(Request $request): JsonResource
     {
         return new JsonResource(Pipeline::send($request)
