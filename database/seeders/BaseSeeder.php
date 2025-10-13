@@ -595,7 +595,7 @@ class BaseSeeder extends Seeder
                 $order->update([
                     'subtotal_price' => $subtotal,
                     'total_price' => $subtotal
-                        - $order->coupon_discount
+                        - $order->discount_price
                         + $order->delivery_fee
                         + $order->service_fee
                         + $order->tax_amount,

@@ -34,12 +34,12 @@ class OrderForm
                         TextEntry::make('payment_status')->badge(),
                         TextEntry::make('delivery_status')->badge(),
 
-                        TextEntry::make('subtotal_price')->money('SAR', 2),
-                        TextEntry::make('coupon_discount')->money('SAR', 2),
-                        TextEntry::make('delivery_fee')->money('SAR', 2),
-                        TextEntry::make('service_fee')->money('SAR', 2),
-                        TextEntry::make('tax_amount')->money('SAR', 2),
-                        TextEntry::make('total_price')->money('SAR', 2),
+                        TextEntry::make('subtotal_price')->money('SAR'),
+                        TextEntry::make('discount_price')->money('SAR'),
+                        TextEntry::make('delivery_fee')->money('SAR'),
+                        TextEntry::make('service_fee')->money('SAR'),
+                        TextEntry::make('tax_amount')->money('SAR'),
+                        TextEntry::make('total_price')->money('SAR'),
 
                         TextEntry::make('created_at')->dateTime(),
 

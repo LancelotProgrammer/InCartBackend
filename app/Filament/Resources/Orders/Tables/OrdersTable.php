@@ -38,7 +38,7 @@ class OrdersTable
                 TextColumn::make('payment_status')->badge(),
                 TextColumn::make('delivery_status')->badge(),
 
-                TextColumn::make('total_price')->money('SAR', 2),
+                TextColumn::make('total_price')->money('SAR'),
                 TextColumn::make('delivery_date')->dateTime(),
 
                 TextColumn::make('created_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),

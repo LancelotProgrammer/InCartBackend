@@ -138,7 +138,7 @@ class OrderActions
                     $order->save();
                     FirebaseFCM::sendOrderStatusNotification($order);
                     DatabaseUserNotification::sendOrderStatusNotification($order);
-                    User::where('id', '=',$data['delivery_id'])->first()->notify(new DeliveryOrderNotification($order));
+                    User::where('id', '=', $data['delivery_id'])->first()->notify(new DeliveryOrderNotification($order));
                     Cache::deletePendingOrderCount();
                     Notification::make()
                         ->title("Order #{$order->order_number} is out for delivery.")
@@ -156,14 +156,18 @@ class OrderActions
                     return $order->order_status === OrderStatus::DELIVERING;
                 })
                 ->action(function (Order $order) {
-                    $order->update([
-                        'order_status' => OrderStatus::FINISHED,
-                        'delivery_status' => DeliveryStatus::DELIVERED,
-                        'payment_status' => PaymentStatus::PAID,
-                        'manager_id' => auth()->user()->id,
-                    ]);
-                    $order->save();
-                    LoyaltyService::addPoints($order->customer, $order->sub_total);
+                    DB::transaction(function () use ($order) {
+                        $order->update([
+                            'order_status' => OrderStatus::FINISHED,
+                            'delivery_status' => DeliveryStatus::DELIVERED,
+                            'payment_status' => PaymentStatus::PAID,
+                            'manager_id' => auth()->user()->id,
+                        ]);
+                        $order->save();
+                        if ($order->discount_price === 0) {
+                            LoyaltyService::addPoints($order->customer, (int)$order->subtotal_price);
+                        }
+                    });
                     FirebaseFCM::sendOrderStatusNotification($order);
                     DatabaseUserNotification::sendOrderStatusNotification($order);
                     Cache::deletePendingOrderCount();
@@ -191,7 +195,7 @@ class OrderActions
                         'payment_status' => $order->payment_status->value,
                         'delivery_status' => $order->delivery_status->value,
                         'subtotal_price' => $order->subtotal_price,
-                        'coupon_discount' => $order->coupon_discount,
+                        'discount_price' => $order->discount_price,
                         'delivery_fee' => $order->delivery_fee,
                         'service_fee' => $order->service_fee,
                         'tax_amount' => $order->tax_amount,

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('delivery_status');
 
             $table->decimal('subtotal_price', 10, 2)->default(0);  // Before discounts, taxes, fees
-            $table->decimal('coupon_discount', 10, 2)->default(0); // Discount from coupon
+            $table->decimal('discount_price', 10, 2)->default(0);  // Discount from coupon
             $table->decimal('delivery_fee', 10, 2)->default(0);    // Calculated by zone/distance
             $table->decimal('service_fee', 10, 2)->default(0);     // Optional
             $table->decimal('tax_amount', 10, 2)->default(0);      // VAT or other tax

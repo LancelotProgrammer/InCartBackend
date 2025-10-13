@@ -148,7 +148,7 @@
             </tr>
             <tr>
                 <td class="label">Coupon Discount:</td>
-                <td class="amount">-{{ number_format($order->coupon_discount, 2) }}</td>
+                <td class="amount">-{{ number_format($order->discount_price, 2) }}</td>
             </tr>
             <tr>
                 <td class="label">Delivery Fee:</td>

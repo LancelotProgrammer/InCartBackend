@@ -104,7 +104,7 @@ class OrderFactory extends Factory
             'delivery_scheduled_type' => $deliveryType,
             'delivery_date' => $date,
             'payment_token' => $token,
-            'coupon_discount' => $couponDiscount,
+            'discount_price' => $couponDiscount,
             'delivery_fee' => $deliveryFee,
             'service_fee' => $serviceFee,
             'tax_amount' => $taxAmount,

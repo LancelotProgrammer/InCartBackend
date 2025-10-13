@@ -72,7 +72,7 @@ class GetOrderDetails
             'products' => $products->values(),
             'address_title' => $order->userAddress->title,
             'payment_method_title' => $order->paymentMethod->title,
-            'discount_price' => $order->coupon_discount,
+            'discount_price' => $order->discount_price,
             'total_price' => $order->total_price,
             'created_at' => $order->created_at,
         ];

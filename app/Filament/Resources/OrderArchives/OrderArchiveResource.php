@@ -35,7 +35,7 @@ class OrderArchiveResource extends Resource
                 TextEntry::make('payment_status')->badge(),
                 TextEntry::make('delivery_status')->badge(),
                 TextEntry::make('subtotal_price')->numeric(),
-                TextEntry::make('coupon_discount')->numeric(),
+                TextEntry::make('discount_price')->numeric(),
                 TextEntry::make('delivery_fee')->numeric(),
                 TextEntry::make('service_fee')->numeric(),
                 TextEntry::make('tax_amount')->numeric(),

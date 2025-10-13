@@ -2,6 +2,7 @@
 
 namespace App\Pipes;
 
+use App\Exceptions\LogicalException;
 use App\Models\Gift;
 use Closure;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class GetGiftDetail
             'id' => 'required|integer|exists:products,id',
         ]);
 
-        return $next(Gift::published()->where('id', '=', $request->route('id'))->first(
+        $gift = Gift::published()->where('id', '=', $request->route('id'))->first(
             [
                 'title',
                 'description',
@@ -24,6 +25,21 @@ class GetGiftDetail
                 'discount',
                 'allowed_sub_total_price',
             ]
-        ));
+        );
+
+        if (! $gift) {
+            throw new LogicalException(
+                'Gift not found',
+                'The gift ID does not exist'
+            );
+        }
+
+        return $next([
+            'title' => $gift->title,
+            'description' => $gift->description,
+            'points' => $gift->points,
+            'discount' => $gift->discount,
+            'allowed_sub_total_price' => $gift->allowed_sub_total_price,
+        ]);
     }
 }

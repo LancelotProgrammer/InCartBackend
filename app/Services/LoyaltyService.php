@@ -7,10 +7,11 @@ use App\Models\Gift;
 use App\Models\Loyalty;
 use App\Models\User;
 use App\Models\UserGift;
+use Illuminate\Support\Facades\DB;
 
 class LoyaltyService
 {
-    public static function addPoints(User $user, float $subTotal): void
+    public static function addPoints(User $user, int $subTotal): void
     {
         $loyalty = Loyalty::firstOrCreate(['user_id' => $user->id]);
         $loyalty->addPoints($subTotal);
@@ -31,7 +32,7 @@ class LoyaltyService
         }
 
         if ($subTotal < $gift->allowed_sub_total_price) {
-            throw new LogicalException('Subtotal too low to use this gift.', 'Subtotal too low to use this gift.');
+            throw new LogicalException('Subtotal too low to use this gift.', 'Rise the price of the cart or cancel the coupon.');
         }
 
         UserGift::where('user_id', '=', $user->id)->where('gift_id', $gift->id)->delete();
@@ -48,15 +49,19 @@ class LoyaltyService
         }
 
         if ($user->gifts()->where('gift_id', '=', $giftId)->exists()) {
-            throw new LogicalException('Gift already redeemed.', 'Gift already redeemed.');
+            throw new LogicalException('Gift already redeemed.', 'You can not redeem a gift twice.');
         }
 
-        if ($gift->points > $user->loyalty->points) {
-            throw new LogicalException('Not enough points to redeem this gift.', 'Not enough points to redeem this gift.');
+        $userLoyaltyPoints = $user->loyalty->points ?? 0;
+
+        if ($gift->points > $userLoyaltyPoints) {
+            throw new LogicalException('Not enough points to redeem.', 'The current user points are less than the gift points.');
         }
 
-        $user->loyalty->redeemPoints($gift->points);
-        $user->gifts()->attach($giftId);
+        DB::transaction(function () use ($user, $gift) {
+            $user->loyalty->redeemPoints($gift->points);
+            $user->gifts()->attach($gift->id);
+        });
 
         return $gift;
     }

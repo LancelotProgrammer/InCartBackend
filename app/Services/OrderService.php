@@ -281,6 +281,7 @@ class OrderService
         }
 
         // calculate discount
+        $this->payload->setGift($gift);
         $gift = LoyaltyService::validateCode($this->payload->getUser(), $giftCode, $this->payload->getSubtotal());
         $this->payload->setDiscount($gift->discount);
 
@@ -346,7 +347,7 @@ class OrderService
             'delivery_status' => $this->payload->getDate() !== null ? DeliveryStatus::SCHEDULED->value : DeliveryStatus::NOT_DELIVERED->value,
 
             'subtotal_price' => $this->payload->getSubtotal(),
-            'coupon_discount' => $this->payload->getCouponDiscount(),
+            'discount_price' => $this->payload->getCouponDiscount(),
             'delivery_fee' => $this->payload->getDeliveryFee(),
             'service_fee' => $this->payload->getServiceFee(),
             'tax_amount' => $this->payload->getTaxAmount(),
@@ -401,7 +402,7 @@ class OrderService
 
         $order->update([
             'subtotal_price' => $subtotal,
-            'total_price' => $subtotal - $order->coupon_discount
+            'total_price' => $subtotal - $order->discount_price
                 + $order->delivery_fee
                 + $order->service_fee
                 + $order->tax_amount,

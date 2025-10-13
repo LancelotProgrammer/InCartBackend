@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Cart;
 use App\Models\Coupon;
+use App\Models\Gift;
 use App\Models\PaymentMethod;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -35,6 +36,8 @@ class OrderPayload
     private Carbon $date;
 
     private ?Coupon $coupon = null;
+
+    private ?Gift $gift = null;
 
     private Cart $cart;
 
@@ -194,6 +197,16 @@ class OrderPayload
     public function setCoupon(?Coupon $coupon): void
     {
         $this->coupon = $coupon;
+    }
+
+    public function getGift(): ?Gift
+    {
+        return $this->gift;
+    }
+
+    public function setGift(?Gift $gift): void
+    {
+        $this->gift = $gift;
     }
 
     public function getCart(): Cart

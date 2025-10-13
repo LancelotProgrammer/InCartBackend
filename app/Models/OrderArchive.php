@@ -16,7 +16,7 @@ class OrderArchive extends Model
         'payment_status' => PaymentStatus::class,
         'delivery_status' => DeliveryStatus::class,
         'subtotal_price' => 'decimal:2',
-        'coupon_discount' => 'decimal:2',
+        'discount_price' => 'decimal:2',
         'delivery_fee' => 'decimal:2',
         'service_fee' => 'decimal:2',
         'tax_amount' => 'decimal:2',
