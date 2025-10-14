@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SuccessfulResponseResource;
-use App\Pipes\GetGiftDetail;
 use App\Pipes\GetGifts;
 use App\Pipes\RedeemGift;
 use Illuminate\Http\Request;
@@ -22,22 +21,6 @@ class GiftController extends Controller
         return new SuccessfulResponseResource(Pipeline::send($request)
             ->through([
                 GetGifts::class,
-            ])
-            ->thenReturn());
-    }
-
-    /**
-     * @authenticated
-     *
-     * @urlParam id int required The gift ID.
-     *
-     * @group Loyalty Actions
-     */
-    public function getGiftDetail(Request $request): SuccessfulResponseResource
-    {
-        return new SuccessfulResponseResource(Pipeline::send($request)
-            ->through([
-                GetGiftDetail::class,
             ])
             ->thenReturn());
     }
