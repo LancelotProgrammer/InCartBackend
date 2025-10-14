@@ -48,7 +48,7 @@ class GetOrderDetails
 
                 $products->filter(function (Product $product) {
                     return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
-                })->push([
+                })->values()->push([
                     'id' => $product->id,
                     'title' => $product->title,
                     'image' => $image,

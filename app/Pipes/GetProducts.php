@@ -48,7 +48,9 @@ class GetProducts
         return $next(collect($products->items())
             ->filter(function (Product $product) {
                 return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
-            })->map(function (Product $product): array {
+            })
+            ->values()
+            ->map(function (Product $product): array {
                 $branchProduct = $product->branchProducts->first();
                 $image = $product->files->first()->url;
 

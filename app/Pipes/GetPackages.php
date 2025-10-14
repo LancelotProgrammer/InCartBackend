@@ -21,7 +21,6 @@ class GetPackages
                 $package->product_images = $package->products
                     ->take(4)
                     ->map(fn ($product) => $product->files->first()?->url)
-                    ->filter()
                     ->values()
                     ->all();
                 unset($package->products);

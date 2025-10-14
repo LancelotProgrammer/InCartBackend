@@ -45,6 +45,7 @@ class GetProductDetails
             ->filter(function (Product $product) {
                 return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
             })
+            ->values()
             ->map(function (Product $related): array {
                 $branchProduct = $related->branchProducts->first();
                 $image = $related->files->first();
