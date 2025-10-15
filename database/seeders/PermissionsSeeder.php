@@ -474,6 +474,10 @@ class PermissionsSeeder extends Seeder
                 'code'  => 'disapprove-user',
             ],
             [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['send notification', 'ارسال الاشعارات']), JSON_UNESCAPED_UNICODE),
+                'code'  => 'send-notification',
+            ],
+            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Mark Important Feedback', 'تعيين ملاحظة كمهمة']), JSON_UNESCAPED_UNICODE),
                 'code' => 'mark-important-feedback',
             ],

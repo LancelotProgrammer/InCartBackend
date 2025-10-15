@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Enums\FirebaseFCMTopics;
 use App\Enums\OtpType;
 use App\Exceptions\AuthenticationException;
 use App\Exceptions\SetupException;
+use App\ExternalServices\FirebaseFCM;
 use App\ExternalServices\Otp;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\Authentication\UserInfoResource;
 use App\Http\Resources\Authentication\UserResource;
 use App\Http\Resources\EmptySuccessfulResponseResource;
@@ -228,6 +230,14 @@ class AuthenticationController extends Controller
             ]
         );
 
+        FirebaseFCM::subscribeToTopics(
+            $request->input('firebase_token'),
+            [
+                FirebaseFCMTopics::ALL_USERS->value,
+                FirebaseFCMTopics::CITY->value . '-' . $request->user()->city_id,
+            ]
+        );
+
         return new EmptySuccessfulResponseResource;
     }
 
@@ -236,7 +246,17 @@ class AuthenticationController extends Controller
      */
     public function logout(Request $request): EmptySuccessfulResponseResource
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+
+        FirebaseFCM::unsubscribeFromTopics(
+            $user->firebaseTokens()->pluck('firebase_token')->toArray(),
+            [
+                FirebaseFCMTopics::ALL_USERS->value,
+                FirebaseFCMTopics::CITY->value . '-' . $user->city_id,
+            ]
+        );
+
+        $user->currentAccessToken()->delete();
 
         return new EmptySuccessfulResponseResource;
     }
@@ -410,7 +430,7 @@ class AuthenticationController extends Controller
             $verifyCode = PhoneVerificationRequest::where('phone', '=', $phone)->latest()->first()->code;
             Otp::send($phone, $verifyCode);
         } catch (Exception $e) {
-            Log::channel('error')->error('OTP Error: '.$e->getMessage());
+            Log::channel('error')->error('OTP Error: ' . $e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'OTP verification request failed. Check error logs for details.'
@@ -508,7 +528,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new VerifyEmail($link, $user->name));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error: '.$e->getMessage());
+            Log::channel('error')->error('Email Error: ' . $e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -621,7 +641,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new ForgotPassword($userName, $code));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error: '.$e->getMessage());
+            Log::channel('error')->error('Email Error: ' . $e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -779,7 +799,7 @@ class AuthenticationController extends Controller
     private function isWeakNumber(string $number): bool
     {
         $length = strlen($number);
-        if (preg_match('/^(\d)\1{'.($length - 1).'}$/', $number)) {
+        if (preg_match('/^(\d)\1{' . ($length - 1) . '}$/', $number)) {
             return true;
         }
         for ($patternLength = 1; $patternLength <= $length / 2; $patternLength++) {

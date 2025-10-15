@@ -13,9 +13,11 @@ use Throwable;
 
 class FirebaseFCM
 {
-    private const ORDER_DEEP_LINK = '/order-details';
+    public const ORDER_DEEP_LINK = '/order-details';
 
-    private const TICKET_DEEP_LINK = '/support';
+    public const TICKET_DEEP_LINK = '/support';
+
+    public const PRODUCT_DEEP_LINK = '/product-details';
 
     public static function sendOrderStatusNotification(Order $order): void
     {
@@ -43,12 +45,20 @@ class FirebaseFCM
         foreach ($tokens as $token) {
             $message = CloudMessage::new()
                 ->withNotification($notification)
-                ->withData(['route' => self::ORDER_DEEP_LINK."/$order->id"])
+                ->withData(['route' => self::ORDER_DEEP_LINK . "/$order->id"])
                 ->toToken($token);
             try {
-                $messaging->send($message);
+                $response = $messaging->send($message);
+                Log::channel('debug')->info('FCM message sent successfully', [
+                    'data' => [$order],
+                    'response' => $response,
+                ]);
             } catch (Throwable $e) {
-                Log::channel('error')->error("Firebase notification failed for token {$token}: ".$e->getMessage());
+                Log::channel('error')->debug('FCM message failed', [
+                    'data' => [$order],
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
             }
         }
     }
@@ -65,7 +75,7 @@ class FirebaseFCM
 
         $maxLength = 150;
         $body = strlen($reply) > $maxLength
-            ? substr($reply, 0, $maxLength).'...'
+            ? substr($reply, 0, $maxLength) . '...'
             : $reply;
 
         $notification = Notification::create(
@@ -76,13 +86,89 @@ class FirebaseFCM
         foreach ($tokens as $token) {
             $message = CloudMessage::new()
                 ->withNotification($notification)
-                ->withData(['route' => self::TICKET_DEEP_LINK."/$ticket->id"])
+                ->withData(['route' => self::TICKET_DEEP_LINK . "/$ticket->id"])
                 ->toToken($token);
             try {
-                $messaging->send($message);
+                $response = $messaging->send($message);
+                Log::channel('debug')->info('FCM message sent successfully', [
+                    'data' => [$ticket, $reply],
+                    'response' => $response,
+                ]);
             } catch (Throwable $e) {
-                Log::channel('error')->error("Firebase notification failed for token {$token}: ".$e->getMessage());
+                Log::channel('error')->debug('FCM message failed', [
+                    'data' => [$ticket, $reply],
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
             }
+        }
+    }
+
+    public static function subscribeToTopics(string $token, array $topics): void
+    {
+        try {
+            $messaging = Firebase::messaging();
+            $response = $messaging->subscribeToTopics($topics, $token);
+            Log::channel('debug')->info('FCM token added to topic successfully', [
+                'data' => [$token, $topics],
+                'response' => $response,
+            ]);
+        } catch (Throwable $e) {
+            Log::channel('error')->debug('Failed to add token to topic', [
+                'data' => [$token, $topics],
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+    public static function unsubscribeFromTopics(string $token, array $topics): void
+    {
+        try {
+            $messaging = Firebase::messaging();
+            $response = $messaging->unsubscribeFromTopics($topics, $token);
+            Log::channel('debug')->info('FCM token removed from topic successfully', [
+                'data' => [$token, $topics],
+                'response' => $response,
+            ]);
+        } catch (Throwable $e) {
+            Log::channel('error')->debug('Failed to remove token from topic', [
+                'data' => [$token, $topics],
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+    public static function sendNotificationToTopic(string $topic, string $title, string $body, ?string $imageUrl, ?string $deepLink): void
+    {
+        $messaging = Firebase::messaging();
+
+        $notification = Notification::create($title, $body);
+        if ($imageUrl) {
+            $notification = $notification->withImageUrl($imageUrl);
+        }
+
+        $message = CloudMessage::new()
+            ->toTopic($topic)
+            ->withNotification($notification);
+
+        if ($deepLink) {
+            $message = $message->withData(['route' => $deepLink]);
+        }
+
+        try {
+            $response = $messaging->send($message);
+            Log::channel('debug')->info('FCM message sent successfully', [
+                'data' => [$topic, $title, $body, $imageUrl, $deepLink],
+                'response' => $response,
+            ]);
+        } catch (Throwable $e) {
+            Log::channel('error')->debug('FCM message failed', [
+                'data' => [$topic, $title, $body, $imageUrl, $deepLink],
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
         }
     }
 }

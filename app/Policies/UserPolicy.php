@@ -76,6 +76,11 @@ class UserPolicy
         return $user->hasPermission('disapprove-user');
     }
 
+    public function sendNotification(User $user): bool
+    {
+        return $user->hasPermission('send-notification');
+    }
+
     private function isSuperAdminOrDeveloper(User $model): bool
     {
         return $model->role->code === Role::ROLE_SUPER_ADMIN_CODE || $model->role->code === Role::ROLE_DEVELOPER_CODE;
