@@ -67,9 +67,11 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
             ])
             ->recordActions([
                 Action::make('view')
+                    ->authorize('view')
                     ->color('primary')
                     ->url(fn ($record) => route('filament.admin.resources.orders.view', $record->id), true),
                 Action::make('edit')
+                    ->authorize('update')
                     ->color('primary')
                     ->url(fn ($record) => route('filament.admin.resources.orders.edit', $record->id), true),
                 OrderActions::configure(false),
