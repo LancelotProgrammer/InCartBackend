@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('gift_id');
             $table->unsignedBigInteger('user_id');
 
-            $table->foreign('gift_id')->references('id')->on('gifts')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('gift_id')->references('id')->on('gifts')->onUpdate('cascade')->onDelete('restrict');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->unique(['gift_id', 'user_id']);
 
