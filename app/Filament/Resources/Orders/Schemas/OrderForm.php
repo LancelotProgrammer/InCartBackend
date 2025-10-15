@@ -7,6 +7,7 @@ use App\Enums\OrderStatus;
 use App\Models\Branch;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\OrderManager;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -70,12 +71,7 @@ class OrderForm
                                 return $order->order_status === OrderStatus::PROCESSING;
                             })
                             ->options(function (Get $get) {
-                                return User::getUsersWhoCanBeAssignedToTakeOrders()->where(function (Builder $query) use ($get) {
-                                    $branch = Branch::find($get('branch_id'));
-                                    $query->whereHas('branches', function (Builder $q) use ($branch) {
-                                        $q->where('branch_id', '=', $branch->id);
-                                    });
-                                })->pluck('name', 'id');
+                                return OrderManager::getDeliveryUsers($get('branch_id'));
                             }),
                         Select::make('delivery_scheduled_type')
                             ->afterStateUpdated(function (Set $set) {

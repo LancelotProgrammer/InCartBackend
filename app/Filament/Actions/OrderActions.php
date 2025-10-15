@@ -65,12 +65,7 @@ class OrderActions
                 })
                 ->schema([
                     Select::make('delivery_id')->options(function ($record) {
-                        return User::getUsersWhoCanBeAssignedToTakeOrders()->where(function (Builder $query) use ($record) {
-                            $branch = Branch::find($record->branch_id);
-                            $query->whereHas('branches', function (Builder $q) use ($branch) {
-                                $q->where('branch_id', '=', $branch->id);
-                            });
-                        })->pluck('name', 'id');
+                        return OrderManager::getDeliveryUsers($record->branch_id);
                     }),
                 ])
                 ->action(function (Order $order, array $data) {

@@ -64,12 +64,20 @@ class UserPolicy
             return false;
         }
 
+        if ($model->role->code !== Role::ROLE_CUSTOMER_CODE) {
+            return false;
+        }
+
         return $user->hasPermission('approve-user');
     }
 
     public function disapprove(User $user, User $model): bool
     {
         if ($this->isSuperAdminOrDeveloper($model)) {
+            return false;
+        }
+
+        if ($model->role->code !== Role::ROLE_CUSTOMER_CODE) {
             return false;
         }
 

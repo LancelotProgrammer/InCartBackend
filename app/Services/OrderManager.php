@@ -7,12 +7,16 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Exceptions\LogicalException;
 use App\ExternalServices\FirebaseFCM;
+use App\Models\Branch;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\User;
 use App\Notifications\DeliveryOrderNotification;
 use App\Support\OrderPayload;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class OrderManager
@@ -153,7 +157,7 @@ class OrderManager
 
     public static function recalculateOrderTotals(Order $order): void
     {
-        $subtotal = $order->cartProducts->sum(fn ($item) => $item->price * $item->quantity);
+        $subtotal = $order->cartProducts->sum(fn($item) => $item->price * $item->quantity);
 
         $taxAmount = PriceService::calculateTaxAmount(
             $subtotal,
@@ -176,7 +180,7 @@ class OrderManager
         ]);
     }
 
-    public static function userCancel(int $orderId, int $userId, string $reason): void
+    public static function userCancel(int $orderId, int $userId, ?string $reason): void
     {
         $order = Order::where('id', $orderId)
             ->where('customer_id', $userId)
@@ -315,5 +319,15 @@ class OrderManager
             ->title("Order #{$order->order_number} has been archived.")
             ->warning()
             ->send();
+    }
+
+    public static function getDeliveryUsers(int $branchId): Collection
+    {
+        return User::getUsersWhoCanBeAssignedToTakeOrders()->unblock()->where(function (Builder $query) use ($branchId) {
+            $branch = Branch::find($branchId);
+            $query->whereHas('branches', function (Builder $q) use ($branch) {
+                $q->where('branch_id', '=', $branch->id);
+            });
+        })->pluck('name', 'id');
     }
 }
