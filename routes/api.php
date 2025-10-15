@@ -90,7 +90,7 @@ Route::middleware([
         Route::post('/users/feedback', [TicketAndFeedbackController::class, 'createFeedback']);
 
         Route::get('/gifts', [GiftController::class, 'getGifts']);
-        Route::post('/gifts/{id}/redeem', [GiftController::class, 'redeemGift']);
+        Route::get('/gifts/{id}/redeem', [GiftController::class, 'redeemGift']);
     });
 
     Route::get('/cities', [CityController::class, 'getCities']);
