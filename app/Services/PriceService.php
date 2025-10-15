@@ -6,7 +6,7 @@ class PriceService
 {
     public static function calculateTaxAmount(float $subtotal, float $serviceFee, float $taxRate): float
     {
-        return ($serviceFee + $subtotal) * $taxRate;
+        return ($serviceFee + $subtotal) * ($taxRate / 100);
     }
 
     public static function calculateTotal(
