@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Filament\Responses\LoginResponse;
 use App\Policies\AuditPolicy;
+use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
@@ -18,7 +20,7 @@ use OwenIt\Auditing\Models\Audit;
 class AppServiceProvider extends ServiceProvider
 {
     public $singletons = [
-        \Filament\Auth\Http\Responses\Contracts\LoginResponse::class => \App\Http\Responses\LoginResponse::class,
+        LoginResponseContract::class => LoginResponse::class,
     ];
 
     /**
