@@ -21,7 +21,7 @@ class CheckoutService
         }
 
         $order = Order::where('payment_token', '=', 'order_id')->first();
-        if ($paymentMethod->code === 'pay-on-delivery') {
+        if ($paymentMethod->code === PaymentMethod::PAY_ON_DELIVERY_CODE) {
             throw new LogicalException('Checkout error', 'Payment method is pay-on-delivery and it is already checked out');
         }
         if ($order->payment_status === PaymentStatus::PAID) {

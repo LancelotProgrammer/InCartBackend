@@ -27,48 +27,48 @@ class PublishService
     {
         $condition1 = $record->deliveryUsers()->exists();
         $condition2 = $record->notificationUsers()->exists();
-        $condition3 = PaymentMethod::where('code', '=', 'pay-on-delivery')
+        $condition3 = PaymentMethod::where('code', '=', PaymentMethod::PAY_ON_DELIVERY_CODE)
             ->where('branch_id', '=', $record->id)
             ->whereNotNull('published_at')
             ->exists();
 
         $reasons = [];
 
-        if (!$record->deliveryUsers()->exists()) {
+        if (! $record->deliveryUsers()->exists()) {
             $reasons[] = 'No delivery users are assigned to this branch.';
         }
 
-        if (!$record->notificationUsers()->exists()) {
+        if (! $record->notificationUsers()->exists()) {
             $reasons[] = 'No users are assigned to receive order notifications.';
         }
 
-        $hasPayOnDelivery = PaymentMethod::where('code', 'pay-on-delivery')
+        $hasPayOnDelivery = PaymentMethod::where('code', PaymentMethod::PAY_ON_DELIVERY_CODE)
             ->where('branch_id', $record->id)
             ->whereNotNull('published_at')
             ->exists();
 
-        if (!$hasPayOnDelivery) {
+        if (! $hasPayOnDelivery) {
             $reasons[] = 'The "Pay on Delivery" payment method must be active for this branch.';
         }
 
         $reason = $reasons
-            ? 'This branch cannot be published because: ' . implode(' ', $reasons)
+            ? 'This branch cannot be published because: '.implode(' ', $reasons)
             : 'This branch cannot be published due to unknown validation failure.';
 
         return [
             $condition1 && $condition2 && $condition3,
-            $reason
+            $reason,
         ];
     }
 
     private static function validateUnpublishPayOnDeliveryPaymentMethod(PaymentMethod $record): array
     {
-        $condition = ! ($record->code === 'pay-on-delivery');
+        $condition = ! ($record->code === PaymentMethod::PAY_ON_DELIVERY_CODE);
         $reason = 'This payment method cannot be unpublished because it is required by other components.';
 
         return [
             $condition,
-            $reason
+            $reason,
         ];
     }
 }

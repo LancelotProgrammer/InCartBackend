@@ -2,13 +2,9 @@
 
 namespace App\Pipes;
 
-use App\Services\DatabaseManagerNotification;
-use App\Services\OrderService;
-use App\Services\SettingsService;
-use App\Support\OrderPayload;
+use App\Services\OrderManager;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CreateOrder
 {
@@ -25,8 +21,7 @@ class CreateOrder
             'notes' => 'nullable|string',
         ]);
 
-        $orderService = new OrderService((new OrderPayload)->fromRequest(
-            now(),
+        $order = OrderManager::userCreate(
             $request->input('address_id'),
             $request->input('delivery_date'),
             $request->input('payment_method_id'),
@@ -34,32 +29,8 @@ class CreateOrder
             $request->input('cart'),
             $request->input('notes'),
             $request->attributes->get('currentBranchId'),
-            $request->user(),
-            SettingsService::getServiceFee(),
-            SettingsService::getTaxRate(),
-            SettingsService::getMinDistance(),
-            SettingsService::getMaxDistance(),
-            SettingsService::getPricePerKilometer(),
-        ));
-
-        $order = DB::transaction(function () use ($orderService) {
-
-            return $orderService
-                ->generateOrderNumber()
-                ->setOrderDate()
-                ->calculateDestination()
-                ->calculateCartPrice()
-                ->createCart()
-                // ->calculateCartWight()
-                ->calculateDeliveryPrice()
-                ->handleGiftRedemption()
-                ->handleCouponService()
-                ->calculateFeesAndTotals()
-                ->handlePaymentMethod()
-                ->createOrder();
-        });
-
-        DatabaseManagerNotification::sendCreatedOrderNotification($order);
+            $request->user()->id,
+        );
 
         return $next([
             'id' => $order->id,

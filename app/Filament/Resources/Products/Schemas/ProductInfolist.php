@@ -17,9 +17,10 @@ class ProductInfolist
                     $fileArray = [];
                     $counter = 1;
                     foreach ($record->files as $file) {
-                        $fileArray[] = ImageEntry::make('product.file.id.' . $counter)->label('file ' . $counter)->state($file->url);
+                        $fileArray[] = ImageEntry::make('product.file.id.'.$counter)->label('file '.$counter)->state($file->url);
                         $counter++;
                     }
+
                     return [
                         Fieldset::make('Product Info')
                             ->columnSpanFull()

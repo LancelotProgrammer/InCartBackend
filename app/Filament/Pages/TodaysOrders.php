@@ -3,7 +3,6 @@
 namespace App\Filament\Pages;
 
 use App\Constants\CacheKeys;
-use App\Enums\OrderStatus;
 use App\Filament\Actions\OrderActions;
 use App\Models\Order;
 use BackedEnum;
@@ -27,6 +26,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
     use InteractsWithActions;
     use InteractsWithSchemas;
     use InteractsWithTable;
+
     protected string $view = 'filament.pages.todays-orders';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ShoppingCart;
@@ -35,7 +35,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
     {
         return $table
             ->paginationMode(PaginationMode::Simple)
-            ->query(fn(): Builder => Order::query()->whereDate('delivery_date', '=', now()->toDateString()))
+            ->query(fn (): Builder => Order::query()->whereDate('delivery_date', '=', now()->toDateString()))
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('branch.title')->toggleable(isToggledHiddenByDefault: true),
@@ -68,16 +68,16 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
             ->recordActions([
                 Action::make('view')
                     ->color('primary')
-                    ->url(fn($record) => route('filament.admin.resources.orders.view', $record->id), true),
+                    ->url(fn ($record) => route('filament.admin.resources.orders.view', $record->id), true),
                 Action::make('edit')
                     ->color('primary')
-                    ->url(fn($record) => route('filament.admin.resources.orders.edit', $record->id), true),
+                    ->url(fn ($record) => route('filament.admin.resources.orders.edit', $record->id), true),
                 OrderActions::configure(false),
             ])
             ->toolbarActions([
                 Action::make('open_full_page')
                     ->color('primary')
-                    ->url(fn() => route('filament.admin.resources.orders.index'), true),
+                    ->url(fn () => route('filament.admin.resources.orders.index'), true),
             ]);
     }
 

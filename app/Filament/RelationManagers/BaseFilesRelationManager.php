@@ -41,7 +41,7 @@ class BaseFilesRelationManager extends RelationManager
             ])
             ->recordActions([
                 DetachAction::make('delete')
-                    ->disabled(fn() => $this->getOwnerRecord()->files()->get()->count() <= 1),
+                    ->disabled(fn () => $this->getOwnerRecord()->files()->get()->count() <= 1),
             ])
             ->headerActions([
                 Action::make('create')

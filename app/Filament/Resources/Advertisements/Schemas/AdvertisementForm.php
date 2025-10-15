@@ -97,12 +97,12 @@ class AdvertisementForm
                                             })
                                             ->relationship('category', 'title')
                                             ->searchable()
-                                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
-                                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                            ->getSearchResultsUsing(fn (string $search): array => Category::query()
+                                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                                 ->limit(50)
                                                 ->pluck('title', 'id')
                                                 ->all())
-                                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title),
+                                            ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->title),
                                     ],
                                     AdvertisementLink::PRODUCT->value => [
                                         Select::make('product_id')
@@ -111,24 +111,24 @@ class AdvertisementForm
                                             })
                                             ->relationship('product', 'title')
                                             ->searchable()
-                                            ->getSearchResultsUsing(fn(string $search): array => Product::query()
-                                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                            ->getSearchResultsUsing(fn (string $search): array => Product::query()
+                                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                                 ->limit(50)
                                                 ->pluck('title', 'id')
                                                 ->all())
-                                            ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title),
+                                            ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title),
                                         Select::make('category_id')
                                             ->required(function (Get $get) {
                                                 return (int) $get('link') === AdvertisementLink::PRODUCT->value;
                                             })
                                             ->relationship('category', 'title')
                                             ->searchable()
-                                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
-                                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                            ->getSearchResultsUsing(fn (string $search): array => Category::query()
+                                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                                 ->limit(50)
                                                 ->pluck('title', 'id')
                                                 ->all())
-                                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title),
+                                            ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->title),
                                     ],
                                     AdvertisementLink::EXTERNAL->value => [
                                         TextInput::make('url')
@@ -178,13 +178,13 @@ class AdvertisementForm
                                         View::make('advertisement-preview.status'),
                                     ],
                                     AdvertisementType::VIDEO => [
-                                        View::make('advertisement-preview.video')
+                                        View::make('advertisement-preview.video'),
                                     ],
                                     AdvertisementType::OFFER => [
-                                        View::make('advertisement-preview.offer')
+                                        View::make('advertisement-preview.offer'),
                                     ],
                                     AdvertisementType::CARD => [
-                                        View::make('advertisement-preview.card')
+                                        View::make('advertisement-preview.card'),
                                     ],
                                     default => ['pleas select a type'],
                                 };

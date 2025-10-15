@@ -119,7 +119,6 @@ class Advertisement extends Model
         ));
     }
 
-
     public static function getLinkValue(stdClass $advertisement): mixed
     {
         return self::getLink($advertisement);

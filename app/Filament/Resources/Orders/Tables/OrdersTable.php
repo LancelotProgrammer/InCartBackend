@@ -50,7 +50,7 @@ class OrdersTable
                 TextColumn::make('userAddress.title')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -61,7 +61,7 @@ class OrdersTable
                     ->authorize('viewInvoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
-                    ->url(fn(Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
+                    ->url(fn (Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
                 OrderActions::configure(true),
             ])
             ->toolbarActions([

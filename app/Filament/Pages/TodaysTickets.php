@@ -26,11 +26,12 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
-class TodaysTickets  extends Page implements HasActions, HasSchemas, HasTable
+class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
 {
     use InteractsWithActions;
     use InteractsWithSchemas;
     use InteractsWithTable;
+
     protected string $view = 'filament.pages.todays-tickets';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Lifebuoy;
@@ -39,7 +40,7 @@ class TodaysTickets  extends Page implements HasActions, HasSchemas, HasTable
     {
         return $table
             ->paginationMode(PaginationMode::Simple)
-            ->query(fn(): Builder => Ticket::query()
+            ->query(fn (): Builder => Ticket::query()
                 ->whereDate('created_at', '=', now()->toDateString())
                 ->whereNull('processed_at')
             )
@@ -81,7 +82,7 @@ class TodaysTickets  extends Page implements HasActions, HasSchemas, HasTable
             ->toolbarActions([
                 Action::make('open_full_page')
                     ->color('primary')
-                    ->url(fn() => route('filament.admin.resources.tickets.index'), true),
+                    ->url(fn () => route('filament.admin.resources.tickets.index'), true),
             ]);
     }
 

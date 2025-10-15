@@ -15,7 +15,7 @@ class UserNotification extends Model
 
     protected $casts = [
         'type' => UserNotificationType::class,
-        'config' => 'array'
+        'config' => 'array',
     ];
 
     public function user(): BelongsTo

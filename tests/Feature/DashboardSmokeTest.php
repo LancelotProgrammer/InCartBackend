@@ -7,10 +7,12 @@ use App\Models\Advertisement;
 use App\Models\User;
 use Filament\Actions\Testing\TestAction;
 use Filament\Forms\Components\FileUpload;
-use function Pest\Laravel\{actingAs, get};
-use function Pest\Livewire\livewire;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\get;
+use function Pest\Livewire\livewire;
 
 function assertModelData(string $table, array $data): void
 {

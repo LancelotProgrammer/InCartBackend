@@ -8,7 +8,6 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
@@ -38,7 +37,7 @@ class RoleForm
                             ->relationship(
                                 'permissions',
                                 'title',
-                                fn($query) => PermissionPolicy::filterPermissions($query)
+                                fn ($query) => PermissionPolicy::filterPermissions($query)
                             )
                             ->required(),
                     ]),

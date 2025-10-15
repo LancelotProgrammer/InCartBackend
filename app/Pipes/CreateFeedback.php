@@ -15,8 +15,8 @@ class CreateFeedback
     {
         $key = 'feedback-submit:'.$request->user()->id;
         $maxAttempts = SettingsService::getAllowedTicketCount();
-        if (RateLimiter::tooManyAttempts($key,$maxAttempts)) {
-            throw new LogicalException("Limit reached", "The user has submitted more than $maxAttempts feedback");
+        if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+            throw new LogicalException('Limit reached', "The user has submitted more than $maxAttempts feedback");
         }
         RateLimiter::hit($key, 86400);
 

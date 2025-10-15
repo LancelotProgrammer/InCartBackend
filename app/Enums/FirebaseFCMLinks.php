@@ -26,23 +26,24 @@ enum FirebaseFCMLinks: string implements HasLabel
                 ->columnSpanFull()
                 ->visible(function (Get $get) {
                     $link = $get('link');
+
                     return isset($link) ? $get('link')->value === 'product' : null;
                 })
                 ->relationship('product', 'title')
                 ->searchable()
-                ->getSearchResultsUsing(fn(string $search): array => Product::query()
-                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                ->getSearchResultsUsing(fn (string $search): array => Product::query()
+                    ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                     ->limit(50)
                     ->pluck('title', 'id')
                     ->all())
-                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
+                ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title),
         ];
     }
 
     public static function getModelDeepLink(array $data): ?string
     {
         return isset($data['link']) ? match ($data['link']->value) {
-            self::PRODUCT->value => isset($data['product_id']) ? FirebaseFCM::PRODUCT_DEEP_LINK . '/' . $data['product_id'] : null,
+            self::PRODUCT->value => isset($data['product_id']) ? FirebaseFCM::PRODUCT_DEEP_LINK.'/'.$data['product_id'] : null,
             default => null,
         } : null;
     }

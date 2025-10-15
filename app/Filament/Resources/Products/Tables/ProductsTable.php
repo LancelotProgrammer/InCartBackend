@@ -24,7 +24,7 @@ class ProductsTable
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')->label('Image')->state(fn($record) => $record->files->first()->url ?? null)->imageSize(200),
+                    ImageColumn::make('url')->label('Image')->state(fn ($record) => $record->files->first()->url ?? null)->imageSize(200),
                     TextColumn::make('title')->searchable(),
                     TextColumn::make('unit')->badge(),
                     TextColumn::make('brand'),

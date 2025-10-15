@@ -23,8 +23,7 @@ class GetProductDetails
             ->first();
         $branchProduct = $product->branchProducts->first();
 
-        if ($branchProduct->published_at === null)
-        {
+        if ($branchProduct->published_at === null) {
             throw new LogicalException('product is not active', 'You are trying to get a product which is not active for the selected branch');
         }
 

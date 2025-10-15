@@ -43,13 +43,13 @@ class CouponForm
                                 return $query->where('branch_id', $get('branch_id'));
                             })
                             ->rules([
-                                fn(): Closure => function (string $attribute, $value, Closure $fail) {
+                                fn (): Closure => function (string $attribute, $value, Closure $fail) {
                                     if (Gift::where('code', $value)->exists()) {
-                                        $fail("The code is used in gifts");
+                                        $fail('The code is used in gifts');
                                     }
                                 },
                             ])
-                            ->dehydrateStateUsing(fn(?string $state) => $state ? trim($state) : null)
+                            ->dehydrateStateUsing(fn (?string $state) => $state ? trim($state) : null)
                             ->required(),
                         Select::make('branch_id')
                             ->relationship('branch', 'title')

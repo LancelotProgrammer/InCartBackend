@@ -99,7 +99,7 @@ class OrderService
         $subtotal = 0;
 
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
-            ->with(['branches' => fn($query) => $query->where('branches.id', $this->payload->getBranchId())->withPivot([
+            ->with(['branches' => fn ($query) => $query->where('branches.id', $this->payload->getBranchId())->withPivot([
                 'price',
                 'quantity',
                 'discount',
@@ -151,7 +151,7 @@ class OrderService
 
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
             ->with([
-                'branches' => fn($query) => $query
+                'branches' => fn ($query) => $query
                     ->where('branches.id', $this->payload->getBranchId())
                     ->withPivot(['price', 'discount']),
             ])
@@ -243,7 +243,7 @@ class OrderService
             $this->payload->getUser()->id,
             $this->payload->getBranchId(),
             $products->unique('id')->pluck('id')->toArray(),
-            $products->flatMap(fn($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
+            $products->flatMap(fn ($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
         );
 
         // apply coupon if exists
@@ -290,12 +290,18 @@ class OrderService
 
     public function calculateFeesAndTotals(): self
     {
-        $taxAmount = ($this->payload->getServiceFee() + $this->payload->getSubtotal()) * $this->payload->getTaxRate();
-        $totalPrice = $this->payload->getSubtotal()
-            - $this->payload->getCouponDiscount()
-            + $this->payload->getDeliveryFee()
-            + $this->payload->getServiceFee()
-            + $taxAmount;
+        $subtotal = $this->payload->getSubtotal();
+        $serviceFee = $this->payload->getServiceFee();
+        $taxRate = $this->payload->getTaxRate();
+
+        $taxAmount = PriceService::calculateTaxAmount($subtotal, $serviceFee, $taxRate);
+        $totalPrice = PriceService::calculateTotal(
+            $subtotal,
+            $this->payload->getDiscount(),
+            $this->payload->getDeliveryFee(),
+            $serviceFee,
+            $taxRate
+        );
 
         $this->payload->setTaxAmount($taxAmount);
         $this->payload->setTotalPrice($totalPrice);
@@ -313,7 +319,7 @@ class OrderService
 
         $this->payload->setPaymentMethod($paymentMethod);
 
-        if ($paymentMethod->code !== 'pay-on-delivery') {
+        if ($paymentMethod->code !== PaymentMethod::PAY_ON_DELIVERY_CODE) {
             $this->resolvePaymentGateway($paymentMethod);
         }
 
@@ -347,7 +353,7 @@ class OrderService
             'delivery_status' => $this->payload->getDate() !== null ? DeliveryStatus::SCHEDULED->value : DeliveryStatus::NOT_DELIVERED->value,
 
             'subtotal_price' => $this->payload->getSubtotal(),
-            'discount_price' => $this->payload->getCouponDiscount(),
+            'discount_price' => $this->payload->getDiscount(),
             'delivery_fee' => $this->payload->getDeliveryFee(),
             'service_fee' => $this->payload->getServiceFee(),
             'tax_amount' => $this->payload->getTaxAmount(),
@@ -386,26 +392,11 @@ class OrderService
     {
         return [
             'subtotal' => $this->payload->getSubtotal(),
-            'discount' => $this->payload->getCouponDiscount(),
+            'discount' => $this->payload->getDiscount(),
             'delivery_fee' => $this->payload->getDeliveryFee() + $this->payload->getServiceFee(),
             'tax' => $this->payload->getTaxAmount(),
             'total' => $this->payload->getTotalPrice(),
             'coupon' => $this->payload->getCoupon()?->code,
         ];
-    }
-
-    public static function recalculateOrderTotals(Order $order): void
-    {
-        $subtotal = $order->cartProducts->sum(
-            fn($cartProduct) => $cartProduct->price * $cartProduct->quantity
-        );
-
-        $order->update([
-            'subtotal_price' => $subtotal,
-            'total_price' => $subtotal - $order->discount_price
-                + $order->delivery_fee
-                + $order->service_fee
-                + $order->tax_amount,
-        ]);
     }
 }

@@ -18,7 +18,7 @@ class PublishActions
                 ->color('success')
                 ->icon(Heroicon::Bolt)
                 ->requiresConfirmation()
-                ->visible(fn($record) => ! $record->isPublished())
+                ->visible(fn ($record) => ! $record->isPublished())
                 ->action(function ($record) use ($model) {
                     [$condition, $reason] = PublishService::canPublish($model, $record);
                     if (! $condition) {
@@ -28,6 +28,7 @@ class PublishActions
                             ->danger()
                             ->persistent()
                             ->send();
+
                         return;
                     }
                     $record->publish();
@@ -44,7 +45,7 @@ class PublishActions
                 ->color('warning')
                 ->icon(Heroicon::BoltSlash)
                 ->requiresConfirmation()
-                ->visible(fn($record) => $record->isPublished())
+                ->visible(fn ($record) => $record->isPublished())
                 ->action(function ($record) use ($model) {
                     [$condition, $reason] = PublishService::canUnpublish($model, $record);
                     if (! $condition) {
@@ -54,6 +55,7 @@ class PublishActions
                             ->danger()
                             ->persistent()
                             ->send();
+
                         return;
                     }
                     $record->unpublish();

@@ -2,12 +2,9 @@
 
 namespace App\Pipes;
 
-use App\Services\OrderService;
-use App\Services\SettingsService;
-use App\Support\OrderPayload;
+use App\Services\OrderManager;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CreateOrderBill
 {
@@ -24,8 +21,7 @@ class CreateOrderBill
             'notes' => 'nullable|string',
         ]);
 
-        $orderService = new OrderService((new OrderPayload)->fromRequest(
-            now(),
+        $orderBill = OrderManager::createBill(
             $request->input('address_id'),
             $request->input('delivery_date'),
             $request->input('payment_method_id'),
@@ -33,30 +29,8 @@ class CreateOrderBill
             $request->input('cart'),
             $request->input('notes'),
             $request->attributes->get('currentBranchId'),
-            $request->user(),
-            SettingsService::getServiceFee(),
-            SettingsService::getTaxRate(),
-            SettingsService::getMinDistance(),
-            SettingsService::getMaxDistance(),
-            SettingsService::getPricePerKilometer(),
-        ));
-
-        $orderBill = DB::transaction(function () use ($orderService) {
-
-            return $orderService
-                ->generateOrderNumber()
-                ->setOrderDate()
-                ->calculateDestination()
-                ->calculateCartPrice()
-                ->createCart()
-                // ->calculateCartWight()
-                ->calculateDeliveryPrice()
-                ->handleGiftRedemption()
-                ->handleCouponService()
-                ->calculateFeesAndTotals()
-                ->handlePaymentMethod()
-                ->createOrderBill();
-        });
+            $request->user()->id,
+        );
 
         return $next($orderBill);
     }

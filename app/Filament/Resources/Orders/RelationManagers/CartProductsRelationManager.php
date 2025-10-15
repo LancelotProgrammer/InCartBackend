@@ -2,16 +2,14 @@
 
 namespace App\Filament\Resources\Orders\RelationManagers;
 
-use App\Models\BranchProduct;
 use App\Models\CartProduct;
 use App\Models\Product;
 use App\Policies\OrderPolicy;
-use App\Services\OrderService;
+use App\Services\CartManager;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
@@ -47,7 +45,7 @@ class CartProductsRelationManager extends RelationManager
                 Action::make('edit')
                     ->icon(Heroicon::PencilSquare)
                     ->visible(function () {
-                        return OrderPolicy::isEnabled($this->getOwnerRecord(), $this->pageClass);
+                        return OrderPolicy::isEnabled($this->getOwnerRecord());
                     })
                     ->fillForm(function (CartProduct $record): array {
                         return [
@@ -76,50 +74,23 @@ class CartProductsRelationManager extends RelationManager
                         ];
                     })
                     ->action(function (array $data, CartProduct $record) {
-                        $order = $this->getOwnerRecord();
-                        $branchProduct = BranchProduct::where('branch_id', $order->branch_id)
-                            ->where('product_id', $data['product_id'])
-                            ->first();
-
-                        $price = $branchProduct
-                            ? BranchProduct::getDiscountPrice($branchProduct)
-                            : 0;
-
-                        $record->update([
-                            'product_id' => $data['product_id'],
-                            'quantity' => $data['quantity'],
-                            'price' => $price,
-                        ]);
-
-                        OrderService::recalculateOrderTotals($order);
+                        CartManager::editProduct($data, $record, $this->getOwnerRecord());
                     }),
                 Action::make('delete')
                     ->color('danger')
                     ->icon(Heroicon::OutlinedTrash)
                     ->requiresConfirmation()
                     ->visible(function () {
-                        return OrderPolicy::isEnabled($this->getOwnerRecord(), $this->pageClass);
+                        return OrderPolicy::isEnabled($this->getOwnerRecord());
                     })
                     ->action(function (CartProduct $record) {
-                        $cart = $record->cart;
-                        if ($cart->cartProducts()->count() <= 1) {
-                            Notification::make()
-                                ->title('Warning')
-                                ->body('You cannot delete the last product in the cart.')
-                                ->warning()
-                                ->send();
-
-                            return;
-                        }
-                        $order = $this->getOwnerRecord();
-                        $record->delete();
-                        OrderService::recalculateOrderTotals($order);
+                        CartManager::removeProduct($record, $this->getOwnerRecord());
                     }),
             ])
             ->toolbarActions([
                 Action::make('create')
                     ->visible(function () {
-                        return OrderPolicy::isEnabled($this->getOwnerRecord(), $this->pageClass);
+                        return OrderPolicy::isEnabled($this->getOwnerRecord());
                     })
                     ->schema(function () {
                         return [
@@ -141,23 +112,7 @@ class CartProductsRelationManager extends RelationManager
                         ];
                     })
                     ->action(function (array $data) {
-                        $order = $this->getOwnerRecord();
-                        $branchProduct = BranchProduct::where('branch_id', $order->branch_id)
-                            ->where('product_id', $data['product_id'])
-                            ->first();
-
-                        $price = $branchProduct
-                            ? BranchProduct::getDiscountPrice($branchProduct)
-                            : 0;
-
-                        CartProduct::create([
-                            'cart_id' => $data['cart_id'],
-                            'product_id' => $data['product_id'],
-                            'quantity' => $data['quantity'],
-                            'price' => $price,
-                        ]);
-
-                        OrderService::recalculateOrderTotals($order);
+                        CartManager::addProduct($data, $this->getOwnerRecord());
                     }),
             ]);
     }

@@ -26,7 +26,7 @@ class GetGifts
                     'allowed_sub_total_price' => $gift->allowed_sub_total_price,
                     'code' => in_array($gift->id, $userGiftIds) ? $gift->code : null,
                 ];
-            })
+            }),
         ]);
     }
 }

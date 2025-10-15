@@ -12,9 +12,8 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Services\DistanceService;
-use App\Services\OrderService;
+use App\Services\OrderManager;
 use App\Services\SettingsService;
-use App\Support\OrderPayload;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
@@ -29,7 +28,6 @@ use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class CreateOrderAction
 {
@@ -52,46 +50,22 @@ class CreateOrderAction
                 ]),
             ])
             ->action(function (array $data) {
-                $data['cart'] = collect($data['cart'])
-                    ->map(function ($item) {
-                        return [
-                            'id' => $item['product_id'],
-                            'quantity' => $item['quantity'],
-                        ];
-                    })
-                    ->toArray();
                 try {
-                    $orderService = new OrderService((new OrderPayload)->fromRequest(
-                        now(),
+                    OrderManager::managerCreate(
                         $data['address_id'],
                         $data['delivery_date'] ?? null,
                         $data['payment_method_id'],
                         $data['coupon'],
-                        $data['cart'],
+                        collect($data['cart'])
+                            ->map(fn ($item) => [
+                                'id' => $item['product_id'],
+                                'quantity' => $item['quantity'],
+                            ])
+                            ->toArray(),
                         $data['notes'],
                         $data['branch_id'],
-                        User::where('id', '=', $data['customer_id'])->first(),
-                        SettingsService::getServiceFee(),
-                        SettingsService::getTaxRate(),
-                        SettingsService::getMinDistance(),
-                        SettingsService::getMaxDistance(),
-                        SettingsService::getPricePerKilometer(),
-                    ));
-                    DB::transaction(function () use ($orderService) {
-                        return $orderService
-                            ->generateOrderNumber()
-                            ->setOrderDate()
-                            ->calculateDestination()
-                            ->calculateCartPrice()
-                            ->createCart()
-                            // ->calculateCartWight()
-                            ->calculateDeliveryPrice()
-                            ->handleGiftRedemption()
-                            ->handleCouponService()
-                            ->calculateFeesAndTotals()
-                            ->handlePaymentMethod()
-                            ->createOrder();
-                    });
+                        $data['customer_id'],
+                    );
                     Notification::make()
                         ->title('Order created successfully')
                         ->success()

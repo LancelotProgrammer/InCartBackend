@@ -75,7 +75,7 @@ class UsersRelationManager extends RelationManager
                             ->send();
                     }),
             ])->recordActions([
-                DetachAction::make()
+                DetachAction::make(),
             ]);
     }
 }

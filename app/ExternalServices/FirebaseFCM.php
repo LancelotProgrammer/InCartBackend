@@ -45,7 +45,7 @@ class FirebaseFCM
         foreach ($tokens as $token) {
             $message = CloudMessage::new()
                 ->withNotification($notification)
-                ->withData(['route' => self::ORDER_DEEP_LINK . "/$order->id"])
+                ->withData(['route' => self::ORDER_DEEP_LINK."/$order->id"])
                 ->toToken($token);
             try {
                 $response = $messaging->send($message);
@@ -56,7 +56,7 @@ class FirebaseFCM
             } catch (Throwable $e) {
                 Log::channel('error')->debug('FCM message failed', [
                     'data' => [$order],
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
                 throw $e;
             }
@@ -75,7 +75,7 @@ class FirebaseFCM
 
         $maxLength = 150;
         $body = strlen($reply) > $maxLength
-            ? substr($reply, 0, $maxLength) . '...'
+            ? substr($reply, 0, $maxLength).'...'
             : $reply;
 
         $notification = Notification::create(
@@ -86,7 +86,7 @@ class FirebaseFCM
         foreach ($tokens as $token) {
             $message = CloudMessage::new()
                 ->withNotification($notification)
-                ->withData(['route' => self::TICKET_DEEP_LINK . "/$ticket->id"])
+                ->withData(['route' => self::TICKET_DEEP_LINK."/$ticket->id"])
                 ->toToken($token);
             try {
                 $response = $messaging->send($message);
@@ -97,7 +97,7 @@ class FirebaseFCM
             } catch (Throwable $e) {
                 Log::channel('error')->debug('FCM message failed', [
                     'data' => [$ticket, $reply],
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
                 throw $e;
             }
@@ -116,7 +116,7 @@ class FirebaseFCM
         } catch (Throwable $e) {
             Log::channel('error')->debug('Failed to add token to topic', [
                 'data' => [$token, $topics],
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -134,7 +134,7 @@ class FirebaseFCM
         } catch (Throwable $e) {
             Log::channel('error')->debug('Failed to remove token from topic', [
                 'data' => [$token, $topics],
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -166,7 +166,7 @@ class FirebaseFCM
         } catch (Throwable $e) {
             Log::channel('error')->debug('FCM message failed', [
                 'data' => [$topic, $title, $body, $imageUrl, $deepLink],
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }

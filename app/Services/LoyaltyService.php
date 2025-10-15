@@ -44,7 +44,7 @@ class LoyaltyService
     {
         $gift = Gift::published()->where('id', '=', $giftId)->first();
 
-        if (!$gift) {
+        if (! $gift) {
             throw new LogicalException('Gift not found.', 'Gift not found.');
         }
 

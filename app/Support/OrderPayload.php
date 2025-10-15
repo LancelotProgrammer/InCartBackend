@@ -49,7 +49,7 @@ class OrderPayload
 
     private float $subtotal = 0;
 
-    private float $couponDiscount = 0;
+    private float $discount = 0;
 
     private float $taxAmount = 0;
 
@@ -259,14 +259,14 @@ class OrderPayload
         $this->subtotal = $subtotal;
     }
 
-    public function getCouponDiscount(): float
+    public function getDiscount(): float
     {
-        return $this->couponDiscount;
+        return $this->discount;
     }
 
     public function setDiscount(float $discount): void
     {
-        $this->couponDiscount = $discount;
+        $this->discount = $discount;
     }
 
     public function getTaxAmount(): float

@@ -34,7 +34,7 @@ class DeliveryOrders extends Page implements HasActions, HasSchemas, HasTable
         return $table
             ->paginationMode(PaginationMode::Simple)
             ->query(
-                fn(): Builder => Order::query()
+                fn (): Builder => Order::query()
                     ->whereDate('delivery_date', '=', now())
                     ->where('delivery_id', '=', auth()->user()->id)
             )
@@ -50,10 +50,10 @@ class DeliveryOrders extends Page implements HasActions, HasSchemas, HasTable
                         ->label('Cart')
                         ->formatStateUsing(function (Order $record) {
                             return $record->carts->first()->cartProducts
-                                ->map(fn($item) => "{$item->product->title} × {$item->quantity}")
-                                ->join(" | ");
+                                ->map(fn ($item) => "{$item->product->title} × {$item->quantity}")
+                                ->join(' | ');
                         })
-                        ->wrap()
+                        ->wrap(),
                 ]),
             ])
             ->contentGrid([
@@ -63,7 +63,7 @@ class DeliveryOrders extends Page implements HasActions, HasSchemas, HasTable
             ->recordActions([
                 Action::make('open_location')
                     ->color('primary')
-                    ->url(fn($record) => "https://www.google.com/maps?q={$record->userAddress->latitude},{$record->userAddress->longitude}"),
+                    ->url(fn ($record) => "https://www.google.com/maps?q={$record->userAddress->latitude},{$record->userAddress->longitude}"),
             ]);
     }
 

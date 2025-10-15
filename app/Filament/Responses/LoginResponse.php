@@ -11,11 +11,12 @@ use Livewire\Features\SupportRedirects\Redirector;
 
 class LoginResponse extends BaseLoginResponse
 {
-    public function toResponse($request): RedirectResponse | Redirector
+    public function toResponse($request): RedirectResponse|Redirector
     {
         if (Filament::auth()->user()->role->code === Role::ROLE_DELIVERY_CODE) {
             return redirect()->intended(DeliveryOrders::getUrl());
         }
+
         return redirect()->intended(Filament::getUrl());
     }
 }

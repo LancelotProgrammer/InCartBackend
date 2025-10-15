@@ -3,11 +3,10 @@
 namespace App\Policies;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Order;
 use App\Models\Role;
 use App\Models\User;
-use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Database\Eloquent\Builder;
 
 class OrderPolicy
 {
@@ -33,8 +32,7 @@ class OrderPolicy
 
     public function update(User $user, Order $order): bool
     {
-        return $user->hasPermission('update-order') &&
-            ! ($order->order_status === OrderStatus::FINISHED || $order->order_status === OrderStatus::CANCELLED);
+        return $user->hasPermission('update-order') && self::isEnabled($order);
     }
 
     public function delete(User $user, Order $order): bool
@@ -72,12 +70,11 @@ class OrderPolicy
         return $user->hasPermission('view-invoice-order');
     }
 
-    public static function isEnabled(Order $order, $pageClass): bool
+    public static function isEnabled(Order $order): bool
     {
-        return $order->paymentMethod?->code === 'pay-on-delivery'
-            && in_array($order->order_status, [
-                OrderStatus::PENDING,
-                OrderStatus::PROCESSING,
-            ], true) && ! (app($pageClass) instanceof ViewRecord);
+        return $order->payment_status === PaymentStatus::UNPAID && in_array($order->order_status, [
+            OrderStatus::PENDING,
+            OrderStatus::PROCESSING,
+        ], true);
     }
 }

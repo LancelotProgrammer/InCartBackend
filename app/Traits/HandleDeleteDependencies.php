@@ -91,7 +91,7 @@ trait HandleDeleteDependencies
                     }
                 }
 
-                if (!empty($foundRelations)) {
+                if (! empty($foundRelations)) {
                     $message = str_replace(':relations', implode(', ', $foundRelations), $config['message']);
 
                     Notification::make()

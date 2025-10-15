@@ -39,6 +39,7 @@ class SendFirebaseNotification extends Command
             $this->line('Example:');
             $this->line('  php artisan firebase:send-token <token>');
             $this->line('  php artisan firebase:send-token --topic=all-users');
+
             return self::FAILURE;
         }
 
@@ -68,9 +69,9 @@ class SendFirebaseNotification extends Command
             $response = $messaging->send($message);
 
             $this->info('✅ Notification sent successfully!');
-            $this->line('Response: ' . json_encode($response));
+            $this->line('Response: '.json_encode($response));
         } catch (Throwable $e) {
-            $this->error('❌ Failed to send notification: ' . $e->getMessage());
+            $this->error('❌ Failed to send notification: '.$e->getMessage());
         }
 
         return self::SUCCESS;

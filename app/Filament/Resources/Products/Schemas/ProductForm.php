@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Enums\UnitType;
 use App\Filament\Components\TranslationComponent;
-use App\Models\Branch;
 use App\Models\Category;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
@@ -39,13 +38,13 @@ class ProductForm
                             ->multiple()
                             ->relationship('categories', 'title')
                             ->searchable()
-                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
-                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                            ->getSearchResultsUsing(fn (string $search): array => Category::query()
+                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                 ->whereNotNull('parent_id')
                                 ->limit(50)
                                 ->pluck('title', 'id')
                                 ->all())
-                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title)
+                            ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->title)
                             ->required(),
                     ]),
                 self::productConfigs(),

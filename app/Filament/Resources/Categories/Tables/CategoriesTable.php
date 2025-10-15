@@ -4,12 +4,10 @@ namespace App\Filament\Resources\Categories\Tables;
 
 use App\Filament\Actions\CategoriesActions;
 use App\Filament\Actions\PublishActions;
-use App\Filament\Resources\Categories\CategoryResource;
 use App\Models\Category;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;

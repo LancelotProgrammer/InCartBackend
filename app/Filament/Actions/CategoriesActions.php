@@ -13,9 +13,9 @@ class CategoriesActions
     {
         return Action::make('products')
             ->authorize('viewProducts')
-            ->visible(fn(Category $record) => $record->parent_id !== null)
+            ->visible(fn (Category $record) => $record->parent_id !== null)
             ->icon(Heroicon::Cube)
-            ->url(fn(Category $record) => CategoryResource::getUrl('products', ['record' => $record->id]));
+            ->url(fn (Category $record) => CategoryResource::getUrl('products', ['record' => $record->id]));
     }
 
     public static function configureViewCategoriesAction(): Action
@@ -30,6 +30,6 @@ class CategoriesActions
                     return true;
                 }
             })
-            ->url(fn(Category $record) => CategoryResource::getUrl('categories', ['record' => $record->id]));
+            ->url(fn (Category $record) => CategoryResource::getUrl('categories', ['record' => $record->id]));
     }
 }

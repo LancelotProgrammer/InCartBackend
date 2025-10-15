@@ -467,15 +467,15 @@ class PermissionsSeeder extends Seeder
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Approve User', 'الموافقة على المستخدم']), JSON_UNESCAPED_UNICODE),
-                'code'  => 'approve-user',
+                'code' => 'approve-user',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Disapprove User', 'رفض المستخدم']), JSON_UNESCAPED_UNICODE),
-                'code'  => 'disapprove-user',
+                'code' => 'disapprove-user',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['send notification', 'ارسال الاشعارات']), JSON_UNESCAPED_UNICODE),
-                'code'  => 'send-notification',
+                'code' => 'send-notification',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Mark Important Feedback', 'تعيين ملاحظة كمهمة']), JSON_UNESCAPED_UNICODE),

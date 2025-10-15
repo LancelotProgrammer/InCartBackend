@@ -37,12 +37,12 @@ class GiftForm
                             ->minLength(5)
                             ->maxLength(15)
                             ->regex('/^(?!.* {2})[\p{Arabic}a-zA-Z0-9 ]+$/u')
-                            ->dehydrateStateUsing(fn(?string $state) => $state ? trim($state) : null)
+                            ->dehydrateStateUsing(fn (?string $state) => $state ? trim($state) : null)
                             ->required()
                             ->rules([
-                                fn(): Closure => function (string $attribute, $value, Closure $fail) {
+                                fn (): Closure => function (string $attribute, $value, Closure $fail) {
                                     if (Coupon::where('code', $value)->exists()) {
-                                        $fail("The code is used in coupons");
+                                        $fail('The code is used in coupons');
                                     }
                                 },
                             ]),

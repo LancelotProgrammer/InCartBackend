@@ -13,6 +13,8 @@ use Spatie\Translatable\HasTranslations;
 #[ScopedBy([BranchScope::class])]
 class PaymentMethod extends Model
 {
+    public const PAY_ON_DELIVERY_CODE = 'pay-on-delivery';
+
     use HasFactory, HasPublishAttribute, HasTranslations;
 
     public $timestamps = false;

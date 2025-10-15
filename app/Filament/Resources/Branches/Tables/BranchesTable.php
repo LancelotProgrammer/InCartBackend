@@ -71,7 +71,7 @@ class BranchesTable
                             ->body("{$cityName} currently has no default branch assigned.")
                             ->warning()
                             ->send();
-                        return;
+
                     }),
                 ...PublishActions::configure(Branch::class),
             ])

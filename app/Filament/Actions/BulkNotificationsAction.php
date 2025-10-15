@@ -56,7 +56,7 @@ class BulkNotificationsAction
                             ->disk('public')
                             ->visibility('public'),
 
-                        ...FirebaseFCMLinks::getLinksModelsForm()
+                        ...FirebaseFCMLinks::getLinksModelsForm(),
                     ]),
             ])
             ->action(function (array $data) {
@@ -74,11 +74,12 @@ class BulkNotificationsAction
                         ->body($e->getMessage())
                         ->danger()
                         ->send();
+
                     return;
                 }
                 Notification::make()
                     ->title('Notification Sent')
-                    ->body("Message sent to users successfully")
+                    ->body('Message sent to users successfully')
                     ->success()
                     ->send();
             });

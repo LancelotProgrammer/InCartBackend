@@ -28,7 +28,6 @@ use Database\Factories\PackageFactory;
 use Database\Factories\RootCategoryFactory;
 use Database\Factories\SecondLevelCategoryFactory;
 use Database\Factories\ThirdLevelCategoryFactory;
-use Database\Seeders\SettingsSeeder;
 use Faker\Generator;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -177,7 +176,7 @@ class BaseSeeder extends Seeder
                         'can-receive-order-notifications',
                         'can-be-assigned-to-take-orders',
                         'can-be-assigned-to-branch',
-                        'view-delivery-orders-page'
+                        'view-delivery-orders-page',
                     ]
                 )
                 ->pluck('code')->toArray(),
@@ -515,7 +514,7 @@ class BaseSeeder extends Seeder
             PaymentMethod::insert([
                 [
                     'branch_id' => $branch->id,
-                    'code' => 'pay-on-delivery',
+                    'code' => PaymentMethod::PAY_ON_DELIVERY_CODE,
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Pay on Delivery', 'الدفع عند الاستلام']), JSON_UNESCAPED_UNICODE),
                     'published_at' => now(),
                     'order' => '1',
@@ -556,7 +555,7 @@ class BaseSeeder extends Seeder
             ->has(UserAddress::factory()->count($userAddressCount), 'addresses')
             ->has(UserNotification::factory()->count($userNotificationCount), 'userNotifications')
             ->has(
-                FavoriteFactory::new()->count($favoriteCount)->sequence(fn($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
+                FavoriteFactory::new()->count($favoriteCount)->sequence(fn ($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
                 'favorites'
             )
             ->has(PackageFactory::new()->hasAttached($products->random(rand(3, 7))->values())->count($packageProductCount), 'packages')
@@ -590,7 +589,7 @@ class BaseSeeder extends Seeder
                     ]);
                 }
                 $subtotal = $cart->cartProducts->sum(
-                    fn($cartProduct) => $cartProduct->price * $cartProduct->quantity
+                    fn ($cartProduct) => $cartProduct->price * $cartProduct->quantity
                 );
                 $order->update([
                     'subtotal_price' => $subtotal,

@@ -137,4 +137,50 @@ class Order extends Model implements AuditableContract
     {
         return ! ($this->order_status === OrderStatus::FINISHED || $this->order_status === OrderStatus::CANCELLED || $this->order_status === OrderStatus::DELIVERING);
     }
+
+    public function isApprovable(): bool
+    {
+        return $this->order_status === OrderStatus::PENDING;
+    }
+
+    public function isDeliverable(): bool
+    {
+        return $this->order_status === OrderStatus::PROCESSING;
+    }
+
+    public function isFinishable(): bool
+    {
+        return $this->order_status === OrderStatus::DELIVERING;
+    }
+
+    public function archive(): void
+    {
+        OrderArchive::create([
+            'archived_at' => now(),
+            'order_number' => $this->order_number,
+            'notes' => $this->notes,
+            'order_status' => $this->order_status->value,
+            'payment_status' => $this->payment_status->value,
+            'delivery_status' => $this->delivery_status->value,
+            'subtotal_price' => $this->subtotal_price,
+            'discount_price' => $this->discount_price,
+            'delivery_fee' => $this->delivery_fee,
+            'service_fee' => $this->service_fee,
+            'tax_amount' => $this->tax_amount,
+            'total_price' => $this->total_price,
+            'delivery_scheduled_type' => $this->delivery_scheduled_type->value,
+            'delivery_date' => $this->delivery_date,
+            'payment_token' => $this->payment_token,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'customer' => $this->customer->toJson(),
+            'delivery' => $this->delivery?->toJson(),
+            'manager' => $this->manager?->toJson(),
+            'branch' => $this->branch->toJson(),
+            'coupon' => $this->coupon?->toJson(),
+            'payment_method' => $this->paymentMethod->toJson(),
+            'user_address' => $this->userAddress->toJson(),
+            'cart' => $this->carts()->with('cartProducts.product')->get()->toJson(),
+        ]);
+    }
 }

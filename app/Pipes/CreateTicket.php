@@ -16,8 +16,8 @@ class CreateTicket
     {
         $key = 'ticket-submit:'.$request->user()->id;
         $maxAttempts = SettingsService::getAllowedTicketCount();
-        if (RateLimiter::tooManyAttempts($key,$maxAttempts)) {
-            throw new LogicalException("Limit reached", "The user has submitted more than $maxAttempts ticket/s");
+        if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+            throw new LogicalException('Limit reached', "The user has submitted more than $maxAttempts ticket/s");
         }
         RateLimiter::hit($key, 86400);
 

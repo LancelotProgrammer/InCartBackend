@@ -2,21 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Enums\{
-    OrderStatus,
-    PaymentStatus,
-    DeliveryStatus,
-    DeliveryScheduledType
-};
-use App\Models\{
-    User,
-    Role,
-    Branch,
-    BranchUser,
-    Coupon,
-    PaymentMethod,
-    Order
-};
+use App\Enums\DeliveryScheduledType;
+use App\Enums\DeliveryStatus;
+use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
+use App\Models\Branch;
+use App\Models\BranchUser;
+use App\Models\Coupon;
+use App\Models\Order;
+use App\Models\PaymentMethod;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -35,7 +31,7 @@ class OrderFactory extends Factory
     {
         // 1. pick a random user who has addresses AND has role = customer
         $user = User::whereHas('addresses')
-            ->whereHas('role', fn($query) => $query->where('code', Role::ROLE_CUSTOMER_CODE))
+            ->whereHas('role', fn ($query) => $query->where('code', Role::ROLE_CUSTOMER_CODE))
             ->with('addresses')
             ->inRandomOrder()
             ->first();
@@ -61,10 +57,12 @@ class OrderFactory extends Factory
         $wasPaid = fake()->boolean(40);
         $payment = PaymentMethod::where('branch_id', $branch->id)->inRandomOrder()->first();
         $token = null;
-        if ($payment && $payment->code !== 'pay-on-delivery') {
+        if ($payment && $payment->code !== PaymentMethod::PAY_ON_DELIVERY_CODE) {
             do {
                 $token = Str::random(32);
             } while (Order::where('payment_token', $token)->exists());
+        } else {
+            $wasPaid = false;
         }
 
         // 6. Delivery scheduling ratio
@@ -99,7 +97,7 @@ class OrderFactory extends Factory
 
         // 7. Prepare base order
         $order = [
-            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(6)),
+            'order_number' => 'ORD-'.now()->format('YmdHis').'-'.strtoupper(Str::random(6)),
             'notes' => fake()->optional()->sentence(),
             'delivery_scheduled_type' => $deliveryType,
             'delivery_date' => $date,
@@ -139,12 +137,12 @@ class OrderFactory extends Factory
 
         // 9. Manager & delivery users for this branch
         $manager = BranchUser::where('branch_id', $branch->id)
-            ->whereHas('user.role', fn($q) => $q->where('code', Role::ROLE_MANAGER_CODE))
+            ->whereHas('user.role', fn ($q) => $q->where('code', Role::ROLE_MANAGER_CODE))
             ->inRandomOrder()
             ->first();
 
         $delivery = BranchUser::where('branch_id', $branch->id)
-            ->whereHas('user.role', fn($q) => $q->where('code', Role::ROLE_DELIVERY_CODE))
+            ->whereHas('user.role', fn ($q) => $q->where('code', Role::ROLE_DELIVERY_CODE))
             ->inRandomOrder()
             ->first();
 
@@ -162,7 +160,7 @@ class OrderFactory extends Factory
                 $order += [
                     'order_status' => OrderStatus::CANCELLED->value,
                     'payment_status' => $wasPaid
-                        ? ($payment && $payment->code !== 'pay-on-delivery' ? PaymentStatus::REFUNDED->value : PaymentStatus::UNPAID->value)
+                        ? ($payment && $payment->code !== PaymentMethod::PAY_ON_DELIVERY_CODE ? PaymentStatus::REFUNDED->value : PaymentStatus::UNPAID->value)
                         : PaymentStatus::UNPAID->value,
                     'delivery_status' => DeliveryStatus::NOT_DELIVERED->value,
                     'manager_id' => $manager?->user_id,

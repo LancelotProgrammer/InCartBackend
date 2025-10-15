@@ -73,7 +73,7 @@ class Category extends Model
                 while ($currentParent) {
                     $depth++;
                     if ($depth > self::$maxDepth) {
-                        $depthCountMessage = self::$maxDepth; 
+                        $depthCountMessage = self::$maxDepth;
                         throw new Exception("Category hierarchy depth cannot exceed $depthCountMessage levels.");
                     }
                     $currentParent = $currentParent->parent;

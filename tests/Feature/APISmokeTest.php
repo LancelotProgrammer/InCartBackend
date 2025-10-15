@@ -130,7 +130,7 @@ describe('API smoke test', function () {
         $response->assertStatus(200);
 
         $orderId = $response->json('data.id');
-        $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/order/' . $orderId)->assertStatus(200);
+        $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/order/'.$orderId)->assertStatus(200);
 
         $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/orders')->assertStatus(200);
 
@@ -172,18 +172,18 @@ describe('API smoke test', function () {
 
         $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/packages')->assertStatus(200);
 
-        $this->actingAs($this->phoneUser, 'sanctum')->putJson('/api/v1/packages/' . $packageId, [
+        $this->actingAs($this->phoneUser, 'sanctum')->putJson('/api/v1/packages/'.$packageId, [
             'title' => 'Updated test package',
             'description' => 'This is an updated test package description.',
         ])->assertStatus(200);
 
-        $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/packages/' . $packageId . '/products/1')->assertStatus(204);
+        $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/packages/'.$packageId.'/products/1')->assertStatus(204);
 
-        $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/packages/' . $packageId . '/products')->assertStatus(200);
+        $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/packages/'.$packageId.'/products')->assertStatus(200);
 
-        $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/' . $packageId . '/products/1')->assertStatus(204);
+        $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/'.$packageId.'/products/1')->assertStatus(204);
 
-        $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/' . $packageId)->assertStatus(200);
+        $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/packages/'.$packageId)->assertStatus(200);
     });
 
     test('favorites endpoints', function () {
@@ -220,7 +220,7 @@ describe('API smoke test', function () {
         $addressId = $response->json('data.id');
         $this->assertNotEmpty($addressId);
 
-        $this->actingAs($this->phoneUser, 'sanctum')->putJson('/api/v1/users/addresses/' . $addressId, [
+        $this->actingAs($this->phoneUser, 'sanctum')->putJson('/api/v1/users/addresses/'.$addressId, [
             'title' => 'Updated test address',
             'description' => 'This is an updated test address description.',
             'phone' => '+966512345678',
@@ -231,7 +231,7 @@ describe('API smoke test', function () {
 
         $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/addresses')->assertStatus(200);
 
-        $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/users/addresses/' . $addressId)->assertStatus(200);
+        $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/users/addresses/'.$addressId)->assertStatus(200);
     });
 
     test('public catalog endpoints', function () {

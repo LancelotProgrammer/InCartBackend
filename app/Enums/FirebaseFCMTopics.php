@@ -25,7 +25,7 @@ enum FirebaseFCMTopics: string implements HasLabel
         ];
 
         foreach (City::all() as $city) {
-            $topics[self::CITY->value . '-' . $city->id] = 'All Users in ' . $city->name;
+            $topics[self::CITY->value.'-'.$city->id] = 'All Users in '.$city->name;
         }
 
         return $topics;

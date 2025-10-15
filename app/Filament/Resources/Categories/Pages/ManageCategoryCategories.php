@@ -6,8 +6,8 @@ use App\Filament\Actions\CategoriesActions;
 use App\Filament\Actions\PublishActions;
 use App\Filament\Components\TranslationComponent;
 use App\Filament\Resources\Categories\CategoryResource;
-use App\Services\HandleUploadedFiles;
 use App\Models\Category;
+use App\Services\HandleUploadedFiles;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
@@ -81,12 +81,12 @@ class ManageCategoryCategories extends ManageRelatedRecords
             ->recordActions([
                 CategoriesActions::configureViewProductsAction()->iconButton(),
                 CategoriesActions::configureViewCategoriesAction()->iconButton(),
-                Action::make('go')->url(fn(Category $record) => CategoryResource::getUrl('edit', ['record' => $record->id])),
+                Action::make('go')->url(fn (Category $record) => CategoryResource::getUrl('edit', ['record' => $record->id])),
                 ...PublishActions::configure(Category::class),
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')->label('Image')->state(fn($record) => $record->files->first()->url ?? null)->imageSize(200),
+                    ImageColumn::make('url')->label('Image')->state(fn ($record) => $record->files->first()->url ?? null)->imageSize(200),
                     TextColumn::make('title')->searchable(),
                     TextColumn::make('published_at')->dateTime(),
                 ]),

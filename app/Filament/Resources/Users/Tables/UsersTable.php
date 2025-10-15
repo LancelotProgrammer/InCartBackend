@@ -58,7 +58,7 @@ class UsersTable
                 ]),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -110,7 +110,7 @@ class UsersTable
                     ->color('success')
                     ->icon(Heroicon::CheckCircle)
                     ->requiresConfirmation()
-                    ->visible(fn(User $record) => ! $record->isApproved())
+                    ->visible(fn (User $record) => ! $record->isApproved())
                     ->action(function (User $record) {
                         $record->approve();
                         Notification::make()
@@ -125,7 +125,7 @@ class UsersTable
                     ->color('danger')
                     ->icon(Heroicon::ExclamationTriangle)
                     ->requiresConfirmation()
-                    ->visible(fn(User $record) => $record->isApproved())
+                    ->visible(fn (User $record) => $record->isApproved())
                     ->action(function (User $record) {
                         $record->unApprove();
                         Notification::make()

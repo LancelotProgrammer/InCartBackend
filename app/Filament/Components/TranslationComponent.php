@@ -25,14 +25,14 @@ class TranslationComponent
 
         if ($isRequired) {
             $component
-            ->required()
-            ->rules([
-                fn(): Closure => function (string $attribute, $value, Closure $fail) {
-                    if (empty($value[0]['value'] ?? '') || empty($value[1]['value'] ?? '')) {
-                        $fail('Both English and Arabic values are required.');
-                    }
-                },
-            ]);
+                ->required()
+                ->rules([
+                    fn (): Closure => function (string $attribute, $value, Closure $fail) {
+                        if (empty($value[0]['value'] ?? '') || empty($value[1]['value'] ?? '')) {
+                            $fail('Both English and Arabic values are required.');
+                        }
+                    },
+                ]);
         }
 
         return $component;

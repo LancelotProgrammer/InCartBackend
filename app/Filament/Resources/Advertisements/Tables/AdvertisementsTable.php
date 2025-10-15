@@ -33,11 +33,11 @@ class AdvertisementsTable
                 TextColumn::make('created_at')->dateTime(),
                 IconColumn::make('can_be_published')
                     ->boolean()
-                    ->tooltip(fn($record) => $record->can_not_be_published_reason),
+                    ->tooltip(fn ($record) => $record->can_not_be_published_reason),
                 TextColumn::make('published_at')->dateTime(),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
