@@ -39,6 +39,7 @@ class CategoriesTable
                 Stack::make([
                     ImageColumn::make('url')->label('Image')->state(fn ($record) => $record->files->first()->url ?? null)->imageSize(200),
                     TextColumn::make('title')->searchable(),
+                    TextColumn::make('type'),
                     TextColumn::make('published_at')->dateTime(),
                 ]),
             ])

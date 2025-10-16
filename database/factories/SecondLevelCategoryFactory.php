@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\CategoryType;
 use App\Models\Category;
 use Database\Seeders\ArabicSeeder;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,6 +24,7 @@ class SecondLevelCategoryFactory extends Factory
             'title' => $text,
             'description' => $text,
             'published_at' => $this->faker->boolean(80) ? now() : null,
+            'type' => CategoryType::MAIN,
             'parent_id' => Category::whereNull('parent_id')->inRandomOrder()->first()?->id,
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\CategoryType;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -52,6 +53,7 @@ class RootCategoryFactory extends Factory
                 [$root['en_description'], $root['ar_description']]
             ),
             'published_at' => now(),
+            'type' => CategoryType::MAIN,
             'parent_id' => null,
         ];
     }

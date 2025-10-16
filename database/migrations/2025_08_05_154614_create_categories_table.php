@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->json('title');
             $table->json('description')->nullable();
+            $table->integer('type');
             $table->dateTime('published_at')->nullable();
             $table->timestamps();
 

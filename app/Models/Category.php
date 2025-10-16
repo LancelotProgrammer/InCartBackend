@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CategoryType;
 use App\Traits\HasPublishAttribute;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,11 +19,12 @@ class Category extends Model
 
     public static int $maxDepth = 3;
 
-    protected $fillable = ['title', 'description', 'published_at', 'parent_id'];
+    protected $fillable = ['title', 'description', 'type', 'published_at', 'parent_id'];
 
     protected $casts = [
         'title' => 'array',
         'description' => 'array',
+        'type' => CategoryType::class,
         'published_at' => 'datetime',
     ];
 

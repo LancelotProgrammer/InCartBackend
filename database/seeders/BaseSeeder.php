@@ -384,12 +384,11 @@ class BaseSeeder extends Seeder
         foreach ($branches as $branch) {
             foreach ($products as $product) {
                 $minimumQuantity = fake()->numberBetween(1, 10);
-                $maximumQuantity = fake()->numberBetween($minimumQuantity + 10, 50);
                 $branch->products()->attach($product->id, [
-                    'price' => fake()->randomFloat(2, 10, 500),
+                    'price' => fake()->randomFloat(2, 0.2, 50),
                     'discount' => $this->faker->boolean(20) ? fake()->numberBetween(5, 30) : 0,
                     'minimum_order_quantity' => $minimumQuantity,
-                    'maximum_order_quantity' => $maximumQuantity,
+                    'maximum_order_quantity' => fake()->numberBetween($minimumQuantity + 10, 50),
                     'quantity' => fake()->numberBetween(100, 10000),
                     'expires_at' => fake()->dateTimeBetween('+20 days', '+1 year'),
                     'published_at' => $this->faker->boolean(70) ? now() : null,

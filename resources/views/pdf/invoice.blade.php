@@ -1,177 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 
 <head>
-    <title>Invoice - Order #{{ $order->order_number }}</title>
+    <title>فاتورة | Invoice #{{ $order['number'] }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            margin: 20px;
+            font-family: sans-serif;
+            font-size: 13px;
             color: #333;
+            font-size: 12pt; 
+            line-height: 1.2;
+        }
+
+        .header,
+        .footer {
+            text-align: center;
+            margin-bottom: 15px;
         }
 
         .invoice-box {
-            width: 100%;
-            border: 1px solid #eee;
-            padding: 5px;
-            /* line-height: 1.6; */
+            border: 1px solid #ddd;
+            padding: 15px;
         }
 
-        .header {
+        .flex-between {
             display: flex;
             justify-content: space-between;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .company-details {
-            text-align: right;
-        }
-
-        .invoice-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #444;
+            align-items: center;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
         }
 
-        table th {
-            background: #f5f5f5;
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
         }
 
-        table td {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .totals {
-            margin-top: 20px;
-            width: 100%;
-        }
-
-        .totals td {
-            padding: 8px;
-        }
-
-        .totals .label {
+        th,
+        td {
+            padding: 6px;
             text-align: right;
+        }
+
+        th {
+            background-color: #f2f2f2;
             font-weight: bold;
         }
 
-        .totals .amount {
-            text-align: right;
+        .totals {
+            margin-top: 15px;
         }
 
-        .footer {
-            margin-top: 30px;
-            font-size: 12px;
-            text-align: center;
-            color: #777;
+        .totals td {
+            border: none;
+            padding: 5px 0;
         }
 
-        .page-break {
-            page-break-after: always;
+        .totals td.label {
+            text-align: left;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
     <div class="invoice-box">
-        <!-- Header -->
         <div class="header">
+            <h2>فاتورة | Invoice</h2>
+            <p>رقم الطلب / Order #: <strong>{{ $order['number'] }}</strong></p>
+            <p>التاريخ / Date: {{ $order['created_at']->format('Y-m-d H:i') }}</p>
+        </div>
+
+        <div class="flex-between">
             <div>
-                <h2 class="invoice-title">Invoice</h2>
-                <p>Order #: <strong>{{ $order->order_number }}</strong></p>
-                <p>Date: {{ $order->created_at->format('d M Y') }}</p>
+                <h4>بيانات العميل / Customer Details</h4>
+                <p>{{ $customer['name'] }}</p>
+                <p>{{ $customer['address'] }}</p>
+                <p>{{ $customer['phone'] }}</p>
             </div>
-            <div class="company-details">
-                <h3>Supermarket</h3>
-                <p>123 Market Street</p>
-                <p>City, Country</p>
-                <p>Email: support@supermarket.com</p>
+            <div style="text-align:left">
+                <h4>بيانات المتجر / Company Details</h4>
+                <p>{{ $app['name'] }}</p>
+                <p>{{ $app['address'] }}</p>
             </div>
         </div>
 
-        <!-- Customer -->
-        <div>
-            <h4>Customer Details</h4>
-            <p><strong>{{ $order->customer->name }}</strong></p>
-            <p>{{ $order->userAddress?->address ?? 'No address provided' }}</p>
-            <p>Email: {{ $order->customer->email }}</p>
-            <p>Phone: {{ $order->customer->phone ?? '-' }}</p>
-        </div>
-
-        <!-- Products -->
-        <h4 style="margin-top:20px;">Order Items</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th style="text-align:right;">Quantity</th>
-                    <th style="text-align:right;">Unit Price</th>
-                    <th style="text-align:right;">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($order->cartProducts as $cartProduct)
+        <h4 style="margin-top:20px;">المنتجات / Products</h4>
+        @foreach ($categories as $group)
+            <h5>{{ $group['category_ar'] }} / {{ $group['category_en'] }}</h5>
+            <table>
+                <thead>
                     <tr>
-                        {{-- <td>{{ $cartProduct->product->title }}</td> --}}
-                        <td>title</td>
-                        <td style="text-align:right;">{{ $cartProduct->quantity }}</td>
-                        <td style="text-align:right;">
-                            123
-                            {{-- {{ number_format($cartProduct->product->branchProduct->price, 2) }} --}}
-                        </td>
-                        <td style="text-align:right;">
-                            123
-                            {{-- {{ number_format($cartProduct->quantity * $cartProduct->product->branchProduct->price, 2) }} --}}
-                        </td>
+                        <th>المنتج / Product</th>
+                        <th>الكمية / Qty</th>
+                        <th>سعر الوحدة / Unit Price</th>
+                        <th>الإجمالي / Total</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($group['products'] as $product)
+                        <tr>
+                            <td>{{ $product['title_ar'] }} / {{ $product['title_en'] }}</td>
+                            <td>{{ $product['quantity'] }}</td>
+                            <td>{{ number_format($product['unit_price'], 2) }}</td>
+                            <td>{{ number_format($product['total'], 2) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endforeach
 
-        <!-- Totals -->
         <table class="totals">
             <tr>
-                <td class="label">Subtotal:</td>
-                <td class="amount">{{ number_format($order->subtotal_price, 2) }}</td>
+                <td class="label">الإجمالي الفرعي / Subtotal:</td>
+                <td>{{ number_format($order['subtotal'], 2) }}</td>
             </tr>
             <tr>
-                <td class="label">Coupon Discount:</td>
-                <td class="amount">-{{ number_format($order->discount_price, 2) }}</td>
+                <td class="label">خصم / Discount:</td>
+                <td>-{{ number_format($order['discount'], 2) }}</td>
             </tr>
             <tr>
-                <td class="label">Delivery Fee:</td>
-                <td class="amount">{{ number_format($order->delivery_fee, 2) }}</td>
+                <td class="label">رسوم التوصيل / Delivery Fee:</td>
+                <td>{{ number_format($order['delivery'], 2) + number_format($order['tax'], 2) + number_format($order['service_fee'], 2)}}</td>
             </tr>
             <tr>
-                <td class="label">Service Fee:</td>
-                <td class="amount">{{ number_format($order->service_fee, 2) }}</td>
-            </tr>
-            <tr>
-                <td class="label">Tax:</td>
-                <td class="amount">{{ number_format($order->tax_amount, 2) }}</td>
-            </tr>
-            <tr>
-                <td class="label"><strong>Total:</strong></td>
-                <td class="amount"><strong>{{ number_format($order->total_price, 2) }}</strong></td>
+                <td class="label"><strong>الإجمالي الكلي / Total:</strong></td>
+                <td><strong>{{ number_format($order['total'], 2) }}</strong></td>
             </tr>
         </table>
 
-        <!-- Footer -->
         <div class="footer">
-            Thank you for shopping with us!<br>
-            This invoice was generated on {{ now()->format('d M Y H:i') }}
+            <p>شكراً لتسوقكم معنا! / Thank you for shopping with us!</p>
+            <p>تم إنشاء الفاتورة في {{ now()->format('Y-m-d H:i') }}</p>
         </div>
     </div>
 </body>
