@@ -81,7 +81,12 @@ class InvoiceService
             'categories' => $groupedProducts->values(),
         ];
 
+        if (!file_exists(storage_path('app/mpdf_tmp'))) {
+            mkdir(storage_path('app/mpdf_tmp'), 0755, true);
+        }
+
         $mpdf = new Mpdf([
+            'tempDir' => storage_path('app/mpdf_tmp'),
             'mode' => 'utf-8',
             'format' => 'A4',
             'default_font' => 'Cairo',
