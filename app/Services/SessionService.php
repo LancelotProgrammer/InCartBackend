@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 
-class Session
+class SessionService
 {
     public static function deleteUserSessions(int $userId): void
     {

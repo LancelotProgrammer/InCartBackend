@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\Session;
+use App\Services\SessionService;
 use App\Traits\CanManagePermissions;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -170,7 +171,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         $this->save();
 
         $this->tokens()->delete();
-        Session::deleteUserSessions($this->id);
+        SessionService::deleteUserSessions($this->id);
     }
 
     public function unBlock(): void
