@@ -287,7 +287,7 @@ class OrderService
                 'manager_id' => auth()->user()->id,
             ]);
             $order->save();
-            if ($order->discount_price === 0) {
+            if ((float)$order->discount_price == 0.0) {
                 LoyaltyService::addPoints($order->customer, (int) $order->subtotal_price);
             }
         });
