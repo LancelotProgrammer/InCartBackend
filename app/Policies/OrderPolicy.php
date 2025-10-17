@@ -72,7 +72,11 @@ class OrderPolicy
 
     public static function isEnabled(Order $order): bool
     {
-        return $order->payment_status === PaymentStatus::UNPAID && in_array($order->order_status, [
+        if ($order->payment_status !== PaymentStatus::UNPAID) {
+            return false;
+        }
+
+        return in_array($order->order_status, [
             OrderStatus::PENDING,
             OrderStatus::PROCESSING,
         ], true);
