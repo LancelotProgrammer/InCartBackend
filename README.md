@@ -7,6 +7,7 @@ docs:
 - optional authentication is used in {set the default branch + favorite product}
 - default branch is set in {SetCurrentBranch middleware} and effect {BranchScope + AppServiceProvider -> configureBuilder}
 - advertisements / coupons / branches products / payment are scoped based on the branch id
+- audit is only applied for order and tickets
 - advertisement model has a getter propriety called link: which means the advertisement can be connected to {product and category, category, external link}
 - categories are build like a tree and they follow these rules:
     - a category can not edit it's parent id

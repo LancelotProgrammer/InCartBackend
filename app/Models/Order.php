@@ -172,8 +172,6 @@ class Order extends Model implements AuditableContract
             'delivery_scheduled_type' => $this->delivery_scheduled_type->value,
             'delivery_date' => $this->delivery_date,
             'payment_token' => $this->payment_token,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
             'customer' => $this->customer->toJson(),
             'delivery' => $this->delivery?->toJson(),
             'manager' => $this->manager?->toJson(),
@@ -182,6 +180,7 @@ class Order extends Model implements AuditableContract
             'payment_method' => $this->paymentMethod->toJson(),
             'user_address' => $this->userAddress->toJson(),
             'cart' => $this->carts()->with('cartProducts.product')->get()->toJson(),
+            'audit' => $this->auditsLogs?->toJson(),
         ]);
     }
 

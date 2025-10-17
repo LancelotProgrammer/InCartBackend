@@ -10,6 +10,34 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderArchive extends Model
 {
+    protected $fillable = [
+        'archived_at',
+        'order_number',
+        'cancel_reason',
+        'notes',
+        'order_status',
+        'payment_status',
+        'delivery_status',
+        'subtotal_price',
+        'discount_price',
+        'delivery_fee',
+        'service_fee',
+        'tax_amount',
+        'total_price',
+        'delivery_scheduled_type',
+        'delivery_date',
+        'payment_token',
+        'customer',
+        'delivery',
+        'manager',
+        'branch',
+        'coupon',
+        'payment_method',
+        'user_address',
+        'cart',
+        'audit',
+    ];
+
     protected $casts = [
         'archived_at' => 'datetime',
         'order_status' => OrderStatus::class,
@@ -31,5 +59,6 @@ class OrderArchive extends Model
         'payment_method' => 'array',
         'user_address' => 'array',
         'cart' => 'array',
+        'audit' => 'array',
     ];
 }

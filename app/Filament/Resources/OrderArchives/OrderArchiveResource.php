@@ -52,8 +52,9 @@ class OrderArchiveResource extends Resource
         return $table
             ->recordTitleAttribute('order_number')
             ->columns([
-                TextColumn::make('id'),
-                TextColumn::make('order_number'),
+                TextColumn::make('order_number')->searchable(),
+                TextColumn::make('total_price'),
+                TextColumn::make('order_status')->badge(),
                 TextColumn::make('archived_at'),
             ])
             ->recordActions([

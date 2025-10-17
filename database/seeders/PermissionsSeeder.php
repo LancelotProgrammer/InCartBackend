@@ -176,24 +176,12 @@ class PermissionsSeeder extends Seeder
                 'code' => 'delete-order',
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Any Order Archive', 'عرض أي أرشيف طلبات']), JSON_UNESCAPED_UNICODE),
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Any Order Archive', 'عرض أرشيف طلبات']), JSON_UNESCAPED_UNICODE),
                 'code' => 'view-any-order-archive',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['View Order Archive', 'عرض تفاصيل أرشيف الطلبات']), JSON_UNESCAPED_UNICODE),
                 'code' => 'view-order-archive',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Create Order Archive', 'إنشاء أرشيف طلبات']), JSON_UNESCAPED_UNICODE),
-                'code' => 'create-order-archive',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Update Order Archive', 'تحديث أرشيف الطلبات']), JSON_UNESCAPED_UNICODE),
-                'code' => 'update-order-archive',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Delete Order Archive', 'حذف أرشيف الطلبات']), JSON_UNESCAPED_UNICODE),
-                'code' => 'delete-order-archive',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['View Any Payment Method', 'عرض أي طريقة دفع']), JSON_UNESCAPED_UNICODE),
