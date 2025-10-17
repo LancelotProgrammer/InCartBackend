@@ -69,6 +69,10 @@ class UsersTable
                     ->nullable(),
                 TernaryFilter::make('phone_verified_at')->label('Phone verified')
                     ->nullable(),
+                TernaryFilter::make('blocked_at')->label('Blocked')
+                    ->nullable(),
+                TernaryFilter::make('approved_at')->label('Approved')
+                    ->nullable(),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 EditAction::make(),

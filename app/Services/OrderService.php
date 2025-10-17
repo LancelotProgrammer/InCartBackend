@@ -8,6 +8,7 @@ use App\Enums\PaymentStatus;
 use App\Exceptions\LogicalException;
 use App\ExternalServices\FirebaseFCM;
 use App\Models\Branch;
+use App\Models\BranchProduct;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Role;
@@ -286,6 +287,13 @@ class OrderService
                 'payment_status' => PaymentStatus::PAID,
                 'manager_id' => auth()->user()->id,
             ]);
+            foreach ($order->carts->first()->cartProducts as $cartProduct) {
+                $branchId = $order->branch_id;
+                $productId = $cartProduct->product_id;
+                BranchProduct::where('branch_id', $branchId)
+                    ->where('product_id', $productId)
+                    ->decrement('quantity', $cartProduct->quantity);
+            }
             $order->save();
             if ((float)$order->discount_price == 0.0) {
                 LoyaltyService::addPoints($order->customer, (int) $order->subtotal_price);
@@ -324,9 +332,13 @@ class OrderService
         })->pluck('name', 'id');
     }
 
-    public static function getUsers(string $search): array
+    public static function getUsers(string $search, int $branchId): array
     {
+        $cityId = Branch::find($branchId)->city_id;
+
         return User::query()
+            ->unblock()
+            ->where('city_id', '=', $cityId)
             ->where('role_id', '=', Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->first()->id)
             ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
             ->limit(50)

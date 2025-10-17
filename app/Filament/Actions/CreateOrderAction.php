@@ -92,7 +92,7 @@ class CreateOrderAction
             Select::make('customer_id')->label('Customer')
                 ->required()
                 ->searchable()
-                ->getSearchResultsUsing(fn(string $search): array => OrderService::getUsers($search))
+                ->getSearchResultsUsing(fn(string $search, Get $get): array => OrderService::getUsers($search, $get('branch_id')))
                 ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name)
                 ->live(),
             Select::make('address_id')

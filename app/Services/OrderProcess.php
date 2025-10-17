@@ -331,22 +331,9 @@ class OrderProcess
             'order_id' => $order->id,
         ]);
 
-        $this->createOrderAfterHook();
+        CacheService::deletePendingOrderCount();
 
         return $order;
-    }
-
-    private function createOrderAfterHook(): void
-    {
-        foreach ($this->payload->getCart()->cartProducts as $cartProduct) {
-            $branchId = $this->payload->getBranchId();
-            $productId = $cartProduct->product_id;
-            BranchProduct::where('branch_id', $branchId)
-                ->where('product_id', $productId)
-                ->decrement('quantity', $cartProduct->quantity);
-        }
-
-        CacheService::deletePendingOrderCount();
     }
 
     public function createOrderBill(): array
