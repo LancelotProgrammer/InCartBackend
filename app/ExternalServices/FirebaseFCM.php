@@ -122,7 +122,7 @@ class FirebaseFCM
         }
     }
 
-    public static function unsubscribeFromTopics(string $token, array $topics): void
+    public static function unsubscribeFromTopics(array $token, array $topics): void
     {
         try {
             $messaging = Firebase::messaging();
