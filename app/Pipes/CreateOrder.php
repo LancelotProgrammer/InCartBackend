@@ -2,7 +2,7 @@
 
 namespace App\Pipes;
 
-use App\Services\OrderManager;
+use App\Services\OrderService;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -21,7 +21,7 @@ class CreateOrder
             'notes' => 'nullable|string',
         ]);
 
-        $order = OrderManager::userCreate(
+        $order = OrderService::userCreate(
             $request->input('address_id'),
             $request->input('delivery_date'),
             $request->input('payment_method_id'),

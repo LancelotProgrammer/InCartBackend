@@ -10,11 +10,14 @@ use App\Pipes\CancelOrder;
 use App\Pipes\CreateOrder;
 use App\Pipes\CreateOrderBill;
 use App\Pipes\CreateOrderCheckout;
+use App\Pipes\CreateOrderInvoice;
 use App\Pipes\GetOrderDetails;
 use App\Pipes\GetUserPreviousOrders;
-use App\Pipes\PaymentGatewayCallback;
+use App\Pipes\MoyasarPaymentGatewayPayCallback;
+use App\Pipes\MoyasarPaymentGatewayRefundCallback;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Pipeline;
 
 class OrderController extends Controller
@@ -82,22 +85,37 @@ class OrderController extends Controller
     /**
      * @authenticated
      *
+     * @group Order Actions
+     */
+    public function createOrderInvoice(Request $request): Response
+    {
+        return Pipeline::send($request)
+            ->through([
+                CreateOrderInvoice::class,
+            ])
+            ->thenReturn();
+    }
+
+    /**
+     * @authenticated
+     *
      * @bodyParam order_id integer The city ID. Example: 1
-     * @bodyParam payment_method_id integer The city ID. Example: product name in english or arabic
      * @bodyParam token string The city ID. Example: 1
-     * @bodyParam metadata object[] metadata key-value. Example: [{"key": 1, "value": 1}, {"key": 2, "value": 2}]
-     * @bodyParam metadata[].key string The city ID. Example: 1
-     * @bodyParam metadata[].value string The city ID. Example: 1
+     * @bodyParam payload object[] payload key-value. Example: [{"key": 1, "value": 1}, {"key": 2, "value": 2}]
+     * @bodyParam payload[].key string The city ID. Example: 1
+     * @bodyParam payload[].value string The city ID. Example: 1
      *
      * @group Order Actions
      */
-    public function createOrderCheckout(Request $request): SuccessfulResponseResource
+    public function createOrderCheckout(Request $request): EmptySuccessfulResponseResource
     {
-        return new SuccessfulResponseResource(Pipeline::send($request)
+        Pipeline::send($request)
             ->through([
                 CreateOrderCheckout::class,
             ])
-            ->thenReturn());
+            ->thenReturn();
+
+        return new EmptySuccessfulResponseResource();
     }
 
     /**
@@ -135,11 +153,23 @@ class OrderController extends Controller
     /**
      * @group Webhook Actions
      */
-    public function paymentGatewayCallback(Request $request): JsonResource
+    public function moyasarPaymentGatewayPayCallback(Request $request): JsonResource
     {
         return new JsonResource(Pipeline::send($request)
             ->through([
-                PaymentGatewayCallback::class,
+                MoyasarPaymentGatewayPayCallback::class,
+            ])
+            ->thenReturn());
+    }
+
+    /**
+     * @group Webhook Actions
+     */
+    public function moyasarPaymentGatewayRefundCallback(Request $request): JsonResource
+    {
+        return new JsonResource(Pipeline::send($request)
+            ->through([
+                MoyasarPaymentGatewayRefundCallback::class,
             ])
             ->thenReturn());
     }

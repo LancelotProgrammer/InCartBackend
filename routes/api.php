@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\GiftController;
 use App\Http\Controllers\Api\HomeController;
-use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Api\PaymentMethodController;
@@ -63,7 +62,7 @@ Route::middleware([
         Route::post('/order/{id}/cancel', [OrderController::class, 'cancelOrder'])->middleware(IsServiceOnline::class);
         Route::get('/order/{id}', [OrderController::class, 'getOrderDetails']);
         Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);
-        Route::get('/orders/{id}/invoice', InvoiceController::class)->name('api.order.invoice');
+        Route::get('/orders/{id}/invoice', [OrderController::class, 'createOrderInvoice'])->name('api.order.invoice');
 
         Route::get('/users/notifications', [UserNotificationController::class, 'getUserNotifications']);
         Route::post('/users/notifications', [UserNotificationController::class, 'markUserNotificationAsRead']);
@@ -101,5 +100,6 @@ Route::middleware([
     Route::get('/payment-methods', [PaymentMethodController::class, 'getPaymentMethods']);
     Route::get('/settings', [SettingController::class, 'getSettings']);
 
-    Route::post('/moyasar/callback', [OrderController::class, 'paymentGatewayCallback'])->name('moyasar.callback');
+    Route::post('/moyasar/pay/callback', [OrderController::class, 'moyasarPaymentGatewayPayCallback'])->name('moyasar.pay.callback');
+    Route::post('/moyasar/refund/callback', [OrderController::class, 'moyasarPaymentGatewayRefundCallback'])->name('moyasar.refund.callback');
 });

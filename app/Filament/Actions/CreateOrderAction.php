@@ -4,16 +4,12 @@ namespace App\Filament\Actions;
 
 use App\Enums\DeliveryScheduledType;
 use App\Exceptions\LogicalException;
-use App\Models\Branch;
 use App\Models\BranchProduct;
 use App\Models\Coupon;
 use App\Models\Product;
-use App\Models\Role;
 use App\Models\User;
-use App\Models\UserAddress;
 use App\Services\DistanceService;
-use App\Services\OrderManager;
-use App\Services\SettingsService;
+use App\Services\OrderService;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
@@ -51,13 +47,13 @@ class CreateOrderAction
             ])
             ->action(function (array $data) {
                 try {
-                    OrderManager::managerCreate(
+                    OrderService::managerCreate(
                         $data['address_id'],
                         $data['delivery_date'] ?? null,
                         $data['payment_method_id'],
                         $data['coupon'],
                         collect($data['cart'])
-                            ->map(fn ($item) => [
+                            ->map(fn($item) => [
                                 'id' => $item['product_id'],
                                 'quantity' => $item['quantity'],
                             ])
@@ -96,38 +92,25 @@ class CreateOrderAction
             Select::make('customer_id')->label('Customer')
                 ->required()
                 ->searchable()
-                ->getSearchResultsUsing(fn (string $search): array => User::query()
-                    ->where('role_id', '=', Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->first()->id)
-                    ->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%'])
-                    ->limit(50)
-                    ->pluck('name', 'id')
-                    ->all())
-                ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name)
+                ->getSearchResultsUsing(fn(string $search): array => OrderService::getUsers($search))
+                ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name)
                 ->live(),
             Select::make('address_id')
                 ->required()
                 ->relationship(
                     'userAddress',
                     'title',
-                    fn (Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
+                    fn(Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
                 )
                 ->rules([
-                    fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
-                        $branch = Branch::where('id', '=', $get('branch_id'))->first();
-                        $address = UserAddress::where('id', '=', $value)->first();
-                        $distance = DistanceService::haversineDistance(
-                            $branch->latitude,
-                            $branch->longitude,
-                            $address->latitude,
-                            $address->longitude
-                        );
-                        $minDistance = SettingsService::getMinDistance();
-                        $maxDistance = SettingsService::getMaxDistance();
-                        if (
-                            $distance < $minDistance
-                            || $distance > $maxDistance
-                        ) {
-                            $fail("The total destination is {$distance} km, which is outside the allowed range of {$minDistance} km to {$maxDistance} km.");
+                    fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                        try {
+                            DistanceService::validate(
+                                $get('branch_id'),
+                                $value,
+                            );
+                        } catch (LogicalException $e) {
+                            $fail($e->details);
                         }
                     },
                 ]),
@@ -144,28 +127,38 @@ class CreateOrderAction
                         Select::make('product_id')
                             ->required()
                             ->searchable()
-                            ->getSearchResultsUsing(fn (string $search): array => Product::query()
-                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
+                            ->getSearchResultsUsing(fn(string $search): array => Product::query()
+                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
                                 ->limit(50)
                                 ->pluck('title', 'id')
                                 ->all())
-                            ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title)
+                            ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
                             ->distinct()
                             ->live(),
                         TextInput::make('quantity')
                             ->required()
                             ->integer()
                             ->minValue(function (Get $get) {
-                                return BranchProduct::where('branch_id', '=', $get('../../branch_id'))
-                                    ->where('product_id', '=', $get('product_id'))
-                                    ->first()?->minimum_order_quantity;
-                            })
-                            ->maxValue(function (Get $get) {
-                                $branchProduct = BranchProduct::where('branch_id', '=', $get('../../branch_id'))
+                                $branchProduct = BranchProduct::published()->where('branch_id', '=', $get('../../branch_id'))
                                     ->where('product_id', '=', $get('product_id'))
                                     ->first();
 
-                                return $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity;
+                                if ($branchProduct) {
+                                    return $branchProduct->minimum_order_quantity;
+                                } else {
+                                    return 0;
+                                }
+                            })
+                            ->maxValue(function (Get $get) {
+                                $branchProduct = BranchProduct::published()->where('branch_id', '=', $get('../../branch_id'))
+                                    ->where('product_id', '=', $get('product_id'))
+                                    ->first();
+
+                                if ($branchProduct) {
+                                    return $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity;
+                                } else {
+                                    return 0;
+                                }
                             }),
                     ];
                 })
@@ -204,7 +197,7 @@ class CreateOrderAction
                 ->relationship(
                     'paymentMethod',
                     'title',
-                    fn (Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
+                    fn(Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
                 ),
             TextInput::make('coupon')
                 ->belowContent(Schema::between([

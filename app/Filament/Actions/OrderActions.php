@@ -3,10 +3,8 @@
 namespace App\Filament\Actions;
 
 use App\Enums\OrderStatus;
-use App\Models\Branch;
 use App\Models\Order;
-use App\Models\User;
-use App\Services\OrderManager;
+use App\Services\OrderService;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
@@ -14,7 +12,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Database\Eloquent\Builder;
 
 class OrderActions
 {
@@ -38,7 +35,7 @@ class OrderActions
                     Textarea::make('cancel_reason')->required(),
                 ])
                 ->action(function (Order $order, array $data) {
-                    OrderManager::managerCancel($order, $data);
+                    OrderService::managerCancel($order, $data);
                 }),
 
             // Approve order
@@ -51,7 +48,7 @@ class OrderActions
                     return $order->isApprovable();
                 })
                 ->action(function (Order $order) {
-                    OrderManager::approve($order);
+                    OrderService::managerApprove($order);
                 }),
 
             // Assign to delivery
@@ -65,11 +62,11 @@ class OrderActions
                 })
                 ->schema([
                     Select::make('delivery_id')->options(function ($record) {
-                        return OrderManager::getDeliveryUsers($record->branch_id);
+                        return OrderService::getDeliveryUsers($record->branch_id);
                     }),
                 ])
                 ->action(function (Order $order, array $data) {
-                    OrderManager::selectDelivery($order, $data);
+                    OrderService::managerSelectDelivery($order, $data);
                 }),
 
             // Mark as finished
@@ -82,7 +79,7 @@ class OrderActions
                     return $order->isFinishable();
                 })
                 ->action(function (Order $order) {
-                    OrderManager::finish($order);
+                    OrderService::managerFinish($order);
                 }),
 
             // Archive order
@@ -95,7 +92,7 @@ class OrderActions
                     return $order->order_status === OrderStatus::FINISHED || $order->order_status === OrderStatus::CANCELLED;
                 })
                 ->action(function (Order $order) {
-                    OrderManager::archive($order);
+                    OrderService::managerArchive($order);
                 }),
         ];
 

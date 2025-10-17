@@ -17,7 +17,7 @@ class OrderInfolist
                     ->columns(11)
                     ->schema([
                         TextEntry::make('order_number'),
-                        TextEntry::make('cancel_reason'),
+                        TextEntry::make('coupon.title')->label('Coupon'),
 
                         TextEntry::make('order_status')->badge(),
                         TextEntry::make('payment_status')->badge(),
@@ -40,7 +40,7 @@ class OrderInfolist
                         TextEntry::make('delivery.email')->label('Delivery Email'),
                         TextEntry::make('manager.name')->label('Manager'),
                         TextEntry::make('branch.title')->label('Branch'),
-                        TextEntry::make('coupon.title')->label('Coupon'),
+                        TextEntry::make('cancel_reason'),
                     ]),
 
                 Section::make('Config')

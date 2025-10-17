@@ -2,7 +2,7 @@
 
 namespace App\Pipes;
 
-use App\Services\OrderManager;
+use App\Services\OrderService;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -21,7 +21,7 @@ class CreateOrderBill
             'notes' => 'nullable|string',
         ]);
 
-        $orderBill = OrderManager::createBill(
+        $orderBill = OrderService::userCreateBill(
             $request->input('address_id'),
             $request->input('delivery_date'),
             $request->input('payment_method_id'),

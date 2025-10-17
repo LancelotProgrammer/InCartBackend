@@ -2,8 +2,44 @@
 
 namespace App\Services;
 
+use App\Exceptions\LogicalException;
+use App\Models\Branch;
+use App\Models\UserAddress;
+
 class DistanceService
 {
+    public static function validate(int $branchId, int $addressId): float
+    {
+        $branch = Branch::where('id', $branchId)->first();
+        if (! $branch) {
+            throw new LogicalException('Branch is invalid', 'The selected branch does not exist.');
+        }
+
+        $address = UserAddress::where('id', $addressId)->first();
+        if (! $address) {
+            throw new LogicalException('User address is invalid', 'The address does not exist or does not belong to you.');
+        }
+
+        $distance = self::haversineDistance(
+            $branch->latitude,
+            $branch->longitude,
+            $address->latitude,
+            $address->longitude
+        );
+
+        $min = SettingsService::getMinDistance();
+        $max = SettingsService::getMaxDistance();
+
+        if ($distance < $min || $distance > $max) {
+            throw new LogicalException(
+                'Destination is invalid',
+                "The total destination is {$distance} km, which is outside the allowed range of {$min} km to {$max} km."
+            );
+        }
+
+        return $distance;
+    }
+
     public static function haversineDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
     {
         $earthRadius = 6371; // km

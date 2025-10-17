@@ -2,11 +2,10 @@
 
 namespace App\ExternalServices;
 
-use App\Contracts\PaymentGatewayInterface;
 use App\Models\Order;
 use App\Services\BasePaymentGateway;
+use App\Services\PaymentGatewayInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class MoyasarPaymentGateway extends BasePaymentGateway implements PaymentGatewayInterface
 {
@@ -20,42 +19,27 @@ class MoyasarPaymentGateway extends BasePaymentGateway implements PaymentGateway
         $this->baseUrl = config('services.moyasar.baseUrl');
     }
 
-    public function generateToken(): string
+    public function pay(Order $order, ?array $payload): void
     {
-        do {
-            $token = Str::random(32);
-        } while (Order::where('payment_token', $token)->exists());
-
-        return $token;
-    }
-
-    /**
-     * Process a payment
-     */
-    public function pay(Request $request): void
-    {
-        $orderId = $request->input('order_id');
-        $paymentMethodId = $request->input('payment_method_id');
-        $token = $request->input('token');
-        $metadata = $request->input('metadata');
-
         // process...
 
-        // $this->payOrder(Order::where('payment_token', '=', $token)->first());
+        // $this->payOrder($order);
     }
 
-    /**
-     * Handle Moyasar callback
-     */
-    public function callback(Request $request): void
+    public function payCallback(Request $request): void
     {
-        $orderId = $request->input('order_id');
-        $paymentMethodId = $request->input('payment_method_id');
-        $token = $request->input('token');
-        $metadata = $request->input('metadata');
+        // process...
+    }
 
+    public function refund(Order $order): void
+    {
         // process...
 
-        // $this->payOrder(Order::where('payment_token', '=', $token)->first());
+        // $this->refundOrder($order);
+    }
+
+    public function refundCallback(Request $request): void
+    {
+        // process...
     }
 }

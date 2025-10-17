@@ -4,10 +4,8 @@ namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Enums\DeliveryScheduledType;
 use App\Enums\OrderStatus;
-use App\Models\Branch;
 use App\Models\Order;
-use App\Models\User;
-use App\Services\OrderManager;
+use App\Services\OrderService;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -29,7 +27,7 @@ class OrderForm
                     ->columns(11)
                     ->schema([
                         TextEntry::make('order_number'),
-                        TextEntry::make('cancel_reason'),
+                        TextEntry::make('coupon.title')->label('Coupon'),
 
                         TextEntry::make('order_status')->badge(),
                         TextEntry::make('payment_status')->badge(),
@@ -52,7 +50,7 @@ class OrderForm
                         TextEntry::make('delivery.email')->label('Delivery Email'),
                         TextEntry::make('manager.name')->label('Manager'),
                         TextEntry::make('branch.title')->label('Branch'),
-                        TextEntry::make('coupon.title')->label('Coupon'),
+                        TextEntry::make('cancel_reason'),
                     ]),
 
                 Section::make('Edit')
@@ -71,7 +69,7 @@ class OrderForm
                                 return $order->order_status === OrderStatus::PROCESSING;
                             })
                             ->options(function (Get $get) {
-                                return OrderManager::getDeliveryUsers($get('branch_id'));
+                                return OrderService::getDeliveryUsers($get('branch_id'));
                             }),
                         Select::make('delivery_scheduled_type')
                             ->afterStateUpdated(function (Set $set) {

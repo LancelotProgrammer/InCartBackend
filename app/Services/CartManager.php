@@ -31,7 +31,7 @@ class CartManager
             'price' => BranchProduct::getDiscountPrice($branchProduct),
         ]);
 
-        OrderManager::recalculateOrderTotals($order);
+        OrderService::recalculateOrderTotals($order);
     }
 
     public static function editProduct(array $data, CartProduct $record, Order $order): void
@@ -55,7 +55,7 @@ class CartManager
             'price' => BranchProduct::getDiscountPrice($branchProduct),
         ]);
 
-        OrderManager::recalculateOrderTotals($order);
+        OrderService::recalculateOrderTotals($order);
     }
 
     public static function removeProduct(CartProduct $record, Order $order): void
@@ -71,6 +71,6 @@ class CartManager
             return;
         }
         $record->delete();
-        OrderManager::recalculateOrderTotals($order);
+        OrderService::recalculateOrderTotals($order);
     }
 }

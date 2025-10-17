@@ -13,13 +13,13 @@ class LogicalException extends Exception
 {
     use DebugPosition;
 
-    private string $context;
+    public string $context;
 
     public function __construct(
-        private string $errorMessage = 'Logical exception',
-        private string $details = 'Logical exception',
-        private int $statusCode = 400,
-        private array $errors = []
+        public string $errorMessage = 'Logical exception',
+        public string $details = 'Logical exception',
+        public int $statusCode = 400,
+        public array $errors = []
     ) {
         parent::__construct($errorMessage, $statusCode);
         $this->context = $this->getDebugPosition();
