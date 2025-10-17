@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Services\Cache;
+use App\Services\CacheService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Pages\Dashboard\Actions\FilterAction;
@@ -18,7 +18,7 @@ class Dashboard extends BaseDashboard
         return [
             Action::make('refresh')
                 ->action(function () {
-                    Cache::deleteDashboardCache();
+                    CacheService::deleteDashboardCache();
                 }),
             FilterAction::make()
                 ->schema([

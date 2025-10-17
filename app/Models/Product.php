@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UnitType;
-use App\Services\Cache;
+use App\Services\CacheService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -26,9 +26,9 @@ class Product extends Model
 
     protected static function booted(): void
     {
-        static::created(fn (Product $product) => Cache::deleteHomeCache());
-        static::updated(fn (Product $product) => Cache::deleteHomeCache());
-        static::deleted(fn (Product $product) => Cache::deleteHomeCache());
+        static::created(fn (Product $product) => CacheService::deleteHomeCache());
+        static::updated(fn (Product $product) => CacheService::deleteHomeCache());
+        static::deleted(fn (Product $product) => CacheService::deleteHomeCache());
     }
 
     public function files(): BelongsToMany

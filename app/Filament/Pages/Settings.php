@@ -4,7 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Enums\SettingType;
 use App\Models\Setting;
-use App\Services\Cache;
+use App\Services\CacheService;
 use App\Services\SettingsService;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -44,7 +44,7 @@ class Settings extends Page
                         ]);
                     }
 
-                    Cache::deleteSettingsCache();
+                    CacheService::deleteSettingsCache();
 
                     Notification::make()
                         ->title('Saved')

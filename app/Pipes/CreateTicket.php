@@ -4,7 +4,7 @@ namespace App\Pipes;
 
 use App\Exceptions\LogicalException;
 use App\Models\Ticket;
-use App\Services\Cache;
+use App\Services\CacheService;
 use App\Services\SettingsService;
 use Closure;
 use Illuminate\Http\Request;
@@ -30,7 +30,7 @@ class CreateTicket
             'question' => $data['question'],
         ]);
 
-        Cache::deleteTodaySupportCount();
+        CacheService::deleteTodaySupportCount();
 
         return $next([]);
     }

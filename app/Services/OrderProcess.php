@@ -346,7 +346,7 @@ class OrderProcess
                 ->decrement('quantity', $cartProduct->quantity);
         }
 
-        Cache::deletePendingOrderCount();
+        CacheService::deletePendingOrderCount();
     }
 
     public function createOrderBill(): array

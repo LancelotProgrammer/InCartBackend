@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\BranchScope;
-use App\Services\Cache;
+use App\Services\CacheService;
 use App\Traits\HasPublishAttribute;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,9 +42,9 @@ class BranchProduct extends Pivot
 
     protected static function booted(): void
     {
-        static::created(fn (BranchProduct $productBranch) => Cache::deleteHomeCache());
-        static::updated(fn (BranchProduct $productBranch) => Cache::deleteHomeCache());
-        static::deleted(fn (BranchProduct $productBranch) => Cache::deleteHomeCache());
+        static::created(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
+        static::updated(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
+        static::deleted(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
     }
 
     public function branch(): BelongsTo

@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Constants\CacheKeys;
 use Illuminate\Support\Facades\DB;
 
-class Cache
+class CacheService
 {
     public static function deleteHomeCache(): void
     {

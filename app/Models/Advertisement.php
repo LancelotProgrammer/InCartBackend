@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\AdvertisementLink;
 use App\Enums\AdvertisementType;
 use App\Models\Scopes\BranchScope;
-use App\Services\Cache;
+use App\Services\CacheService;
 use App\Traits\HasPublishAttribute;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,9 +34,9 @@ class Advertisement extends Model
 
     protected static function booted(): void
     {
-        static::created(fn (Advertisement $advertisement) => Cache::deleteHomeCache());
-        static::updated(fn (Advertisement $advertisement) => Cache::deleteHomeCache());
-        static::deleted(fn (Advertisement $advertisement) => Cache::deleteHomeCache());
+        static::created(fn (Advertisement $advertisement) => CacheService::deleteHomeCache());
+        static::updated(fn (Advertisement $advertisement) => CacheService::deleteHomeCache());
+        static::deleted(fn (Advertisement $advertisement) => CacheService::deleteHomeCache());
     }
 
     public function files(): BelongsToMany
