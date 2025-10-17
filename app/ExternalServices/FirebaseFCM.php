@@ -4,8 +4,13 @@ namespace App\ExternalServices;
 
 use App\Models\Order;
 use App\Models\Ticket;
+use App\Models\UserFirebaseToken;
 use Illuminate\Support\Facades\Log;
-use InvalidArgumentException;
+use Kreait\Firebase\Exception\Messaging\InvalidMessage;
+use Kreait\Firebase\Exception\Messaging\NotFound;
+use Kreait\Firebase\Exception\Messaging\ServerError;
+use Kreait\Firebase\Exception\Messaging\ServerUnavailable;
+use Kreait\Firebase\Exception\MessagingException;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Kreait\Laravel\Firebase\Facades\Firebase;
@@ -21,86 +26,109 @@ class FirebaseFCM
 
     public static function sendOrderStatusNotification(Order $order): void
     {
-        $messaging = Firebase::messaging();
-
         $tokens = $order->customer->firebaseTokens()->pluck('firebase_token')->toArray();
 
         if (empty($tokens)) {
             return;
         }
 
-        [$title, $body] = match ($order->order_status->value) {
-            2 => ['Order Processing', 'Your order is being processed.'],
-            3 => ['Order Delivering', 'Your order is on the way!'],
-            4 => ['Order Finished', 'Your order has been delivered successfully.'],
-            5 => ['Order Cancelled', 'Your order has been cancelled.'],
-            default => throw new InvalidArgumentException('Can not create message for this order'),
-        };
-
-        $notification = Notification::create(
-            $title,
-            $body
-        );
+        [$title, $body] = Order::getOrderNotificationMessage($order);
 
         foreach ($tokens as $token) {
-            $message = CloudMessage::new()
-                ->withNotification($notification)
-                ->withData(['route' => self::ORDER_DEEP_LINK."/$order->id"])
-                ->toToken($token);
-            try {
-                $response = $messaging->send($message);
-                Log::channel('debug')->info('FCM message sent successfully', [
-                    'data' => [$order],
-                    'response' => $response,
-                ]);
-            } catch (Throwable $e) {
-                Log::channel('error')->debug('FCM message failed', [
-                    'data' => [$order],
-                    'error' => $e->getMessage(),
-                ]);
-                throw $e;
-            }
+            self::sendNotificationToToken(
+                $token,
+                $title,
+                $body,
+                null,
+                self::ORDER_DEEP_LINK . "/$order->id"
+            );
         }
     }
 
     public static function sendTicketNotification(Ticket $ticket, string $reply): void
     {
-        $messaging = Firebase::messaging();
-
         $tokens = $ticket->user->firebaseTokens()->pluck('firebase_token')->toArray();
 
         if (empty($tokens)) {
             return;
         }
 
-        $maxLength = 150;
-        $body = strlen($reply) > $maxLength
-            ? substr($reply, 0, $maxLength).'...'
-            : $reply;
-
-        $notification = Notification::create(
-            'We’ve replied to your support request',
-            $body
-        );
-
         foreach ($tokens as $token) {
-            $message = CloudMessage::new()
-                ->withNotification($notification)
-                ->withData(['route' => self::TICKET_DEEP_LINK."/$ticket->id"])
-                ->toToken($token);
-            try {
-                $response = $messaging->send($message);
-                Log::channel('debug')->info('FCM message sent successfully', [
-                    'data' => [$ticket, $reply],
-                    'response' => $response,
-                ]);
-            } catch (Throwable $e) {
-                Log::channel('error')->debug('FCM message failed', [
-                    'data' => [$ticket, $reply],
-                    'error' => $e->getMessage(),
-                ]);
-                throw $e;
-            }
+            self::sendNotificationToToken(
+                $token,
+                'We’ve replied to your support request',
+                Ticket::getTicketNotificationReply($reply),
+                null,
+                self::TICKET_DEEP_LINK . "/$ticket->id"
+            );
+        }
+    }
+
+    private static function sendNotificationToToken(
+        string $token,
+        string $title,
+        string $body,
+        ?string $imageUrl = null,
+        ?string $deepLink = null,
+    ): void {
+        $messaging = Firebase::messaging();
+
+        $notification = Notification::create($title, $body);
+        if ($imageUrl) {
+            $notification = $notification->withImageUrl($imageUrl);
+        }
+
+        $message = CloudMessage::new()
+            ->toToken($token)
+            ->withNotification($notification);
+
+        if ($deepLink) {
+            $message = $message->withData(['route' => $deepLink]);
+        }
+
+        try {
+            $response = $messaging->send($message);
+            Log::channel('debug')->info('FCM message sent successfully', [
+                'token' => $token,
+                'title' => $title,
+                'body' => $body,
+                'response' => $response,
+            ]);
+        } catch (NotFound $e) {
+            Log::channel('error')->warning('FCM token not found, removing.', [
+                'token' => $token,
+                'errors' => $e->errors(),
+                'firebase_token' => $e->token(),
+            ]);
+            UserFirebaseToken::where('firebase_token', $token)->delete();
+        } catch (InvalidMessage $e) {
+            Log::channel('error')->error('Invalid FCM message.', [
+                'token' => $token,
+                'errors' => $e->errors(),
+            ]);
+        } catch (ServerUnavailable $e) {
+            $retryAfter = $e->retryAfter();
+            Log::channel('error')->error('FCM server unavailable.', [
+                'token' => $token,
+                'retry_after' => $retryAfter?->format(\DATE_ATOM),
+                'errors' => $e->errors(),
+            ]);
+        } catch (ServerError $e) {
+            Log::channel('error')->error('FCM server error.', [
+                'token' => $token,
+                'errors' => $e->errors(),
+            ]);
+        } catch (MessagingException $e) {
+            Log::channel('error')->error('Generic FCM messaging exception.', [
+                'token' => $token,
+                'message' => $e->getMessage(),
+                'errors' => $e->errors(),
+            ]);
+        } catch (Throwable $e) {
+            Log::channel('error')->error('Unexpected FCM failure.', [
+                'token' => $token,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 
@@ -140,8 +168,13 @@ class FirebaseFCM
         }
     }
 
-    public static function sendNotificationToTopic(string $topic, string $title, string $body, ?string $imageUrl, ?string $deepLink): void
-    {
+    public static function sendNotificationToTopic(
+        string $topic,
+        string $title,
+        string $body,
+        ?string $imageUrl = null,
+        ?string $deepLink = null,
+    ): void {
         $messaging = Firebase::messaging();
 
         $notification = Notification::create($title, $body);
@@ -159,12 +192,12 @@ class FirebaseFCM
 
         try {
             $response = $messaging->send($message);
-            Log::channel('debug')->info('FCM message sent successfully', [
+            Log::channel('debug')->info('FCM bulk message sent successfully', [
                 'data' => [$topic, $title, $body, $imageUrl, $deepLink],
                 'response' => $response,
             ]);
         } catch (Throwable $e) {
-            Log::channel('error')->debug('FCM message failed', [
+            Log::channel(channel: 'error')->debug('FCM bulk message failed', [
                 'data' => [$topic, $title, $body, $imageUrl, $deepLink],
                 'error' => $e->getMessage(),
             ]);

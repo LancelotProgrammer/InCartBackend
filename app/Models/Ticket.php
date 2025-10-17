@@ -17,4 +17,11 @@ class Ticket extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public static function getTicketNotificationReply(string $reply, int $maxLength = 150): string
+    {
+        return strlen($reply) > $maxLength
+            ? substr($reply, 0, $maxLength) . '...'
+            : $reply;
+    }
 }

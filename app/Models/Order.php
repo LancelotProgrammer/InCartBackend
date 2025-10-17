@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use InvalidArgumentException;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Models\Audit;
@@ -182,5 +183,16 @@ class Order extends Model implements AuditableContract
             'user_address' => $this->userAddress->toJson(),
             'cart' => $this->carts()->with('cartProducts.product')->get()->toJson(),
         ]);
+    }
+
+    public static function getOrderNotificationMessage(Order $order): array
+    {
+        return match ($order->order_status->value) {
+            2 => ['Order Processing', 'Your order is being processed.'],
+            3 => ['Order Delivering', 'Your order is on the way!'],
+            4 => ['Order Finished', 'Your order has been delivered successfully.'],
+            5 => ['Order Cancelled', 'Your order has been cancelled.'],
+            default => throw new InvalidArgumentException('Can not create message for this order'),
+        };
     }
 }
