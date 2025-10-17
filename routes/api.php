@@ -88,8 +88,8 @@ Route::middleware([
         Route::post('/users/tickets', [TicketAndFeedbackController::class, 'createTicket']);
         Route::post('/users/feedback', [TicketAndFeedbackController::class, 'createFeedback']);
 
-        Route::get('/gifts', [GiftController::class, 'getGifts']);
         Route::get('/gifts/{id}/redeem', [GiftController::class, 'redeemGift']);
+        Route::get('/gifts', [GiftController::class, 'getGifts']);
     });
 
     Route::get('/cities', [CityController::class, 'getCities']);
