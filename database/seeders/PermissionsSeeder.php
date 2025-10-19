@@ -426,6 +426,10 @@ class PermissionsSeeder extends Seeder
                 'code' => 'approve-order',
             ],
             [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Force Approve Order', 'فرض الموافقة على الطلب']), JSON_UNESCAPED_UNICODE),
+                'code' => 'force-approve-order',
+            ],
+            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Select Delivery Order', 'اختيار توصيل الطلب']), JSON_UNESCAPED_UNICODE),
                 'code' => 'select-delivery-order',
             ],

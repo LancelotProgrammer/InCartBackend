@@ -51,6 +51,22 @@ class OrderActions
                     OrderService::managerApprove($order);
                 }),
 
+            // Force approve order
+            Action::make('force_approve')
+                ->authorize('forceApprove')
+                ->icon(Heroicon::CheckBadge)
+                ->color('warning')
+                ->requiresConfirmation()
+                ->modalHeading('Force Approve order')
+                ->modalDescription('Are you sure you\'d like to force approve this order? This means you are approving an order which it\'s date is not today or it\'s not checked out.')
+                ->modalSubmitActionLabel('Yes, Approve it')
+                ->visible(function (Order $order) {
+                    return $order->isForceApprovable();
+                })
+                ->action(function (Order $order) {
+                    OrderService::managerForceApprove($order);
+                }),
+
             // Assign to delivery
             Action::make('select_delivery')
                 ->authorize('selectDelivery')

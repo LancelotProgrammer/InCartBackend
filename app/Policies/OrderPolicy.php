@@ -50,6 +50,11 @@ class OrderPolicy
         return $user->hasPermission('approve-order');
     }
 
+    public function forceApprove(User $user, Order $order): bool
+    {
+        return $user->hasPermission('force-approve-order');
+    }
+
     public function selectDelivery(User $user, Order $order): bool
     {
         return $user->hasPermission('select-delivery-order');

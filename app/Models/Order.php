@@ -144,6 +144,14 @@ class Order extends Model implements AuditableContract
         return $this->order_status === OrderStatus::PENDING;
     }
 
+    public function isForceApprovable(): bool
+    {
+        return $this->order_status === OrderStatus::PENDING && 
+            !$this->delivery_date->isSameDay(now()) ||
+            (PaymentMethod::where('id', '=', $this->payment_method_id)->value('code') !== PaymentMethod::PAY_ON_DELIVERY_CODE &&
+            $this->payment_status === PaymentStatus::UNPAID);
+    }
+
     public function isDeliverable(): bool
     {
         return $this->order_status === OrderStatus::PROCESSING;

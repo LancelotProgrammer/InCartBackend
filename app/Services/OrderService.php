@@ -259,6 +259,23 @@ class OrderService
             ->send();
     }
 
+    public static function managerForceApprove(Order $order): void
+    {
+        $order->update([
+            'order_status' => OrderStatus::PROCESSING,
+            'manager_id' => auth()->user()->id,
+        ]);
+        $order->save();
+
+        FirebaseFCM::sendOrderStatusNotification($order);
+        DatabaseUserNotification::sendOrderStatusNotification($order);
+        CacheService::deletePendingOrderCount();
+        Notification::make()
+            ->title("Order #{$order->order_number} is approved and currently processing.")
+            ->success()
+            ->send();
+    }
+
     public static function managerSelectDelivery(Order $order, array $data): void
     {
         $order->update([
