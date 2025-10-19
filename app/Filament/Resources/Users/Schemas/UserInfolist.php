@@ -68,8 +68,9 @@ class UserInfolist
                             ->schema([
                                 TextEntry::make('title')->label('Title'),
                             ])
-                            ->state(fn(User $record) => $record->notifications->map(fn($notification) => [
+                            ->state(fn(User $record) => $record->userNotifications->map(fn($notification) => [
                                 'title' => $notification->title,
+                                'body' => $notification->body,
                             ])),
 
                         RepeatableEntry::make('Addresses')
