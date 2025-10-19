@@ -154,31 +154,31 @@ class OrderProcess
         return $this;
     }
 
-    public function calculateCartWight(): self
+    public function calculateCartWeight(): self
     {
         /*
-            future: use this code to calculate the cart wight
+            future: use this code to calculate the cart weight
             weight_per_unit: should be added to products table. The idea is to have the weight of one unit of the product in grams
             setTotalWeight / getTotalWeight / getAllowedWeight:  should be added to OrderPayload
         */
         throw new Exception('Not implemented yet');
         // $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))->get();
-        // $totalWight = 0;
+        // $totalWeight = 0;
         // foreach ($this->payload->getCartItems() as $item) {
-        //     $totalWight += $products->firstWhere('id', $item['id'])->weight_per_unit * $item['quantity'];
+        //     $totalWeight += $products->firstWhere('id', $item['id'])->weight_per_unit * $item['quantity'];
         // }
         // $allowedWeight = $this->payload->getAllowedWeight();
-        // if ($totalWight >= $allowedWeight) {
-        //     throw new LogicalException("Cart wight is too high.", "Your cart wight is {$totalWight} and the allowed wight is {$allowedWeight}");
+        // if ($totalWeight >= $allowedWeight) {
+        //     throw new LogicalException("Cart weight is too high.", "Your cart weight is {$totalWeight} and the allowed weight is {$allowedWeight}");
         // }
-        // $this->payload->setTotalWeight($totalWight);
+        // $this->payload->setTotalWeight($totalWeight);
         // return $this;
     }
 
     public function calculateDeliveryPrice(): self
     {
         /*
-            future: use this code to calculate the deliveryFee based on distance, wight or branch
+            future: use this code to calculate the deliveryFee based on distance, weight or branch
             getCartWeight / getPricePerKilogram / getBranchDeliveryPrice : should be added to OrderPayload
         */
         // $fee = $this->payload->getDistance() * $this->payload->getPricePerKilometer() + 

@@ -61,7 +61,7 @@ class OrderService
                 ->calculateDestination()
                 ->calculateCartPrice()
                 ->createCart()
-                // ->calculateCartWight()
+                // ->calculateCartWeight()
                 ->calculateDeliveryPrice()
                 ->handleGiftRedemption()
                 ->handleCouponService()
