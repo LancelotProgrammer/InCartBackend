@@ -194,7 +194,7 @@ describe('API smoke test', function () {
         $this->actingAs($this->phoneUser, 'sanctum')->deleteJson('/api/v1/favorites/products/1')->assertStatus(204);
     });
 
-    test('tickets and feedbacks endpoints', function () {
+    test('tickets and feedback endpoints', function () {
         $this->actingAs($this->phoneUser, 'sanctum')->getJson('/api/v1/users/tickets')->assertStatus(200);
 
         $this->actingAs($this->phoneUser, 'sanctum')->postJson('/api/v1/users/tickets', [

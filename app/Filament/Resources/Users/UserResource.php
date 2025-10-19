@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Users;
 
+use App\Filament\Resources\Orders\Pages\ViewUser;
+use App\Filament\Resources\Orders\Schemas\UserInfolist;
 use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Resources\Users\Schemas\UserForm;
 use App\Filament\Resources\Users\Tables\UsersTable;
@@ -30,7 +32,7 @@ class UserResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        return $schema;
+        return UserInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
@@ -48,6 +50,7 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
+            'view' => ViewUser::route('/{record}'),
             'index' => ListUsers::route('/'),
         ];
     }
