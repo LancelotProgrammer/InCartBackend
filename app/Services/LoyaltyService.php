@@ -35,9 +35,14 @@ class LoyaltyService
             throw new LogicalException('Subtotal too low to use this gift.', 'Rise the price of the cart or cancel the coupon.');
         }
 
-        UserGift::where('user_id', '=', $user->id)->where('gift_id', $gift->id)->delete();
-
         return $gift;
+    }
+
+    public static function applyGift(int $userId, int $giftId): void
+    {
+        UserGift::where('user_id', '=', $userId)
+            ->where('gift_id', '=', $giftId)
+            ->delete();
     }
 
     public static function redeemGift(User $user, int $giftId): Gift

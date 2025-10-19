@@ -103,6 +103,13 @@ class SettingsSeeder extends Seeder
                 'group' => 'order',
                 'is_locked' => false,
             ],
+            [
+                'key' => 'max_subtotal_price',
+                'value' => '10000',
+                'type' => SettingType::FLOAT,
+                'group' => 'order',
+                'is_locked' => false,
+            ],
 
             // Legal
             [

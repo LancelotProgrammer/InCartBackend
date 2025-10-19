@@ -27,8 +27,8 @@ class DistanceService
             $address->longitude
         );
 
-        $min = SettingsService::getMinDistance();
-        $max = SettingsService::getMaxDistance();
+        $min = BranchSettingsService::getMinDistance($branchId);
+        $max = BranchSettingsService::getMaxDistance($branchId);
 
         if ($distance < $min || $distance > $max) {
             throw new LogicalException(

@@ -9,7 +9,7 @@ class PriceService
         return ($serviceFee + $subtotal) * ($taxRate / 100);
     }
 
-    public static function calculateTotal(
+    public static function calculateTotalPrice(
         float $subtotal,
         float $discount,
         float $deliveryFee,

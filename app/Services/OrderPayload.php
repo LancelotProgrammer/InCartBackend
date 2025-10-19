@@ -65,6 +65,8 @@ class OrderPayload
 
     private float $pricePerKilometer;
 
+    private float $maxSubtotalPrice;
+
     // -------------------------------
     // Getters & Setters
     // -------------------------------
@@ -339,6 +341,16 @@ class OrderPayload
         $this->pricePerKilometer = $price;
     }
 
+    public function getMaxSubtotalPrice(): float
+    {
+        return $this->maxSubtotalPrice;
+    }
+
+    public function setMaxSubtotalPrice(float $price): void
+    {
+        $this->maxSubtotalPrice = $price;
+    }
+
     public function fromRequest(
         Carbon $time,
         int $addressId,
@@ -354,6 +366,7 @@ class OrderPayload
         float $minDistance,
         float $maxDistance,
         float $pricePerKilometer,
+        float $maxSubtotalPrice,
     ): self {
         $this->setTime($time);
         $this->setAddressId($addressId);
@@ -369,6 +382,7 @@ class OrderPayload
         $this->setMinDistance($minDistance);
         $this->setMaxDistance($maxDistance);
         $this->setPricePerKilometer($pricePerKilometer);
+        $this->setMaxSubtotalPrice($maxSubtotalPrice);
 
         return $this;
     }

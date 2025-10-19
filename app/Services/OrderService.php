@@ -42,11 +42,12 @@ class OrderService
             $notes,
             $branchId,
             User::findOrFail($customerId),
-            SettingsService::getServiceFee(),
-            SettingsService::getTaxRate(),
-            SettingsService::getMinDistance(),
-            SettingsService::getMaxDistance(),
-            SettingsService::getPricePerKilometer(),
+            BranchSettingsService::getServiceFee($branchId),
+            BranchSettingsService::getTaxRate($branchId),
+            BranchSettingsService::getMinDistance($branchId),
+            BranchSettingsService::getMaxDistance($branchId),
+            BranchSettingsService::getPricePerKilometer($branchId),
+            BranchSettingsService::getMaxSubtotalPrice($branchId),
         ));
     }
 
@@ -356,7 +357,7 @@ class OrderService
             $order->tax_rate
         );
 
-        $totalPrice = PriceService::calculateTotal(
+        $totalPrice = PriceService::calculateTotalPrice(
             $subtotal,
             $order->discount_price,
             $order->delivery_fee,

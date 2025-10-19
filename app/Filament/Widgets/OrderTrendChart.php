@@ -52,8 +52,8 @@ class OrderTrendChart extends ChartWidget
             switch ($activeFilter) {
                 case 'per_week':
                     $orders = DB::table('orders')
-                        ->selectRaw('YEAR(created_at) as year, WEEK(created_at, 1) as week, COUNT(*) as total')
-                        ->whereBetween('created_at', [$startDate, $endDate])
+                        ->selectRaw('YEAR(delivery_date) as year, WEEK(delivery_date, 1) as week, COUNT(*) as total')
+                        ->whereBetween('delivery_date', [$startDate, $endDate])
                         ->groupBy('year', 'week')
                         ->orderBy('year')
                         ->orderBy('week')
@@ -70,8 +70,8 @@ class OrderTrendChart extends ChartWidget
 
                 case 'per_month':
                     $orders = DB::table('orders')
-                        ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total")
-                        ->whereBetween('created_at', [$startDate, $endDate])
+                        ->selectRaw("DATE_FORMAT(delivery_date, '%Y-%m') as month, COUNT(*) as total")
+                        ->whereBetween('delivery_date', [$startDate, $endDate])
                         ->groupBy('month')
                         ->orderBy('month')
                         ->pluck('total', 'month')
@@ -87,8 +87,8 @@ class OrderTrendChart extends ChartWidget
 
                 default:
                     $ordersPerHour = DB::table('orders')
-                        ->selectRaw('HOUR(created_at) as hour, COUNT(*) as total')
-                        ->whereBetween('created_at', [$startDate, $endDate])
+                        ->selectRaw('HOUR(delivery_date) as hour, COUNT(*) as total')
+                        ->whereBetween('delivery_date', [$startDate, $endDate])
                         ->groupBy('hour')
                         ->orderBy('hour')
                         ->pluck('total', 'hour')

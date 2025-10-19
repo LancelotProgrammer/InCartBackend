@@ -111,6 +111,11 @@ class OrderProcess
             $subtotal += $price * $item['quantity'];
         }
 
+        $allowedSubtotal = $this->payload->getMaxSubtotalPrice();
+        if ($subtotal >= $allowedSubtotal) {
+            throw new LogicalException("Cart price is too high.", "Your cart price is {$subtotal} and the allowed amount is {$allowedSubtotal}");
+        }
+
         $this->payload->setSubtotal($subtotal);
 
         return $this;
@@ -153,24 +158,20 @@ class OrderProcess
     {
         /*
             future: use this code to calculate the cart wight
-            weight_per_unit: should be added to products table. The idea is to have the weight of one unit of the product in grams (g)
-            setTotalWeight / getTotalWeight: should be added to OrderPayload
+            weight_per_unit: should be added to products table. The idea is to have the weight of one unit of the product in grams
+            setTotalWeight / getTotalWeight / getAllowedWeight:  should be added to OrderPayload
         */
         throw new Exception('Not implemented yet');
-        // $this->payload->setTotalWeight(0);
-        // $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
-        //     ->with(['branches' => fn($query) => $query->where('branches.id', $this->payload->getBranchId())])
-        //     ->get();
+        // $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))->get();
+        // $totalWight = 0;
         // foreach ($this->payload->getCartItems() as $item) {
-        //     $product = $products->firstWhere('id', $item['id']);
-        //     if (!$product || $product->branches->isEmpty()) {
-        //         continue;
-        //     }
-        //     $weight = $product->weight_per_unit * $item['quantity'];
-        //     $this->payload->setTotalWeight(
-        //         $this->payload->getTotalWeight() + $weight
-        //     );
+        //     $totalWight += $products->firstWhere('id', $item['id'])->weight_per_unit * $item['quantity'];
         // }
+        // $allowedWeight = $this->payload->getAllowedWeight();
+        // if ($totalWight >= $allowedWeight) {
+        //     throw new LogicalException("Cart wight is too high.", "Your cart wight is {$totalWight} and the allowed wight is {$allowedWeight}");
+        // }
+        // $this->payload->setTotalWeight($totalWight);
         // return $this;
     }
 
@@ -178,20 +179,11 @@ class OrderProcess
     {
         /*
             future: use this code to calculate the deliveryFee based on distance, wight or branch
+            getCartWeight / getPricePerKilogram / getBranchDeliveryPrice : should be added to OrderPayload
         */
-        // if (true) {
-        //     $this->payload->setDeliveryFee(
-        //         ($this->payload->getCartWeight() / 1000) * $this->payload->getPricePerKilogram()
-        //     );
-        // }
-        // if (true) {
-        //     $this->payload->setDeliveryFee($this->payload->getBranchDeliveryPrice());
-        // }
-        // if (true) {
-        //     $this->payload->setDeliveryFee(
-        //         $this->payload->getDistance() * $this->payload->getPricePerKilometer()
-        //     );
-        // }
+        // $fee = $this->payload->getDistance() * $this->payload->getPricePerKilometer() + 
+        //     $this->payload->getCartWeight() * $this->payload->getPricePerKilogram() + 
+        //     $this->payload->getBranchDeliveryPrice();
 
         $fee = $this->payload->getDistance() * $this->payload->getPricePerKilometer();
         $this->payload->setDeliveryFee($fee);
@@ -223,16 +215,14 @@ class OrderProcess
         if (empty($this->payload->getCode())) {
             return $this;
         }
-        $coupon = Coupon::published()
-            ->where('code', $this->payload->getCode())
-            ->first();
+        $coupon = Coupon::published()->where('code', $this->payload->getCode())->first();
         if (! $coupon) {
             return $this;
         }
 
         // calculate discount
-        $this->payload->setCoupon($coupon);
         $discount = $couponService->calculateDiscount($coupon);
+        $this->payload->setCoupon($coupon);
         $this->payload->setDiscount($discount);
 
         return $this;
@@ -240,22 +230,18 @@ class OrderProcess
 
     public function handleGiftRedemption(): self
     {
-        $giftCode = $this->payload->getCode();
-
         // apply gift if exists
         if (empty($this->payload->getCode())) {
             return $this;
         }
-        $gift = Gift::published()
-            ->where('code', $this->payload->getCode())
-            ->first();
+        $gift = Gift::published()->where('code', $this->payload->getCode())->first();
         if (! $gift) {
             return $this;
         }
 
         // calculate discount
+        $gift = LoyaltyService::validateCode($this->payload->getUser(), $this->payload->getCode(), $this->payload->getSubtotal());
         $this->payload->setGift($gift);
-        $gift = LoyaltyService::validateCode($this->payload->getUser(), $giftCode, $this->payload->getSubtotal());
         $this->payload->setDiscount($gift->discount);
 
         return $this;
@@ -268,7 +254,7 @@ class OrderProcess
         $taxRate = $this->payload->getTaxRate();
 
         $taxAmount = PriceService::calculateTaxAmount($subtotal, $serviceFee, $taxRate);
-        $totalPrice = PriceService::calculateTotal(
+        $totalPrice = PriceService::calculateTotalPrice(
             $subtotal,
             $this->payload->getDiscount(),
             $this->payload->getDeliveryFee(),
@@ -331,9 +317,18 @@ class OrderProcess
             'order_id' => $order->id,
         ]);
 
-        CacheService::deletePendingOrderCount();
+        $this->createOrderAfterHook();
 
         return $order;
+    }
+
+    private function createOrderAfterHook(): void
+    {
+        if ($this->payload->getGift() !== null) {
+            LoyaltyService::applyGift($this->payload->getUser()->id, $this->payload->getGift()->id);
+        }
+
+        CacheService::deletePendingOrderCount();
     }
 
     public function createOrderBill(): array
