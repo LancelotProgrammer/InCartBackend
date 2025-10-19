@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Users;
 
-use App\Filament\Resources\Orders\Pages\ViewUser;
-use App\Filament\Resources\Orders\Schemas\UserInfolist;
+use App\Filament\Resources\Users\Pages\ViewUser;
+use App\Filament\Resources\Users\Schemas\UserInfolist;
 use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Resources\Users\Schemas\UserForm;
 use App\Filament\Resources\Users\Tables\UsersTable;

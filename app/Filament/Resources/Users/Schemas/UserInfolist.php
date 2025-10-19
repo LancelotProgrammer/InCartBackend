@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Orders\Schemas;
+namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\Order;
 use App\Models\User;
