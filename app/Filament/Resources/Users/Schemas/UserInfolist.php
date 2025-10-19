@@ -22,7 +22,6 @@ class UserInfolist
                     ->schema([
                         TextEntry::make('name'),
                         TextEntry::make('email'),
-                        TextEntry::make('password'),
                         TextEntry::make('phone'),
                         TextEntry::make('city.name'),
                         TextEntry::make('role.title'),
@@ -45,7 +44,7 @@ class UserInfolist
                                 TextEntry::make('question')->label('Question'),
                                 TextEntry::make('reply')->label('Reply'),
                             ])
-                            ->state(fn($record) => $record->tickets->map(fn($ticket) => [
+                            ->state(fn(User $record) => $record->tickets->map(fn($ticket) => [
                                 'question' => $ticket->question,
                                 'reply' => $ticket->reply ?? 'No reply',
                             ])),
@@ -56,7 +55,7 @@ class UserInfolist
                             ->schema([
                                 TextEntry::make('feedback')->label('feedback'),
                             ])
-                            ->state(fn($record) => $record->feedback->map(fn($ticket) => [
+                            ->state(fn(User $record) => $record->feedback->map(fn($ticket) => [
                                 'feedback' => $ticket->feedback
                             ])),
 
@@ -66,23 +65,11 @@ class UserInfolist
 
                         RepeatableEntry::make('notifications')
                             ->grid(4)
-                            ->visible(fn($record) => $record->favorites->isNotEmpty())
                             ->schema([
                                 TextEntry::make('title')->label('Title'),
                             ])
-                            ->state(fn($record) => $record->notifications->map(fn($notification) => [
+                            ->state(fn(User $record) => $record->notifications->map(fn($notification) => [
                                 'title' => $notification->title,
-                            ])),
-
-                        RepeatableEntry::make('Firebase Tokens')
-                            ->columns(3)
-                            ->schema([
-                                TextEntry::make('token')->label('Token'),
-                                TextEntry::make('created_at')->label('Created At'),
-                            ])
-                            ->state(fn($record) => $record->firebaseTokens->map(fn($token) => [
-                                'token' => $token->token,
-                                'created_at' => $token->created_at?->toDateTimeString(),
                             ])),
 
                         RepeatableEntry::make('Addresses')
@@ -139,7 +126,6 @@ class UserInfolist
                         RepeatableEntry::make('Favorites')
                             ->columns(1)
                             ->grid(5)
-                            ->visible(fn($record) => $record->favorites->isNotEmpty())
                             ->schema([
                                 TextEntry::make('title')->label('Title'),
                             ])
