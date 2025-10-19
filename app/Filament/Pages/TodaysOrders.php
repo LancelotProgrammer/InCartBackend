@@ -34,6 +34,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
     public function table(Table $table): Table
     {
         return $table
+            ->poll()
             ->paginationMode(PaginationMode::Simple)
             ->query(fn (): Builder => Order::query()->whereDate('delivery_date', '=', now()->toDateString()))
             ->defaultSort('id', 'desc')

@@ -39,6 +39,7 @@ class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
     public function table(Table $table): Table
     {
         return $table
+            ->poll()
             ->paginationMode(PaginationMode::Simple)
             ->query(fn (): Builder => Ticket::query()
                 ->whereDate('created_at', '=', now()->toDateString())
