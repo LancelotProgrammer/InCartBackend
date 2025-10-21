@@ -522,24 +522,28 @@ class BaseSeeder extends Seeder
                     'branch_id' => $branch->id,
                     'code' => 'apple-pay',
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Apple Pay', 'Apple Pay']), JSON_UNESCAPED_UNICODE),
+                    'published_at' => null,
                     'order' => '2',
                 ],
                 [
                     'branch_id' => $branch->id,
                     'code' => 'google-pay',
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Google Pay', 'Google Pay']), JSON_UNESCAPED_UNICODE),
+                    'published_at' => null,
                     'order' => '2',
                 ],
                 [
                     'branch_id' => $branch->id,
                     'code' => 'mada-pay',
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['Mada Pay', 'Mada Pay']), JSON_UNESCAPED_UNICODE),
+                    'published_at' => null,
                     'order' => '3',
                 ],
                 [
                     'branch_id' => $branch->id,
                     'code' => 'stc-pay',
                     'title' => json_encode(Factory::translations(['en', 'ar'], ['STC Pay', 'STC Pay']), JSON_UNESCAPED_UNICODE),
+                    'published_at' => null,
                     'order' => '3',
                 ],
             ]);
