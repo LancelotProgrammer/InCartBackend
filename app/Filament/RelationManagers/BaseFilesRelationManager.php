@@ -4,10 +4,10 @@ namespace App\Filament\RelationManagers;
 
 use App\Services\HandleUploadedFiles;
 use Filament\Actions\Action;
-use Filament\Actions\DetachAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -40,8 +40,35 @@ class BaseFilesRelationManager extends RelationManager
                 ]),
             ])
             ->recordActions([
-                DetachAction::make('delete')
-                    ->disabled(fn () => $this->getOwnerRecord()->files()->get()->count() <= 1),
+                Action::make('detach')
+                    ->defaultColor('danger')
+                    ->icon(Heroicon::XMark)
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        if (! $record) {
+                            Notification::make()
+                                ->title('Record Conflict')
+                                ->body('This record has been modified by another user. Please refresh and try again.')
+                                ->warning()
+                                ->send();
+                            return;
+                        }
+
+                        if ($this->getOwnerRecord()->files()->count() <= 1) {
+                            Notification::make()
+                                ->title('You cannot delete the last file.')
+                                ->warning()
+                                ->send();
+                            return;
+                        }
+
+                        $this->getOwnerRecord()->files()->detach($record->id);
+
+                        Notification::make()
+                            ->title('File deleted')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->headerActions([
                 Action::make('create')

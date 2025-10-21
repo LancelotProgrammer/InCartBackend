@@ -4,12 +4,13 @@ namespace App\Filament\Resources\Cities\Pages;
 
 use App\Filament\Resources\Cities\CityResource;
 use App\Traits\HandleDeleteDependencies;
+use App\Traits\HasConcurrentEditingProtection;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditCity extends EditRecord
 {
-    use HandleDeleteDependencies;
+    use HandleDeleteDependencies, HasConcurrentEditingProtection;
 
     protected static string $resource = CityResource::class;
 

@@ -48,6 +48,12 @@ return new class extends Migration
             $table->timestamp('created_at')->nullable();
         });
 
+        Schema::create('delete_account_requests', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->timestamp('created_at')->nullable();
+        });
+
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();

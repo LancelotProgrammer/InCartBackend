@@ -70,3 +70,6 @@ docs:
     - role permissions are handled by trait called CanManagePermissions
 - settings 
     - SettingsService is responsible to define the getter of each setting, the form component of each setting, the cast of each setting and to cache them all
+- resource lock is using HasConcurrentEditingProtection trait and a custom resource lock is added to
+    - BaseFilesRelationManager
+    - UsersRelationManager

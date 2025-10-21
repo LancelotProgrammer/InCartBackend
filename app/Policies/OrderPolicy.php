@@ -32,7 +32,9 @@ class OrderPolicy
 
     public function update(User $user, Order $order): bool
     {
-        return $user->hasPermission('update-order') && self::isEnabled($order);
+        return $user->hasPermission('update-order') && 
+            self::isEnabled($order) &&
+            $user->id === $order->manager_id;
     }
 
     public function delete(User $user, Order $order): bool
@@ -57,12 +59,12 @@ class OrderPolicy
 
     public function selectDelivery(User $user, Order $order): bool
     {
-        return $user->hasPermission('select-delivery-order');
+        return $user->hasPermission('select-delivery-order') && $user->id === $order->manager_id;
     }
 
     public function finish(User $user, Order $order): bool
     {
-        return $user->hasPermission('finish-order');
+        return $user->hasPermission('finish-order') && $user->id === $order->manager_id;
     }
 
     public function archive(User $user, Order $order): bool
@@ -81,9 +83,6 @@ class OrderPolicy
             return false;
         }
 
-        return in_array($order->order_status, [
-            OrderStatus::PENDING,
-            OrderStatus::PROCESSING,
-        ], true);
+        return $order->order_status === OrderStatus::PROCESSING;
     }
 }

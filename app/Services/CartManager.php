@@ -32,6 +32,11 @@ class CartManager
         ]);
 
         OrderService::recalculateOrderTotals($order);
+
+        Notification::make()
+            ->title('Cart updated successfully.')
+            ->success()
+            ->send();
     }
 
     public static function editProduct(array $data, CartProduct $record, Order $order): void
@@ -56,11 +61,17 @@ class CartManager
         ]);
 
         OrderService::recalculateOrderTotals($order);
+
+        Notification::make()
+            ->title('Cart updated successfully.')
+            ->success()
+            ->send();
     }
 
     public static function removeProduct(CartProduct $record, Order $order): void
     {
         $cart = $record->cart;
+
         if ($cart->cartProducts()->count() <= 1) {
             Notification::make()
                 ->title('Warning')
@@ -70,7 +81,14 @@ class CartManager
 
             return;
         }
+
         $record->delete();
+
         OrderService::recalculateOrderTotals($order);
+
+        Notification::make()
+            ->title('Cart updated successfully.')
+            ->success()
+            ->send();
     }
 }

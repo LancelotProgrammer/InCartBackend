@@ -282,7 +282,6 @@ class OrderService
             'order_status' => OrderStatus::DELIVERING,
             'delivery_status' => DeliveryStatus::OUT_FOR_DELIVERY,
             'delivery_id' => $data['delivery_id'],
-            'manager_id' => auth()->user()->id,
         ]);
         $order->save();
 
@@ -303,7 +302,6 @@ class OrderService
                 'order_status' => OrderStatus::FINISHED,
                 'delivery_status' => DeliveryStatus::DELIVERED,
                 'payment_status' => PaymentStatus::PAID,
-                'manager_id' => auth()->user()->id,
             ]);
             foreach ($order->carts->first()->cartProducts as $cartProduct) {
                 $branchId = $order->branch_id;
@@ -367,11 +365,12 @@ class OrderService
     public static function recalculateOrderTotals(Order $order): void
     {
         $subtotal = $order->cartProducts->sum(fn($item) => $item->price * $item->quantity);
+        $taxRate = BranchSettingsService::getTaxRate($order->branch_id);
 
         $taxAmount = PriceService::calculateTaxAmount(
             $subtotal,
             $order->service_fee,
-            $order->tax_rate
+            $taxRate
         );
 
         $totalPrice = PriceService::calculateTotalPrice(
@@ -379,7 +378,7 @@ class OrderService
             $order->discount_price,
             $order->delivery_fee,
             $order->service_fee,
-            $order->tax_rate
+            $taxRate
         );
 
         $order->update([

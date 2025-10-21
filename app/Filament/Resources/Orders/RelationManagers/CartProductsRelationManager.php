@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\RelationManagers;
 
+use App\Models\BranchProduct;
 use App\Models\CartProduct;
 use App\Models\Product;
 use App\Policies\OrderPolicy;
@@ -11,6 +12,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
@@ -19,6 +21,8 @@ use Filament\Tables\Table;
 
 class CartProductsRelationManager extends RelationManager
 {
+    protected static bool $isLazy = false;
+
     protected static string $relationship = 'cartProducts';
 
     public function table(Table $table): Table
@@ -30,12 +34,11 @@ class CartProductsRelationManager extends RelationManager
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')->label('Image')->state(function ($record) {
-                        return $record->product->files->first()->url;
-                    }),
-                    TextColumn::make('product.title')->searchable(),
-                    TextColumn::make('quantity')->searchable(),
-                    TextColumn::make('price')->searchable(),
+                    ImageColumn::make('url')->label('Image')->state(fn($record) => $record->product->files->first()->url ?? null)->imageSize(200),
+                    TextColumn::make('product.title')->searchable()->prefix('Title: '),
+                    TextColumn::make('quantity')->searchable()->prefix('Quantity: '),
+                    TextColumn::make('price')->searchable()->prefix('Price: '),
+                    TextColumn::make('Total')->searchable()->state(fn($record) => $record->price * $record->quantity)->prefix('Total: '),
                 ]),
             ])
             ->filters([
@@ -56,21 +59,33 @@ class CartProductsRelationManager extends RelationManager
                     })
                     ->schema(function () {
                         return [
-                            Hidden::make('cart_id')
-                                ->default($this->getOwnerRecord()->carts->first()->id),
-                            Select::make('product_id')
-                                ->relationship('product', 'title')
-                                ->searchable()
-                                ->getSearchResultsUsing(fn (string $search): array => Product::query()
-                                    ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
-                                    ->limit(50)
-                                    ->pluck('title', 'id')
-                                    ->all())
-                                ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title)
-                                ->required(),
+                            Hidden::make('cart_id')->default($this->getOwnerRecord()->carts->first()->id),
+                            Select::make('product_id')->relationship('product', 'title')->disabled()->dehydrated(),
                             TextInput::make('quantity')
-                                ->numeric()
-                                ->required(),
+                                ->required()
+                                ->integer()
+                                ->minValue(function (Get $get) {
+                                    $branchProduct = BranchProduct::published()->where('branch_id', '=', $this->getOwnerRecord()->branch_id)
+                                        ->where('product_id', '=', $get('product_id'))
+                                        ->first();
+
+                                    if ($branchProduct) {
+                                        return $branchProduct->minimum_order_quantity;
+                                    } else {
+                                        return 0;
+                                    }
+                                })
+                                ->maxValue(function (Get $get) {
+                                    $branchProduct = BranchProduct::published()->where('branch_id', '=', $this->getOwnerRecord()->branch_id)
+                                        ->where('product_id', '=', $get('product_id'))
+                                        ->first();
+
+                                    if ($branchProduct) {
+                                        return $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity;
+                                    } else {
+                                        return 0;
+                                    }
+                                }),
                         ];
                     })
                     ->action(function (array $data, CartProduct $record) {
@@ -97,18 +112,41 @@ class CartProductsRelationManager extends RelationManager
                             Hidden::make('cart_id')
                                 ->default($this->getOwnerRecord()->carts->first()->id),
                             Select::make('product_id')
-                                ->relationship('product', 'title')
+                                ->required()
                                 ->searchable()
-                                ->getSearchResultsUsing(fn (string $search): array => Product::query()
-                                    ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
+                                ->getSearchResultsUsing(fn(string $search): array => Product::query()
+                                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
                                     ->limit(50)
                                     ->pluck('title', 'id')
                                     ->all())
-                                ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title)
-                                ->required(),
+                                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
+                                ->distinct()
+                                ->live(),
                             TextInput::make('quantity')
-                                ->numeric()
-                                ->required(),
+                                ->required()
+                                ->integer()
+                                ->minValue(function (Get $get) {
+                                    $branchProduct = BranchProduct::published()->where('branch_id', '=', $this->getOwnerRecord()->branch_id)
+                                        ->where('product_id', '=', $get('product_id'))
+                                        ->first();
+
+                                    if ($branchProduct) {
+                                        return $branchProduct->minimum_order_quantity;
+                                    } else {
+                                        return 0;
+                                    }
+                                })
+                                ->maxValue(function (Get $get) {
+                                    $branchProduct = BranchProduct::published()->where('branch_id', '=', $this->getOwnerRecord()->branch_id)
+                                        ->where('product_id', '=', $get('product_id'))
+                                        ->first();
+
+                                    if ($branchProduct) {
+                                        return $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity;
+                                    } else {
+                                        return 0;
+                                    }
+                                }),
                         ];
                     })
                     ->action(function (array $data) {

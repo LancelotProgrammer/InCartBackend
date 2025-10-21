@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Branches\RelationManagers;
 
 use App\Models\User;
 use Filament\Actions\Action;
-use Filament\Actions\DetachAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -75,7 +74,27 @@ class UsersRelationManager extends RelationManager
                             ->send();
                     }),
             ])->recordActions([
-                DetachAction::make(),
+                Action::make('detach')
+                    ->defaultColor('danger')
+                    ->icon(Heroicon::XMark)
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        if (! $record) {
+                            Notification::make()
+                                ->title('Record Conflict')
+                                ->body('This record has been modified by another user. Please refresh and try again.')
+                                ->warning()
+                                ->send();
+                            return;
+                        }
+
+                        $this->getOwnerRecord()->users()->detach($record->id);
+
+                        Notification::make()
+                            ->title('Users detached')
+                            ->success()
+                            ->send();
+                    }),
             ]);
     }
 }

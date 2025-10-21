@@ -145,6 +145,8 @@ class OrderProcess
                 'product_id' => $item['id'],
                 'quantity' => $item['quantity'],
                 'price' => $price,
+                'created_at' => $this->payload->getTime(),
+                'updated_at' => $this->payload->getTime(),
             ];
         }
 
