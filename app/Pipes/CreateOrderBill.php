@@ -2,9 +2,11 @@
 
 namespace App\Pipes;
 
+use App\Enums\DeliveryScheduledType;
 use App\Services\OrderService;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CreateOrderBill
 {
@@ -12,6 +14,7 @@ class CreateOrderBill
     {
         $request->validate([
             'address_id' => 'required|exists:user_addresses,id',
+            'delivery_scheduled_type' => ['required', Rule::enum(DeliveryScheduledType::class)],
             'delivery_date' => 'nullable|date|after_or_equal:today',
             'payment_method_id' => 'required|exists:payment_methods,id',
             'coupon' => 'nullable|string',
@@ -23,6 +26,7 @@ class CreateOrderBill
 
         $orderBill = OrderService::userCreateBill(
             $request->input('address_id'),
+            $request->input('delivery_date'),
             $request->input('delivery_date'),
             $request->input('payment_method_id'),
             $request->input('coupon'),

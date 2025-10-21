@@ -40,6 +40,7 @@ class OrderController extends Controller
      * @authenticated
      *
      * @bodyParam address_id integer required The user address ID. Example: 1
+     * @bodyParam delivery_scheduled_type number The delivery date. Example: 1 => IMMEDIATE, 2 => SCHEDULED
      * @bodyParam delivery_date date The delivery date. Example: 2025
      * @bodyParam payment_method_id integer required The payment method ID. Example: 1
      * @bodyParam coupon string The city ID. Example: COUPONTEST
@@ -63,6 +64,7 @@ class OrderController extends Controller
      * @authenticated
      *
      * @bodyParam address_id integer required The user address ID. Example: 1
+     * @bodyParam delivery_scheduled_type number The delivery date. Example: 1 => IMMEDIATE, 2 => SCHEDULED
      * @bodyParam delivery_date date The delivery date. Example: 2025
      * @bodyParam payment_method_id integer required The payment method ID. Example: 1
      * @bodyParam coupon string The city ID. Example: COUPONTEST

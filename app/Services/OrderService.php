@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\DeliveryScheduledType;
 use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
@@ -24,6 +25,7 @@ class OrderService
 {
     private static function makeOrderProcess(
         int $addressId,
+        DeliveryScheduledType $deliveryScheduledType,
         ?string $deliveryDate,
         int $paymentMethodId,
         ?string $coupon,
@@ -35,6 +37,7 @@ class OrderService
         return new OrderProcess((new OrderPayload)->fromRequest(
             now(),
             $addressId,
+            $deliveryScheduledType,
             $deliveryDate,
             $paymentMethodId,
             $coupon,
@@ -73,6 +76,7 @@ class OrderService
 
     public static function userCreate(
         int $addressId,
+        DeliveryScheduledType $deliveryScheduledType,
         ?string $deliveryDate,
         int $paymentMethodId,
         ?string $coupon,
@@ -83,6 +87,7 @@ class OrderService
     ): Order {
         $order = self::processOrderCreation(self::makeOrderProcess(
             $addressId,
+            $deliveryScheduledType,
             $deliveryDate,
             $paymentMethodId,
             $coupon,
@@ -116,6 +121,7 @@ class OrderService
 
     public static function userCreateBill(
         int $addressId,
+        DeliveryScheduledType $deliveryScheduledType,
         ?string $deliveryDate,
         int $paymentMethodId,
         ?string $coupon,
@@ -126,6 +132,7 @@ class OrderService
     ): array {
         return self::processOrderCreation(self::makeOrderProcess(
             $addressId,
+            $deliveryScheduledType,
             $deliveryDate,
             $paymentMethodId,
             $coupon,
@@ -168,6 +175,7 @@ class OrderService
 
     public static function managerCreate(
         int $addressId,
+        DeliveryScheduledType $deliveryScheduledType,
         ?string $deliveryDate,
         int $paymentMethodId,
         ?string $coupon,
@@ -178,6 +186,7 @@ class OrderService
     ): void {
         self::processOrderCreation(self::makeOrderProcess(
             $addressId,
+            $deliveryScheduledType,
             $deliveryDate,
             $paymentMethodId,
             $coupon,

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\DeliveryScheduledType;
 use App\Models\Cart;
 use App\Models\Coupon;
 use App\Models\Gift;
@@ -16,6 +17,8 @@ class OrderPayload
     private int $addressId;
 
     private ?string $deliveryDate = null;
+
+    private DeliveryScheduledType $deliveryScheduledType;
 
     private int $paymentMethodId;
 
@@ -89,6 +92,16 @@ class OrderPayload
     public function setAddressId(int $id): void
     {
         $this->addressId = $id;
+    }
+
+    public function getDeliveryScheduledType(): DeliveryScheduledType
+    {
+        return $this->deliveryScheduledType;
+    }
+
+    public function setDeliveryScheduledType(DeliveryScheduledType $deliveryScheduledType): void
+    {
+        $this->deliveryScheduledType = $deliveryScheduledType;
     }
 
     public function getDeliveryDate(): ?string
@@ -354,6 +367,7 @@ class OrderPayload
     public function fromRequest(
         Carbon $time,
         int $addressId,
+        DeliveryScheduledType $deliveryScheduledType,
         ?string $deliveryDate,
         int $paymentMethodId,
         ?string $couponCode,
@@ -370,6 +384,7 @@ class OrderPayload
     ): self {
         $this->setTime($time);
         $this->setAddressId($addressId);
+        $this->setDeliveryScheduledType($deliveryScheduledType);
         $this->setDeliveryDate($deliveryDate);
         $this->setPaymentMethodId($paymentMethodId);
         $this->setCouponCode($couponCode);

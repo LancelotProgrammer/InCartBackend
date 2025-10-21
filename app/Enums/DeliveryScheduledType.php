@@ -6,8 +6,8 @@ use Filament\Support\Contracts\HasLabel;
 
 enum DeliveryScheduledType: int implements HasLabel
 {
-    case SCHEDULED = 1;
-    case IMMEDIATE = 2;
+    case IMMEDIATE = 1;
+    case SCHEDULED = 2;
 
     public function getLabel(): string
     {

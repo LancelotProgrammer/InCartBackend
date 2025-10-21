@@ -49,6 +49,7 @@ class CreateOrderAction
                 try {
                     OrderService::managerCreate(
                         $data['address_id'],
+                        $data['delivery_scheduled_type'],
                         $data['delivery_date'] ?? null,
                         $data['payment_method_id'],
                         $data['coupon'],

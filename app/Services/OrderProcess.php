@@ -46,7 +46,7 @@ class OrderProcess
 
     public function setOrderDate(): self
     {
-        $date = $this->payload->getDeliveryDate() !== null
+        $date = $this->payload->getDeliveryScheduledType() === DeliveryScheduledType::SCHEDULED
             ? Carbon::parse($this->payload->getDeliveryDate())
             : $this->payload->getTime();
 
@@ -294,7 +294,7 @@ class OrderProcess
             'notes' => $this->payload->getNotes(),
             'payment_token' => $this->payload->getPaymentToken(),
 
-            'delivery_scheduled_type' => $this->payload->getDeliveryDate() !== null ? DeliveryScheduledType::SCHEDULED->value : DeliveryScheduledType::IMMEDIATE->value,
+            'delivery_scheduled_type' => $this->payload->getDeliveryScheduledType()->value,
             'delivery_date' => $this->payload->getDate(),
 
             'order_status' => OrderStatus::PENDING->value,
