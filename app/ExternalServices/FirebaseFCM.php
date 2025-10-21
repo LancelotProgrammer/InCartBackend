@@ -83,7 +83,7 @@ class FirebaseFCM
             ->withNotification($notification);
 
         if ($deepLink) {
-            $message = $message->withData(['route' => $deepLink]);
+            $message = $message->withData(['path' => $deepLink]);
         }
 
         try {
@@ -187,7 +187,7 @@ class FirebaseFCM
             ->withNotification($notification);
 
         if ($deepLink) {
-            $message = $message->withData(['route' => $deepLink]);
+            $message = $message->withData(['path' => $deepLink]);
         }
 
         try {

@@ -266,7 +266,7 @@ class AuthenticationController extends Controller
      */
     public function deleteAccount(Request $request): EmptySuccessfulResponseResource
     {
-        if ($request->user()->blocked()) {
+        if ($request->user()->isBlocked()) {
             throw new AuthenticationException('User is blocked');
         }
 
