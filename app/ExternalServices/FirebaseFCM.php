@@ -59,7 +59,7 @@ class FirebaseFCM
                 'We’ve replied to your support request',
                 Ticket::getTicketNotificationReply($reply),
                 null,
-                self::TICKET_DEEP_LINK . "/$ticket->id"
+                self::TICKET_DEEP_LINK
             );
         }
     }

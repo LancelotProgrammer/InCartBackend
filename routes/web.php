@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthenticationController;
 use App\Http\Controllers\Web\ApiDocsController;
+use App\Http\Controllers\Web\LegalController;
 use App\Http\Controllers\Web\OrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +12,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{id}/invoice', OrderController::class)->name('web.order.invoice');
     Route::get('/docs', ApiDocsController::class);
 });
+
+Route::get('/privacy-policy', [LegalController::class, 'getPolicyPage']);
+Route::get('/terms-of-service', [LegalController::class, 'getTermsOfServicePage']);
 
 Route::get('/', function () {
     return view('welcome');

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
             $table->string('key');
-            $table->string('value');
+            $table->text('value');
             $table->string('type');
             $table->string('group');
             $table->boolean('is_locked');
