@@ -54,8 +54,6 @@ Route::middleware([
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/branches', [BranchController::class, 'getBranches']);
 
-        Route::post('/advertisements/{id}/click', [AdvertisementController::class, 'createAdvertisementClick']);
-
         Route::post('/order/bill', [OrderController::class, 'createOrderBill']);
         Route::post('/order', [OrderController::class, 'createOrder'])->middleware(IsServiceOnline::class);
         Route::post('/order/checkout', [OrderController::class, 'createOrderCheckout'])->middleware(IsServiceOnline::class);
@@ -92,6 +90,7 @@ Route::middleware([
         Route::get('/gifts', [GiftController::class, 'getGifts']);
     });
 
+    Route::post('/advertisements/{id}/click', [AdvertisementController::class, 'createAdvertisementClick']);
     Route::get('/cities', [CityController::class, 'getCities']);
     Route::get('/home', [HomeController::class, 'getHome']);
     Route::get('/products', [ProductController::class, 'getProducts']);
