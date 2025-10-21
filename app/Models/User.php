@@ -120,7 +120,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function unfinishedOrders(): HasMany
     {
         return $this->hasMany(Order::class, 'customer_id')
-            ->whereNotIn('status', [OrderStatus::FINISHED, OrderStatus::CANCELLED]);
+            ->whereNotIn('order_status', [OrderStatus::FINISHED, OrderStatus::CANCELLED]);
     }
 
     public function managerOrders(): HasMany
