@@ -198,7 +198,7 @@ class CreateOrderAction
                 ->relationship(
                     'paymentMethod',
                     'title',
-                    fn(Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
+                    fn(Builder $query, Get $get) => $query->published()->where('branch_id', '=', $get('branch_id'))
                 ),
             TextInput::make('coupon')
                 ->belowContent(Schema::between([

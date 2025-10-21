@@ -76,7 +76,7 @@ class OrderService
 
     public static function userCreate(
         int $addressId,
-        DeliveryScheduledType $deliveryScheduledType,
+        int $deliveryScheduledType,
         ?string $deliveryDate,
         int $paymentMethodId,
         ?string $coupon,
@@ -87,7 +87,7 @@ class OrderService
     ): Order {
         $order = self::processOrderCreation(self::makeOrderProcess(
             $addressId,
-            $deliveryScheduledType,
+            DeliveryScheduledType::from($deliveryScheduledType),
             $deliveryDate,
             $paymentMethodId,
             $coupon,
@@ -121,7 +121,7 @@ class OrderService
 
     public static function userCreateBill(
         int $addressId,
-        DeliveryScheduledType $deliveryScheduledType,
+        int $deliveryScheduledType,
         ?string $deliveryDate,
         int $paymentMethodId,
         ?string $coupon,
@@ -132,7 +132,7 @@ class OrderService
     ): array {
         return self::processOrderCreation(self::makeOrderProcess(
             $addressId,
-            $deliveryScheduledType,
+            DeliveryScheduledType::from($deliveryScheduledType),
             $deliveryDate,
             $paymentMethodId,
             $coupon,
