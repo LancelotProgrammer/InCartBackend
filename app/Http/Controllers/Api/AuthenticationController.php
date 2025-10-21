@@ -262,6 +262,15 @@ class AuthenticationController extends Controller
     }
 
     /**
+     * @group Authentication Actions
+     */
+    public function deleteAccount(Request $request): EmptySuccessfulResponseResource
+    {
+
+        return new EmptySuccessfulResponseResource;
+    }
+
+    /**
      * @group Account Management
      *
      * @bodyParam name string The user’s name. Example: John Doe

@@ -48,6 +48,7 @@ Route::middleware([
         // Route::post('/user/credentials', [AuthenticationController::class, 'addCredentials']);
         Route::post('/firebase-token', [AuthenticationController::class, 'createFirebaseToken']);
         Route::put('/user/update', [AuthenticationController::class, 'updateUser']);
+        Route::delete('/users', [AuthenticationController::class, 'deleteAccount']);
         Route::post('/logout', [AuthenticationController::class, 'logout']);
     });
 

@@ -26,7 +26,7 @@ class CreateOrderBill
 
         $orderBill = OrderService::userCreateBill(
             $request->input('address_id'),
-            $request->input('delivery_date'),
+            $request->input('delivery_scheduled_type'),
             $request->input('delivery_date'),
             $request->input('payment_method_id'),
             $request->input('coupon'),
