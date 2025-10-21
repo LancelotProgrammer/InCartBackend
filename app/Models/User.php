@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use App\Services\Session;
 use App\Services\SessionService;
 use App\Traits\CanManagePermissions;
@@ -114,6 +115,12 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function customerOrders(): HasMany
     {
         return $this->hasMany(Order::class, 'customer_id');
+    }
+
+    public function unfinishedOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'customer_id')
+            ->whereNotIn('status', [OrderStatus::FINISHED, OrderStatus::CANCELLED]);
     }
 
     public function managerOrders(): HasMany
