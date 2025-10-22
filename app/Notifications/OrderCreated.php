@@ -30,8 +30,8 @@ class OrderCreated extends Notification
             )
             ->actions([
                 Action::make('manage')
-                    ->label('Manage Order')
-                    ->url(route('filament.admin.resources.orders.edit', $this->order->id))
+                    ->label('View Order')
+                    ->url(route('filament.admin.resources.orders.view', $this->order->id))
                     ->openUrlInNewTab(),
             ])
             ->getDatabaseMessage();

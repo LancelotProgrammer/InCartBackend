@@ -91,20 +91,20 @@ class OrderProcess
             $branchProduct = $product->branches->first()->pivot;
             $productTitle = $product->title;
 
-            if ($item['quantity'] > $branchProduct->quantity) {
-                throw new LogicalException("Quantity exceeds storage for {$productTitle}", "quantity allowed is: {$branchProduct->quantity}, Product id: {$product->id}");
+            if ($branchProduct->published_at === null) {
+                throw new LogicalException("{$productTitle} is not active.", "You are trying to get a product which is not active for the selected branch, Product id: {$product->id}");
             }
 
-            if ($item['quantity'] > $branchProduct->maximum_order_quantity) {
-                throw new LogicalException("Quantity exceeds maximum allowed for {$productTitle}", "maximum order quantity allowed is: {$branchProduct->maximum_order_quantity}, Product id: {$product->id}");
+            if ($item['quantity'] > $branchProduct->quantity) {
+                throw new LogicalException("Quantity exceeds storage for {$productTitle}", "quantity allowed is: {$branchProduct->quantity}, Product id: {$product->id}");
             }
 
             if ($item['quantity'] < $branchProduct->minimum_order_quantity) {
                 throw new LogicalException("Quantity is below minimum allowed for {$productTitle}", "minimum order quantity allowed is: {$branchProduct->minimum_order_quantity}, Product id: {$product->id}");
             }
 
-            if ($branchProduct->published_at === null) {
-                throw new LogicalException("{$productTitle} is not active.", "You are trying to get a product which is not active for the selected branch, Product id: {$product->id}");
+            if ($item['quantity'] > $branchProduct->maximum_order_quantity) {
+                throw new LogicalException("Quantity exceeds maximum allowed for {$productTitle}", "maximum order quantity allowed is: {$branchProduct->maximum_order_quantity}, Product id: {$product->id}");
             }
 
             $price = BranchProduct::getDiscountPrice($branchProduct);
@@ -299,7 +299,7 @@ class OrderProcess
 
             'order_status' => OrderStatus::PENDING->value,
             'payment_status' => PaymentStatus::UNPAID->value,
-            'delivery_status' => $this->payload->getDate() !== null ? DeliveryStatus::SCHEDULED->value : DeliveryStatus::NOT_DELIVERED->value,
+            'delivery_status' => $this->payload->getDeliveryScheduledType() === DeliveryScheduledType::SCHEDULED ? DeliveryStatus::SCHEDULED->value : DeliveryStatus::NOT_DELIVERED->value,
 
             'subtotal_price' => $this->payload->getSubtotal(),
             'discount_price' => $this->payload->getDiscount(),

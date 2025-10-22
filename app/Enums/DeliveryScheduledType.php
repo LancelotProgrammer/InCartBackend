@@ -12,8 +12,8 @@ enum DeliveryScheduledType: int implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::SCHEDULED => 'Scheduled',
             self::IMMEDIATE => 'Immediate',
+            self::SCHEDULED => 'Scheduled',
         };
     }
 }
