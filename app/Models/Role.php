@@ -22,8 +22,6 @@ class Role extends Model
 
     const ROLE_CUSTOMER_CODE = 'customer';
 
-    public $timestamps = false;
-
     protected $fillable = ['title', 'code'];
 
     protected $casts = [

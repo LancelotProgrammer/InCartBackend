@@ -11,8 +11,6 @@ class City extends Model
 {
     use HasFactory, HasTranslations;
 
-    public $timestamps = false;
-
     protected $fillable = ['name', 'boundary'];
 
     public $casts = [
