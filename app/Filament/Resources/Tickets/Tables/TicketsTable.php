@@ -33,25 +33,26 @@ class TicketsTable
                 TextColumn::make('question')->limit(50),
                 IconColumn::make('is_important')->boolean(),
                 TextColumn::make('processed_at')->dateTime(),
+                TextColumn::make('manager.name')->label('Manager')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')->dateTime()->toggleable(),
                 TextColumn::make('updated_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
             ->filters([
                 Filter::make('is_important')
                     ->label('Important')
-                    ->query(fn ($query) => $query->where('is_important', true)),
+                    ->query(fn($query) => $query->where('is_important', true)),
                 TernaryFilter::make('processed')
                     ->label('Processed')
                     ->nullable()
                     ->queries(
-                        true: fn ($query) => $query->whereNotNull('processed_at'),
-                        false: fn ($query) => $query->whereNull('processed_at'),
-                        blank: fn ($query) => $query,
+                        true: fn($query) => $query->whereNotNull('processed_at'),
+                        false: fn($query) => $query->whereNull('processed_at'),
+                        blank: fn($query) => $query,
                     ),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
@@ -63,7 +64,7 @@ class TicketsTable
                     ->label('Process')
                     ->icon('heroicon-o-check')
                     ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->processed_at === null)
+                    ->visible(fn($record) => $record->processed_at === null)
                     ->form([
                         Textarea::make('reply')->required(),
                     ])
@@ -72,6 +73,7 @@ class TicketsTable
                         $record->update(
                             [
                                 'processed_at' => now(),
+                                'processed_by' => auth()->user()->id,
                                 'reply' => $data['reply'],
                             ]
                         );

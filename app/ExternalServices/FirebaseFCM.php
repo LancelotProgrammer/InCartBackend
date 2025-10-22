@@ -57,7 +57,7 @@ class FirebaseFCM
             self::sendNotificationToToken(
                 $token,
                 'We’ve replied to your support request',
-                Ticket::getTicketNotificationReply($reply),
+                Ticket::trimTicketNotificationReply($reply),
                 null,
                 self::TICKET_DEEP_LINK
             );

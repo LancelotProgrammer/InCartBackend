@@ -20,8 +20,10 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('processed_by')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
+            $table->foreign('processed_by')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
         });
     }
 

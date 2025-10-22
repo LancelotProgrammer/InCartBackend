@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Feedback extends Model
 {
-    protected $fillable = ['user_id', 'feedback', 'is_important', 'processed_at'];
+    protected $fillable = ['user_id', 'feedback', 'is_important', 'processed_at', 'processed_by'];
 
     protected $casts = [
         'is_important' => 'boolean',
@@ -16,5 +16,10 @@ class Feedback extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'processed_by');
     }
 }

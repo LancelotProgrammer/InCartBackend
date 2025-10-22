@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ticket extends Model
 {
-    protected $fillable = ['user_id', 'question', 'reply', 'is_important', 'processed_at'];
+    protected $fillable = ['user_id', 'question', 'reply', 'is_important', 'processed_at', 'processed_by'];
 
     protected $casts = [
         'is_important' => 'boolean',
@@ -18,7 +18,12 @@ class Ticket extends Model
         return $this->belongsTo(User::class);
     }
 
-    public static function getTicketNotificationReply(string $reply, int $maxLength = 150): string
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'processed_by');
+    }
+
+    public static function trimTicketNotificationReply(string $reply, int $maxLength = 150): string
     {
         return strlen($reply) > $maxLength
             ? substr($reply, 0, $maxLength) . '...'

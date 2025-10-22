@@ -29,25 +29,26 @@ class FeedbackTable
                 TextColumn::make('feedback')->limit(50),
                 IconColumn::make('is_important')->boolean(),
                 TextColumn::make('processed_at'),
+                TextColumn::make('manager.name')->label('Manager')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')->dateTime()->toggleable(),
                 TextColumn::make('updated_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
             ->filters([
                 Filter::make('is_important')
                     ->label('Important')
-                    ->query(fn ($query) => $query->where('is_important', true)),
+                    ->query(fn($query) => $query->where('is_important', true)),
                 TernaryFilter::make('processed')
                     ->label('Processed')
                     ->nullable()
                     ->queries(
-                        true: fn ($query) => $query->whereNotNull('processed_at'),
-                        false: fn ($query) => $query->whereNull('processed_at'),
-                        blank: fn ($query) => $query,
+                        true: fn($query) => $query->whereNotNull('processed_at'),
+                        false: fn($query) => $query->whereNull('processed_at'),
+                        blank: fn($query) => $query,
                     ),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
@@ -59,9 +60,12 @@ class FeedbackTable
                     ->label('Process')
                     ->icon('heroicon-o-check')
                     ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->processed_at === null)
+                    ->visible(fn($record) => $record->processed_at === null)
                     ->action(function ($record) {
-                        $record->update(['processed_at' => now()]);
+                        $record->update([
+                            'processed_by' => auth()->user()->id,
+                            'processed_at' => now()
+                        ]);
                         Notification::make()
                             ->success()
                             ->title("Feedback #{$record->id} marked as processed")

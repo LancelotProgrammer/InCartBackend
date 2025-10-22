@@ -8,6 +8,7 @@ use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContrac
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentTimezone;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
@@ -41,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configureModel();
         $this->configureBuilder();
         $this->configureFilamentTable();
+        $this->configureFilamentTimezone();
         $this->configureFilamentAsset();
         $this->configureDB();
         $this->configureURL();
@@ -75,6 +77,11 @@ class AppServiceProvider extends ServiceProvider
         Table::configureUsing(function (Table $table): void {
             $table->paginationPageOptions([10, 25]);
         });
+    }
+
+    private function configureFilamentTimezone(): void
+    {
+        FilamentTimezone::set('Asia/Riyadh');
     }
 
     private function configureFilamentAsset(): void
