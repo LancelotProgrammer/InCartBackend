@@ -151,14 +151,14 @@ class HomeService
 
         return [
             'id' => $advertisement->id,
-            'image' => $advertisementImage->url,
+            'image' => $advertisementImage?->url,
             'title' => get_translatable_attribute($advertisement->title),
             'type' => AdvertisementLink::PRODUCT->value,
             'created_at' => $advertisement->created_at,
             'product' => [
                 'id' => $product->id,
                 'title' => get_translatable_attribute($product->title),
-                'image' => $productImage->url,
+                'image' => $productImage?->url,
                 'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
                 'min_limit' => $branchProduct?->minimum_order_quantity,
                 'price' => $branchProduct->price,
@@ -176,8 +176,9 @@ class HomeService
     private static function getCategory(stdClass $advertisement): array
     {
         $advertisementImage = DB::table('advertisement_file')
-            ->join('files', 'advertisement_file.id', '=', 'files.id')
-            ->where('advertisement_file.id', '=', $advertisement->id)
+            ->join('files', 'files.id', '=', 'advertisement_file.file_id')
+            ->where('advertisement_file.advertisement_id', $advertisement->id)
+            ->select('files.url')
             ->first();
 
         $category = DB::table('categories')->publishedScope()->where('id', '=', $advertisement->category_id)->first();
@@ -187,20 +188,21 @@ class HomeService
         }
 
         $categoryImage = DB::table('category_file')
-            ->join('files', 'category_file.id', '=', 'files.id')
-            ->where('category_file.id', '=', $category->id)
+            ->join('files', 'files.id', '=', 'category_file.file_id')
+            ->where('category_file.category_id', '=', $category->id)
+            ->select('files.url')
             ->first();
 
         return [
             'id' => $advertisement->id,
-            'image' => $advertisementImage->url,
+            'image' => $advertisementImage?->url,
             'title' => get_translatable_attribute($advertisement->title),
             'type' => AdvertisementLink::CATEGORY->value,
             'created_at' => $advertisement->created_at,
             'category' => [
                 'id' => $category->id,
                 'title' => get_translatable_attribute($category->title),
-                'image' => $categoryImage->url,
+                'image' => $categoryImage?->url,
             ],
         ];
     }
@@ -215,7 +217,7 @@ class HomeService
 
         return [
             'id' => $advertisement->id,
-            'image' => $advertisementImage->url,
+            'image' => $advertisementImage?->url,
             'title' => get_translatable_attribute($advertisement->title),
             'type' => AdvertisementLink::EXTERNAL->value,
             'created_at' => $advertisement->created_at,
@@ -235,7 +237,7 @@ class HomeService
 
         return [
             'id' => $advertisement->id,
-            'image' => $advertisementImage->url,
+            'image' => $advertisementImage?->url,
             'title' => get_translatable_attribute($advertisement->title),
             'type' => AdvertisementLink::EXTERNAL->value,
             'created_at' => $advertisement->created_at,
@@ -277,7 +279,7 @@ class HomeService
         return [
             'id' => $product->id,
             'title' => get_translatable_attribute($product->title),
-            'image' => $productImage->url,
+            'image' => $productImage?->url,
             'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
             'min_limit' => $branchProduct?->minimum_order_quantity,
             'price' => $branchProduct->price,
@@ -319,7 +321,7 @@ class HomeService
         return [
             'id' => $product->id,
             'title' => get_translatable_attribute($product->title),
-            'image' => $productImage->url,
+            'image' => $productImage?->url,
             'max_limit' => $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity,
             'min_limit' => $branchProduct?->minimum_order_quantity,
             'price' => $branchProduct->price,
