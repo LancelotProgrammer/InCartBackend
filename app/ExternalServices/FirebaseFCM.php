@@ -2,6 +2,7 @@
 
 namespace App\ExternalServices;
 
+use App\Constants\DeepLinks;
 use App\Models\Order;
 use App\Models\Ticket;
 use App\Models\UserFirebaseToken;
@@ -18,12 +19,6 @@ use Throwable;
 
 class FirebaseFCM
 {
-    public const ORDER_DEEP_LINK = '/order-details';
-
-    public const TICKET_DEEP_LINK = '/support/1';
-
-    public const PRODUCT_DEEP_LINK = '/product-details';
-
     public static function sendOrderStatusNotification(Order $order): void
     {
         $tokens = $order->customer->firebaseTokens()->pluck('firebase_token')->toArray();
@@ -40,7 +35,7 @@ class FirebaseFCM
                 $title,
                 $body,
                 null,
-                self::ORDER_DEEP_LINK . "/$order->id"
+                DeepLinks::ORDER_DEEP_LINK . "/$order->id"
             );
         }
     }
@@ -59,7 +54,7 @@ class FirebaseFCM
                 'We’ve replied to your support request',
                 Ticket::trimTicketNotificationReply($reply),
                 null,
-                self::TICKET_DEEP_LINK
+                DeepLinks::TICKET_DEEP_LINK
             );
         }
     }

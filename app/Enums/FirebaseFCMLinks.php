@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-use App\ExternalServices\FirebaseFCM;
+use App\Constants\DeepLinks;
 use App\Models\Product;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Utilities\Get;
@@ -43,7 +43,7 @@ enum FirebaseFCMLinks: string implements HasLabel
     public static function getModelDeepLink(array $data): ?string
     {
         return isset($data['link']) ? match ($data['link']->value) {
-            self::PRODUCT->value => isset($data['product_id']) ? FirebaseFCM::PRODUCT_DEEP_LINK.'/'.$data['product_id'] : null,
+            self::PRODUCT->value => isset($data['product_id']) ? DeepLinks::PRODUCT_DEEP_LINK.'/'.$data['product_id'] : null,
             default => null,
         } : null;
     }
