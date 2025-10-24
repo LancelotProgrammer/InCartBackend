@@ -299,7 +299,7 @@ class OrderProcess
 
             'order_status' => OrderStatus::PENDING->value,
             'payment_status' => PaymentStatus::UNPAID->value,
-            'delivery_status' => $this->payload->getDeliveryScheduledType() === DeliveryScheduledType::SCHEDULED ? DeliveryStatus::SCHEDULED->value : DeliveryStatus::NOT_DELIVERED->value,
+            'delivery_status' => $this->payload->getDeliveryScheduledType()->value,
 
             'subtotal_price' => $this->payload->getSubtotal(),
             'discount_price' => $this->payload->getDiscount(),

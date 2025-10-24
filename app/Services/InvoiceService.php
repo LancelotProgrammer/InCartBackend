@@ -75,8 +75,8 @@ class InvoiceService
                 'address' => $order->userAddress->title,
             ],
             'app' => [
-                'name' => 'In-Cart',
-                'address' => 'City, Country, Address',
+                'name' => 'In-Cart', // TODO
+                'address' => 'City, Country, Address', // TODO
             ],
             'categories' => $groupedProducts->values(),
         ];
