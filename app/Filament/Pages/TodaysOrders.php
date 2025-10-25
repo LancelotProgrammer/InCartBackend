@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Constants\CacheKeys;
+use App\Enums\OrderStatus;
 use App\Filament\Actions\OrderActions;
 use App\Models\Order;
 use BackedEnum;
@@ -36,7 +37,11 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
         return $table
             ->poll()
             ->paginationMode(PaginationMode::Simple)
-            ->query(fn(): Builder => Order::query()->whereDate('delivery_date', '=', now()->toDateString()))
+            ->query(
+                fn(): Builder => Order::query()
+                    ->whereDate('delivery_date', '=', now()->toDateString())
+                    ->whereNotIn('order_status', [OrderStatus::FINISHED->value, OrderStatus::CANCELLED->value])
+            )
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('branch.title')->toggleable(isToggledHiddenByDefault: true),
