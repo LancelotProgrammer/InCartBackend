@@ -42,6 +42,7 @@ class DeliveryOrders extends Page implements HasActions, HasSchemas, HasTable
             ->columns([
                 Stack::make([
                     TextColumn::make('userAddress.title')->prefix('Address: '),
+                    TextColumn::make('payment_status')->prefix('Payment status: '),
                     TextColumn::make('order_number')->prefix('Order number: '),
                     TextColumn::make('customer.name')->prefix('Customer name: '),
                     TextColumn::make('customer.phone')->prefix('Customer phone: '),
