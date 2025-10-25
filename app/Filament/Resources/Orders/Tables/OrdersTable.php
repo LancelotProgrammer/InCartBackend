@@ -2,15 +2,23 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use App\Enums\DeliveryScheduledType;
+use App\Enums\DeliveryStatus;
+use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Filament\Actions\OrderActions;
-use App\Filament\Filters\OrderTableFilter;
 use App\Models\Order;
+use App\Models\Role;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Schemas\Components\Section;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Enums\PaginationMode;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -50,18 +58,88 @@ class OrdersTable
                 TextColumn::make('userAddress.title')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
-            ->filters(OrderTableFilter::configure(), FiltersLayout::Modal)
+            ->filters([
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until')->after('created_from'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+                SelectFilter::make('order_status')->options(OrderStatus::class),
+                SelectFilter::make('payment_status')->options(PaymentStatus::class),
+                SelectFilter::make('delivery_status')->options(DeliveryStatus::class),
+                SelectFilter::make('delivery_scheduled_type')->options(DeliveryScheduledType::class),
+                SelectFilter::make('customer')
+                    ->relationship(
+                        'customer',
+                        'name',
+                        fn($query) =>
+                        $query->whereHas('role', fn($q) => $q->where('code', '=', Role::ROLE_CUSTOMER_CODE))
+                    )->searchable(),
+                SelectFilter::make('manager')
+                    ->relationship(
+                        'manager',
+                        'name',
+                        fn($query) =>
+                        $query->whereHas('role', fn($q) => $q->where('code', '=',  Role::ROLE_MANAGER_CODE))
+                    ),
+                SelectFilter::make('delivery')
+                    ->relationship(
+                        'delivery',
+                        'name',
+                        fn($query) =>
+                        $query->whereHas('role', fn($q) => $q->where('code', '=',  Role::ROLE_DELIVERY_CODE))
+                    ),
+            ], FiltersLayout::Modal)
+            ->filtersFormColumns(3)
+            ->filtersFormSchema(function (array $filters) {
+                return [
+                    Section::make('Date')
+                        ->columnSpanFull()
+                        ->columns(1)
+                        ->schema([
+                            $filters['created_at'],
+                        ]),
+                    Section::make('Status')
+                        ->columnSpanFull()
+                        ->columns(4)
+                        ->schema([
+                            $filters['order_status'],
+                            $filters['payment_status'],
+                            $filters['delivery_status'],
+                            $filters['delivery_scheduled_type'],
+                        ]),
+                    Section::make('User')
+                        ->columnSpanFull()
+                        ->columns(3)
+                        ->schema([
+                            $filters['customer'],
+                            $filters['delivery'],
+                            $filters['manager'],
+                        ]),
+                ];
+            })
             ->recordActions([
                 ViewAction::make(),
                 Action::make('invoice')
                     ->authorize('viewInvoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
-                    ->url(fn (Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
+                    ->url(fn(Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
                 OrderActions::configure(true),
             ])
             ->toolbarActions([
