@@ -156,7 +156,7 @@ class CreateOrderAction
                                     ->first();
 
                                 if ($branchProduct) {
-                                    return $branchProduct?->maximum_order_quantity > $branchProduct?->quantity ? $branchProduct?->quantity : $branchProduct?->maximum_order_quantity;
+                                    return $branchProduct->maximum_order_quantity;
                                 } else {
                                     return 0;
                                 }

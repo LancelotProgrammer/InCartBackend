@@ -27,7 +27,7 @@ class GetFavoriteProducts
                     'title' => $product->title,
                     'image' => $image,
                     'favorite_at' => $favorite->created_at,
-                    'max_limit' => $branchProduct->maximum_order_quantity > $branchProduct->quantity ? $branchProduct->quantity : $branchProduct->maximum_order_quantity,
+                    'max_limit' => $branchProduct->maximum_order_quantity,
                     'min_limit' => $branchProduct->minimum_order_quantity,
                     'price' => $branchProduct->price,
                     'discount' => $branchProduct->discount,

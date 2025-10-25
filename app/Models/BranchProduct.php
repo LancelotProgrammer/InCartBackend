@@ -6,6 +6,7 @@ use App\Models\Scopes\BranchScope;
 use App\Services\CacheService;
 use App\Traits\HasPublishAttribute;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use stdClass;
@@ -42,9 +43,9 @@ class BranchProduct extends Pivot
 
     protected static function booted(): void
     {
-        static::created(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
-        static::updated(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
-        static::deleted(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
+        static::created(fn(BranchProduct $productBranch) => CacheService::deleteHomeCache());
+        static::updated(fn(BranchProduct $productBranch) => CacheService::deleteHomeCache());
+        static::deleted(fn(BranchProduct $productBranch) => CacheService::deleteHomeCache());
     }
 
     public function branch(): BelongsTo
@@ -75,5 +76,23 @@ class BranchProduct extends Pivot
         $discountedPrice = $branchProduct->price - $branchProduct->price * ($branchProduct->discount / 100);
 
         return round($discountedPrice, 2);
+    }
+
+    protected function maximumOrderQuantity(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value, $attributes) => self::getMaximumOrderQuantity((object) $attributes),
+            set: fn($value) => $value,
+        );
+    }
+
+    public static function getMaximumOrderQuantityValue(stdClass|self $branchProduct): mixed
+    {
+        return self::getMaximumOrderQuantity($branchProduct);
+    }
+
+    public static function getMaximumOrderQuantity(stdClass|self $branchProduct): mixed
+    {
+        return min($branchProduct->maximum_order_quantity, $branchProduct->quantity);
     }
 }
