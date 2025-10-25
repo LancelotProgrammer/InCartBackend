@@ -46,7 +46,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
             ->columns([
                 TextColumn::make('branch.title')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('order_number')->searchable(),
-                TextColumn::make('customer.name')
+                TextColumn::make('customer.name')->placeholder('Deleted customer')
                     ->label('Customer')
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->whereHas('customer', function (Builder $q) use ($search) {

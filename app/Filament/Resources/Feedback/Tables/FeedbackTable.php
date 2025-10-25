@@ -25,7 +25,7 @@ class FeedbackTable
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('id')->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('user.name')->label('User'),
+                TextColumn::make('user.name')->placeholder('Deleted customer')->label('User'),
                 TextColumn::make('feedback')->limit(50),
                 IconColumn::make('is_important')->boolean(),
                 TextColumn::make('processed_at'),

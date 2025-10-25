@@ -3,9 +3,6 @@
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Enums\DeliveryScheduledType;
-use App\Enums\OrderStatus;
-use App\Models\Order;
-use App\Services\OrderService;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -26,51 +23,40 @@ class OrderForm
                 Section::make('Info')
                     ->columns(11)
                     ->schema([
-                        TextEntry::make('order_number'),
-                        TextEntry::make('coupon.title')->label('Coupon'),
-
-                        TextEntry::make('order_status')->badge(),
-                        TextEntry::make('payment_status')->badge(),
-                        TextEntry::make('delivery_status')->badge(),
-
-                        TextEntry::make('subtotal_price')->money('SAR'),
-                        TextEntry::make('discount_price')->money('SAR'),
-                        TextEntry::make('delivery_fee')->money('SAR'),
-                        TextEntry::make('service_fee')->money('SAR'),
-                        TextEntry::make('tax_amount')->money('SAR'),
-                        TextEntry::make('total_price')->money('SAR'),
-
-                        TextEntry::make('created_at')->dateTime(),
-
-                        TextEntry::make('customer.name')->label('Customer'),
-                        TextEntry::make('customer.phone')->label('Customer Phone'),
-                        TextEntry::make('customer.email')->label('Customer Email'),
-                        TextEntry::make('delivery.name')->label('Delivery'),
-                        TextEntry::make('delivery.phone')->label('Delivery Phone'),
-                        TextEntry::make('delivery.email')->label('Delivery Email'),
-                        TextEntry::make('manager.name')->label('Manager'),
-                        TextEntry::make('branch.title')->label('Branch'),
-                        TextEntry::make('cancel_reason'),
+                        TextEntry::make('order_number')->placeholder('No order number available'),
+                        TextEntry::make('coupon.title')->label('Coupon')->placeholder('No coupon used'),
+                        TextEntry::make('order_status')->badge()->placeholder('No status'),
+                        TextEntry::make('payment_status')->badge()->placeholder('No payment info'),
+                        TextEntry::make('delivery_status')->badge()->placeholder('No delivery status'),
+                        TextEntry::make('subtotal_price')->money('SAR')->placeholder('—'),
+                        TextEntry::make('discount_price')->money('SAR')->placeholder('No discount applied'),
+                        TextEntry::make('delivery_fee')->money('SAR')->placeholder('No delivery fee'),
+                        TextEntry::make('service_fee')->money('SAR')->placeholder('No service fee'),
+                        TextEntry::make('tax_amount')->money('SAR')->placeholder('No tax applied'),
+                        TextEntry::make('total_price')->money('SAR')->placeholder('No total calculated'),
+                        TextEntry::make('created_at')->dateTime()->placeholder('No creation date'),
+                        TextEntry::make('customer.name')->label('Customer')->placeholder('No customer'),
+                        TextEntry::make('customer.phone')->label('Customer Phone')->placeholder('No customer phone'),
+                        TextEntry::make('customer.email')->label('Customer Email')->placeholder('No customer email'),
+                        TextEntry::make('delivery.name')->label('Delivery')->placeholder('No delivery assigned'),
+                        TextEntry::make('delivery.phone')->label('Delivery Phone')->placeholder('No delivery phone'),
+                        TextEntry::make('delivery.email')->label('Delivery Email')->placeholder('No delivery email'),
+                        TextEntry::make('manager.name')->label('Manager')->placeholder('No manager assigned'),
+                        TextEntry::make('branch.title')->label('Branch')->placeholder('No branch assigned'),
+                        TextEntry::make('cancel_reason')->placeholder('No cancel reason'),
                     ]),
 
                 Section::make('Edit')
                     ->columns(3)
                     ->schema([
-                        TextInput::make('notes'),
+                        TextInput::make('notes')->columnSpan(2),
                         Select::make('payment_method_id')
+                            ->required()
                             ->relationship(
                                 'paymentMethod',
                                 'title',
-                                fn (Builder $query, Get $get) => $query->where('branch_id', '=', $get('branch_id'))
-                            )
-                            ->required(),
-                        Select::make('delivery_id')
-                            ->visible(function (Order $order) {
-                                return $order->order_status === OrderStatus::PROCESSING;
-                            })
-                            ->options(function (Get $get) {
-                                return OrderService::getDeliveryUsers($get('branch_id'));
-                            }),
+                                fn(Builder $query, Get $get) => $query->published()->where('branch_id', '=', $get('branch_id'))
+                            ),
                         Select::make('delivery_scheduled_type')
                             ->afterStateUpdated(function (Set $set) {
                                 $set('delivery_date', null);
@@ -90,7 +76,7 @@ class OrderForm
                             ->relationship(
                                 'userAddress',
                                 'title',
-                                fn (Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
+                                fn(Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
                             )
                             ->required(),
                     ]),
