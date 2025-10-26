@@ -40,7 +40,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
             ->query(
                 fn(): Builder => Order::query()
                     ->whereDate('delivery_date', '=', now()->toDateString())
-                    ->whereNotIn('order_status', [OrderStatus::FINISHED->value, OrderStatus::CANCELLED->value])
+                    ->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])
             )
             ->defaultSort('id', 'desc')
             ->columns([

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Actions;
 
-use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Services\OrderService;
 use Filament\Actions\Action;
@@ -10,6 +9,7 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
 
@@ -98,6 +98,26 @@ class OrderActions
                     OrderService::managerFinish($order);
                 }),
 
+            // Mark as closed
+            Action::make('close')
+                ->authorize('close')
+                ->icon(Heroicon::Flag)
+                ->color('primary')
+                ->requiresConfirmation()
+                ->visible(fn(Order $order) => $order->isClosable())
+                ->schema(function (Order $order) {
+                    return $order->isPayOnDelivery()
+                        ? [
+                            TextInput::make('payed_price')
+                                ->numeric()
+                                ->required(),
+                        ]
+                        : [];
+                })
+                ->action(function (Order $order, array $data) {
+                    OrderService::managerClose($order, $data);
+                }),
+
             // Archive order
             Action::make('archive')
                 ->authorize('archive')
@@ -105,7 +125,7 @@ class OrderActions
                 ->color('warning')
                 ->requiresConfirmation()
                 ->visible(function (Order $order) {
-                    return $order->order_status === OrderStatus::FINISHED || $order->order_status === OrderStatus::CANCELLED;
+                    return $order->isArchivable();
                 })
                 ->action(function (Order $order) {
                     OrderService::managerArchive($order);

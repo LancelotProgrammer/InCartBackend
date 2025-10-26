@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\CouponType;
+use App\Enums\OrderStatus;
 use App\Models\Advertisement;
 use App\Models\AdvertisementUser;
 use App\Models\Branch;
@@ -225,6 +226,7 @@ class BaseSeeder extends Seeder
                         'can-be-assigned-to-take-orders',
                         'can-be-assigned-to-branch',
                         'view-delivery-orders-page',
+                        'finish-order',
                     ]
                 )
                 ->pluck('code')->toArray(),
@@ -554,7 +556,7 @@ class BaseSeeder extends Seeder
             ->has(UserAddress::factory()->count($userAddressCount), 'addresses')
             ->has(UserNotification::factory()->count($userNotificationCount), 'userNotifications')
             ->has(
-                FavoriteFactory::new()->count($favoriteCount)->sequence(fn ($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
+                FavoriteFactory::new()->count($favoriteCount)->sequence(fn($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
                 'favorites'
             )
             ->has(PackageFactory::new()->hasAttached($products->random(rand(3, 7))->values())->count($packageProductCount), 'packages')
@@ -579,25 +581,27 @@ class BaseSeeder extends Seeder
                     CartProduct::factory()->create([
                         'cart_id' => $cart->id,
                         'product_id' => $product->id,
-                        'price' => $branchProduct
-                            ? ($branchProduct->discount > 0
-                                ? $branchProduct->price - ($branchProduct->price * ($branchProduct->discount / 100))
-                                : $branchProduct->price)
-                            : 0,
+                        'title' => json_encode($product->getTranslations('title'), JSON_UNESCAPED_UNICODE),
+                        'price' => $branchProduct ? ($branchProduct->discount > 0 ? $branchProduct->price - ($branchProduct->price * ($branchProduct->discount / 100)) : $branchProduct->price) : 0,
                         'quantity' => rand(1, 5),
                     ]);
                 }
                 $subtotal = $cart->cartProducts->sum(
-                    fn ($cartProduct) => $cartProduct->price * $cartProduct->quantity
+                    fn($cartProduct) => $cartProduct->price * $cartProduct->quantity
                 );
-                $order->update([
-                    'subtotal_price' => $subtotal,
-                    'total_price' => $subtotal
-                        - $order->discount_price
-                        + $order->delivery_fee
-                        + $order->service_fee
-                        + $order->tax_amount,
-                ]);
+                $totalPrice = $subtotal - $order->discount_price + $order->delivery_fee + $order->service_fee + $order->tax_amount;
+                if ($order->order_status === OrderStatus::CLOSED && $order->isPayOnDelivery()) {
+                    $order->update([
+                        'subtotal_price' => $subtotal,
+                        'total_price' => $totalPrice,
+                        'payed_price' => $this->faker->boolean(90) ? $totalPrice : $totalPrice - rand(1, 5),
+                    ]);
+                } else {
+                    $order->update([
+                        'subtotal_price' => $subtotal,
+                        'total_price' => $totalPrice,
+                    ]);
+                }
             });
 
         $this->command->info('Seeding advertisement users');

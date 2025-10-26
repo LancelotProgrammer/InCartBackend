@@ -438,6 +438,10 @@ class PermissionsSeeder extends Seeder
                 'code' => 'finish-order',
             ],
             [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Close Order', 'إغلاق الطلب']), JSON_UNESCAPED_UNICODE),
+                'code' => 'close-order',
+            ],
+            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Archive Order', 'أرشفة الطلب']), JSON_UNESCAPED_UNICODE),
                 'code' => 'archive-order',
             ],

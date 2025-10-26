@@ -20,8 +20,7 @@ class OrderPolicy
         return $user->hasPermission('view-order')
             || (
                 $user->role->code = Role::ROLE_DELIVERY_CODE &&
-                $order->delivery_id === $user->id &&
-                $order->delivery_date->isToday()
+                $order->delivery_id === $user->id
             );
     }
 
@@ -32,7 +31,7 @@ class OrderPolicy
 
     public function update(User $user, Order $order): bool
     {
-        return $user->hasPermission('update-order') && 
+        return $user->hasPermission('update-order') &&
             self::isEnabled($order) &&
             $user->id === $order->manager_id;
     }
@@ -44,7 +43,7 @@ class OrderPolicy
 
     public function cancel(User $user, Order $order): bool
     {
-        return $user->hasPermission('cancel-order');
+        return $user->hasPermission('cancel-order') && $user->id === $order->manager_id;
     }
 
     public function approve(User $user, Order $order): bool
@@ -64,7 +63,12 @@ class OrderPolicy
 
     public function finish(User $user, Order $order): bool
     {
-        return $user->hasPermission('finish-order') && $user->id === $order->manager_id;
+        return $user->hasPermission('finish-order') && $user->id === $order->manager_id || $user->id === $order->delivery_id;
+    }
+
+    public function close(User $user, Order $order): bool
+    {
+        return $user->hasPermission('close-order') && $user->id === $order->manager_id;
     }
 
     public function archive(User $user, Order $order): bool

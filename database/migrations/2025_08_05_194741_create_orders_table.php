@@ -16,25 +16,30 @@ return new class extends Migration
 
             $table->string('order_number');
             $table->string('cancel_reason')->nullable();
+            $table->json('metadata')->nullable();
             $table->text('notes')->nullable();
 
             $table->integer('order_status');
             $table->integer('payment_status');
             $table->integer('delivery_status');
 
-            $table->decimal('subtotal_price', 10, 2)->default(0);  // Before discounts, taxes, fees
-            $table->decimal('discount_price', 10, 2)->default(0); // Discount from coupon
-            $table->decimal('delivery_fee', 10, 2)->default(0);    // Calculated by zone/distance
+            $table->decimal('subtotal_price', 10, 2)->default(0);  // Cart total price
+            $table->decimal('discount_price', 10, 2)->default(0);  // Discount from coupon / gift
+            $table->decimal('delivery_fee', 10, 2)->default(0);    // Calculated by distance
             $table->decimal('service_fee', 10, 2)->default(0);     // Optional
             $table->decimal('tax_amount', 10, 2)->default(0);      // VAT or other tax
-            $table->decimal('total_price', 10, 2)->default(0);     // What the customer pays
+            $table->decimal('total_price', 10, 2)->default(0);     // Order total Price
+            $table->decimal('payed_price', 10, 2)->default(0);     // What the customer pays
 
             $table->integer('delivery_scheduled_type');
             $table->timestamp('delivery_date')->nullable();
 
+            $table->string('user_address_title');
+
             $table->string('payment_token')->nullable();
             $table->timestamps();
 
+            $table->unsignedBigInteger('cancelled_by_id')->nullable();
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->unsignedBigInteger('delivery_id')->nullable();
             $table->unsignedBigInteger('manager_id')->nullable();
@@ -43,6 +48,7 @@ return new class extends Migration
             $table->unsignedBigInteger('payment_method_id');
             $table->unsignedBigInteger('user_address_id')->nullable();
 
+            $table->foreign('cancelled_by_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('customer_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('delivery_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
             $table->foreign('manager_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');

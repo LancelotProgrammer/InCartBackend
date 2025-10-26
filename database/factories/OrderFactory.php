@@ -45,17 +45,17 @@ class OrderFactory extends Factory
 
         // 3. Coupon logic (30%)
         $applyCoupon = fake()->boolean(30);
-        $coupon = $applyCoupon ? Coupon::inRandomOrder()->first() : null;
+        $coupon = $applyCoupon ? Coupon::published()->inRandomOrder()->first() : null;
         $couponDiscount = $coupon?->config['value'] ?? 0;
 
         // 4. Fees
         $deliveryFee = fake()->randomFloat(2, 3, 20);
         $serviceFee = 2;
-        $taxAmount = 2;
+        $taxAmount = 0;
 
         // 5. Payment method
         $wasPaid = fake()->boolean(40);
-        $payment = PaymentMethod::where('branch_id', $branch->id)->inRandomOrder()->first();
+        $payment = PaymentMethod::where('branch_id', $branch->id)->published()->inRandomOrder()->first();
         $token = null;
         if ($payment && $payment->code !== PaymentMethod::PAY_ON_DELIVERY_CODE) {
             do {
@@ -111,6 +111,7 @@ class OrderFactory extends Factory
             'coupon_id' => $coupon?->id,
             'payment_method_id' => $payment?->id,
             'user_address_id' => $address->id,
+            'user_address_title' => $address->title,
         ];
 
         // 8. Status logic (based on time context)
@@ -130,6 +131,7 @@ class OrderFactory extends Factory
                     OrderStatus::PENDING,
                     OrderStatus::PROCESSING,
                     OrderStatus::DELIVERING,
+                    OrderStatus::CLOSED,
                 ])
             ),
             'future' => OrderStatus::PENDING,
@@ -165,6 +167,7 @@ class OrderFactory extends Factory
                     'delivery_status' => DeliveryStatus::NOT_DELIVERED->value,
                     'manager_id' => $manager?->user_id,
                     'cancel_reason' => fake()->sentence(),
+                    'cancelled_by_id' => fake()->boolean(50) ? $manager?->user_id : $user->id,
                 ];
                 break;
 
@@ -182,17 +185,28 @@ class OrderFactory extends Factory
                     'order_status' => OrderStatus::DELIVERING->value,
                     'payment_status' => $wasPaid ? PaymentStatus::PAID->value : PaymentStatus::UNPAID->value,
                     'delivery_status' => DeliveryStatus::OUT_FOR_DELIVERY->value,
-                    'delivery_id' => $delivery?->user_id,
-                    'manager_id' => $manager?->user_id,
+                    'delivery_id' => $delivery->user_id,
+                    'manager_id' => $manager->user_id,
                 ];
                 break;
 
             case OrderStatus::FINISHED:
                 $order += [
                     'order_status' => OrderStatus::FINISHED->value,
+                    'payment_status' => $wasPaid ? PaymentStatus::PAID->value : PaymentStatus::UNPAID->value,
+                    'delivery_status' => DeliveryStatus::DELIVERED->value,
+                    'delivery_id' => $delivery->user_id,
+                    'manager_id' => $manager->user_id,
+                ];
+                break;
+
+            case OrderStatus::CLOSED:
+                $order += [
+                    'order_status' => OrderStatus::CLOSED->value,
                     'payment_status' => PaymentStatus::PAID->value,
                     'delivery_status' => DeliveryStatus::DELIVERED->value,
-                    'manager_id' => $manager?->user_id,
+                    'delivery_id' => $delivery->user_id,
+                    'manager_id' => $manager->user_id,
                 ];
                 break;
         }

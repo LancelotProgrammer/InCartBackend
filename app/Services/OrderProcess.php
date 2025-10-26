@@ -138,13 +138,12 @@ class OrderProcess
         $cartProducts = [];
         foreach ($this->payload->getCartItems() as $item) {
             $product = $products->firstWhere('id', $item['id']);
-            $branchProduct = $product?->branches->first()?->pivot;
-            $price = $branchProduct ? BranchProduct::getDiscountPrice($branchProduct) : 0;
             $cartProducts[] = [
                 'cart_id' => $cart->id,
-                'product_id' => $item['id'],
+                'product_id' => $product->id,
+                'title' => json_encode($product->getTranslations('title'), JSON_UNESCAPED_UNICODE),
+                'price' => BranchProduct::getDiscountPrice($product->branches->first()->pivot),
                 'quantity' => $item['quantity'],
-                'price' => $price,
                 'created_at' => $this->payload->getTime(),
                 'updated_at' => $this->payload->getTime(),
             ];
@@ -296,6 +295,8 @@ class OrderProcess
 
             'delivery_scheduled_type' => $this->payload->getDeliveryScheduledType()->value,
             'delivery_date' => $this->payload->getDate(),
+
+            'user_address_title' => UserAddress::where('id', '=', $this->payload->getAddressId())->first()->title,
 
             'order_status' => OrderStatus::PENDING->value,
             'payment_status' => PaymentStatus::UNPAID->value,

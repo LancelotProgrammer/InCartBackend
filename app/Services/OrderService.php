@@ -10,8 +10,10 @@ use App\Exceptions\LogicalException;
 use App\ExternalServices\FirebaseFCM;
 use App\Models\Branch;
 use App\Models\BranchProduct;
+use App\Models\CartProduct;
 use App\Models\Order;
 use App\Models\PaymentMethod;
+use App\Models\Product;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\DeliveryOrderNotification;
@@ -20,6 +22,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class OrderService
 {
@@ -56,6 +59,10 @@ class OrderService
 
     private static function processOrderCreation(OrderProcess $service, string $process): mixed
     {
+        if ($process === 'createOrder' || $process === 'createOrderBill') {
+            throw new InvalidArgumentException('Invalid order process');
+        }
+
         return DB::transaction(
             fn() =>
             $service
@@ -156,14 +163,15 @@ class OrderService
             throw new LogicalException('Order can not be canceled');
         }
 
-        DB::transaction(function () use ($order, $reason) {
+        DB::transaction(function () use ($order, $reason, $userId) {
             $order->update([
                 'order_status' => OrderStatus::CANCELLED,
                 'delivery_status' => DeliveryStatus::NOT_DELIVERED,
                 'cancel_reason' => $reason,
+                'cancelled_by_id' => $userId,
             ]);
             $order->save();
-            if ($order->paymentMethod->code !== PaymentMethod::PAY_ON_DELIVERY_CODE) {
+            if (!$order->isPayOnDelivery()) {
                 self::ensureValidPayment($order, forRefund: true);
                 BasePaymentGateway::make($order->paymentMethod->code)->refund($order);
             }
@@ -207,14 +215,16 @@ class OrderService
     public static function managerCancel(Order $order, array $data): void
     {
         DB::transaction(function () use ($order, $data) {
+            $userId = auth()->user()->id;
             $order->update([
                 'order_status' => OrderStatus::CANCELLED,
                 'delivery_status' => DeliveryStatus::NOT_DELIVERED,
-                'manager_id' => auth()->user()->id,
+                'manager_id' => $userId,
                 'cancel_reason' => $data['cancel_reason'],
+                'cancelled_by_id' => $userId,
             ]);
             $order->save();
-            if ($order->paymentMethod->code !== PaymentMethod::PAY_ON_DELIVERY_CODE) {
+            if (!$order->isPayOnDelivery()) {
                 self::ensureValidPayment($order, forRefund: true);
                 BasePaymentGateway::make($order->paymentMethod->code)->refund($order);
             }
@@ -232,7 +242,7 @@ class OrderService
     public static function managerApprove(Order $order): void
     {
         if (
-            PaymentMethod::where('id', '=', $order->payment_method_id)->value('code') !== PaymentMethod::PAY_ON_DELIVERY_CODE &&
+            !$order->isPayOnDelivery() &&
             $order->payment_status === PaymentStatus::UNPAID
         ) {
             Notification::make()
@@ -304,13 +314,52 @@ class OrderService
             ->send();
     }
 
+    public static function deliveryFinish(Order $order): void
+    {
+        DB::transaction(function () use ($order) {
+            $order->update([
+                'order_status' => OrderStatus::FINISHED,
+                'delivery_status' => DeliveryStatus::DELIVERED,
+            ]);
+        });
+
+        FirebaseFCM::sendOrderStatusNotification($order);
+        DatabaseUserNotification::sendOrderStatusNotification($order);
+        CacheService::deletePendingOrderCount();
+        Notification::make()
+            ->title("Order #{$order->order_number} has been completed.")
+            ->success()
+            ->send();
+    }
+
     public static function managerFinish(Order $order): void
     {
         DB::transaction(function () use ($order) {
             $order->update([
                 'order_status' => OrderStatus::FINISHED,
                 'delivery_status' => DeliveryStatus::DELIVERED,
+            ]);
+        });
+
+        FirebaseFCM::sendOrderStatusNotification($order);
+        DatabaseUserNotification::sendOrderStatusNotification($order);
+        CacheService::deletePendingOrderCount();
+        Notification::make()
+            ->title("Order #{$order->order_number} has been completed.")
+            ->success()
+            ->send();
+    }
+
+    public static function managerClose(Order $order, array $data): void
+    {
+        DB::transaction(function () use ($order, $data) {
+            $payedPrice = $order->isPayOnDelivery() ?
+                $data['payed_price'] :
+                $order->payed_price;
+            $order->update([
+                'order_status' => OrderStatus::CLOSED,
                 'payment_status' => PaymentStatus::PAID,
+                'payed_price' => $payedPrice,
             ]);
             foreach ($order->carts->first()->cartProducts as $cartProduct) {
                 $branchId = $order->branch_id;
@@ -325,11 +374,9 @@ class OrderService
             }
         });
 
-        FirebaseFCM::sendOrderStatusNotification($order);
-        DatabaseUserNotification::sendOrderStatusNotification($order);
         CacheService::deletePendingOrderCount();
         Notification::make()
-            ->title("Order #{$order->order_number} has been completed.")
+            ->title("Order #{$order->order_number} has been closed.")
             ->success()
             ->send();
     }
@@ -345,6 +392,15 @@ class OrderService
             ->title("Order #{$order->order_number} has been archived.")
             ->warning()
             ->send();
+    }
+
+    public static function getPaymentMethods(?int $branchId = null): Collection
+    {
+        $paymentMethod = PaymentMethod::published();
+        if ($branchId) {
+            $paymentMethod->where('branch_id', '=', $branchId);
+        }
+        return $paymentMethod->get();
     }
 
     public static function getDeliveryUsers(int $branchId): Collection
@@ -407,7 +463,7 @@ class OrderService
             throw new LogicalException('Payment method is not active');
         }
 
-        if ($order->paymentMethod->code === PaymentMethod::PAY_ON_DELIVERY_CODE) {
+        if ($order->isPayOnDelivery()) {
             $context = $forRefund ? 'Refund error' : 'Checkout error';
             throw new LogicalException($context, 'Payment method is pay-on-delivery');
         }
@@ -427,5 +483,105 @@ class OrderService
                 throw new LogicalException('Checkout error', 'Order is refunded and cannot be paid');
             }
         }
+    }
+
+    public static function addProduct(array $data, Order $order): void
+    {
+        $branchProduct = BranchProduct::where('branch_id', $order->branch_id)
+            ->where('product_id', $data['product_id'])
+            ->first();
+
+        if (! $branchProduct) {
+            Notification::make()
+                ->title('Product is not available for branch.')
+                ->warning()
+                ->send();
+
+            return;
+        }
+
+        $cartProduct = CartProduct::where('cart_id', $data['cart_id'])
+            ->where('product_id', $data['product_id'])
+            ->first();
+
+        if ($cartProduct) {
+            Notification::make()
+                ->title('Product is already in the cart.')
+                ->warning()
+                ->send();
+
+            return;
+        }
+
+        DB::transaction(function () use ($branchProduct, $data) {
+            $product = Product::where('id', '=', $data['product_id'])->first();
+            $cartProduct = new CartProduct([
+                'cart_id' => $data['cart_id'],
+                'product_id' => $data['product_id'],
+                'price' => BranchProduct::getDiscountPrice($branchProduct),
+                'quantity' => $data['quantity'],
+            ]);
+            $cartProduct->setTranslations('title', $product->getTranslations('title'));
+            $cartProduct->save();
+        });
+
+        self::recalculateOrderTotals($order);
+
+        Notification::make()
+            ->title('Cart updated successfully.')
+            ->success()
+            ->send();
+    }
+
+    public static function editProduct(array $data, CartProduct $record, Order $order): void
+    {
+        $branchProduct = BranchProduct::where('branch_id', $order->branch_id)
+            ->where('product_id', $data['product_id'])
+            ->first();
+
+        if (! $branchProduct) {
+            Notification::make()
+                ->title('Product is not available for branch.')
+                ->warning()
+                ->send();
+
+            return;
+        }
+
+        $record->update([
+            'price' => BranchProduct::getDiscountPrice($branchProduct),
+            'quantity' => $data['quantity'],
+        ]);
+
+        self::recalculateOrderTotals($order);
+
+        Notification::make()
+            ->title('Cart updated successfully.')
+            ->success()
+            ->send();
+    }
+
+    public static function removeProduct(CartProduct $record, Order $order): void
+    {
+        $cart = $record->cart;
+
+        if ($cart->cartProducts()->count() <= 1) {
+            Notification::make()
+                ->title('Warning')
+                ->body('You cannot delete the last product in the cart.')
+                ->warning()
+                ->send();
+
+            return;
+        }
+
+        $record->delete();
+
+        self::recalculateOrderTotals($order);
+
+        Notification::make()
+            ->title('Cart updated successfully.')
+            ->success()
+            ->send();
     }
 }

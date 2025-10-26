@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Enums\DeliveryScheduledType;
+use App\Services\OrderService;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -24,7 +25,6 @@ class OrderForm
                     ->columns(11)
                     ->schema([
                         TextEntry::make('order_number')->placeholder('No order number available'),
-                        TextEntry::make('coupon.title')->label('Coupon')->placeholder('No coupon used'),
                         TextEntry::make('order_status')->badge()->placeholder('No status'),
                         TextEntry::make('payment_status')->badge()->placeholder('No payment info'),
                         TextEntry::make('delivery_status')->badge()->placeholder('No delivery status'),
@@ -34,15 +34,17 @@ class OrderForm
                         TextEntry::make('service_fee')->money('SAR')->placeholder('No service fee'),
                         TextEntry::make('tax_amount')->money('SAR')->placeholder('No tax applied'),
                         TextEntry::make('total_price')->money('SAR')->placeholder('No total calculated'),
+                        TextEntry::make('payed_price')->money('SAR')->placeholder('No payed price'),
+                        TextEntry::make('coupon.title')->label('Coupon')->placeholder('No coupon used'),
                         TextEntry::make('created_at')->dateTime()->placeholder('No creation date'),
                         TextEntry::make('customer.name')->label('Customer')->placeholder('No customer'),
                         TextEntry::make('customer.phone')->label('Customer Phone')->placeholder('No customer phone'),
-                        TextEntry::make('customer.email')->label('Customer Email')->placeholder('No customer email'),
                         TextEntry::make('delivery.name')->label('Delivery')->placeholder('No delivery assigned'),
                         TextEntry::make('delivery.phone')->label('Delivery Phone')->placeholder('No delivery phone'),
                         TextEntry::make('delivery.email')->label('Delivery Email')->placeholder('No delivery email'),
                         TextEntry::make('manager.name')->label('Manager')->placeholder('No manager assigned'),
                         TextEntry::make('branch.title')->label('Branch')->placeholder('No branch assigned'),
+                        TextEntry::make('cancelledBy.name')->placeholder('No cancelled by'),
                         TextEntry::make('cancel_reason')->placeholder('No cancel reason'),
                     ]),
 
@@ -52,11 +54,9 @@ class OrderForm
                         TextInput::make('notes')->columnSpan(2),
                         Select::make('payment_method_id')
                             ->required()
-                            ->relationship(
-                                'paymentMethod',
-                                'title',
-                                fn(Builder $query, Get $get) => $query->published()->where('branch_id', '=', $get('branch_id'))
-                            ),
+                            ->options(function (Get $get) {
+                                return OrderService::getPaymentMethods($get('branch_id'))->pluck('title', 'id');
+                            }),
                         Select::make('delivery_scheduled_type')
                             ->afterStateUpdated(function (Set $set) {
                                 $set('delivery_date', null);

@@ -6,7 +6,7 @@ use App\Models\BranchProduct;
 use App\Models\CartProduct;
 use App\Models\Product;
 use App\Policies\OrderPolicy;
-use App\Services\CartManager;
+use App\Services\OrderService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -34,8 +34,8 @@ class CartProductsRelationManager extends RelationManager
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')->label('Image')->state(fn($record) => $record->product->files->first()->url ?? null)->imageSize(200),
-                    TextColumn::make('product.title')->searchable()->prefix('Title: '),
+                    ImageColumn::make('url')->label('Image')->state(fn($record) => $record->product->files->first()->url ?? null)->placeholder('Deleted Product')->imageSize(200),
+                    TextColumn::make('title')->searchable()->prefix('Title: '),
                     TextColumn::make('quantity')->searchable()->prefix('Quantity: '),
                     TextColumn::make('price')->searchable()->prefix('Price: '),
                     TextColumn::make('Total')->searchable()->state(fn($record) => $record->price * $record->quantity)->prefix('Total: '),
@@ -89,7 +89,7 @@ class CartProductsRelationManager extends RelationManager
                         ];
                     })
                     ->action(function (array $data, CartProduct $record) {
-                        CartManager::editProduct($data, $record, $this->getOwnerRecord());
+                        OrderService::editProduct($data, $record, $this->getOwnerRecord());
                     }),
                 Action::make('delete')
                     ->color('danger')
@@ -99,7 +99,7 @@ class CartProductsRelationManager extends RelationManager
                         return OrderPolicy::isEnabled($this->getOwnerRecord());
                     })
                     ->action(function (CartProduct $record) {
-                        CartManager::removeProduct($record, $this->getOwnerRecord());
+                        OrderService::removeProduct($record, $this->getOwnerRecord());
                     }),
             ])
             ->toolbarActions([
@@ -150,7 +150,7 @@ class CartProductsRelationManager extends RelationManager
                         ];
                     })
                     ->action(function (array $data) {
-                        CartManager::addProduct($data, $this->getOwnerRecord());
+                        OrderService::addProduct($data, $this->getOwnerRecord());
                     }),
             ]);
     }

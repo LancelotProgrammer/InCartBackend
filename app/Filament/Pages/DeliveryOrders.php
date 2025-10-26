@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Order;
+use App\Services\OrderService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -34,7 +35,7 @@ class DeliveryOrders extends Page implements HasActions, HasSchemas, HasTable
         return $table
             ->paginationMode(PaginationMode::Simple)
             ->query(
-                fn (): Builder => Order::query()
+                fn(): Builder => Order::query()
                     ->whereDate('delivery_date', '=', now())
                     ->where('delivery_id', '=', auth()->user()->id)
             )
@@ -51,7 +52,7 @@ class DeliveryOrders extends Page implements HasActions, HasSchemas, HasTable
                         ->label('Cart')
                         ->formatStateUsing(function (Order $record) {
                             return $record->carts->first()->cartProducts
-                                ->map(fn ($item) => "{$item->product->title} × {$item->quantity}")
+                                ->map(fn($item) => "{$item->product->title} x {$item->quantity}")
                                 ->join(' | ');
                         })
                         ->wrap(),
@@ -64,7 +65,18 @@ class DeliveryOrders extends Page implements HasActions, HasSchemas, HasTable
             ->recordActions([
                 Action::make('open_location')
                     ->color('primary')
-                    ->url(fn ($record) => "https://www.google.com/maps?q={$record->userAddress->latitude},{$record->userAddress->longitude}"),
+                    ->url(fn($record) => "https://www.google.com/maps?q={$record->userAddress->latitude},{$record->userAddress->longitude}"),
+                Action::make('finish')
+                    ->authorize('finish')
+                    ->icon(Heroicon::DocumentCheck)
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(function (Order $order) {
+                        return $order->isFinishable();
+                    })
+                    ->action(function (Order $order) {
+                        OrderService::deliveryFinish($order);
+                    }),
             ]);
     }
 

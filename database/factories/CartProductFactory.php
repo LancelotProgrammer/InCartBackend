@@ -20,12 +20,9 @@ class CartProductFactory extends Factory
      */
     public function definition(): array
     {
-        $product = Product::inRandomOrder()->first();
-
         $quantity = $this->faker->numberBetween(1, 10);
 
         return [
-            'product_id' => $product->id,
             'quantity' => $quantity,
         ];
     }

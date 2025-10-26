@@ -195,11 +195,9 @@ class CreateOrderAction
         return [
             Select::make('payment_method_id')
                 ->required()
-                ->relationship(
-                    'paymentMethod',
-                    'title',
-                    fn(Builder $query, Get $get) => $query->published()->where('branch_id', '=', $get('branch_id'))
-                ),
+                ->options(function (Get $get) {
+                    return OrderService::getPaymentMethods($get('branch_id'))->pluck('title', 'id');
+                }),
             TextInput::make('coupon')
                 ->belowContent(Schema::between([
                     Action::make('validate')->action(function ($state, Get $get) {

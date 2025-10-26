@@ -25,6 +25,7 @@ class Order extends Model implements AuditableContract
         'order_number',
         'notes',
         'cancel_reason',
+        'metadata',
         'order_status',
         'payment_status',
         'delivery_status',
@@ -34,9 +35,12 @@ class Order extends Model implements AuditableContract
         'service_fee',
         'tax_amount',
         'total_price',
+        'payed_price',
         'delivery_scheduled_type',
         'delivery_date',
+        'user_address_title',
         'payment_token',
+        'cancelled_by_id',
         'customer_id',
         'manager_id',
         'delivery_id',
@@ -47,6 +51,7 @@ class Order extends Model implements AuditableContract
     ];
 
     protected $casts = [
+        'metadata' => 'array',
         'order_status' => OrderStatus::class,
         'payment_status' => PaymentStatus::class,
         'delivery_status' => DeliveryStatus::class,
@@ -56,6 +61,7 @@ class Order extends Model implements AuditableContract
         'service_fee' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'total_price' => 'decimal:2',
+        'payed_price' => 'decimal:2',
         'delivery_scheduled_type' => DeliveryScheduledType::class,
         'delivery_date' => 'datetime',
     ];
@@ -75,6 +81,7 @@ class Order extends Model implements AuditableContract
         'delivery_scheduled_type',
         'delivery_date',
         'payment_token',
+        'cancelled_by_id',
         'customer_id',
         'manager_id',
         'delivery_id',
@@ -82,7 +89,13 @@ class Order extends Model implements AuditableContract
         'coupon_id',
         'payment_method_id',
         'user_address_id',
+
     ];
+
+    public function cancelledBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cancelled_by_id');
+    }
 
     public function customer(): BelongsTo
     {
@@ -134,9 +147,14 @@ class Order extends Model implements AuditableContract
         return $this->morphMany(Audit::class, 'auditable');
     }
 
+    public function isPayOnDelivery(): bool
+    {
+        return $this->paymentMethod->code === PaymentMethod::PAY_ON_DELIVERY_CODE;
+    }
+
     public function isCancelable(): bool
     {
-        return ! ($this->order_status === OrderStatus::FINISHED || $this->order_status === OrderStatus::CANCELLED || $this->order_status === OrderStatus::DELIVERING);
+        return $this->order_status === OrderStatus::PENDING || $this->order_status === OrderStatus::PROCESSING;
     }
 
     public function isApprovable(): bool
@@ -146,10 +164,10 @@ class Order extends Model implements AuditableContract
 
     public function isForceApprovable(): bool
     {
-        return $this->order_status === OrderStatus::PENDING && 
-            !$this->delivery_date->isSameDay(now()) ||
-            (PaymentMethod::where('id', '=', $this->payment_method_id)->value('code') !== PaymentMethod::PAY_ON_DELIVERY_CODE &&
-            $this->payment_status === PaymentStatus::UNPAID);
+        return $this->order_status === OrderStatus::PENDING &&
+            (!$this->delivery_date->isSameDay(now()) ||
+                ($this->isPayOnDelivery() &&
+                    $this->payment_status === PaymentStatus::UNPAID));
     }
 
     public function isDeliverable(): bool
@@ -162,12 +180,23 @@ class Order extends Model implements AuditableContract
         return $this->order_status === OrderStatus::DELIVERING;
     }
 
+    public function isClosable(): bool
+    {
+        return $this->order_status === OrderStatus::FINISHED;
+    }
+
+    public function isArchivable(): bool
+    {
+        return $this->order_status === OrderStatus::CANCELLED || $this->order_status === OrderStatus::CLOSED;
+    }
+
     public function archive(): void
     {
         OrderArchive::create([
             'archived_at' => now(),
             'order_number' => $this->order_number,
             'notes' => $this->notes,
+            'metadata' => $this->metadata,
             'order_status' => $this->order_status->value,
             'payment_status' => $this->payment_status->value,
             'delivery_status' => $this->delivery_status->value,
@@ -177,9 +206,12 @@ class Order extends Model implements AuditableContract
             'service_fee' => $this->service_fee,
             'tax_amount' => $this->tax_amount,
             'total_price' => $this->total_price,
+            'payed_price' => $this->payed_price,
             'delivery_scheduled_type' => $this->delivery_scheduled_type->value,
             'delivery_date' => $this->delivery_date,
+            'user_address_title' => $this->user_address_title,
             'payment_token' => $this->payment_token,
+            'cancelled_by' => $this->cancelledBy?->toJson(),
             'customer' => $this->customer->toJson(),
             'delivery' => $this->delivery?->toJson(),
             'manager' => $this->manager?->toJson(),

@@ -14,6 +14,7 @@ class OrderArchive extends Model
         'archived_at',
         'order_number',
         'cancel_reason',
+        'metadata',
         'notes',
         'order_status',
         'payment_status',
@@ -24,9 +25,12 @@ class OrderArchive extends Model
         'service_fee',
         'tax_amount',
         'total_price',
+        'payed_price',
         'delivery_scheduled_type',
         'delivery_date',
+        'user_address_title',
         'payment_token',
+        'cancelled_by',
         'customer',
         'delivery',
         'manager',
@@ -39,6 +43,7 @@ class OrderArchive extends Model
     ];
 
     protected $casts = [
+        'metadata' => 'array',
         'archived_at' => 'datetime',
         'order_status' => OrderStatus::class,
         'payment_status' => PaymentStatus::class,
@@ -49,6 +54,7 @@ class OrderArchive extends Model
         'service_fee' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'total_price' => 'decimal:2',
+        'payed_price' => 'decimal:2',
         'delivery_scheduled_type' => DeliveryScheduledType::class,
         'delivery_date' => 'datetime',
         'customer' => 'array',
