@@ -59,7 +59,7 @@ class OrderService
 
     private static function processOrderCreation(OrderProcess $service, string $process): mixed
     {
-        if ($process === 'createOrder' || $process === 'createOrderBill') {
+        if ($process !== 'createOrder' || $process !== 'createOrderBill') {
             throw new InvalidArgumentException('Invalid order process');
         }
 
