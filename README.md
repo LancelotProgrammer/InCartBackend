@@ -107,7 +107,7 @@ loyalties:
         - OrderService: handles the orders actions
         - OrderProcess: handle the orders creation
     - notification are sent according to the notification docs
-    - makeOrderProcess is BranchSettingsService which is layer to future proof getting setting per branch
+    - makeOrderProcess has a BranchSettingsService which is layer to future proof getting setting per branch
     - OrderProcess->calculateCartWeight() is commented and can be used to "calculate cart weight"
     - OrderProcess->createOrderBill() is used to create a temporary bill for the order
     - OrderProcess->createOrder() is used to create the order
@@ -117,12 +117,12 @@ loyalties:
         - approving an order means the manager is now responsible to handle the order
     - after approving, the order is processing and can be edited if needed
     - order can be assigned to a delivery
-    - order can marked as finished by the manager or the delivery personal_access_tokens
+    - order can marked as finished by the manager or the delivery person
     - order can closed by a manager
         - closing an order means that:
             - the order is marked as closed and can be archived
             - the payed price is entered and saved. If it's not pay on delivery the payed price is saved automatically
-            - product quantity has decremented
+            - product quantity is decremented
             - loyalty points are added to the customer if there is no discount
     - order can be archived which means the order is moved to the archive table and is hidden from the user
     - order can be cancelled by the manager or the customer and if the order status is pending or processing
