@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
-use App\Services\Session;
 use App\Services\SessionService;
 use App\Traits\CanManagePermissions;
 use Filament\Models\Contracts\FilamentUser;
@@ -16,14 +15,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use InvalidArgumentException;
 use Laravel\Sanctum\HasApiTokens;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Models\Audit;
 
-class User extends Authenticatable implements FilamentUser, MustVerifyEmail
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail, AuditableContract
 {
-    use CanManagePermissions, HasApiTokens, HasFactory, Notifiable;
+    use CanManagePermissions, HasApiTokens, HasFactory, Notifiable, Auditable;
 
     protected $fillable = [
         'name',
@@ -37,7 +40,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'approved_at',
         'role_id',
         'city_id',
-        'file_id',
     ];
 
     protected $hidden = [
@@ -50,6 +52,20 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'blocked_at' => 'datetime',
         'approved_at' => 'datetime',
         'password' => 'hashed',
+    ];
+
+    protected $auditInclude = [
+        'name',
+        'phone',
+        'email',
+        'pending_email',
+        'password',
+        'email_verified_at',
+        'phone_verified_at',
+        'blocked_at',
+        'approved_at',
+        'role_id',
+        'city_id',
     ];
 
     public function city(): BelongsTo
@@ -240,5 +256,10 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function isApproved(): bool
     {
         return ! is_null($this->approved_at);
+    }
+
+    public function auditsLogs(): MorphMany
+    {
+        return $this->morphMany(Audit::class, 'auditable');
     }
 }

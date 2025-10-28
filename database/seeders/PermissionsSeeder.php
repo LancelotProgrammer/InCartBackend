@@ -450,8 +450,8 @@ class PermissionsSeeder extends Seeder
                 'code' => 'view-invoice-order',
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Can Audit', 'يستطيع مراجعة السجلات']), JSON_UNESCAPED_UNICODE),
-                'code' => 'can-audit',
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Can View Audit', 'يستطيع عرض سجلات المراقبه']), JSON_UNESCAPED_UNICODE),
+                'code' => 'can-view-audit',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Block User', 'حظر المستخدم']), JSON_UNESCAPED_UNICODE),

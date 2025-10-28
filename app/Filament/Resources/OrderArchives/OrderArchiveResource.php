@@ -6,8 +6,10 @@ use App\Filament\Resources\OrderArchives\Pages\ManageOrderArchives;
 use App\Models\OrderArchive;
 use BackedEnum;
 use Filament\Actions\ViewAction;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -27,23 +29,72 @@ class OrderArchiveResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
-                TextEntry::make('archived_at')->dateTime(),
-                TextEntry::make('order_number'),
-                TextEntry::make('cancel_reason'),
-                TextEntry::make('order_status')->badge(),
-                TextEntry::make('payment_status')->badge(),
-                TextEntry::make('delivery_status')->badge(),
-                TextEntry::make('subtotal_price')->numeric(),
-                TextEntry::make('discount_price')->numeric(),
-                TextEntry::make('delivery_fee')->numeric(),
-                TextEntry::make('service_fee')->numeric(),
-                TextEntry::make('tax_amount')->numeric(),
-                TextEntry::make('total_price')->numeric(),
-                TextEntry::make('delivery_scheduled_type')->badge(),
-                TextEntry::make('delivery_date')->dateTime(),
-                TextEntry::make('created_at')->dateTime(),
-                TextEntry::make('updated_at')->dateTime(),
+                Section::make('General Info')
+                    ->columns(3)
+                    ->schema([
+                        TextEntry::make('order_number')->label('Order number'),
+                        TextEntry::make('order_status')->badge(),
+                        TextEntry::make('payment_status')->badge(),
+                        TextEntry::make('delivery_status')->badge(),
+                        TextEntry::make('created_at')->dateTime()->label('Created At'),
+                        TextEntry::make('delivery_date')->date()->label('Delivery Date'),
+                        TextEntry::make('delivery_scheduled_type')->label('Delivery Type'),
+                    ]),
+
+                Section::make('Customer & Staff')
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('customer_name')->label('Customer'),
+                        TextEntry::make('customer_phone')->label('Customer Phone'),
+                        TextEntry::make('delivery_name')->label('Delivery'),
+                        TextEntry::make('manager.name')
+                            ->label('Manager')
+                            ->formatStateUsing(fn($state) => json_decode($state)?->name ?? '—'),
+                        TextEntry::make('branch_title')->label('Branch'),
+                        TextEntry::make('cancelled_by')
+                            ->label('Cancelled By')
+                            ->formatStateUsing(fn($state) => json_decode($state)?->name ?? '—'),
+                    ]),
+
+                Section::make('Pricing')
+                    ->columns(3)
+                    ->schema([
+                        TextEntry::make('subtotal_price')->money('SAR'),
+                        TextEntry::make('discount_price')->money('SAR'),
+                        TextEntry::make('delivery_fee')->money('SAR'),
+                        TextEntry::make('service_fee')->money('SAR'),
+                        TextEntry::make('tax_amount')->money('SAR'),
+                        TextEntry::make('total_price')->money('SAR'),
+                        TextEntry::make('payed_price')->money('SAR'),
+                        TextEntry::make('coupon_title')->label('Coupon'),
+                    ]),
+
+                Section::make('Configuration')
+                    ->columns(3)
+                    ->schema([
+                        TextEntry::make('notes')->label('Notes'),
+                        TextEntry::make('payment_method_title')->label('Payment Method'),
+                        TextEntry::make('user_address_title')->label('Address Title'),
+                    ]),
+
+                Section::make('Order Cart Details')
+                    ->columns(1)
+                    ->schema([
+                        RepeatableEntry::make('cart')
+                            ->schema([
+                                TextEntry::make('order_number'),
+                                RepeatableEntry::make('cart_products')
+                                    ->grid(3)
+                                    ->columns(2)
+                                    ->schema([
+                                        TextEntry::make('title')->columnSpanFull(),
+                                        TextEntry::make('price'),
+                                        TextEntry::make('quantity'),
+                                    ]),
+                            ]),
+                    ]),
             ]);
     }
 

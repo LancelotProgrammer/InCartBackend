@@ -39,9 +39,11 @@ class Settings extends Page
                         } else {
                             $value = (string) $value;
                         }
-                        Setting::where('key', $key)->update([
-                            'value' => $value,
-                        ]);
+                        $setting = Setting::where('key', $key)->first();
+                        if ($setting) {
+                            $setting->value = $value;
+                            $setting->save();
+                        }
                     }
 
                     CacheService::deleteSettingsCache();

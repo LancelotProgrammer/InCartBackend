@@ -69,6 +69,8 @@ class Order extends Model implements AuditableContract
     protected $auditInclude = [
         'order_number',
         'notes',
+        'cancel_reason',
+        'metadata',
         'order_status',
         'payment_status',
         'delivery_status',
@@ -78,8 +80,10 @@ class Order extends Model implements AuditableContract
         'service_fee',
         'tax_amount',
         'total_price',
+        'payed_price',
         'delivery_scheduled_type',
         'delivery_date',
+        'user_address_title',
         'payment_token',
         'cancelled_by_id',
         'customer_id',
@@ -89,7 +93,6 @@ class Order extends Model implements AuditableContract
         'coupon_id',
         'payment_method_id',
         'user_address_id',
-
     ];
 
     public function cancelledBy(): BelongsTo
@@ -142,11 +145,6 @@ class Order extends Model implements AuditableContract
         return $this->hasManyThrough(CartProduct::class, Cart::class);
     }
 
-    public function auditsLogs(): MorphMany
-    {
-        return $this->morphMany(Audit::class, 'auditable');
-    }
-
     public function isPayOnDelivery(): bool
     {
         return $this->paymentMethod->code === PaymentMethod::PAY_ON_DELIVERY_CODE;
@@ -166,7 +164,7 @@ class Order extends Model implements AuditableContract
     {
         return $this->order_status === OrderStatus::PENDING &&
             (!$this->delivery_date->isSameDay(now()) ||
-                ($this->isPayOnDelivery() &&
+                (!$this->isPayOnDelivery() &&
                     $this->payment_status === PaymentStatus::UNPAID));
     }
 
@@ -211,27 +209,31 @@ class Order extends Model implements AuditableContract
             'delivery_date' => $this->delivery_date,
             'user_address_title' => $this->user_address_title,
             'payment_token' => $this->payment_token,
-            'cancelled_by' => $this->cancelledBy?->toJson(),
-            'customer' => $this->customer->toJson(),
-            'delivery' => $this->delivery?->toJson(),
-            'manager' => $this->manager?->toJson(),
-            'branch' => $this->branch->toJson(),
-            'coupon' => $this->coupon?->toJson(),
-            'payment_method' => $this->paymentMethod->toJson(),
-            'user_address' => $this->userAddress->toJson(),
-            'cart' => $this->carts()->with('cartProducts.product')->get()->toJson(),
-            'audit' => $this->auditsLogs?->toJson(),
+            'cancelled_by' => $this->cancelledBy?->toArray(),
+            'customer' => $this->customer->toArray(),
+            'delivery' => $this->delivery?->toArray(),
+            'manager' => $this->manager?->toArray(),
+            'branch' => $this->branch->toArray(),
+            'coupon' => $this->coupon?->toArray(),
+            'payment_method' => $this->paymentMethod->toArray(),
+            'user_address' => $this->userAddress->toArray(),
+            'cart' => $this->carts()->with('cartProducts.product')->get()->toArray(),
         ]);
     }
 
     public static function getOrderNotificationMessage(Order $order): array
     {
         return match ($order->order_status->value) {
-            2 => ['Order Processing', 'Your order is being processed.'],
-            3 => ['Order Delivering', 'Your order is on the way!'],
-            4 => ['Order Finished', 'Your order has been delivered successfully.'],
-            5 => ['Order Cancelled', 'Your order has been cancelled.'],
+            OrderStatus::PROCESSING->value => ['Order Processing', 'Your order is being processed.'],
+            OrderStatus::DELIVERING->value => ['Order Delivering', 'Your order is on the way!'],
+            OrderStatus::FINISHED->value => ['Order Finished', 'Your order has been delivered successfully.'],
+            OrderStatus::CANCELLED->value => ['Order Cancelled', 'Your order has been cancelled.'],
             default => throw new InvalidArgumentException('Can not create message for this order'),
         };
+    }
+
+    public function auditsLogs(): MorphMany
+    {
+        return $this->morphMany(Audit::class, 'auditable');
     }
 }

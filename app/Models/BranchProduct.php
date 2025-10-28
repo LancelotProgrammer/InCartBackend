@@ -8,13 +8,17 @@ use App\Traits\HasPublishAttribute;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Models\Audit;
 use stdClass;
 
 #[ScopedBy([BranchScope::class])]
-class BranchProduct extends Pivot
+class BranchProduct extends Pivot implements AuditableContract
 {
-    use HasPublishAttribute;
+    use HasPublishAttribute, Auditable;
 
     public $incrementing = true;
 
@@ -40,6 +44,23 @@ class BranchProduct extends Pivot
         'expires_at' => 'datetime',
         'published_at' => 'datetime',
     ];
+
+    protected $auditInclude = [
+        'branch_id',
+        'product_id',
+        'price',
+        'discount',
+        'maximum_order_quantity',
+        'minimum_order_quantity',
+        'quantity',
+        'expires_at',
+        'published_at',
+    ];
+
+    public function audits(): MorphMany
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
 
     protected static function booted(): void
     {

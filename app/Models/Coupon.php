@@ -9,12 +9,16 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Models\Audit;
 use Spatie\Translatable\HasTranslations;
 
 #[ScopedBy([BranchScope::class])]
-class Coupon extends Model
+class Coupon extends Model implements AuditableContract
 {
-    use HasFactory, HasPublishAttribute, HasTranslations;
+    use HasFactory, HasPublishAttribute, HasTranslations, Auditable;
 
     protected $fillable = ['title', 'description', 'code', 'type', 'config', 'published_at', 'branch_id'];
 
@@ -27,6 +31,19 @@ class Coupon extends Model
     ];
 
     public array $translatable = ['title', 'description'];
+
+    protected $auditInclude = [
+        'title',
+        'description',
+        'type',
+        'config',
+        'published_at',
+    ];
+
+    public function audits(): MorphMany
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
 
     public function branch(): BelongsTo
     {

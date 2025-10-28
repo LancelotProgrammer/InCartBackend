@@ -353,8 +353,8 @@ class BaseSeeder extends Seeder
         $this->command->info('seeding branches');
         $branch = Branch::insert([
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 1', 'الفرع رقم 1']), JSON_UNESCAPED_UNICODE),
-                'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 1', 'الفرع رقم 1']), JSON_UNESCAPED_UNICODE),
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Jeddah Branch', 'فرع جدة']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['Jeddah Branch', 'فرع جدة']), JSON_UNESCAPED_UNICODE),
                 'latitude' => 21.5292,
                 'longitude' => 39.1611,
                 'is_default' => true,
@@ -362,8 +362,8 @@ class BaseSeeder extends Seeder
                 'published_at' => now(),
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 2', 'الفرع رقم 2']), JSON_UNESCAPED_UNICODE),
-                'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 2', 'الفرع رقم 2']), JSON_UNESCAPED_UNICODE),
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Riyadh Branch', 'فرع الرياض']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['Riyadh Branch', 'فرع الرياض']), JSON_UNESCAPED_UNICODE),
                 'latitude' => 24.7136,
                 'longitude' => 46.6753,
                 'is_default' => true,
@@ -371,8 +371,8 @@ class BaseSeeder extends Seeder
                 'published_at' => now(),
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['branch number 3', 'الفرع رقم 3']), JSON_UNESCAPED_UNICODE),
-                'description' => json_encode(Factory::translations(['en', 'ar'], ['branch number 3', 'الفرع رقم 3']), JSON_UNESCAPED_UNICODE),
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Makkah Branch', 'فرع مكة']), JSON_UNESCAPED_UNICODE),
+                'description' => json_encode(Factory::translations(['en', 'ar'], ['Makkah Branch', 'فرع مكة']), JSON_UNESCAPED_UNICODE),
                 'latitude' => 21.4241,
                 'longitude' => 39.8173,
                 'is_default' => true,
@@ -581,7 +581,7 @@ class BaseSeeder extends Seeder
                     CartProduct::factory()->create([
                         'cart_id' => $cart->id,
                         'product_id' => $product->id,
-                        'title' => json_encode($product->getTranslations('title'), JSON_UNESCAPED_UNICODE),
+                        'title' => $product->getTranslations('title'),
                         'price' => $branchProduct ? ($branchProduct->discount > 0 ? $branchProduct->price - ($branchProduct->price * ($branchProduct->discount / 100)) : $branchProduct->price) : 0,
                         'quantity' => rand(1, 5),
                     ]);
