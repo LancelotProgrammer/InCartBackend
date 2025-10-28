@@ -70,6 +70,59 @@ docs:
     - role permissions are handled by trait called CanManagePermissions
 - settings 
     - SettingsService is responsible to define the getter of each setting, the form component of each setting, the cast of each setting and to cache them all
-- resource lock is using HasConcurrentEditingProtection trait and a custom resource lock is added to
+- resource lock is using HasConcurrentEditingProtection trait and a custom lock logic is added to
     - BaseFilesRelationManager
     - UsersRelationManager
+loyalties:
+    - the LoyaltyService is responsible for handling loyalty points and gifts
+    - loyalty points are added to the user only if the order is closed and it does not have a discount
+    - customer can not redeem the gift twice
+    - gifts has the following attributes:
+        - points: points count which are required to redeem the gift
+        - code: the gift code which the customer can use to apply the gift
+        - discount: the amount of discount
+        - allowed_sub_total_price: the minimum subtotal price allowed to apply the gift
+    - Loyalty has the following attributes:
+        - user_id: the customer id
+        - points: the customer current total points
+        - total_earned: the customer total points earned
+        - total_redeemed: the customer current total points redeemed
+- user delete:
+    - if a user is blocked, it can not be deleted
+    - if a user has an order which is not finished or cancelled, it can not be deleted
+- fcm bulk notification:
+    - FirebaseFCMLinks enum is used to define which model can be deep linked to a bulk notification
+    - FirebaseFCMTopics enum is used to define topics and resolve the options available for bulk actions
+- audit is applied on:
+    - branch products
+    - carts products
+    - coupons
+    - orders
+    - roles
+    - role permissions
+    - settings
+    - users
+- order lifecycle:
+    - the order is managed by two classes:
+        - OrderService: handles the orders actions
+        - OrderProcess: handle the orders creation
+    - notification are sent according to the notification docs
+    - makeOrderProcess is BranchSettingsService which is layer to future proof getting setting per branch
+    - OrderProcess->calculateCartWeight() is commented and can be used to "calculate cart weight"
+    - OrderProcess->createOrderBill() is used to create a temporary bill for the order
+    - OrderProcess->createOrder() is used to create the order
+    - order is created via order process class and it's status is set to pending
+    - order can be approved or force approved by a manager
+        - force approve means that the manager is approving an order which is not created today or it's not checked out
+        - approving an order means the manager is now responsible to handle the order
+    - after approving, the order is processing and can be edited if needed
+    - order can be assigned to a delivery
+    - order can marked as finished by the manager or the delivery personal_access_tokens
+    - order can closed by a manager
+        - closing an order means that:
+            - the order is marked as closed and can be archived
+            - the payed price is entered and saved. If it's not pay on delivery the payed price is saved automatically
+            - product quantity has decremented
+            - loyalty points are added to the customer if there is no discount
+    - order can be archived which means the order is moved to the archive table and is hidden from the user
+    - order can be cancelled by the manager or the customer and if the order status is pending or processing
