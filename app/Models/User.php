@@ -59,7 +59,6 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Aud
         'phone',
         'email',
         'pending_email',
-        'password',
         'email_verified_at',
         'phone_verified_at',
         'blocked_at',
