@@ -104,7 +104,9 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
         return Cache::remember(
             CacheKeys::PENDING_ORDER_COUNT,
             now()->addDay(),
-            fn() => Order::whereDate('delivery_date', now()->toDateString())->count()
+            fn() => Order::query()
+                ->whereDate('delivery_date', '=', now()->toDateString())
+                ->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])->count()
         );
     }
 
