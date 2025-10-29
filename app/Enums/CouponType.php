@@ -45,6 +45,7 @@ enum CouponType: int implements HasLabel
                             ->minDate(now()),
                         DateTimePicker::make('end_date')
                             ->required()
+                            ->minDate(fn(Get $get) => $get('start_date'))
                             ->after(fn(Get $get) => $get('start_date')),
                         TextInput::make('use_limit')
                             ->required()
@@ -71,19 +72,6 @@ enum CouponType: int implements HasLabel
                         ')),
                     ]),
             ]
-        };
-    }
-
-    public function getValidationRulesForCreate(): array
-    {
-        return match ($this) {
-            self::TIMED => [
-                'value' => ['required', 'integer', 'min:1'],
-                'start_date' => ['required', 'date', 'after_or_equal:now'],
-                'end_date' => ['required', 'date', 'after:start_date'],
-                'use_limit' => ['required', 'integer', 'min:1'],
-                'user_limit' => ['required', 'integer', 'min:1'],
-            ],
         };
     }
 

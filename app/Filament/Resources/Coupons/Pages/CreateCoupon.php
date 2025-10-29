@@ -6,7 +6,6 @@ use App\Enums\CouponType;
 use App\Filament\Resources\Coupons\CouponResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Validator;
 
 class CreateCoupon extends CreateRecord
 {
@@ -15,8 +14,6 @@ class CreateCoupon extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $type = CouponType::from((int) $data['type']);
-
-        Validator::make($data, $type->getValidationRulesForCreate())->validate();
 
         $config = $type->transformConfig($data);
 
