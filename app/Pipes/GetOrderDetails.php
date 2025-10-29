@@ -37,18 +37,19 @@ class GetOrderDetails
         foreach ($order->carts as $cart) {
             foreach ($cart->cartProducts as $cartProduct) {
                 $product = $cartProduct->product;
-                $branchProduct = $product->branchProducts->first();
-                $image = $product->files->first()->url;
                 
                 $cartList->push([
                     'id' => $product->id,
                     'title' => $cartProduct->title,
                     'quantity' => $cartProduct->quantity,
                 ]);
-
+                
                 if (!$product) {
                     continue;
                 }
+
+                $branchProduct = $product->branchProducts->first();
+                $image = $product->files->first()->url;
 
                 $products->filter(function (Product $product) {
                     return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
