@@ -45,7 +45,7 @@ enum CouponType: int implements HasLabel
                             ->minDate(now()),
                         DateTimePicker::make('end_date')
                             ->required()
-                            ->after(fn (Get $get) => $get('start_date')),
+                            ->after(fn(Get $get) => $get('start_date')),
                         TextInput::make('use_limit')
                             ->required()
                             ->numeric()
@@ -74,13 +74,26 @@ enum CouponType: int implements HasLabel
         };
     }
 
-    public function getValidationRules(): array
+    public function getValidationRulesForCreate(): array
     {
         return match ($this) {
             self::TIMED => [
                 'value' => ['required', 'integer', 'min:1'],
                 'start_date' => ['required', 'date', 'after_or_equal:now'],
                 'end_date' => ['required', 'date', 'after:start_date'],
+                'use_limit' => ['required', 'integer', 'min:1'],
+                'user_limit' => ['required', 'integer', 'min:1'],
+            ],
+        };
+    }
+
+    public function getValidationRulesForApply(): array
+    {
+        return match ($this) {
+            self::TIMED => [
+                'value' => ['required', 'integer', 'min:1'],
+                'start_date' => ['required', 'date'],
+                'end_date' => ['required', 'date'],
                 'use_limit' => ['required', 'integer', 'min:1'],
                 'user_limit' => ['required', 'integer', 'min:1'],
             ],
@@ -111,9 +124,9 @@ enum CouponType: int implements HasLabel
     {
         $config = $coupon->config;
 
-        $validator = Validator::make($config, $this->getValidationRules());
+        $validator = Validator::make($config, $this->getValidationRulesForApply());
         if ($validator->fails()) {
-            throw new InvalidArgumentException('Invalid coupon config: '.$validator->errors()->first());
+            throw new InvalidArgumentException('Invalid coupon config: ' . $validator->errors()->first());
         }
 
         if (! empty($config['start_date']) && $context->time->lt(Carbon::parse($config['start_date']))) {

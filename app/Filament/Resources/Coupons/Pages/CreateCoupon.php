@@ -16,7 +16,7 @@ class CreateCoupon extends CreateRecord
     {
         $type = CouponType::from((int) $data['type']);
 
-        Validator::make($data, $type->getValidationRules())->validate();
+        Validator::make($data, $type->getValidationRulesForCreate())->validate();
 
         $config = $type->transformConfig($data);
 
