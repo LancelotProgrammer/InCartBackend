@@ -61,7 +61,7 @@ Route::middleware([
         Route::post('/order/{id}/cancel', [OrderController::class, 'cancelOrder'])->middleware(IsServiceOnline::class);
         Route::get('/order/{id}', [OrderController::class, 'getOrderDetails']);
         Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);
-        Route::get('/orders/{id}/invoice', [OrderController::class, 'createOrderInvoice'])->name('api.order.invoice');
+        Route::get('/order/{id}/invoice', [OrderController::class, 'createOrderInvoice'])->name('api.order.invoice');
 
         Route::get('/users/notifications', [UserNotificationController::class, 'getUserNotifications']);
         Route::post('/users/notifications', [UserNotificationController::class, 'markUserNotificationAsRead']);

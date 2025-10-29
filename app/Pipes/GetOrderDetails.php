@@ -37,6 +37,9 @@ class GetOrderDetails
         foreach ($order->carts as $cart) {
             foreach ($cart->cartProducts as $cartProduct) {
                 $product = $cartProduct->product;
+                if (!$product) {
+                    continue;
+                }
                 $branchProduct = $product->branchProducts->first();
                 $image = $product->files->first()->url;
 
