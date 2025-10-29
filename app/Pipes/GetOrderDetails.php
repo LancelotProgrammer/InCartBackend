@@ -39,7 +39,6 @@ class GetOrderDetails
                 $product = $cartProduct->product;
                 
                 $cartList->push([
-                    'id' => $product->id,
                     'title' => $cartProduct->title,
                     'quantity' => $cartProduct->quantity,
                 ]);
