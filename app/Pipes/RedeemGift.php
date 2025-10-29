@@ -13,7 +13,7 @@ class RedeemGift
         $request->merge(['id' => $request->route('id')]);
 
         $request->validate([
-            'id' => 'required|integer|exists:products,id',
+            'id' => 'required|integer|exists:gifts,id',
         ]);
 
         $gift = LoyaltyService::redeemGift($request->user(), $request->route('id'));
