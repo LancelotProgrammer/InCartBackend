@@ -37,17 +37,18 @@ class GetOrderDetails
         foreach ($order->carts as $cart) {
             foreach ($cart->cartProducts as $cartProduct) {
                 $product = $cartProduct->product;
+                $branchProduct = $product->branchProducts->first();
+                $image = $product->files->first()->url;
+                
+                $cartList->push([
+                    'id' => $product->id,
+                    'title' => $cartProduct->title,
+                    'quantity' => $cartProduct->quantity,
+                ]);
+
                 if (!$product) {
                     continue;
                 }
-                $branchProduct = $product->branchProducts->first();
-                $image = $product->files->first()->url;
-
-                $cartList->push([
-                    'id' => $product->id,
-                    'title' => $product->title,
-                    'quantity' => $cartProduct->quantity,
-                ]);
 
                 $products->filter(function (Product $product) {
                     return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
@@ -70,10 +71,10 @@ class GetOrderDetails
             'status' => $order->order_status,
             'cancelable' => $order->isCancelable(),
             'delivery_date' => $order->delivery_date->toDateTimeString(),
-            'address_phone_number' => $order->userAddress->phone,
+            'address_phone_number' => $order?->userAddress->phone ?? null,
             'cart_list' => $cartList->values(),
             'products' => $products->values(),
-            'address_title' => $order->userAddress->title,
+            'address_title' => $order->user_address_title,
             'payment_method_title' => $order->paymentMethod->title,
             'discount_price' => $order->discount_price,
             'total_price' => $order->total_price,
