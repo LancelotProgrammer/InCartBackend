@@ -162,6 +162,7 @@ class AuditResource extends Resource
                     Coupon::class => 'Coupon model',
                     Order::class => 'Order model',
                     OrderArchive::class => 'OrderArchive model',
+                    RolePermission::class => 'RolePermission model',
                     Role::class => 'Role model',
                     Setting::class => 'Setting model',
                     User::class => 'User model',

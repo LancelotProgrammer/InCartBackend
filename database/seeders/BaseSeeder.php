@@ -140,6 +140,7 @@ class BaseSeeder extends Seeder
                         'view-delivery-orders-page',
 
                         'manage-developer-settings',
+                        'can-view-audit',
                         'view-any-branch',
                         'view-branch',
                         'create-branch',
@@ -189,6 +190,7 @@ class BaseSeeder extends Seeder
                         'view-delivery-orders-page',
 
                         'manage-developer-settings',
+                        'can-view-audit',
                         'view-any-branch',
                         'view-branch',
                         'create-branch',

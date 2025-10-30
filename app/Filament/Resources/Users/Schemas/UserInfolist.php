@@ -114,13 +114,13 @@ class UserInfolist
                                 'delivery_status' => $order->delivery_status,
                                 'payment_status' => $order->payment_status,
 
-                                'user_address' => $order->userAddress->title,
+                                'user_address' => $order->user_address_title,
                                 'coupon' => $order->coupon?->title ?? 'no coupon',
                                 'delivery_date' => $order->delivery_date,
 
                                 'cart' => $order->carts
                                     ->first()?->cartProducts
-                                    ->map(fn($cartProducts) => "{$cartProducts->product->title} (x{$cartProducts->quantity})")
+                                    ->map(fn($cartProducts) => "{$cartProducts->title} (x{$cartProducts->quantity})")
                                     ->join(', ') ?? '—',
                             ])),
 

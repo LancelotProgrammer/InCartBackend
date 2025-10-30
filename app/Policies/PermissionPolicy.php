@@ -40,6 +40,8 @@ class PermissionPolicy
             [
                 'manage-developer-settings',
 
+                'can-view-audit',
+
                 'view-any-branch',
                 'view-branch',
                 'create-branch',
