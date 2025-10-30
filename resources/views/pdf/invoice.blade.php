@@ -86,7 +86,6 @@
             <div style="text-align:left">
                 <h4>بيانات المتجر / Company Details</h4>
                 <p>{{ $app['name'] }}</p>
-                <p>{{ $app['address'] }}</p>
             </div>
         </div>
 

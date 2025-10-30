@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\CategoryType;
+use App\Models\Category;
 use App\Models\Order;
 use Illuminate\Support\Facades\View;
 use Mpdf\Mpdf;
@@ -11,8 +12,16 @@ class InvoiceService
 {
     public static function generateInvoice(Order $order)
     {
+        $uncategorized = new Category([
+            'title' => [
+                'en' => 'Uncategorized',
+                'ar' => 'غير مصنف',
+            ],
+            'type' => CategoryType::MAIN,
+        ]);
+
         $mainCategories = $order->cartProducts
-            ->flatMap(fn($cartProduct) => $cartProduct->product->categories)
+            ->flatMap(fn($cartProduct) => $cartProduct->product?->categories ?? collect([$uncategorized]))
             ->filter(fn($category) => $category->type === CategoryType::MAIN)
             ->unique('id')
             ->values();
@@ -20,7 +29,8 @@ class InvoiceService
         // Count how many products belong to each category
         $categoryCount = [];
         foreach ($order->cartProducts as $cartProduct) {
-            foreach ($cartProduct->product->categories as $category) {
+            $categories = $cartProduct->product?->categories ?? collect([$uncategorized]);
+            foreach ($categories as $category) {
                 if ($category->type === CategoryType::MAIN) {
                     $categoryCount[$category->id] = ($categoryCount[$category->id] ?? 0) + 1;
                 }
@@ -30,24 +40,29 @@ class InvoiceService
         // Determine best category for each product (category with max count)
         $productToCategory = [];
         foreach ($order->cartProducts as $cartProduct) {
-            $eligibleCategories = $cartProduct->product->categories
+            $eligibleCategories = collect($cartProduct->product?->categories ?? [$uncategorized])
                 ->filter(fn($cat) => $cat->type === CategoryType::MAIN);
 
             if ($eligibleCategories->isNotEmpty()) {
-                $bestCategory = $eligibleCategories->sortByDesc(fn($cat) => $categoryCount[$cat->id] ?? 0)->first();
-                $productToCategory[$cartProduct->id] = $bestCategory->id;
+                $bestCategory = $eligibleCategories
+                    ->sortByDesc(fn($cat) => $categoryCount[$cat->id] ?? 0)
+                    ->first();
+
+                if ($bestCategory) {
+                    $productToCategory[$cartProduct->id] = $bestCategory->id;
+                }
             }
         }
 
-        $groupedProducts = $mainCategories->map(function ($category) use ($order, $productToCategory) {
+        $groupedProducts = $mainCategories->map(function ($category) use ($order, $productToCategory, $uncategorized) {
             $products = $order->cartProducts
-                ->filter(fn($cartProduct) => ($productToCategory[$cartProduct->id] ?? null) === $category->id)
+                ->filter(fn($cartProduct) => ($productToCategory[$cartProduct->id] ?? $uncategorized->id) === $category->id)
                 ->map(fn($cartProduct) => [
-                    'title_ar' => $cartProduct->product->getTranslation('title', 'ar'),
-                    'title_en' => $cartProduct->product->getTranslation('title', 'en'),
+                    'title_ar' => $cartProduct->getTranslation('title', 'ar') ?? 'منتج محذوف',
+                    'title_en' => $cartProduct->getTranslation('title', 'en') ?? 'Deleted Product',
                     'quantity' => $cartProduct->quantity,
-                    'unit_price' => $cartProduct->product->branchProducts->firstWhere('branch_id', $order->branch_id)->price,
-                    'total' => $cartProduct->quantity * $cartProduct->product->branchProducts->firstWhere('branch_id', $order->branch_id)->price,
+                    'unit_price' => $cartProduct->price,
+                    'total' => round($cartProduct->quantity * $cartProduct->price, 2),
                 ]);
 
             return [
@@ -72,11 +87,10 @@ class InvoiceService
                 'name' => $order->customer->name,
                 'email' => $order->customer->email,
                 'phone' => $order->customer->phone,
-                'address' => $order->userAddress->title,
+                'address' => $order->user_address_title,
             ],
             'app' => [
-                'name' => 'In-Cart', // TODO
-                'address' => 'City, Country, Address', // TODO
+                'name' => config('app.name'),
             ],
             'categories' => $groupedProducts->values(),
         ];

@@ -88,7 +88,7 @@ class ManageCategoryCategories extends ManageRelatedRecords
                 Stack::make([
                     ImageColumn::make('url')->label('Image')->state(fn ($record) => $record->files->first()->url ?? null)->imageSize(200),
                     TextColumn::make('title')->searchable(),
-                    TextColumn::make('published_at')->dateTime(),
+                    TextColumn::make('published_at')->dateTime()->placeholder('Not published'),
                 ]),
             ])
             ->contentGrid([

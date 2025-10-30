@@ -23,7 +23,7 @@ class ProductsRelationManager extends RelationManager
                 TextColumn::make('minimum_order_quantity'),
                 TextColumn::make('quantity'),
                 TextColumn::make('expires_at'),
-                TextColumn::make('published_at'),
+                TextColumn::make('published_at')->placeholder('Not published'),
             ]);
     }
 }

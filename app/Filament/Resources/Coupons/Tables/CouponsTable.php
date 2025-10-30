@@ -23,19 +23,20 @@ class CouponsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('title')->searchable(),
-                TextColumn::make('start_date')->state(fn ($record) => $record->config['start_date'])->dateTime(),
-                TextColumn::make('end_date')->state(fn ($record) => $record->config['end_date'])->dateTime(),
+                TextColumn::make('start_date')->state(fn($record) => $record->config['start_date'])->dateTime(),
+                TextColumn::make('end_date')->state(fn($record) => $record->config['end_date'])->dateTime(),
                 TextColumn::make('branch.title'),
-                TextColumn::make('published_at')->dateTime(),
+                TextColumn::make('published_at')->dateTime()->placeholder('Not published'),
             ])
             ->groups([
                 'branch.id',
             ])
             ->filtersTriggerAction(
-                fn (Action $action) => $action
+                fn(Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -47,7 +48,7 @@ class CouponsTable
                     ->trueLabel('Active Coupons')
                     ->falseLabel('Disabled Coupons')
                     ->queries(
-                        true: fn (Builder $query) => $query
+                        true: fn(Builder $query) => $query
                             ->whereNotNull('published_at')
                             ->where(function ($q) {
                                 $q->whereNull('config->start_date')
@@ -57,17 +58,17 @@ class CouponsTable
                                 $q->whereNull('config->end_date')
                                     ->orWhere('config->end_date', '>=', now());
                             }),
-                        false: fn (Builder $query) => $query->where(function ($q) {
+                        false: fn(Builder $query) => $query->where(function ($q) {
                             $q->whereNull('published_at')
                                 ->orWhere('config->start_date', '>', now())
                                 ->orWhere('config->end_date', '<', now());
                         }),
-                        blank: fn (Builder $query) => $query,
+                        blank: fn(Builder $query) => $query,
                     ),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
                 ViewAction::make(),
-                DeleteAction::make()->using(fn ($record, $action) => (new static)->deleteWithDependencyCheck()($record, $action)),
+                DeleteAction::make()->using(fn($record, $action) => (new static)->deleteWithDependencyCheck()($record, $action)),
                 ...PublishActions::configure(Coupon::class),
                 Action::make('show_code')
                     ->authorize('showCode')

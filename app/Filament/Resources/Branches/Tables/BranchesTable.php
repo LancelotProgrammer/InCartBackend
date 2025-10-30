@@ -23,7 +23,7 @@ class BranchesTable
                 TextColumn::make('latitude'),
                 TextColumn::make('longitude'),
                 IconColumn::make('is_default')->boolean(),
-                TextColumn::make('published_at')->dateTime(),
+                TextColumn::make('published_at')->dateTime()->placeholder('Not published'),
             ])
             ->groups([
                 'city.id',

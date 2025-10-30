@@ -77,7 +77,7 @@ class SettingsSeeder extends Seeder
             ],
             [
                 'key' => 'tax_rate',
-                'value' => '1',
+                'value' => '0',
                 'type' => SettingType::FLOAT,
                 'group' => 'order',
                 'is_locked' => false,

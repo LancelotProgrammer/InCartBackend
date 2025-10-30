@@ -218,7 +218,7 @@ class OrderProcess
         }
         $coupon = Coupon::published()->where('code', $this->payload->getCode())->first();
         if (! $coupon) {
-            return $this;
+            throw new LogicalException('Code error', 'Coupon is not available.');
         }
 
         // calculate discount
@@ -237,7 +237,7 @@ class OrderProcess
         }
         $gift = Gift::published()->where('code', $this->payload->getCode())->first();
         if (! $gift) {
-            return $this;
+            throw new LogicalException('Code error', 'Gift is not available.');
         }
 
         // calculate discount
@@ -337,12 +337,15 @@ class OrderProcess
     public function createOrderBill(): array
     {
         return [
-            'subtotal' => $this->payload->getSubtotal(),
-            'discount' => $this->payload->getDiscount(),
-            'delivery_fee' => $this->payload->getDeliveryFee() + $this->payload->getServiceFee(),
-            'tax' => $this->payload->getTaxAmount(),
-            'total' => $this->payload->getTotalPrice(),
-            'coupon' => $this->payload->getCoupon()?->code,
+            'subtotal' => round($this->payload->getSubtotal(), 2),
+            'discount' => round($this->payload->getDiscount(), 2),
+            'delivery_fee' => round(
+                $this->payload->getDeliveryFee() + $this->payload->getServiceFee(),
+                2
+            ),
+            'tax' => round($this->payload->getTaxAmount(), 2),
+            'total' => round($this->payload->getTotalPrice(), 2),
+            'coupon' => $this->payload->getCode(),
         ];
     }
 }

@@ -34,7 +34,7 @@ class AdvertisementsTable
                 IconColumn::make('can_be_published')
                     ->boolean()
                     ->tooltip(fn ($record) => $record->can_not_be_published_reason),
-                TextColumn::make('published_at')->dateTime(),
+                TextColumn::make('published_at')->dateTime()->placeholder('Not published'),
             ])
             ->filtersTriggerAction(
                 fn (Action $action) => $action

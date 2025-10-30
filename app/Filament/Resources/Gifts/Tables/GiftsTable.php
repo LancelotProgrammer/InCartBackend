@@ -18,12 +18,13 @@ class GiftsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('title')->searchable(),
                 TextColumn::make('points'),
                 TextColumn::make('discount'),
                 TextColumn::make('allowed_sub_total_price'),
-                TextColumn::make('published_at')->dateTime(),
+                TextColumn::make('published_at')->dateTime()->placeholder('Not published'),
             ])
             ->filters([
                 //

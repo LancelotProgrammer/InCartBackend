@@ -205,6 +205,12 @@
     }
 </style>
 
+{{-- 
+
+future: improve this design
+
+--}}
+
 <div class="preview-container">
     <div class="status-viewer-preview">
         <div class="status-header">

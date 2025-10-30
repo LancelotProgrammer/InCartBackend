@@ -113,7 +113,7 @@
         opacity: 0.7;
     }
 
-    .add-button {
+    .status-add-button {
         background: #4CAF50;
         color: white;
         width: 50px;
@@ -128,7 +128,7 @@
         transition: background 0.3s ease;
     }
 
-    .add-button:hover {
+    .status-add-button:hover {
         background: #388E3C;
     }
 </style>
@@ -138,7 +138,7 @@
         <div class="status-header">
             <div class="user-info">
                 <div class="avatar">
-                    <img src="{{ $productImageUrl }}">
+                    <img src="{!! $imageUrl !!}">
                 </div>
                 <div class="product-details">
                     <div class="product">{{ $productTile }}</div>
@@ -149,7 +149,7 @@
         </div>
 
         <div class="status-content">
-            <img src="{!! $imageUrl !!}">
+            <img src="{{ $productImageUrl }}">
         </div>
 
         <div class="status-footer">
@@ -161,7 +161,7 @@
                     <div class="discount-price">{{ number_format($price, 2) }}</div>
                 @endif
             </div>
-            <button class="add-button">+</button>
+            <button class="status-add-button">+</button>
         </div>
     </div>
 </div>

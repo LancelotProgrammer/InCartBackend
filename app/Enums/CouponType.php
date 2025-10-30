@@ -111,10 +111,11 @@ enum CouponType: int implements HasLabel
     private function calculateTimedDiscount(CouponService $context, Coupon $coupon): float
     {
         $config = $coupon->config;
+        $couponId = $coupon->id;
 
         $validator = Validator::make($config, $this->getValidationRulesForApply());
         if ($validator->fails()) {
-            throw new InvalidArgumentException('Invalid coupon config: ' . $validator->errors()->first());
+            throw new InvalidArgumentException("Invalid config for coupon with id: {$couponId}");
         }
 
         if (! empty($config['start_date']) && $context->time->lt(Carbon::parse($config['start_date']))) {
@@ -124,8 +125,8 @@ enum CouponType: int implements HasLabel
             throw new LogicalException('Coupon error', 'Coupon has expired.');
         }
 
-        $totalUses = Order::where('coupon_id', $coupon->id)->count();
-        $userUses = Order::where('coupon_id', $coupon->id)->where('customer_id', $context->userId)->count();
+        $totalUses = Order::where('coupon_id', $couponId)->count();
+        $userUses = Order::where('coupon_id', $couponId)->where('customer_id', $context->userId)->count();
 
         // Check user limit first
         if (! empty($config['user_limit']) && $userUses >= $config['user_limit']) {

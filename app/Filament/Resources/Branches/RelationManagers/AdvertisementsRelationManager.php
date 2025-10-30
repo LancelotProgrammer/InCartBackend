@@ -21,7 +21,7 @@ class AdvertisementsRelationManager extends RelationManager
                 TextColumn::make('type')->badge(),
                 TextColumn::make('link')->badge(),
                 TextColumn::make('created_at')->dateTime(),
-                TextColumn::make('published_at')->dateTime(),
+                TextColumn::make('published_at')->dateTime()->placeholder('Not published'),
             ]);
     }
 }

@@ -44,7 +44,7 @@ class SettingsService
     {
         return [
             Section::make('Service')
-                ->description('Is system online or offline')
+                ->description('Is the system ready to accept orders or not?')
                 ->components([
                     Checkbox::make('is_system_online')->inline(false),
                 ]),

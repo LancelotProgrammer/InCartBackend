@@ -19,7 +19,7 @@ class CouponsRelationManager extends RelationManager
                 TextColumn::make('title')->searchable(),
                 TextColumn::make('start_date')->state(fn ($record) => $record->config['start_date'])->dateTime(),
                 TextColumn::make('end_date')->state(fn ($record) => $record->config['end_date'])->dateTime(),
-                TextColumn::make('published_at')->dateTime(),
+                TextColumn::make('published_at')->dateTime()->placeholder('Not published'),
             ]);
     }
 }

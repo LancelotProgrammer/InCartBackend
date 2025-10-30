@@ -34,7 +34,23 @@ class CartProductsRelationManager extends RelationManager
             ])
             ->columns([
                 Stack::make([
-                    ImageColumn::make('url')->label('Image')->state(fn($record) => $record?->product?->files->first()->url ?? null)->placeholder('Deleted Product')->imageSize(200),
+                    ImageColumn::make('url')
+                        ->label('Image')
+                        ->state(fn($record) => $record?->product?->files->first()->url ?? null)
+                        ->placeholder('Deleted Product')
+                        ->imageSize(200)
+                        ->extraAttributes([
+                            'style' => '
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                padding-bottom: 10px;
+                                color: #d9534f;
+                                font-weight: bold;
+                                height: 200px;
+                                text-align: center;
+                            '
+                        ]),
                     TextColumn::make('title')->searchable()->prefix('Title: '),
                     TextColumn::make('quantity')->searchable()->prefix('Quantity: '),
                     TextColumn::make('price')->searchable()->prefix('Price: '),

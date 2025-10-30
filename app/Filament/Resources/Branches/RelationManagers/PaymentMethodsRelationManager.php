@@ -18,7 +18,7 @@ class PaymentMethodsRelationManager extends RelationManager
                 TextColumn::make('id'),
                 TextColumn::make('title')->searchable(),
                 TextColumn::make('order'),
-                TextColumn::make('published_at'),
+                TextColumn::make('published_at')->placeholder('Not published'),
                 TextColumn::make('branch.title'),
             ]);
     }
