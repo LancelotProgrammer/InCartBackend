@@ -2,6 +2,7 @@
 
 namespace App\Filament\Actions;
 
+use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
 use App\Services\OrderService;
 use Filament\Actions\Action;
@@ -83,6 +84,7 @@ class OrderActions
                 ])
                 ->action(function (Order $order, array $data) {
                     OrderService::managerSelectDelivery($order, $data);
+                    redirect(OrderResource::getUrl('index'));
                 }),
 
             // Mark as finished
