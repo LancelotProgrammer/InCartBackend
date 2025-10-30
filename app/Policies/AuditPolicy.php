@@ -9,12 +9,12 @@ class AuditPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasPermission('can-view-audit');
+        return $user->hasPermission('can-view-audit') && $user->canManageDeveloperSettings();
     }
 
     public function view(User $user, Audit $audit): bool
     {
-        return $user->hasPermission('can-view-audit');
+        return $user->hasPermission('can-view-audit') && $user->canManageDeveloperSettings();
     }
 
     public function create(User $user): bool
