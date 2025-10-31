@@ -71,7 +71,7 @@ class OrderForm
                             ->disabled(function (Get $get) {
                                 return $get('delivery_scheduled_type') === DeliveryScheduledType::IMMEDIATE;
                             })
-                            ->minDate(now()),
+                            ->minDate(now()->inApplicationTimezone()),
                         Select::make('user_address_id')
                             ->relationship(
                                 'userAddress',

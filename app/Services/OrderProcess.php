@@ -47,7 +47,7 @@ class OrderProcess
     public function setOrderDate(): self
     {
         $date = $this->payload->getDeliveryScheduledType() === DeliveryScheduledType::SCHEDULED
-            ? Carbon::parse($this->payload->getDeliveryDate())
+            ? Carbon::parse($this->payload->getDeliveryDate(), config('app.timezone_display'))->setTimezone('UTC')
             : $this->payload->getTime();
 
         $this->payload->setDate($date);

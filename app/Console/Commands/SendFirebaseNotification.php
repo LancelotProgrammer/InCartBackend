@@ -54,7 +54,7 @@ class SendFirebaseNotification extends Command
         // Build message with common data
         $message = CloudMessage::new()
             ->withNotification($notification)
-            ->withData(['type' => 'test', 'timestamp' => now()->toDateTimeString()]);
+            ->withData(['type' => 'test']);
 
         // Send either to topic or token
         if ($topic) {

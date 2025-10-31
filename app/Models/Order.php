@@ -163,7 +163,7 @@ class Order extends Model implements AuditableContract
     public function isForceApprovable(): bool
     {
         return $this->order_status === OrderStatus::PENDING &&
-            (!$this->delivery_date->isSameDay(now()) ||
+            (!$this->delivery_date->inApplicationTimezone()->isSameDay(now()->inApplicationTimezone()) ||
                 (!$this->isPayOnDelivery() &&
                     $this->payment_status === PaymentStatus::UNPAID));
     }

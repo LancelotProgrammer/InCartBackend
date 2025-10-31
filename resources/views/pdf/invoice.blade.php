@@ -135,7 +135,7 @@
 
         <div class="footer">
             <p>شكراً لتسوقكم معنا! / Thank you for shopping with us!</p>
-            <p>تم إنشاء الفاتورة في {{ now()->format('Y-m-d H:i') }}</p>
+            <p>تم إنشاء الفاتورة في {{ now()->inApplicationTimezone()->format('Y-m-d H:i') }}</p> 
         </div>
     </div>
 </body>

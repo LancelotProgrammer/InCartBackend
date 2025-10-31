@@ -25,9 +25,9 @@ class ListOrders extends ListRecords
         return [
             'all' => Tab::make(),
 
-            'future' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->whereAfterToday('delivery_date')),
-            'today' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->whereDate('delivery_date', '=', now()->toDateString())->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])),
-            'past' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->whereBeforeToday('delivery_date')),
+            'future' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('delivery_date', '<', now()->inApplicationTodayRange()[0])),
+            'today' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->whereBetween('delivery_date', now()->inApplicationTodayRange())->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])),
+            'past' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('delivery_date', '>', now()->inApplicationTodayRange()[1])),
 
             'missed' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->whereBeforeToday('delivery_date')->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])),
             'to archive' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->whereIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])),

@@ -7,7 +7,7 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Services\CouponService;
 use Carbon\Carbon;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Fieldset;
@@ -40,10 +40,10 @@ enum CouponType: int implements HasLabel
                             ->required()
                             ->numeric()
                             ->minValue(1),
-                        DateTimePicker::make('start_date')
+                        DatePicker::make('start_date')
                             ->required()
-                            ->minDate(now()),
-                        DateTimePicker::make('end_date')
+                            ->minDate(now()->inApplicationTimezone()),
+                        DatePicker::make('end_date')
                             ->required()
                             ->minDate(fn(Get $get) => $get('start_date'))
                             ->after(fn(Get $get) => $get('start_date')),
@@ -118,10 +118,10 @@ enum CouponType: int implements HasLabel
             throw new InvalidArgumentException("Invalid config for coupon with id: {$couponId}");
         }
 
-        if (! empty($config['start_date']) && $context->time->lt(Carbon::parse($config['start_date']))) {
+        if (! empty($config['start_date']) && $context->time->inApplicationTimezone()->lt(Carbon::parse($config['start_date'])->inApplicationTimezone())) {
             throw new LogicalException('Coupon error', 'Coupon is not active yet.');
         }
-        if (! empty($config['end_date']) && $context->time->gt(Carbon::parse($config['end_date']))) {
+        if (! empty($config['end_date']) && $context->time->inApplicationTimezone()->gt(Carbon::parse($config['end_date'])->inApplicationTimezone())) {
             throw new LogicalException('Coupon error', 'Coupon has expired.');
         }
 

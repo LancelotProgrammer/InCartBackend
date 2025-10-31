@@ -249,7 +249,7 @@ class OrderService
 
             return;
         }
-        if (! $order->delivery_date->isSameDay(now())) {
+        if (! $order->delivery_date->inApplicationTimezone()->isSameDay(now()->inApplicationTimezone())) {
             Notification::make()
                 ->title("Order #{$order->order_number} cannot be approved.")
                 ->body('Order cannot be approved because it was not created today.')

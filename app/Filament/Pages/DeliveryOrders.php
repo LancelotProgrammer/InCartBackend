@@ -36,7 +36,7 @@ class DeliveryOrders extends Page implements HasActions, HasSchemas, HasTable
             ->paginationMode(PaginationMode::Simple)
             ->query(
                 fn(): Builder => Order::query()
-                    ->whereDate('delivery_date', '=', now())
+                    ->whereBetween('delivery_date', now()->inApplicationTodayRange())
                     ->where('delivery_id', '=', auth()->user()->id)
             )
             ->defaultSort('id', 'desc')
@@ -87,7 +87,7 @@ class DeliveryOrders extends Page implements HasActions, HasSchemas, HasTable
 
     public static function getNavigationBadge(): ?string
     {
-        return Order::whereDate('delivery_date', now()->toDateString())
+        return Order::whereBetween('delivery_date', now()->inApplicationTodayRange())
             ->where('delivery_id', '=', auth()->user()->id)
             ->count();
     }

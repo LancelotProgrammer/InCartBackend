@@ -39,7 +39,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
             ->paginationMode(PaginationMode::Simple)
             ->query(
                 fn(): Builder => Order::query()
-                    ->whereDate('delivery_date', '=', now()->toDateString())
+                    ->whereBetween('delivery_date', now()->inApplicationTodayRange())
                     ->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])
             )
             ->defaultSort('id', 'desc')
@@ -105,7 +105,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
             CacheKeys::PENDING_ORDER_COUNT,
             now()->addDay(),
             fn() => Order::query()
-                ->whereDate('delivery_date', '=', now()->toDateString())
+                ->whereBetween('delivery_date', now()->inApplicationTodayRange())
                 ->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])->count()
         );
     }
