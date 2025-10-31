@@ -87,9 +87,7 @@ class UsersRelationManager extends RelationManager
                                 ->send();
                             return;
                         }
-
                         $this->getOwnerRecord()->users()->detach($record->id);
-
                         Notification::make()
                             ->title('Users detached')
                             ->success()
