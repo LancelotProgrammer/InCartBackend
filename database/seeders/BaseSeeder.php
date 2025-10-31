@@ -33,6 +33,7 @@ use Faker\Generator;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class BaseSeeder extends Seeder
@@ -395,7 +396,7 @@ class BaseSeeder extends Seeder
                     'maximum_order_quantity' => fake()->numberBetween($minimumQuantity + 10, 50),
                     'quantity' => fake()->numberBetween(100, 10000),
                     'expires_at' => fake()->dateTimeBetween('+20 days', '+1 year'),
-                    'published_at' => $this->faker->boolean(70) ? now() : null,
+                    'published_at' => $this->faker->boolean(70) ? Carbon::parse('2025-01-01 00:00:00') : null,
                 ]);
             }
             Advertisement::factory()

@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Infolists\Components\TextEntry;
 
 class ProductForm
 {
@@ -38,13 +39,13 @@ class ProductForm
                             ->multiple()
                             ->relationship('categories', 'title')
                             ->searchable()
-                            ->getSearchResultsUsing(fn (string $search): array => Category::query()
-                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
+                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
+                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
                                 ->whereNotNull('parent_id')
                                 ->limit(50)
                                 ->pluck('title', 'id')
                                 ->all())
-                            ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->title)
+                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title)
                             ->required(),
                     ]),
                 self::productConfigs(),
@@ -115,13 +116,15 @@ class ProductForm
                             return auth()->user()->canPublishProduct();
                         })
                         ->afterStateHydrated(function (Toggle $component, ?Model $record) {
-                            if ($record !== null && $record->published_at !== null) {
-                                $component->state(true);
+                            if ($record !== null) {
+                                if ($record->published_at !== null) {
+                                    $component->state(true);
+                                }
                             }
                         })
                         ->dehydrateStateUsing(
                             function ($state) {
-                                return $state ? Carbon::now() : null;
+                                return $state ? Carbon::parse('2025-01-01 00:00:00') : null;
                             }
                         )
                         ->inline(false),
