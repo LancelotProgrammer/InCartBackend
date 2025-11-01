@@ -22,7 +22,7 @@ class DeleteBranchAndCartProducts
     public function handle(ProductDeleting $event): void
     {
         $product = $event->product;
-        $product->branchProducts->each->delete();
-        $product->cartProducts->each->delete();
+        $product->branches()->detach();
+        $product->carts()->detach();
     }
 }

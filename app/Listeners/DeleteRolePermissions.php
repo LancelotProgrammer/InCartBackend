@@ -22,6 +22,6 @@ class DeleteRolePermissions
     public function handle(RoleDeleting $event): void
     {
         $role = $event->role;
-        $role->rolePermissions->each->delete();
+        $role->permissions()->detach();
     }
 }
