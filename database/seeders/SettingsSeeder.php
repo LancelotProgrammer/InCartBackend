@@ -110,6 +110,13 @@ class SettingsSeeder extends Seeder
                 'group' => 'order',
                 'is_locked' => false,
             ],
+            [
+                'key' => 'max_scheduled_days',
+                'value' => '7',
+                'type' => SettingType::INT,
+                'group' => 'order',
+                'is_locked' => false,
+            ],
 
             // Legal
             [

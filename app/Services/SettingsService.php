@@ -70,7 +70,7 @@ class SettingsService
             Section::make('Order Config')
                 ->columnSpanFull()
                 ->description('General order configs for the system')
-                ->columns(6)
+                ->columns(7)
                 ->components([
                     TextInput::make('service_fee')->required()->numeric()->rule('min:0'),
                     TextInput::make('tax_rate')->required()->numeric()->rule('min:0'),
@@ -78,6 +78,7 @@ class SettingsService
                     TextInput::make('max_distance')->required()->numeric()->rule('min:0'),
                     TextInput::make('price_per_kilometer')->required()->numeric()->rule('min:0'),
                     TextInput::make('max_subtotal_price')->required()->numeric()->rule('min:0'),
+                    TextInput::make('max_scheduled_days')->required()->numeric()->rule('min:0'),
                 ]),
             Section::make('Legal')
                 ->description('Legal text')
@@ -156,6 +157,11 @@ class SettingsService
     public static function getMaxSubtotalPrice(): float
     {
         return (float) self::getValue('max_subtotal_price');
+    }
+
+    public static function getMaxScheduledDays(): float
+    {
+        return (float) self::getValue('max_scheduled_days');
     }
 
     public static function getPrivacyPolicy(): ?string

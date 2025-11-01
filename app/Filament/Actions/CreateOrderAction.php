@@ -8,6 +8,7 @@ use App\Models\BranchProduct;
 use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\User;
+use App\Services\BranchSettingsService;
 use App\Services\DistanceService;
 use App\Services\OrderService;
 use Closure;
@@ -187,7 +188,10 @@ class CreateOrderAction
                 ->disabled(function (Get $get) {
                     return $get('delivery_scheduled_type') === DeliveryScheduledType::IMMEDIATE;
                 })
-                ->minDate(now()->inApplicationTimezone()),
+                ->minDate(now()->inApplicationTimezone())
+                ->maxDate(function (Get $get) {
+                    return now()->addDays(BranchSettingsService::getMaxScheduledDays($get('branch_id')))->inApplicationTimezone();
+                }),
         ];
     }
 

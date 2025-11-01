@@ -70,6 +70,8 @@ class OrderPayload
 
     private float $maxSubtotalPrice;
 
+    private int $maxScheduledDays;
+
     // -------------------------------
     // Getters & Setters
     // -------------------------------
@@ -364,6 +366,16 @@ class OrderPayload
         $this->maxSubtotalPrice = $price;
     }
 
+    public function getMaxScheduledDays(): int
+    {
+        return $this->maxScheduledDays;
+    }
+
+    public function setMaxScheduledDays(int $days): void
+    {
+        $this->maxScheduledDays = $days;
+    }
+
     public function fromRequest(
         Carbon $time,
         int $addressId,
@@ -381,6 +393,7 @@ class OrderPayload
         float $maxDistance,
         float $pricePerKilometer,
         float $maxSubtotalPrice,
+        int $maxScheduledDays,
     ): self {
         $this->setTime($time);
         $this->setAddressId($addressId);
@@ -398,6 +411,7 @@ class OrderPayload
         $this->setMaxDistance($maxDistance);
         $this->setPricePerKilometer($pricePerKilometer);
         $this->setMaxSubtotalPrice($maxSubtotalPrice);
+        $this->setMaxScheduledDays($maxScheduledDays);
 
         return $this;
     }

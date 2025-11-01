@@ -46,6 +46,15 @@ class OrderProcess
 
     public function setOrderDate(): self
     {
+        if ($this->payload->getDeliveryScheduledType() === DeliveryScheduledType::SCHEDULED) {
+            $maxScheduledDays = $this->payload->getMaxScheduledDays();
+            $maxDate = Carbon::now(config('app.timezone_display'))->addDays($maxScheduledDays );
+            if (Carbon::parse($this->payload->getDeliveryDate(), config('app.timezone_display'))->greaterThan($maxDate)
+            ) {
+                throw new LogicalException("The delivery date cannot be more than $maxScheduledDays days from now.");
+            }
+        }
+
         $date = $this->payload->getDeliveryScheduledType() === DeliveryScheduledType::SCHEDULED
             ? Carbon::parse($this->payload->getDeliveryDate(), config('app.timezone_display'))->setTimezone('UTC')
             : $this->payload->getTime();

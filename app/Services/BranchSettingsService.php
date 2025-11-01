@@ -34,6 +34,11 @@ class BranchSettingsService
         return self::getSetting($branchId, 'max_subtotal_price', SettingsService::getMaxSubtotalPrice());
     }
 
+    public static function getMaxScheduledDays(int $branchId): float
+    {
+        return self::getSetting($branchId, 'max_scheduled_days', SettingsService::getMaxScheduledDays());
+    }
+
     protected static function getSetting(int $branchId, string $key, float $default): mixed
     {
         // future:
