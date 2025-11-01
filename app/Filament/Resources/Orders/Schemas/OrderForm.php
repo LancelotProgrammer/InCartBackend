@@ -44,7 +44,7 @@ class OrderForm
                         TextEntry::make('delivery.email')->label('Delivery Email')->placeholder('No delivery email'),
                         TextEntry::make('manager.name')->label('Manager')->placeholder('No manager assigned'),
                         TextEntry::make('branch.title')->label('Branch')->placeholder('No branch assigned'),
-                        TextEntry::make('cancelledBy.name')->placeholder('No cancelled by'),
+                        TextEntry::make('cancelledBy.name')->label('Cancelled By')->placeholder('No cancelled by'),
                         TextEntry::make('cancel_reason')->placeholder('No cancel reason'),
                     ]),
 

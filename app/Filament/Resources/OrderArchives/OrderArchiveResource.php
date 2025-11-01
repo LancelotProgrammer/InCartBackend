@@ -47,15 +47,10 @@ class OrderArchiveResource extends Resource
                     ->columns(2)
                     ->schema([
                         TextEntry::make('customer_name')->label('Customer'),
-                        TextEntry::make('customer_phone')->label('Customer Phone'),
                         TextEntry::make('delivery_name')->label('Delivery'),
-                        TextEntry::make('manager.name')
-                            ->label('Manager')
-                            ->formatStateUsing(fn($state) => json_decode($state)?->name ?? '—'),
+                        TextEntry::make('manager_name')->label('Manager'),
                         TextEntry::make('branch_title')->label('Branch'),
-                        TextEntry::make('cancelled_by')
-                            ->label('Cancelled By')
-                            ->formatStateUsing(fn($state) => json_decode($state)?->name ?? '—'),
+                        TextEntry::make('cancelled_by_name')->label('Cancelled By'),
                     ]),
 
                 Section::make('Pricing')

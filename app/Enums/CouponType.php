@@ -42,6 +42,7 @@ enum CouponType: int implements HasLabel
                             ->minValue(1),
                         DatePicker::make('start_date')
                             ->required()
+                            ->live()
                             ->minDate(now()->inApplicationTimezone()),
                         DatePicker::make('end_date')
                             ->required()

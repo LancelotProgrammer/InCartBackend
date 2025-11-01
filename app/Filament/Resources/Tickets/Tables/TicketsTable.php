@@ -32,7 +32,7 @@ class TicketsTable
                 TextColumn::make('user.name')->placeholder('Deleted customer')->label('User'),
                 TextColumn::make('question')->limit(50),
                 IconColumn::make('is_important')->boolean(),
-                TextColumn::make('processed_at')->dateTime(),
+                TextColumn::make('processed_at')->dateTime()->placeholder('Not processed yet'),
                 TextColumn::make('manager.name')->label('Manager')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')->dateTime()->toggleable(),
                 TextColumn::make('updated_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),

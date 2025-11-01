@@ -115,14 +115,19 @@ class OrderArchive extends Model implements AuditableContract
         return Attribute::get(fn() => $this->customer['name'] ?? '—');
     }
 
-    protected function customerPhone(): Attribute
-    {
-        return Attribute::get(fn() => $this->customer['phone'] ?? '—');
-    }
-
     protected function deliveryName(): Attribute
     {
         return Attribute::get(fn() => $this->delivery['name'] ?? '—');
+    }
+
+    protected function managerName(): Attribute
+    {
+        return Attribute::get(fn() => $this->manager['name'] ?? '—');
+    }
+
+    protected function cancelledByName(): Attribute
+    {
+        return Attribute::get(fn() => $this->cancelled_by['name'] ?? '—');
     }
 
     protected function branchTitle(): Attribute
@@ -138,10 +143,5 @@ class OrderArchive extends Model implements AuditableContract
     protected function paymentMethodTitle(): Attribute
     {
         return Attribute::get(fn() => $this->payment_method['title'] ?? '—');
-    }
-
-    protected function cancelledByName(): Attribute
-    {
-        return Attribute::get(fn() => $this->cancelled_by['name'] ?? '—');
     }
 }
