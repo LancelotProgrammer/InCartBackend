@@ -26,6 +26,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Models\Audit;
 use UnitEnum;
 
@@ -65,36 +66,7 @@ class AuditResource extends Resource
                             ])
                             ->grid(2)
                             ->columns(3)
-                            ->state(function ($record) {
-                                $modified = $record->getModified(true);
-                                if (is_string($modified)) {
-                                    $decoded = json_decode($modified, true);
-                                    $modified = is_array($decoded) ? $decoded : [];
-                                }
-                                if (!is_array($modified)) {
-                                    return [];
-                                }
-                                $rows = [];
-                                foreach ($modified as $attribute => $values) {
-                                    if (!is_array($values)) {
-                                        continue;
-                                    }
-                                    $old = $values['old'] ?? null;
-                                    $new = $values['new'] ?? null;
-                                    if (is_array($old)) {
-                                        $old = json_encode($old, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                                    }
-                                    if (is_array($new)) {
-                                        $new = json_encode($new, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-                                    }
-                                    $rows[] = [
-                                        'attribute' => $attribute,
-                                        'old' => $old ?? '',
-                                        'new' => $new ?? '',
-                                    ];
-                                }
-                                return $rows;
-                            })
+                            ->state(fn($record) => self::formatInfoState($record))
                     ]),
             ]);;
     }
@@ -185,5 +157,37 @@ class AuditResource extends Resource
         return [
             'index' => ManageAudits::route('/'),
         ];
+    }
+
+    private static function formatInfoState(Model $record): array
+    {
+        $modified = $record->getModified(true);
+        if (is_string($modified)) {
+            $decoded = json_decode($modified, true);
+            $modified = is_array($decoded) ? $decoded : [];
+        }
+        if (!is_array($modified)) {
+            return [];
+        }
+        $rows = [];
+        foreach ($modified as $attribute => $values) {
+            if (!is_array($values)) {
+                continue;
+            }
+            $old = $values['old'] ?? null;
+            $new = $values['new'] ?? null;
+            if (is_array($old)) {
+                $old = json_encode($old, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            }
+            if (is_array($new)) {
+                $new = json_encode($new, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            }
+            $rows[] = [
+                'attribute' => $attribute,
+                'old' => $old ?? '',
+                'new' => $new ?? '',
+            ];
+        }
+        return $rows;
     }
 }
