@@ -6,6 +6,7 @@ use App\Enums\DeliveryScheduledType;
 use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
+use App\Events\OrderDeleting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -94,6 +95,11 @@ class Order extends Model implements AuditableContract
         'payment_method_id',
         'user_address_id',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(fn(Order $order) => event(new OrderDeleting($order)));
+    }
 
     public function cancelledBy(): BelongsTo
     {

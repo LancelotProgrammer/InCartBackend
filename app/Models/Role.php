@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\RoleDeleting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -35,6 +36,11 @@ class Role extends Model implements AuditableContract
     public array $translatable = ['title'];
 
     protected $auditInclude = ['title', 'code'];
+
+    protected static function booted(): void
+    {
+        static::deleting(fn(Role $role) => event(new RoleDeleting($role)));
+    }
 
     public function audits(): MorphMany
     {

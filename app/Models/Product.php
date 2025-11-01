@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UnitType;
+use App\Events\ProductDeleting;
 use App\Services\CacheService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,7 @@ class Product extends Model
     {
         static::created(fn (Product $product) => CacheService::deleteHomeCache());
         static::updated(fn (Product $product) => CacheService::deleteHomeCache());
+        static::deleting(fn (Product $product) => event(new ProductDeleting($product)));
         static::deleted(fn (Product $product) => CacheService::deleteHomeCache());
     }
 
