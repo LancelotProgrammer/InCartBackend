@@ -19,7 +19,7 @@ class CartProduct extends Pivot implements AuditableContract
 
     protected $table = 'cart_product';
 
-    protected $fillable = ['cart_id', 'product_id', 'title', 'quantity', 'price'];
+    protected $fillable = ['cart_id', 'product_id', 'title', 'quantity', 'price', 'created_at', 'updated_at'];
 
     protected $casts = [
         'quantity' => 'decimal:2',

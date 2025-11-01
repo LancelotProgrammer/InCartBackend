@@ -112,11 +112,10 @@ class AuditResource extends Resource
                 TextColumn::make('auditable_type')
                     ->label('Auditable Model'),
                 TextColumn::make('auditable_id')
-                    ->searchable()
                     ->label('Auditable Model Info')
                     ->placeholder('Deleted Model')
                     ->state(fn($record) => match ($record->auditable_type) {
-                        CartProduct::class => $record->auditable?->cart->order->order_number,
+                        CartProduct::class => $record->auditable?->title,
                         BranchProduct::class => $record->auditable?->product->title,
                         Coupon::class => $record->auditable?->title,
                         Order::class => $record->auditable?->order_number,

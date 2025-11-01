@@ -18,6 +18,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Wizard;
@@ -215,6 +216,52 @@ class CreateOrderAction
                         }
                     }),
                 ])),
+            Section::make('Price')
+                ->afterHeader([
+                    Action::make('calculate')
+                        ->action(function (Get $get, Set $set) {
+
+                            if ($get('payment_method_id') === null) {
+                                Notification::make()
+                                    ->title('Please select a payment method')
+                                    ->warning()
+                                    ->send();
+                                return;
+                            }
+
+                            $orderBill = OrderService::userCreateBill(
+                                $get('address_id'),
+                                $get('delivery_scheduled_type') === DeliveryScheduledType::SCHEDULED ?
+                                    DeliveryScheduledType::SCHEDULED->value :
+                                    DeliveryScheduledType::IMMEDIATE->value,
+                                $get('delivery_date') ?? null,
+                                $get('payment_method_id'),
+                                $get('coupon'),
+                                collect($get('cart'))
+                                    ->map(fn($item) => [
+                                        'id' => $item['product_id'],
+                                        'quantity' => $item['quantity'],
+                                    ])
+                                    ->toArray(),
+                                $get('notes'),
+                                $get('branch_id'),
+                                $get('customer_id'),
+                            );
+                            $set('subtotal', $orderBill['subtotal']);
+                            $set('discount', $orderBill['discount']);
+                            $set('delivery_fee', $orderBill['delivery_fee']);
+                            $set('tax', $orderBill['tax']);
+                            $set('total', $orderBill['total']);
+                        })
+                ])
+                ->columns(5)
+                ->schema([
+                    TextInput::make('subtotal')->disabled()->label('Cart Total'),
+                    TextInput::make('discount')->disabled()->label('Discount'),
+                    TextInput::make('delivery_fee')->disabled()->label('Delivery Fee'),
+                    TextInput::make('tax')->disabled()->label('Tax'),
+                    TextInput::make('total')->disabled()->label('Total'),
+                ])
         ];
     }
 }

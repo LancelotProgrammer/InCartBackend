@@ -141,7 +141,7 @@ class OrderProcess
             $cartProducts[] = [
                 'cart_id' => $cart->id,
                 'product_id' => $product->id,
-                'title' => json_encode($product->getTranslations('title'), JSON_UNESCAPED_UNICODE),
+                'title' => $product->getTranslations('title'),
                 'price' => BranchProduct::getDiscountPrice($product->branches->first()->pivot),
                 'quantity' => $item['quantity'],
                 'created_at' => $this->payload->getTime(),
@@ -149,7 +149,10 @@ class OrderProcess
             ];
         }
 
-        CartProduct::insert($cartProducts);
+        foreach ($cartProducts as $data) {
+            CartProduct::create($data);
+        }
+
         $this->payload->setCart($cart);
 
         return $this;
