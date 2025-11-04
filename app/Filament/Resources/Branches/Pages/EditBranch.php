@@ -17,7 +17,7 @@ class EditBranch extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make()->using(fn($record, $action) => (new static)->deleteWithDependencyCheck()($record, $action)),
+            DeleteAction::make()->using(fn ($record, $action) => (new static)->deleteWithDependencyCheck()($record, $action)),
         ];
     }
 }

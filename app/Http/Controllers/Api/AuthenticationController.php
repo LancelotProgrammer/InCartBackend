@@ -234,7 +234,7 @@ class AuthenticationController extends Controller
             $request->input('firebase_token'),
             [
                 FirebaseFCMTopics::ALL_USERS->value,
-                FirebaseFCMTopics::CITY->value . '-' . $request->user()->city_id,
+                FirebaseFCMTopics::CITY->value.'-'.$request->user()->city_id,
             ]
         );
 
@@ -252,7 +252,7 @@ class AuthenticationController extends Controller
             $user->firebaseTokens()->pluck('firebase_token')->toArray(),
             [
                 FirebaseFCMTopics::ALL_USERS->value,
-                FirebaseFCMTopics::CITY->value . '-' . $user->city_id,
+                FirebaseFCMTopics::CITY->value.'-'.$user->city_id,
             ]
         );
 
@@ -448,7 +448,7 @@ class AuthenticationController extends Controller
             $verifyCode = PhoneVerificationRequest::where('phone', '=', $phone)->latest()->first()->code;
             Otp::send($phone, $verifyCode);
         } catch (Exception $e) {
-            Log::channel('error')->error('OTP Error: ' . $e->getMessage());
+            Log::channel('error')->error('OTP Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'OTP verification request failed. Check error logs for details.'
@@ -546,7 +546,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new VerifyEmail($link, $user->name));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error: ' . $e->getMessage());
+            Log::channel('error')->error('Email Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -659,7 +659,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new ForgotPassword($userName, $code));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error: ' . $e->getMessage());
+            Log::channel('error')->error('Email Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -817,7 +817,7 @@ class AuthenticationController extends Controller
     private function isWeakNumber(string $number): bool
     {
         $length = strlen($number);
-        if (preg_match('/^(\d)\1{' . ($length - 1) . '}$/', $number)) {
+        if (preg_match('/^(\d)\1{'.($length - 1).'}$/', $number)) {
             return true;
         }
         for ($patternLength = 1; $patternLength <= $length / 2; $patternLength++) {

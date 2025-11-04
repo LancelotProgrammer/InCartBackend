@@ -64,6 +64,7 @@ class UsersRelationManager extends RelationManager
                                 ->title('User already attached to a branch')
                                 ->warning()
                                 ->send();
+
                             return;
                         }
                         $this->getRelationship()->attach($data['user_id']);
@@ -84,6 +85,7 @@ class UsersRelationManager extends RelationManager
                                 ->body('This record has been modified by another user. Please refresh and try again.')
                                 ->warning()
                                 ->send();
+
                             return;
                         }
                         $this->getOwnerRecord()->users()->detach($record->id);

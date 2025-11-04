@@ -51,6 +51,7 @@ class BaseFilesRelationManager extends RelationManager
                                 ->body('This record has been modified by another user. Please refresh and try again.')
                                 ->warning()
                                 ->send();
+
                             return;
                         }
 
@@ -59,6 +60,7 @@ class BaseFilesRelationManager extends RelationManager
                                 ->title('You cannot delete the last file.')
                                 ->warning()
                                 ->send();
+
                             return;
                         }
 

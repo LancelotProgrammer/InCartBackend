@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\CartProduct;
-use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

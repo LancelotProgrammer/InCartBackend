@@ -48,7 +48,7 @@ class OrderProcess
     {
         if ($this->payload->getDeliveryScheduledType() === DeliveryScheduledType::SCHEDULED) {
             $maxScheduledDays = $this->payload->getMaxScheduledDays();
-            $maxDate = Carbon::now(config('app.timezone_display'))->addDays($maxScheduledDays );
+            $maxDate = Carbon::now(config('app.timezone_display'))->addDays($maxScheduledDays);
             if (Carbon::parse($this->payload->getDeliveryDate(), config('app.timezone_display'))->greaterThan($maxDate)
             ) {
                 throw new LogicalException("The delivery date cannot be more than $maxScheduledDays days from now.");
@@ -81,7 +81,7 @@ class OrderProcess
         $subtotal = 0;
 
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
-            ->with(['branches' => fn($query) => $query->where('branches.id', $this->payload->getBranchId())->withPivot([
+            ->with(['branches' => fn ($query) => $query->where('branches.id', $this->payload->getBranchId())->withPivot([
                 'price',
                 'quantity',
                 'discount',
@@ -122,7 +122,7 @@ class OrderProcess
 
         $allowedSubtotal = $this->payload->getMaxSubtotalPrice();
         if ($subtotal >= $allowedSubtotal) {
-            throw new LogicalException("Cart price is too high.", "Your cart price is {$subtotal} and the allowed amount is {$allowedSubtotal}");
+            throw new LogicalException('Cart price is too high.', "Your cart price is {$subtotal} and the allowed amount is {$allowedSubtotal}");
         }
 
         $this->payload->setSubtotal($subtotal);
@@ -138,7 +138,7 @@ class OrderProcess
 
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
             ->with([
-                'branches' => fn($query) => $query
+                'branches' => fn ($query) => $query
                     ->where('branches.id', $this->payload->getBranchId())
                     ->withPivot(['price', 'discount']),
             ])
@@ -194,8 +194,8 @@ class OrderProcess
             future: use this code to calculate the deliveryFee based on distance, weight or branch
             getCartWeight / getPricePerKilogram / getBranchDeliveryPrice : should be added to OrderPayload
         */
-        // $fee = $this->payload->getDistance() * $this->payload->getPricePerKilometer() + 
-        //     $this->payload->getCartWeight() * $this->payload->getPricePerKilogram() + 
+        // $fee = $this->payload->getDistance() * $this->payload->getPricePerKilometer() +
+        //     $this->payload->getCartWeight() * $this->payload->getPricePerKilogram() +
         //     $this->payload->getBranchDeliveryPrice();
 
         $fee = $this->payload->getDistance() * $this->payload->getPricePerKilometer();
@@ -221,7 +221,7 @@ class OrderProcess
             $this->payload->getUser()->id,
             $this->payload->getBranchId(),
             $products->unique('id')->pluck('id')->toArray(),
-            $products->flatMap(fn($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
+            $products->flatMap(fn ($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
         );
 
         // apply coupon if exists

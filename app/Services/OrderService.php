@@ -22,7 +22,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 class OrderService
 {
@@ -61,8 +60,7 @@ class OrderService
     private static function processOrderCreation(OrderProcess $service, string $process): mixed
     {
         return DB::transaction(
-            fn() =>
-            $service
+            fn () => $service
                 ->generateOrderNumber()
                 ->setOrderDate()
                 ->calculateDestination()
@@ -101,6 +99,7 @@ class OrderService
             $customerId,
         ), 'createOrder');
         DatabaseManagerNotification::sendCreatedOrderNotification($order);
+
         return $order;
     }
 
@@ -168,7 +167,7 @@ class OrderService
                 'cancelled_by_id' => $userId,
             ]);
             $order->save();
-            if (!$order->isPayOnDelivery()) {
+            if (! $order->isPayOnDelivery()) {
                 self::ensureValidPayment($order, forRefund: true);
                 BasePaymentGateway::make($order->paymentMethod->code)->refund($order);
             }
@@ -221,7 +220,7 @@ class OrderService
                 'cancelled_by_id' => $userId,
             ]);
             $order->save();
-            if (!$order->isPayOnDelivery()) {
+            if (! $order->isPayOnDelivery()) {
                 self::ensureValidPayment($order, forRefund: true);
                 BasePaymentGateway::make($order->paymentMethod->code)->refund($order);
             }
@@ -239,7 +238,7 @@ class OrderService
     public static function managerApprove(Order $order): void
     {
         if (
-            !$order->isPayOnDelivery() &&
+            ! $order->isPayOnDelivery() &&
             $order->payment_status === PaymentStatus::UNPAID
         ) {
             Notification::make()
@@ -259,7 +258,7 @@ class OrderService
 
             return;
         }
-        if (!SettingsService::isSystemOnline()) {
+        if (! SettingsService::isSystemOnline()) {
             Notification::make()
                 ->title("Order #{$order->order_number} cannot be approved.")
                 ->body('Order cannot be approved because the system is offline.')
@@ -375,7 +374,7 @@ class OrderService
                     ->decrement('quantity', $cartProduct->quantity);
             }
             $order->save();
-            if ((float)$order->discount_price == 0.0) {
+            if ((float) $order->discount_price == 0.0) {
                 LoyaltyService::addPoints($order->customer, (int) $order->subtotal_price);
             }
         });
@@ -406,6 +405,7 @@ class OrderService
         if ($branchId) {
             $paymentMethod->where('branch_id', '=', $branchId);
         }
+
         return $paymentMethod->get();
     }
 
@@ -427,7 +427,7 @@ class OrderService
             ->unblock()
             ->where('city_id', '=', $cityId)
             ->where('role_id', '=', Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->first()->id)
-            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
+            ->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%'])
             ->limit(50)
             ->pluck('name', 'id')
             ->all();
@@ -435,7 +435,7 @@ class OrderService
 
     public static function recalculateOrderTotals(Order $order): void
     {
-        $subtotal = $order->cartProducts->sum(fn($item) => $item->price * $item->quantity);
+        $subtotal = $order->cartProducts->sum(fn ($item) => $item->price * $item->quantity);
         $taxRate = BranchSettingsService::getTaxRate($order->branch_id);
 
         $taxAmount = PriceService::calculateTaxAmount(

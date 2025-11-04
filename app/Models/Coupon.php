@@ -18,7 +18,7 @@ use Spatie\Translatable\HasTranslations;
 #[ScopedBy([BranchScope::class])]
 class Coupon extends Model implements AuditableContract
 {
-    use HasFactory, HasPublishAttribute, HasTranslations, Auditable;
+    use Auditable, HasFactory, HasPublishAttribute, HasTranslations;
 
     protected $fillable = ['title', 'description', 'code', 'type', 'config', 'published_at', 'branch_id'];
 

@@ -57,7 +57,7 @@ class CreateOrderAction
                         $data['payment_method_id'],
                         $data['coupon'],
                         collect($data['cart'])
-                            ->map(fn($item) => [
+                            ->map(fn ($item) => [
                                 'id' => $item['product_id'],
                                 'quantity' => $item['quantity'],
                             ])
@@ -93,18 +93,18 @@ class CreateOrderAction
             Select::make('customer_id')->label('Customer')
                 ->required()
                 ->searchable()
-                ->getSearchResultsUsing(fn(string $search, Get $get): array => OrderService::getUsers($search, $get('branch_id')))
-                ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name)
+                ->getSearchResultsUsing(fn (string $search, Get $get): array => OrderService::getUsers($search, $get('branch_id')))
+                ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name)
                 ->live(),
             Select::make('address_id')
                 ->required()
                 ->relationship(
                     'userAddress',
                     'title',
-                    fn(Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
+                    fn (Builder $query, Get $get) => $query->where('user_id', '=', $get('customer_id'))
                 )
                 ->rules([
-                    fn(Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                    fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                         try {
                             DistanceService::validate(
                                 $get('branch_id'),
@@ -128,12 +128,12 @@ class CreateOrderAction
                         Select::make('product_id')
                             ->required()
                             ->searchable()
-                            ->getSearchResultsUsing(fn(string $search): array => Product::query()
-                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                            ->getSearchResultsUsing(fn (string $search): array => Product::query()
+                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                 ->limit(50)
                                 ->pluck('title', 'id')
                                 ->all())
-                            ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
+                            ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title)
                             ->distinct()
                             ->live(),
                         TextInput::make('quantity')
@@ -228,6 +228,7 @@ class CreateOrderAction
                                     ->title('Please select a payment method')
                                     ->warning()
                                     ->send();
+
                                 return;
                             }
 
@@ -240,7 +241,7 @@ class CreateOrderAction
                                 $get('payment_method_id'),
                                 $get('coupon'),
                                 collect($get('cart'))
-                                    ->map(fn($item) => [
+                                    ->map(fn ($item) => [
                                         'id' => $item['product_id'],
                                         'quantity' => $item['quantity'],
                                     ])
@@ -254,7 +255,7 @@ class CreateOrderAction
                             $set('delivery_fee', $orderBill['delivery_fee']);
                             $set('tax', $orderBill['tax']);
                             $set('total', $orderBill['total']);
-                        })
+                        }),
                 ])
                 ->columns(5)
                 ->schema([
@@ -263,7 +264,7 @@ class CreateOrderAction
                     TextInput::make('delivery_fee')->disabled()->label('Delivery Fee'),
                     TextInput::make('tax')->disabled()->label('Tax'),
                     TextInput::make('total')->disabled()->label('Total'),
-                ])
+                ]),
         ];
     }
 }

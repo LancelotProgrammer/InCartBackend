@@ -14,7 +14,7 @@ class CreateFeedback
 {
     public function __invoke(Request $request, Closure $next): array
     {
-        $key = 'feedback-submit:' . $request->user()->id;
+        $key = 'feedback-submit:'.$request->user()->id;
         $maxAttempts = SettingsService::getAllowedTicketCount();
         if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
             throw new LogicalException('Limit reached', "The user has submitted more than $maxAttempts feedback");
@@ -33,7 +33,7 @@ class CreateFeedback
         Feedback::create([
             'user_id' => $request->user()->id,
             'feedback' => $data['feedback'],
-            'branch_id' => $branchId
+            'branch_id' => $branchId,
         ]);
 
         return $next([]);

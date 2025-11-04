@@ -37,13 +37,13 @@ class GetOrderDetails
         foreach ($order->carts as $cart) {
             foreach ($cart->cartProducts as $cartProduct) {
                 $product = $cartProduct->product;
-                
+
                 $cartList->push([
                     'title' => $cartProduct->title,
                     'quantity' => $cartProduct->quantity,
                 ]);
-                
-                if (!$product) {
+
+                if (! $product) {
                     continue;
                 }
 

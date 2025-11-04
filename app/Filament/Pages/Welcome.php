@@ -25,7 +25,7 @@ class Welcome extends Page
 
     protected static ?int $navigationSort = -3;
 
-    public function getHeaderWidgetsColumns(): int | array
+    public function getHeaderWidgetsColumns(): int|array
     {
         return 1;
     }
@@ -52,7 +52,7 @@ class Welcome extends Page
             ->columns(1)
             ->components([
                 Section::make('Quick Actions')
-                    ->visible(fn() => auth()->user()->canViewDashboard())
+                    ->visible(fn () => auth()->user()->canViewDashboard())
                     ->columns(6)
                     ->schema([
                         Action::make('open_statistics')

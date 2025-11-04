@@ -58,7 +58,7 @@ class OrdersTable
                 TextColumn::make('userAddress.title')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
@@ -72,11 +72,11 @@ class OrdersTable
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
                 SelectFilter::make('order_status')->options(OrderStatus::class),
@@ -87,22 +87,19 @@ class OrdersTable
                     ->relationship(
                         'customer',
                         'name',
-                        fn($query) =>
-                        $query->whereHas('role', fn($q) => $q->where('code', '=', Role::ROLE_CUSTOMER_CODE))
+                        fn ($query) => $query->whereHas('role', fn ($q) => $q->where('code', '=', Role::ROLE_CUSTOMER_CODE))
                     )->searchable(),
                 SelectFilter::make('manager')
                     ->relationship(
                         'manager',
                         'name',
-                        fn($query) =>
-                        $query->whereHas('role', fn($q) => $q->where('code', '=',  Role::ROLE_MANAGER_CODE))
+                        fn ($query) => $query->whereHas('role', fn ($q) => $q->where('code', '=', Role::ROLE_MANAGER_CODE))
                     ),
                 SelectFilter::make('delivery')
                     ->relationship(
                         'delivery',
                         'name',
-                        fn($query) =>
-                        $query->whereHas('role', fn($q) => $q->where('code', '=',  Role::ROLE_DELIVERY_CODE))
+                        fn ($query) => $query->whereHas('role', fn ($q) => $q->where('code', '=', Role::ROLE_DELIVERY_CODE))
                     ),
             ], FiltersLayout::Modal)
             ->filtersFormColumns(3)
@@ -139,7 +136,7 @@ class OrdersTable
                     ->authorize('viewInvoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
-                    ->url(fn(Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
+                    ->url(fn (Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
                 OrderActions::configure(true),
             ])
             ->toolbarActions([

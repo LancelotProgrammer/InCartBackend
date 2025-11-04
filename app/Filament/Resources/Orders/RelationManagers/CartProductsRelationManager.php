@@ -36,7 +36,7 @@ class CartProductsRelationManager extends RelationManager
                 Stack::make([
                     ImageColumn::make('url')
                         ->label('Image')
-                        ->state(fn($record) => $record?->product?->files->first()->url ?? null)
+                        ->state(fn ($record) => $record?->product?->files->first()->url ?? null)
                         ->placeholder('Deleted Product')
                         ->imageSize(200)
                         ->extraAttributes([
@@ -49,12 +49,12 @@ class CartProductsRelationManager extends RelationManager
                                 font-weight: bold;
                                 height: 200px;
                                 text-align: center;
-                            '
+                            ',
                         ]),
                     TextColumn::make('title')->searchable()->prefix('Title: '),
                     TextColumn::make('quantity')->searchable()->prefix('Quantity: '),
                     TextColumn::make('price')->searchable()->prefix('Price: '),
-                    TextColumn::make('Total')->searchable()->state(fn($record) => $record->price * $record->quantity)->prefix('Total: '),
+                    TextColumn::make('Total')->searchable()->state(fn ($record) => $record->price * $record->quantity)->prefix('Total: '),
                 ]),
             ])
             ->filters([
@@ -130,12 +130,12 @@ class CartProductsRelationManager extends RelationManager
                             Select::make('product_id')
                                 ->required()
                                 ->searchable()
-                                ->getSearchResultsUsing(fn(string $search): array => Product::query()
-                                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                ->getSearchResultsUsing(fn (string $search): array => Product::query()
+                                    ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                     ->limit(50)
                                     ->pluck('title', 'id')
                                     ->all())
-                                ->getOptionLabelUsing(fn($value): ?string => Product::find($value)?->title)
+                                ->getOptionLabelUsing(fn ($value): ?string => Product::find($value)?->title)
                                 ->distinct()
                                 ->live(),
                             TextInput::make('quantity')

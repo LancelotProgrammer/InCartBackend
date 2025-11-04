@@ -12,14 +12,14 @@ class LegalController extends Controller
     public function getPolicyPage(Request $request)
     {
         return view('pages.privacy-policy', [
-            'privacyPolicy' => Purifier::clean(SettingsService::getPrivacyPolicy())
+            'privacyPolicy' => Purifier::clean(SettingsService::getPrivacyPolicy()),
         ]);
     }
 
     public function getTermsOfServicePage(Request $request)
     {
         return view('pages.terms-of-service', [
-            'termsOfServices' => Purifier::clean(SettingsService::getTermsOfServices())
+            'termsOfServices' => Purifier::clean(SettingsService::getTermsOfServices()),
         ]);
     }
 }

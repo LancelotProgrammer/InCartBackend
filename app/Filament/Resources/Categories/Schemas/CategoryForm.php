@@ -35,18 +35,19 @@ class CategoryForm
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search, Get $get) {
                                 $result = Category::query()
-                                    ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                                    ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                     ->limit(50);
                                 $type = $get('type');
                                 if (isset($type)) {
                                     $result->where('type', '=', $type->value);
                                 }
+
                                 return $result->get()
-                                    ->filter(fn($category) => $category->depth < 3)
+                                    ->filter(fn ($category) => $category->depth < 3)
                                     ->pluck('title', 'id')
                                     ->all();
                             })
-                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title),
+                            ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->title),
                         FileUpload::make('files')
                             ->visible(function ($operation) {
                                 return $operation === 'create';

@@ -4,7 +4,6 @@ namespace App\Filament\Resources\PaymentMethods\Schemas;
 
 use App\Filament\Components\SelectBranchComponent;
 use App\Filament\Components\TranslationComponent;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;

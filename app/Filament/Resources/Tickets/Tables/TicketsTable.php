@@ -11,7 +11,6 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
@@ -41,21 +40,21 @@ class TicketsTable
                 TextColumn::make('updated_at')->dateTime()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->button()
                     ->label('Filter'),
             )
             ->filters([
                 Filter::make('is_important')
                     ->label('Important')
-                    ->query(fn($query) => $query->where('is_important', true)),
+                    ->query(fn ($query) => $query->where('is_important', true)),
                 TernaryFilter::make('processed')
                     ->label('Processed')
                     ->nullable()
                     ->queries(
-                        true: fn($query) => $query->whereNotNull('processed_at'),
-                        false: fn($query) => $query->whereNull('processed_at'),
-                        blank: fn($query) => $query,
+                        true: fn ($query) => $query->whereNotNull('processed_at'),
+                        false: fn ($query) => $query->whereNull('processed_at'),
+                        blank: fn ($query) => $query,
                     ),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
@@ -67,7 +66,7 @@ class TicketsTable
                     ->label('Process')
                     ->icon(Heroicon::Check)
                     ->requiresConfirmation()
-                    ->visible(fn($record) => $record->processed_at === null)
+                    ->visible(fn ($record) => $record->processed_at === null)
                     ->form([
                         Textarea::make('reply')->required(),
                     ])

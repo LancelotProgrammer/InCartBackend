@@ -38,7 +38,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
             ->poll()
             ->paginationMode(PaginationMode::Simple)
             ->query(
-                fn(): Builder => Order::query()
+                fn (): Builder => Order::query()
                     ->whereBetween('delivery_date', now()->inApplicationTodayRange())
                     ->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])
             )
@@ -75,22 +75,22 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
                 Action::make('view')
                     ->authorize('view')
                     ->color('primary')
-                    ->url(fn($record) => route('filament.admin.resources.orders.view', $record->id), true),
+                    ->url(fn ($record) => route('filament.admin.resources.orders.view', $record->id), true),
                 Action::make('edit')
                     ->authorize('update')
                     ->color('primary')
-                    ->url(fn($record) => route('filament.admin.resources.orders.edit', $record->id), true),
+                    ->url(fn ($record) => route('filament.admin.resources.orders.edit', $record->id), true),
                 Action::make('invoice')
                     ->authorize('viewInvoice')
                     ->icon(Heroicon::OutlinedArrowDownCircle)
                     ->color('primary')
-                    ->url(fn(Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
+                    ->url(fn (Order $record) => route('web.order.invoice', ['id' => $record->id]), true),
                 OrderActions::configure(false),
             ])
             ->toolbarActions([
                 Action::make('open_full_page')
                     ->color('primary')
-                    ->url(fn() => route('filament.admin.resources.orders.index'), true),
+                    ->url(fn () => route('filament.admin.resources.orders.index'), true),
             ]);
     }
 
@@ -104,7 +104,7 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
         return Cache::remember(
             CacheKeys::PENDING_ORDER_COUNT,
             now()->addDay(),
-            fn() => Order::query()
+            fn () => Order::query()
                 ->whereBetween('delivery_date', now()->inApplicationTodayRange())
                 ->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])->count()
         );

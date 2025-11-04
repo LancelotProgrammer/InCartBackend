@@ -13,7 +13,7 @@ use Spatie\Translatable\HasTranslations;
 
 class CartProduct extends Pivot implements AuditableContract
 {
-    use HasFactory, HasTranslations, Auditable;
+    use Auditable, HasFactory, HasTranslations;
 
     public $incrementing = true;
 

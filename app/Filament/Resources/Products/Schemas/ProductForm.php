@@ -13,7 +13,6 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
@@ -40,13 +39,13 @@ class ProductForm
                             ->multiple()
                             ->relationship('categories', 'title')
                             ->searchable()
-                            ->getSearchResultsUsing(fn(string $search): array => Category::query()
-                                ->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($search) . '%'])
+                            ->getSearchResultsUsing(fn (string $search): array => Category::query()
+                                ->whereRaw('LOWER(title) LIKE ?', ['%'.strtolower($search).'%'])
                                 ->whereNotNull('parent_id')
                                 ->limit(50)
                                 ->pluck('title', 'id')
                                 ->all())
-                            ->getOptionLabelUsing(fn($value): ?string => Category::find($value)?->title)
+                            ->getOptionLabelUsing(fn ($value): ?string => Category::find($value)?->title)
                             ->required(),
                     ]),
                 self::productConfigs(),

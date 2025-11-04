@@ -99,7 +99,7 @@ class Order extends Model implements AuditableContract
 
     protected static function booted(): void
     {
-        static::deleting(fn(Order $order) => event(new OrderDeleting($order)));
+        static::deleting(fn (Order $order) => event(new OrderDeleting($order)));
     }
 
     public function cancelledBy(): BelongsTo
@@ -171,9 +171,9 @@ class Order extends Model implements AuditableContract
     {
         return $this->order_status === OrderStatus::PENDING &&
             (
-                !$this->delivery_date->inApplicationTimezone()->isSameDay(now()->inApplicationTimezone()) ||
-                (!$this->isPayOnDelivery() && $this->payment_status === PaymentStatus::UNPAID) ||
-                !SettingsService::isSystemOnline()
+                ! $this->delivery_date->inApplicationTimezone()->isSameDay(now()->inApplicationTimezone()) ||
+                (! $this->isPayOnDelivery() && $this->payment_status === PaymentStatus::UNPAID) ||
+                ! SettingsService::isSystemOnline()
             );
     }
 

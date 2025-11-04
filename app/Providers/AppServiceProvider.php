@@ -80,6 +80,7 @@ class AppServiceProvider extends ServiceProvider
         });
         Carbon::macro('inApplicationTodayRange', function () {
             $this->tz(config('app.timezone_display'));
+
             return [
                 $this->copy()->startOfDay()->timezone('UTC')->toDateTimeString(),
                 $this->copy()->endOfDay()->timezone('UTC')->toDateTimeString(),

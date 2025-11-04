@@ -562,7 +562,7 @@ class BaseSeeder extends Seeder
             ->has(UserAddress::factory()->count($userAddressCount), 'addresses')
             ->has(UserNotification::factory()->count($userNotificationCount), 'userNotifications')
             ->has(
-                FavoriteFactory::new()->count($favoriteCount)->sequence(fn($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
+                FavoriteFactory::new()->count($favoriteCount)->sequence(fn ($seq) => ['product_id' => $products[$seq->index % count($products)]->id]),
                 'favorites'
             )
             ->has(PackageFactory::new()->hasAttached($products->random(rand(3, 7))->values())->count($packageProductCount), 'packages')
@@ -593,7 +593,7 @@ class BaseSeeder extends Seeder
                     ]);
                 }
                 $subtotal = $cart->cartProducts->sum(
-                    fn($cartProduct) => $cartProduct->price * $cartProduct->quantity
+                    fn ($cartProduct) => $cartProduct->price * $cartProduct->quantity
                 );
                 $totalPrice = $subtotal - $order->discount_price + $order->delivery_fee + $order->service_fee + $order->tax_amount;
                 if ($order->order_status === OrderStatus::CLOSED && $order->isPayOnDelivery()) {

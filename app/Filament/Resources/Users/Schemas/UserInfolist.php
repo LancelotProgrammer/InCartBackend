@@ -31,7 +31,7 @@ class UserInfolist
                     ->columns(1)
                     ->schema([
                         KeyValueEntry::make('Loyalty')
-                            ->state(fn($record) => [
+                            ->state(fn ($record) => [
                                 'points' => $record->loyalty->points ?? '—',
                                 'total_earned' => $record->loyalty->total_earned ?? '—',
                                 'total_redeemed' => $record->loyalty->total_redeemed ?? '—',
@@ -44,7 +44,7 @@ class UserInfolist
                                 TextEntry::make('question')->label('Question'),
                                 TextEntry::make('reply')->label('Reply'),
                             ])
-                            ->state(fn(User $record) => $record->tickets->map(fn($ticket) => [
+                            ->state(fn (User $record) => $record->tickets->map(fn ($ticket) => [
                                 'question' => $ticket->question,
                                 'reply' => $ticket->reply ?? 'No reply',
                             ])),
@@ -55,20 +55,20 @@ class UserInfolist
                             ->schema([
                                 TextEntry::make('feedback')->label('feedback'),
                             ])
-                            ->state(fn(User $record) => $record->feedback->map(fn($ticket) => [
-                                'feedback' => $ticket->feedback
+                            ->state(fn (User $record) => $record->feedback->map(fn ($ticket) => [
+                                'feedback' => $ticket->feedback,
                             ])),
 
                         TextEntry::make('gifts')
                             ->label('Gifts')
-                            ->state(fn(User $record) => $record->gifts->pluck('title')->join(', ')),
+                            ->state(fn (User $record) => $record->gifts->pluck('title')->join(', ')),
 
                         RepeatableEntry::make('notifications')
                             ->grid(4)
                             ->schema([
                                 TextEntry::make('title')->label('Title'),
                             ])
-                            ->state(fn(User $record) => $record->userNotifications->map(fn($notification) => [
+                            ->state(fn (User $record) => $record->userNotifications->map(fn ($notification) => [
                                 'title' => $notification->title,
                                 'body' => $notification->body,
                             ])),
@@ -81,7 +81,7 @@ class UserInfolist
                                 TextEntry::make('city')->label('City'),
                                 TextEntry::make('phone')->label('Phone'),
                             ])
-                            ->state(fn(User $record) => $record->addresses->map(fn($addr) => [
+                            ->state(fn (User $record) => $record->addresses->map(fn ($addr) => [
                                 'title' => $addr->title,
                                 'city' => $addr->city->name,
                                 'phone' => $addr->phone,
@@ -105,7 +105,7 @@ class UserInfolist
 
                                 TextEntry::make('cart')->label('Cart')->columnSpanFull(),
                             ])
-                            ->state(fn(User $record) => $record->customerOrders->map(fn(Order $order) => [
+                            ->state(fn (User $record) => $record->customerOrders->map(fn (Order $order) => [
                                 'order_number' => $order->order_number,
                                 'total_price' => $order->total_price,
                                 'payment_method' => $order->paymentMethod->title,
@@ -120,7 +120,7 @@ class UserInfolist
 
                                 'cart' => $order->carts
                                     ->first()?->cartProducts
-                                    ->map(fn($cartProducts) => "{$cartProducts->title} (x{$cartProducts->quantity})")
+                                    ->map(fn ($cartProducts) => "{$cartProducts->title} (x{$cartProducts->quantity})")
                                     ->join(', ') ?? '—',
                             ])),
 
@@ -130,7 +130,7 @@ class UserInfolist
                             ->schema([
                                 TextEntry::make('title')->label('Title'),
                             ])
-                            ->state(fn($record) => $record->favorites->map(fn($fav) => [
+                            ->state(fn ($record) => $record->favorites->map(fn ($fav) => [
                                 'title' => $fav->product->title,
                             ])),
 
@@ -141,7 +141,7 @@ class UserInfolist
                                 TextEntry::make('title')->label('Title'),
                                 TextEntry::make('products')->label('Products'),
                             ])
-                            ->state(fn($record) => $record->packages->map(fn($pkg) => [
+                            ->state(fn ($record) => $record->packages->map(fn ($pkg) => [
                                 'title' => $pkg->title,
                                 'products' => $pkg->products->pluck('title')->join(', '),
                             ])),

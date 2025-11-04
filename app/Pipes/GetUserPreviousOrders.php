@@ -14,7 +14,7 @@ class GetUserPreviousOrders
             'order_number',
             'total_price',
             'created_at',
-            'order_status'
+            'order_status',
         ])->latest()->simplePaginate();
 
         return $next($orders->items());

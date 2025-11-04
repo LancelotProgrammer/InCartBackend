@@ -22,7 +22,7 @@ class BranchScope implements Scope
         if ($branchId = request()->attributes->get('currentBranchId')) {
             $builder->where($model->getTable().'.branch_id', $branchId);
         }
-        
+
         $user = auth()->user();
         if ($user) {
             if ($user->shouldFilterBranchContent()) {

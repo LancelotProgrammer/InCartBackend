@@ -24,9 +24,9 @@ use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Models\Audit;
 
-class User extends Authenticatable implements FilamentUser, MustVerifyEmail, AuditableContract
+class User extends Authenticatable implements AuditableContract, FilamentUser, MustVerifyEmail
 {
-    use CanManagePermissions, HasApiTokens, HasFactory, Notifiable, Auditable;
+    use Auditable, CanManagePermissions, HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',

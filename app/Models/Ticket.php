@@ -31,7 +31,7 @@ class Ticket extends Model
     public static function trimTicketNotificationReply(string $reply, int $maxLength = 150): string
     {
         return strlen($reply) > $maxLength
-            ? substr($reply, 0, $maxLength) . '...'
+            ? substr($reply, 0, $maxLength).'...'
             : $reply;
     }
 }

@@ -112,36 +112,36 @@ class OrderArchive extends Model implements AuditableContract
 
     protected function customerName(): Attribute
     {
-        return Attribute::get(fn() => $this->customer['name'] ?? '—');
+        return Attribute::get(fn () => $this->customer['name'] ?? '—');
     }
 
     protected function deliveryName(): Attribute
     {
-        return Attribute::get(fn() => $this->delivery['name'] ?? '—');
+        return Attribute::get(fn () => $this->delivery['name'] ?? '—');
     }
 
     protected function managerName(): Attribute
     {
-        return Attribute::get(fn() => $this->manager['name'] ?? '—');
+        return Attribute::get(fn () => $this->manager['name'] ?? '—');
     }
 
     protected function cancelledByName(): Attribute
     {
-        return Attribute::get(fn() => $this->cancelled_by['name'] ?? '—');
+        return Attribute::get(fn () => $this->cancelled_by['name'] ?? '—');
     }
 
     protected function branchTitle(): Attribute
     {
-        return Attribute::get(fn() => $this->branch['title'] ?? '—');
+        return Attribute::get(fn () => $this->branch['title'] ?? '—');
     }
 
     protected function couponTitle(): Attribute
     {
-        return Attribute::get(fn() => $this->coupon['title'] ?? '—');
+        return Attribute::get(fn () => $this->coupon['title'] ?? '—');
     }
 
     protected function paymentMethodTitle(): Attribute
     {
-        return Attribute::get(fn() => $this->payment_method['title'] ?? '—');
+        return Attribute::get(fn () => $this->payment_method['title'] ?? '—');
     }
 }

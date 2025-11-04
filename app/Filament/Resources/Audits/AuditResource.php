@@ -66,9 +66,9 @@ class AuditResource extends Resource
                             ])
                             ->grid(2)
                             ->columns(3)
-                            ->state(fn($record) => self::formatInfoState($record))
+                            ->state(fn ($record) => self::formatInfoState($record)),
                     ]),
-            ]);;
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -86,7 +86,7 @@ class AuditResource extends Resource
                 TextColumn::make('auditable_id')
                     ->label('Auditable Model Info')
                     ->placeholder('Deleted Model')
-                    ->state(fn($record) => match ($record->auditable_type) {
+                    ->state(fn ($record) => match ($record->auditable_type) {
                         CartProduct::class => $record->auditable?->title,
                         BranchProduct::class => $record->auditable?->product->title,
                         Coupon::class => $record->auditable?->title,
@@ -100,7 +100,7 @@ class AuditResource extends Resource
                     }),
                 TextColumn::make('event')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'created' => 'success',
                         'updated' => 'warning',
                         'deleted' => 'danger',
@@ -120,11 +120,11 @@ class AuditResource extends Resource
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
                 SelectFilter::make('auditable_type')->options([
@@ -166,12 +166,12 @@ class AuditResource extends Resource
             $decoded = json_decode($modified, true);
             $modified = is_array($decoded) ? $decoded : [];
         }
-        if (!is_array($modified)) {
+        if (! is_array($modified)) {
             return [];
         }
         $rows = [];
         foreach ($modified as $attribute => $values) {
-            if (!is_array($values)) {
+            if (! is_array($values)) {
                 continue;
             }
             $old = $values['old'] ?? null;
@@ -188,6 +188,7 @@ class AuditResource extends Resource
                 'new' => $new ?? '',
             ];
         }
+
         return $rows;
     }
 }

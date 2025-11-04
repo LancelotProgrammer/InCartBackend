@@ -42,7 +42,7 @@ class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
             ->poll()
             ->paginationMode(PaginationMode::Simple)
             ->query(
-                fn(): Builder => Ticket::query()
+                fn (): Builder => Ticket::query()
                     ->whereBetween('created_at', now()->inApplicationTodayRange())
                     ->whereNull('processed_at')
             )
@@ -61,7 +61,7 @@ class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
                     ->label('Process')
                     ->icon(Heroicon::Check)
                     ->requiresConfirmation()
-                    ->visible(fn($record) => $record->processed_at === null)
+                    ->visible(fn ($record) => $record->processed_at === null)
                     ->schema([
                         Textarea::make('reply')->required(),
                     ])
@@ -84,7 +84,7 @@ class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
             ->toolbarActions([
                 Action::make('open_full_page')
                     ->color('primary')
-                    ->url(fn() => route('filament.admin.resources.tickets.index'), true),
+                    ->url(fn () => route('filament.admin.resources.tickets.index'), true),
             ]);
     }
 
@@ -98,7 +98,7 @@ class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
         return Cache::remember(
             CacheKeys::TODAY_SUPPORT_COUNT,
             now()->addDay(),
-            fn() => Ticket::query()
+            fn () => Ticket::query()
                 ->whereBetween('created_at', now()->inApplicationTodayRange())
                 ->whereNull('processed_at')->count()
         );

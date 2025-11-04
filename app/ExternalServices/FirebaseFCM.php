@@ -35,7 +35,7 @@ class FirebaseFCM
                 $title,
                 $body,
                 null,
-                DeepLinks::ORDER_DEEP_LINK . "/$order->id"
+                DeepLinks::ORDER_DEEP_LINK."/$order->id"
             );
         }
     }

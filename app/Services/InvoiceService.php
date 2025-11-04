@@ -21,8 +21,8 @@ class InvoiceService
         ]);
 
         $mainCategories = $order->cartProducts
-            ->flatMap(fn($cartProduct) => $cartProduct->product?->categories ?? collect([$uncategorized]))
-            ->filter(fn($category) => $category->type === CategoryType::MAIN)
+            ->flatMap(fn ($cartProduct) => $cartProduct->product?->categories ?? collect([$uncategorized]))
+            ->filter(fn ($category) => $category->type === CategoryType::MAIN)
             ->unique('id')
             ->values();
 
@@ -41,11 +41,11 @@ class InvoiceService
         $productToCategory = [];
         foreach ($order->cartProducts as $cartProduct) {
             $eligibleCategories = collect($cartProduct->product?->categories ?? [$uncategorized])
-                ->filter(fn($cat) => $cat->type === CategoryType::MAIN);
+                ->filter(fn ($cat) => $cat->type === CategoryType::MAIN);
 
             if ($eligibleCategories->isNotEmpty()) {
                 $bestCategory = $eligibleCategories
-                    ->sortByDesc(fn($cat) => $categoryCount[$cat->id] ?? 0)
+                    ->sortByDesc(fn ($cat) => $categoryCount[$cat->id] ?? 0)
                     ->first();
 
                 if ($bestCategory) {
@@ -56,8 +56,8 @@ class InvoiceService
 
         $groupedProducts = $mainCategories->map(function ($category) use ($order, $productToCategory, $uncategorized) {
             $products = $order->cartProducts
-                ->filter(fn($cartProduct) => ($productToCategory[$cartProduct->id] ?? $uncategorized->id) === $category->id)
-                ->map(fn($cartProduct) => [
+                ->filter(fn ($cartProduct) => ($productToCategory[$cartProduct->id] ?? $uncategorized->id) === $category->id)
+                ->map(fn ($cartProduct) => [
                     'title_ar' => $cartProduct->getTranslation('title', 'ar') ?? 'منتج محذوف',
                     'title_en' => $cartProduct->getTranslation('title', 'en') ?? 'Deleted Product',
                     'quantity' => $cartProduct->quantity,
@@ -70,7 +70,7 @@ class InvoiceService
                 'category_en' => $category->getTranslation('title', 'en'),
                 'products' => $products,
             ];
-        })->filter(fn($group) => $group['products']->isNotEmpty());
+        })->filter(fn ($group) => $group['products']->isNotEmpty());
 
         $invoiceData = [
             'order' => [
@@ -95,7 +95,7 @@ class InvoiceService
             'categories' => $groupedProducts->values(),
         ];
 
-        if (!file_exists(storage_path('app/mpdf_tmp'))) {
+        if (! file_exists(storage_path('app/mpdf_tmp'))) {
             mkdir(storage_path('app/mpdf_tmp'), 0755, true);
         }
 
@@ -111,6 +111,7 @@ class InvoiceService
         ]);
 
         $mpdf->WriteHTML(View::make('pdf.invoice', $invoiceData)->render());
+
         return response($mpdf->Output('', 'S'))
             ->header('Content-Type', 'application/pdf');
     }

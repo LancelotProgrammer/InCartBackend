@@ -33,7 +33,7 @@ class OrderPolicy
     {
         return $user->hasPermission('update-order') &&
             self::isEnabled($order) &&
-            $user->id === $order->manager_id && 
+            $user->id === $order->manager_id &&
             $user->belongsToUserBranch($order);
     }
 

@@ -117,7 +117,7 @@ class OrderController extends Controller
             ])
             ->thenReturn();
 
-        return new EmptySuccessfulResponseResource();
+        return new EmptySuccessfulResponseResource;
     }
 
     /**

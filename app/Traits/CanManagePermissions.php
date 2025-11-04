@@ -8,7 +8,6 @@ use App\Models\Feedback;
 use App\Models\Order;
 use App\Models\Ticket;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
 trait CanManagePermissions

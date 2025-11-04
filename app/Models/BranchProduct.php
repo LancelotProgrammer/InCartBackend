@@ -18,7 +18,7 @@ use stdClass;
 #[ScopedBy([BranchScope::class])]
 class BranchProduct extends Pivot implements AuditableContract
 {
-    use HasPublishAttribute, Auditable;
+    use Auditable, HasPublishAttribute;
 
     public $incrementing = true;
 
@@ -64,9 +64,9 @@ class BranchProduct extends Pivot implements AuditableContract
 
     protected static function booted(): void
     {
-        static::created(fn(BranchProduct $productBranch) => CacheService::deleteHomeCache());
-        static::updated(fn(BranchProduct $productBranch) => CacheService::deleteHomeCache());
-        static::deleted(fn(BranchProduct $productBranch) => CacheService::deleteHomeCache());
+        static::created(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
+        static::updated(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
+        static::deleted(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
     }
 
     public function branch(): BelongsTo
@@ -102,8 +102,8 @@ class BranchProduct extends Pivot implements AuditableContract
     protected function maximumOrderQuantity(): Attribute
     {
         return Attribute::make(
-            get: fn($value, $attributes) => self::getMaximumOrderQuantity((object) $attributes),
-            set: fn($value) => $value,
+            get: fn ($value, $attributes) => self::getMaximumOrderQuantity((object) $attributes),
+            set: fn ($value) => $value,
         );
     }
 

@@ -15,7 +15,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Role extends Model implements AuditableContract
 {
-    use HasFactory, HasTranslations, Auditable;
+    use Auditable, HasFactory, HasTranslations;
 
     const ROLE_SUPER_ADMIN_CODE = 'super-admin';
 
@@ -39,7 +39,7 @@ class Role extends Model implements AuditableContract
 
     protected static function booted(): void
     {
-        static::deleting(fn(Role $role) => event(new RoleDeleting($role)));
+        static::deleting(fn (Role $role) => event(new RoleDeleting($role)));
     }
 
     public function audits(): MorphMany

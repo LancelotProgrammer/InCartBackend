@@ -106,7 +106,7 @@ class OrderActions
                 ->icon(Heroicon::Flag)
                 ->color('primary')
                 ->requiresConfirmation()
-                ->visible(fn(Order $order) => $order->isClosable())
+                ->visible(fn (Order $order) => $order->isClosable())
                 ->schema(function (Order $order) {
                     return $order->isPayOnDelivery()
                         ? [
