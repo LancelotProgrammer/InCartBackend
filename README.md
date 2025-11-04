@@ -113,7 +113,7 @@ loyalties:
     - OrderProcess->createOrder() is used to create the order
     - order is created via order process class and it's status is set to pending
     - order can be approved or force approved by a manager
-        - force approve means that the manager is approving an order which is not created today or it's not checked out
+        - force approve means that the manager is approving an order which is not created today, it's not checked out or the system is offline
         - approving an order means the manager is now responsible to handle the order
     - after approving, the order is processing and can be edited if needed
     - order can be assigned to a delivery
