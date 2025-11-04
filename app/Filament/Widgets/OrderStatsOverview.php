@@ -21,8 +21,8 @@ class OrderStatsOverview extends StatsOverviewWidget
     protected function getStats(): array
     {
         // Default to current month if no filter provided
-        $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
-        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
+        $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfYear();
+        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
 
         // Cache key with date range
         $cacheKey = CacheKeys::ORDER_STATS_OVERVIEW.'_'.
@@ -46,12 +46,12 @@ class OrderStatsOverview extends StatsOverviewWidget
                 ->orderByDesc('total')
                 ->value('delivery_scheduled_type'))->getLabel() ?? 'N/A';
 
-            // $mostCancelReason = DB::table('orders')
-            //     ->select('cancel_reason', DB::raw('COUNT(*) as total'))
-            //     ->whereNotNull('cancel_reason')
-            //     ->groupBy('cancel_reason')
-            //     ->orderByDesc('total')
-            //     ->value('cancel_reason') ?? 'N/A';
+            $mostCoupon = get_translatable_attribute(DB::table('orders')
+                ->join('coupons', 'orders.payment_method_id', '=', 'coupons.id')
+                ->select('coupons.title', DB::raw('COUNT(*) as total'))
+                ->groupBy('coupons.id', 'coupons.title')
+                ->orderByDesc('total')
+                ->value('coupons.title')) ?? 'N/A';
 
             $mostActiveDelivery = DB::table('users')
                 ->select('name', DB::raw('COUNT(*) as total'))
@@ -84,8 +84,8 @@ class OrderStatsOverview extends StatsOverviewWidget
             return [
                 Stat::make('Average Order Subtotal', $avgSubtotal),
                 Stat::make('Most Payment Used', $mostPayment),
+                Stat::make('Most Coupon used', $mostCoupon),
                 Stat::make('Most Delivery Type', $mostDeliveryType),
-                Stat::make('Most Cancel Reason', 'N/A'),
                 Stat::make('Most Active Delivery', $mostActiveDelivery),
                 Stat::make('Most Active Manager', $mostActiveManager),
                 Stat::make('Most Active Branch', $mostActiveBranch),

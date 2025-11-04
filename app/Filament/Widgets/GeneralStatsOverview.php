@@ -21,8 +21,8 @@ class GeneralStatsOverview extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
-        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
+        $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfYear();
+        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
 
         $cacheKey = CacheKeys::GENERAL_STATS_OVERVIEW.'_'.
             Carbon::parse($startDate)->format('Y-m-d').'_'.

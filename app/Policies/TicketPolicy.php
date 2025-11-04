@@ -46,4 +46,9 @@ class TicketPolicy
     {
         return $user->hasPermission('process-ticket');
     }
+
+    public function changeBranch(User $user, Ticket $ticket): bool
+    {
+        return $user->hasPermission('change-branch-ticket');
+    }
 }

@@ -79,7 +79,7 @@ class OrderFactory extends Factory
         } else {
             // 40% future
             $timeContext = 'future';
-            $date = Carbon::instance(fake()->dateTimeBetween('+1 day', '+1 month'));
+            $date = Carbon::instance(fake()->dateTimeBetween('+1 day', '+7 day'));
         }
 
         // Delivery type

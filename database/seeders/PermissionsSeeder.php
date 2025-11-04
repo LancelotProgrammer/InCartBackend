@@ -486,6 +486,10 @@ class PermissionsSeeder extends Seeder
                 'code' => 'process-feedback',
             ],
             [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Transfer feedback to Another Branch', 'نقل الملاحظة إلى فرع آخر']), JSON_UNESCAPED_UNICODE),
+                'code' => 'change-branch-feedback',
+            ],
+            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Mark Important Ticket', 'تعيين تذكرة كمهمة']), JSON_UNESCAPED_UNICODE),
                 'code' => 'mark-important-ticket',
             ],
@@ -496,6 +500,10 @@ class PermissionsSeeder extends Seeder
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Process Ticket', 'معالجة التذكرة']), JSON_UNESCAPED_UNICODE),
                 'code' => 'process-ticket',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Transfer Ticket to Another Branch', 'نقل التذكرة إلى فرع آخر']), JSON_UNESCAPED_UNICODE),
+                'code' => 'change-branch-ticket',
             ],
         ]);
     }

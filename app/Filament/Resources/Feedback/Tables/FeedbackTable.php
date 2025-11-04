@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\Feedback\Tables;
 
 use App\Filament\Actions\MarkImportantActions;
+use App\Models\Feedback;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -61,7 +63,7 @@ class FeedbackTable
                     ->icon('heroicon-o-check')
                     ->requiresConfirmation()
                     ->visible(fn($record) => $record->processed_at === null)
-                    ->action(function ($record) {
+                    ->action(function (Feedback $record) {
                         $record->update([
                             'processed_by' => auth()->user()->id,
                             'processed_at' => now()
@@ -69,6 +71,25 @@ class FeedbackTable
                         Notification::make()
                             ->success()
                             ->title("Feedback #{$record->id} marked as processed")
+                            ->send();
+                    }),
+                Action::make('change_branch')
+                    ->authorize('changeBranch')
+                    ->icon('heroicon-o-check')
+                    ->requiresConfirmation()
+                    ->form([
+                        Select::make('branch_id')
+                            ->required()
+                            ->relationship('branch', 'title')
+                            ->live(),
+                    ])
+                    ->action(function (Feedback $record, array $data) {
+                        $record->update([
+                            'branch_id' => $data['branch_id'],
+                        ]);
+                        Notification::make()
+                            ->success()
+                            ->title("Feedback #{$record->id} branch changed")
                             ->send();
                     }),
             ])

@@ -3,6 +3,7 @@
 namespace App\Pipes;
 
 use App\Exceptions\LogicalException;
+use App\Models\Branch;
 use App\Models\Ticket;
 use App\Services\CacheService;
 use App\Services\SettingsService;
@@ -14,7 +15,7 @@ class CreateTicket
 {
     public function __invoke(Request $request, Closure $next): array
     {
-        $key = 'ticket-submit:'.$request->user()->id;
+        $key = 'ticket-submit:' . $request->user()->id;
         $maxAttempts = SettingsService::getAllowedTicketCount();
         if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
             throw new LogicalException('Limit reached', "The user has submitted more than $maxAttempts ticket/s");
@@ -25,8 +26,14 @@ class CreateTicket
             'question' => 'required|string|min:5',
         ]);
 
+        $branchId = Branch::query()
+            ->where('city_id', $request->user()->city_id)
+            ->where('is_default', true)
+            ->value('id');
+
         Ticket::create([
             'user_id' => $request->user()->id,
+            'branch_id' => $branchId,
             'question' => $data['question'],
         ]);
 

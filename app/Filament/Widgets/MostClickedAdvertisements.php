@@ -24,8 +24,8 @@ class MostClickedAdvertisements extends ChartWidget
 
     protected function getData(): array
     {
-        $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
-        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
+        $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfYear();
+        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
 
         $cacheKey = CacheKeys::MOST_CLICKED_ADVERTISEMENTS.'_'.
             Carbon::parse($startDate)->format('Y-m-d').'_'.

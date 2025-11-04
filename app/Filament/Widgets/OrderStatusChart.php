@@ -24,8 +24,8 @@ class OrderStatusChart extends ChartWidget
 
     protected function getData(): array
     {
-        $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfMonth();
-        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfMonth();
+        $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfYear();
+        $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
 
         $cacheKey = CacheKeys::ORDER_STATUS_CHART.'_'.
             Carbon::parse($startDate)->format('Y-m-d').'_'.

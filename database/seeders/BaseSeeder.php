@@ -626,17 +626,27 @@ class BaseSeeder extends Seeder
         $randomUsers = $users->random(rand(floor($users->count() * 0.3), floor($users->count() * 0.5)));
         foreach ($randomUsers as $user) {
             foreach ((array) $randomAds as $adIndex) {
+                $branchId = Branch::query()
+                    ->where('city_id', $user->city_id)
+                    ->where('is_default', true)
+                    ->value('id');
                 Feedback::create([
                     'user_id' => $user->id,
                     'feedback' => $this->faker->sentence(),
+                    'branch_id' => $branchId,
                 ]);
             }
         }
         foreach ($randomUsers as $user) {
             foreach ((array) $randomAds as $adIndex) {
+                $branchId = Branch::query()
+                    ->where('city_id', $user->city_id)
+                    ->where('is_default', true)
+                    ->value('id');
                 Ticket::create([
                     'user_id' => $user->id,
                     'question' => $this->faker->sentence(),
+                    'branch_id' => $branchId,
                 ]);
             }
         }

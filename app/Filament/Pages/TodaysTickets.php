@@ -43,7 +43,7 @@ class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
             ->paginationMode(PaginationMode::Simple)
             ->query(
                 fn(): Builder => Ticket::query()
-                    ->whereBetween('delivery_date', now()->inApplicationTodayRange())
+                    ->whereBetween('created_at', now()->inApplicationTodayRange())
                     ->whereNull('processed_at')
             )
             ->defaultSort('id', 'desc')
@@ -99,7 +99,7 @@ class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
             CacheKeys::TODAY_SUPPORT_COUNT,
             now()->addDay(),
             fn() => Ticket::query()
-                ->whereBetween('delivery_date', now()->inApplicationTodayRange())
+                ->whereBetween('created_at', now()->inApplicationTodayRange())
                 ->whereNull('processed_at')->count()
         );
     }

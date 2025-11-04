@@ -46,4 +46,9 @@ class FeedbackPolicy
     {
         return $user->hasPermission('process-feedback');
     }
+
+    public function changeBranch(User $user, Feedback $feedback): bool
+    {
+        return $user->hasPermission('change-branch-feedback');
+    }
 }

@@ -10,6 +10,7 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
@@ -82,6 +83,25 @@ class TicketsTable
                         Notification::make()
                             ->success()
                             ->title("Ticket #{$record->id} marked as processed")
+                            ->send();
+                    }),
+                Action::make('change_branch')
+                    ->authorize('changeBranch')
+                    ->icon('heroicon-o-check')
+                    ->requiresConfirmation()
+                    ->form([
+                        Select::make('branch_id')
+                            ->required()
+                            ->relationship('branch', 'title')
+                            ->live(),
+                    ])
+                    ->action(function (Ticket $record, array $data) {
+                        $record->update([
+                            'branch_id' => $data['branch_id'],
+                        ]);
+                        Notification::make()
+                            ->success()
+                            ->title("Ticket #{$record->id} branch changed")
                             ->send();
                     }),
             ])
