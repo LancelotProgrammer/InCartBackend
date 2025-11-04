@@ -14,6 +14,7 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -64,7 +65,7 @@ class TicketsTable
                 Action::make('process')
                     ->authorize('process')
                     ->label('Process')
-                    ->icon('heroicon-o-check')
+                    ->icon(Heroicon::Check)
                     ->requiresConfirmation()
                     ->visible(fn($record) => $record->processed_at === null)
                     ->form([
@@ -88,7 +89,7 @@ class TicketsTable
                     }),
                 Action::make('change_branch')
                     ->authorize('changeBranch')
-                    ->icon('heroicon-o-check')
+                    ->icon(Heroicon::BuildingOffice2)
                     ->requiresConfirmation()
                     ->form([
                         SelectBranchComponent::configure(),

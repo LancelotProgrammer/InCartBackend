@@ -11,6 +11,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -61,7 +62,7 @@ class FeedbackTable
                 Action::make('process')
                     ->authorize('process')
                     ->label('Process')
-                    ->icon('heroicon-o-check')
+                    ->icon(Heroicon::Check)
                     ->requiresConfirmation()
                     ->visible(fn($record) => $record->processed_at === null)
                     ->action(function (Feedback $record) {
@@ -76,7 +77,7 @@ class FeedbackTable
                     }),
                 Action::make('change_branch')
                     ->authorize('changeBranch')
-                    ->icon('heroicon-o-check')
+                    ->icon(Heroicon::BuildingOffice2)
                     ->requiresConfirmation()
                     ->form([
                         SelectBranchComponent::configure(),

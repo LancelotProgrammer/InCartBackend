@@ -12,6 +12,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
@@ -23,7 +24,7 @@ class BulkNotificationsAction
             ->authorize('sendNotification')
             ->label('Send Notification')
             ->color('primary')
-            ->icon('heroicon-o-bell')
+            ->icon(Heroicon::Bell)
             ->schema([
                 Section::make('information')
                     ->columns(3)

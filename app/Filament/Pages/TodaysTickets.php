@@ -59,7 +59,7 @@ class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
                 Action::make('process')
                     ->authorize('process')
                     ->label('Process')
-                    ->icon('heroicon-o-check')
+                    ->icon(Heroicon::Check)
                     ->requiresConfirmation()
                     ->visible(fn($record) => $record->processed_at === null)
                     ->schema([

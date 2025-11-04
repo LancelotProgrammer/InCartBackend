@@ -140,7 +140,7 @@ class OrderActions
 
         return ActionGroup::make($actions)
             ->label('More actions')
-            ->icon('heroicon-m-ellipsis-vertical')
+            ->icon(Heroicon::EllipsisVertical)
             ->size(Size::Small)
             ->color('primary')
             ->button();
