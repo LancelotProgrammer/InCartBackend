@@ -24,21 +24,21 @@ class AdvertisementPolicy
 
     public function update(User $user, Advertisement $advertisement): bool
     {
-        return $user->hasPermission('update-advertisement');
+        return $user->hasPermission('update-advertisement') && $user->belongsToUserBranch($advertisement);
     }
 
     public function delete(User $user, Advertisement $advertisement): bool
     {
-        return $user->hasPermission('delete-advertisement');
+        return $user->hasPermission('delete-advertisement') && $user->belongsToUserBranch($advertisement);
     }
 
     public function publish(User $user, Advertisement $advertisement): bool
     {
-        return $user->hasPermission('publish-advertisement');
+        return $user->hasPermission('publish-advertisement') && $user->belongsToUserBranch($advertisement);
     }
 
     public function unpublish(User $user, Advertisement $advertisement): bool
     {
-        return $user->hasPermission('unpublish-advertisement');
+        return $user->hasPermission('unpublish-advertisement') && $user->belongsToUserBranch($advertisement);
     }
 }

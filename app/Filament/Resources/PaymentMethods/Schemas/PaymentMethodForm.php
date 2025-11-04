@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PaymentMethods\Schemas;
 
+use App\Filament\Components\SelectBranchComponent;
 use App\Filament\Components\TranslationComponent;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -25,9 +26,7 @@ class PaymentMethodForm
                                 return $query->where('branch_id', $get('branch_id'));
                             }),
                         TextInput::make('order')->numeric()->required(),
-                        Select::make('branch_id')
-                            ->relationship('branch', 'title')
-                            ->required(),
+                        SelectBranchComponent::configure(),
                     ]),
             ]);
     }

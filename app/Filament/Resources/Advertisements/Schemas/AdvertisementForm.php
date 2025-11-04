@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Advertisements\Schemas;
 
 use App\Enums\AdvertisementLink;
 use App\Enums\AdvertisementType;
+use App\Filament\Components\SelectBranchComponent;
 use App\Filament\Components\TranslationComponent;
 use App\Models\Category;
 use App\Models\Product;
@@ -30,7 +31,7 @@ class AdvertisementForm
                     ->schema([
                         TranslationComponent::configure('title'),
                         TranslationComponent::configure('description', false),
-                        Select::make('branch_id')->relationship('branch', 'title')->required(),
+                        SelectBranchComponent::configure(),
                         TextInput::make('order')->required()->numeric(),
                     ]),
                 Section::make('Configs')

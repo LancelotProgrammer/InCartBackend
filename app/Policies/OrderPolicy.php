@@ -33,52 +33,53 @@ class OrderPolicy
     {
         return $user->hasPermission('update-order') &&
             self::isEnabled($order) &&
-            $user->id === $order->manager_id;
+            $user->id === $order->manager_id && 
+            $user->belongsToUserBranch($order);
     }
 
     public function delete(User $user, Order $order): bool
     {
-        return $user->hasPermission('delete-order');
+        return $user->hasPermission('delete-order') && $user->belongsToUserBranch($order);
     }
 
     public function cancel(User $user, Order $order): bool
     {
-        return $user->hasPermission('cancel-order') && $user->id === $order->manager_id;
+        return $user->hasPermission('cancel-order') && $user->id === $order->manager_id && $user->belongsToUserBranch($order);
     }
 
     public function approve(User $user, Order $order): bool
     {
-        return $user->hasPermission('approve-order');
+        return $user->hasPermission('approve-order') && $user->belongsToUserBranch($order);
     }
 
     public function forceApprove(User $user, Order $order): bool
     {
-        return $user->hasPermission('force-approve-order');
+        return $user->hasPermission('force-approve-order') && $user->belongsToUserBranch($order);
     }
 
     public function selectDelivery(User $user, Order $order): bool
     {
-        return $user->hasPermission('select-delivery-order') && $user->id === $order->manager_id;
+        return $user->hasPermission('select-delivery-order') && $user->id === $order->manager_id && $user->belongsToUserBranch($order);
     }
 
     public function finish(User $user, Order $order): bool
     {
-        return $user->hasPermission('finish-order') && $user->id === $order->manager_id || $user->id === $order->delivery_id;
+        return $user->hasPermission('finish-order') && $user->id === $order->manager_id || $user->id === $order->delivery_id && $user->belongsToUserBranch($order);
     }
 
     public function close(User $user, Order $order): bool
     {
-        return $user->hasPermission('close-order') && $user->id === $order->manager_id;
+        return $user->hasPermission('close-order') && $user->id === $order->manager_id && $user->belongsToUserBranch($order);
     }
 
     public function archive(User $user, Order $order): bool
     {
-        return $user->hasPermission('archive-order');
+        return $user->hasPermission('archive-order') && $user->belongsToUserBranch($order);
     }
 
     public function viewInvoice(User $user, Order $order): bool
     {
-        return $user->hasPermission('view-invoice-order');
+        return $user->hasPermission('view-invoice-order') && $user->belongsToUserBranch($order);
     }
 
     public static function isEnabled(Order $order): bool

@@ -102,6 +102,12 @@ loyalties:
     - role permissions
     - settings
     - users
+- branch filter system:
+    - branch filter system will only be checking data if the user has the {filter-branch-content} permission
+    - the create process is handled by filtering the select branch
+    - the view process is handled by the branch scope
+    - the update/delete/custom action is handled by policies
+    - users and bulk user notifications is not filtered by this system
 - order lifecycle:
     - the order is managed by two classes:
         - OrderService: handles the orders actions

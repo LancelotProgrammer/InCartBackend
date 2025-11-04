@@ -4,6 +4,7 @@ namespace App\Filament\Actions;
 
 use App\Enums\DeliveryScheduledType;
 use App\Exceptions\LogicalException;
+use App\Filament\Components\SelectBranchComponent;
 use App\Models\BranchProduct;
 use App\Models\Coupon;
 use App\Models\Product;
@@ -82,10 +83,7 @@ class CreateOrderAction
     private static function branchStepSchema(): array
     {
         return [
-            Select::make('branch_id')
-                ->required()
-                ->relationship('branch', 'title')
-                ->live(),
+            SelectBranchComponent::configure()->live(),
         ];
     }
 

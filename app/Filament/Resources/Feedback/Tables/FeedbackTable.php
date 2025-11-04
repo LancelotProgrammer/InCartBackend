@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Feedback\Tables;
 
 use App\Filament\Actions\MarkImportantActions;
+use App\Filament\Components\SelectBranchComponent;
 use App\Models\Feedback;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -78,10 +79,7 @@ class FeedbackTable
                     ->icon('heroicon-o-check')
                     ->requiresConfirmation()
                     ->form([
-                        Select::make('branch_id')
-                            ->required()
-                            ->relationship('branch', 'title')
-                            ->live(),
+                        SelectBranchComponent::configure(),
                     ])
                     ->action(function (Feedback $record, array $data) {
                         $record->update([

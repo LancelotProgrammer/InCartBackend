@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Tickets\Tables;
 
 use App\ExternalServices\FirebaseFCM;
 use App\Filament\Actions\MarkImportantActions;
+use App\Filament\Components\SelectBranchComponent;
 use App\Models\Ticket;
 use App\Services\DatabaseUserNotification;
 use Filament\Actions\Action;
@@ -90,10 +91,7 @@ class TicketsTable
                     ->icon('heroicon-o-check')
                     ->requiresConfirmation()
                     ->form([
-                        Select::make('branch_id')
-                            ->required()
-                            ->relationship('branch', 'title')
-                            ->live(),
+                        SelectBranchComponent::configure(),
                     ])
                     ->action(function (Ticket $record, array $data) {
                         $record->update([

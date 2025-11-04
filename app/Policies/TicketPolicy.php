@@ -24,31 +24,31 @@ class TicketPolicy
 
     public function update(User $user, Ticket $ticket): bool
     {
-        return $user->hasPermission('update-ticket');
+        return $user->hasPermission('update-ticket') && $user->belongsToUserBranch($ticket);
     }
 
     public function delete(User $user, Ticket $ticket): bool
     {
-        return $user->hasPermission('delete-ticket');
+        return $user->hasPermission('delete-ticket') && $user->belongsToUserBranch($ticket);
     }
 
     public function markImportant(User $user, Ticket $ticket): bool
     {
-        return $user->hasPermission('mark-important-ticket');
+        return $user->hasPermission('mark-important-ticket') && $user->belongsToUserBranch($ticket);
     }
 
     public function unmarkImportant(User $user, Ticket $ticket): bool
     {
-        return $user->hasPermission('unmark-important-ticket');
+        return $user->hasPermission('unmark-important-ticket') && $user->belongsToUserBranch($ticket);
     }
 
     public function process(User $user, Ticket $ticket): bool
     {
-        return $user->hasPermission('process-ticket');
+        return $user->hasPermission('process-ticket') && $user->belongsToUserBranch($ticket);
     }
 
     public function changeBranch(User $user, Ticket $ticket): bool
     {
-        return $user->hasPermission('change-branch-ticket');
+        return $user->hasPermission('change-branch-ticket') && $user->belongsToUserBranch($ticket);
     }
 }

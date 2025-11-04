@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Coupons\Schemas;
 
 use App\Enums\CouponType;
+use App\Filament\Components\SelectBranchComponent;
 use App\Filament\Components\TranslationComponent;
 use App\Models\Gift;
 use Closure;
@@ -51,9 +52,7 @@ class CouponForm
                             ])
                             ->dehydrateStateUsing(fn (?string $state) => $state ? trim($state) : null)
                             ->required(),
-                        Select::make('branch_id')
-                            ->relationship('branch', 'title')
-                            ->required(),
+                        SelectBranchComponent::configure(),
                         Hidden::make('type')
                             ->afterStateHydrated(function (Hidden $component) {
                                 $component->state(CouponType::TIMED->value);

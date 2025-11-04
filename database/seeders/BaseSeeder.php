@@ -139,9 +139,10 @@ class BaseSeeder extends Seeder
                         'can-be-assigned-to-take-orders',
                         'can-be-assigned-to-branch',
                         'view-delivery-orders-page',
-
+                        'filter-branch-content',
                         'manage-developer-settings',
                         'can-view-audit',
+
                         'view-any-branch',
                         'view-branch',
                         'create-branch',
@@ -180,6 +181,7 @@ class BaseSeeder extends Seeder
                         'can-be-assigned-to-take-orders',
                         'can-be-assigned-to-branch',
                         'view-delivery-orders-page',
+                        'filter-branch-content',
                     ]
                 )
                 ->pluck('code')->toArray(),
@@ -189,9 +191,10 @@ class BaseSeeder extends Seeder
                     [
                         'can-be-assigned-to-take-orders',
                         'view-delivery-orders-page',
-
                         'manage-developer-settings',
                         'can-view-audit',
+                        'view-dashboard',
+
                         'view-any-branch',
                         'view-branch',
                         'create-branch',

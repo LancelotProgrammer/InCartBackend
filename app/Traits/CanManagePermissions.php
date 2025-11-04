@@ -2,7 +2,13 @@
 
 namespace App\Traits;
 
+use App\Models\Advertisement;
+use App\Models\Coupon;
+use App\Models\Feedback;
+use App\Models\Order;
+use App\Models\Ticket;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
 trait CanManagePermissions
@@ -75,6 +81,18 @@ trait CanManagePermissions
     public function canBeAssignedBranch(): bool
     {
         return $this->role->permissions->contains('code', 'can-be-assigned-to-branch');
+    }
+
+    public function shouldFilterBranchContent(): bool
+    {
+        return $this->role->permissions->contains('code', 'filter-branch-content');
+    }
+
+    public function belongsToUserBranch(Advertisement|Order|Ticket|Feedback|Coupon $model): bool
+    {
+        return $this->role->permissions->contains('code', 'filter-branch-content') ?
+            $this->branches->contains('id', $model->branch_id) :
+            true;
     }
 
     public function scopeGetUsersWhoCanReceiveOrderNotifications(Builder $query): Builder

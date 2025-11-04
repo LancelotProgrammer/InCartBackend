@@ -24,31 +24,31 @@ class FeedbackPolicy
 
     public function update(User $user, Feedback $feedback): bool
     {
-        return $user->hasPermission('update-feedback');
+        return $user->hasPermission('update-feedback') && $user->belongsToUserBranch($feedback);
     }
 
     public function delete(User $user, Feedback $feedback): bool
     {
-        return $user->hasPermission('delete-feedback');
+        return $user->hasPermission('delete-feedback') && $user->belongsToUserBranch($feedback);
     }
 
     public function markImportant(User $user, Feedback $feedback): bool
     {
-        return $user->hasPermission('mark-important-feedback');
+        return $user->hasPermission('mark-important-feedback') && $user->belongsToUserBranch($feedback);
     }
 
     public function unmarkImportant(User $user, Feedback $feedback): bool
     {
-        return $user->hasPermission('unmark-important-feedback');
+        return $user->hasPermission('unmark-important-feedback') && $user->belongsToUserBranch($feedback);
     }
 
     public function process(User $user, Feedback $feedback): bool
     {
-        return $user->hasPermission('process-feedback');
+        return $user->hasPermission('process-feedback') && $user->belongsToUserBranch($feedback);
     }
 
     public function changeBranch(User $user, Feedback $feedback): bool
     {
-        return $user->hasPermission('change-branch-feedback');
+        return $user->hasPermission('change-branch-feedback') && $user->belongsToUserBranch($feedback);
     }
 }

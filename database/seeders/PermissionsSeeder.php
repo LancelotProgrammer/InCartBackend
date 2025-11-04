@@ -362,6 +362,10 @@ class PermissionsSeeder extends Seeder
                 'code' => 'publish-advertisement',
             ],
             [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Filter Branch Content', 'تصفية محتوى الفرع']), JSON_UNESCAPED_UNICODE),
+                'code' => 'filter-branch-content',
+            ],
+            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Unpublish Advertisement', 'إلغاء نشر الإعلان']), JSON_UNESCAPED_UNICODE),
                 'code' => 'unpublish-advertisement',
             ],

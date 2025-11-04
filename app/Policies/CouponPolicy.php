@@ -24,26 +24,26 @@ class CouponPolicy
 
     public function update(User $user, Coupon $coupon): bool
     {
-        return $user->hasPermission('update-coupon');
+        return $user->hasPermission('update-coupon') && $user->belongsToUserBranch($coupon);
     }
 
     public function delete(User $user, Coupon $coupon): bool
     {
-        return $user->hasPermission('delete-coupon');
+        return $user->hasPermission('delete-coupon') && $user->belongsToUserBranch($coupon);
     }
 
     public function publish(User $user, Coupon $coupon): bool
     {
-        return $user->hasPermission('publish-coupon');
+        return $user->hasPermission('publish-coupon') && $user->belongsToUserBranch($coupon);
     }
 
     public function unpublish(User $user, Coupon $coupon): bool
     {
-        return $user->hasPermission('unpublish-coupon');
+        return $user->hasPermission('unpublish-coupon') && $user->belongsToUserBranch($coupon);
     }
 
     public function showCode(User $user, Coupon $coupon): bool
     {
-        return $user->hasPermission('show-code-coupon');
+        return $user->hasPermission('show-code-coupon') && $user->belongsToUserBranch($coupon);
     }
 }

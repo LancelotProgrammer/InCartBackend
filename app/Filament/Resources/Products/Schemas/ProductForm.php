@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Enums\UnitType;
+use App\Filament\Components\SelectBranchComponent;
 use App\Filament\Components\TranslationComponent;
 use App\Models\Category;
 use Carbon\Carbon;
@@ -12,11 +13,11 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Infolists\Components\TextEntry;
 
 class ProductForm
 {
@@ -74,10 +75,7 @@ class ProductForm
                 ->columns(8)
                 ->relationship('branchProducts')
                 ->schema([
-                    Select::make('branch_id')
-                        ->required()
-                        ->distinct()
-                        ->relationship('branch', 'title'),
+                    SelectBranchComponent::configure()->distinct(),
                     TextInput::make('quantity')
                         ->required()
                         ->rule('gt:0')
