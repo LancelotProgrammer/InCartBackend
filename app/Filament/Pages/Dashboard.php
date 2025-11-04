@@ -3,15 +3,20 @@
 namespace App\Filament\Pages;
 
 use App\Services\CacheService;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
-use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
+use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\Support\Htmlable;
 
 class Dashboard extends BaseDashboard
 {
     use HasFiltersAction;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::DocumentChartBar;
 
     protected function getHeaderActions(): array
     {
@@ -36,5 +41,15 @@ class Dashboard extends BaseDashboard
     public static function canAccess(): bool
     {
         return auth()->user()->canViewDashboard();
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'statistics';
+    }
+
+    public function getTitle(): string | Htmlable
+    {
+        return 'Statistics';
     }
 }
