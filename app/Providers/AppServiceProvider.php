@@ -85,7 +85,7 @@ class AppServiceProvider extends ServiceProvider
                 $this->copy()->endOfDay()->timezone('UTC')->toDateTimeString(),
             ];
         });
-        FilamentTimezone::set('Asia/Riyadh');
+        FilamentTimezone::set(config('app.timezone_display'));
     }
 
     private function configureDB(): void
