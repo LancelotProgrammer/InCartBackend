@@ -59,12 +59,11 @@ class UsersRelationManager extends RelationManager
                             ->required(),
                     ])
                     ->action(function (array $data) {
-                        if ($this->getRelationship()->where('user_id', $data['user_id'])->exists()) {
+                        if (User::find($data['user_id'])->branches()->exists()) {
                             Notification::make()
-                                ->title('User already attached')
+                                ->title('User already attached to a branch')
                                 ->warning()
                                 ->send();
-
                             return;
                         }
                         $this->getRelationship()->attach($data['user_id']);
