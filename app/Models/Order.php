@@ -7,6 +7,7 @@ use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Events\OrderDeleting;
+use App\Services\SettingsService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -169,9 +170,11 @@ class Order extends Model implements AuditableContract
     public function isForceApprovable(): bool
     {
         return $this->order_status === OrderStatus::PENDING &&
-            (!$this->delivery_date->inApplicationTimezone()->isSameDay(now()->inApplicationTimezone()) ||
-                (!$this->isPayOnDelivery() &&
-                    $this->payment_status === PaymentStatus::UNPAID));
+            (
+                !$this->delivery_date->inApplicationTimezone()->isSameDay(now()->inApplicationTimezone()) ||
+                (!$this->isPayOnDelivery() && $this->payment_status === PaymentStatus::UNPAID) ||
+                !SettingsService::isSystemOnline()
+            );
     }
 
     public function isDeliverable(): bool

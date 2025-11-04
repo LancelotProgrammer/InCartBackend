@@ -259,6 +259,15 @@ class OrderService
 
             return;
         }
+        if (!SettingsService::isSystemOnline()) {
+            Notification::make()
+                ->title("Order #{$order->order_number} cannot be approved.")
+                ->body('Order cannot be approved because the system is offline.')
+                ->warning()
+                ->send();
+
+            return;
+        }
 
         $order->update([
             'order_status' => OrderStatus::PROCESSING,
