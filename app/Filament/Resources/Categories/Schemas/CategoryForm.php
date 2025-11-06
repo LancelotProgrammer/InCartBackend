@@ -24,6 +24,7 @@ class CategoryForm
                         TranslationComponent::configure('title'),
                         TranslationComponent::configure('description'),
                         Select::make('type')
+                            ->required()
                             ->disabled(function ($operation) {
                                 return $operation === 'edit';
                             })
