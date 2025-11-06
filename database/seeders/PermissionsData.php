@@ -4,14 +4,10 @@ namespace Database\Seeders;
 
 use App\Models\Permission;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Seeder;
 
-class PermissionsSeeder extends Seeder
+class PermissionsData
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public static function run(): void
     {
         Permission::insert([
             // crud
@@ -144,16 +140,20 @@ class PermissionsSeeder extends Seeder
                 'code' => 'view-feedback',
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Create Feedback', 'إنشاء ملاحظة']), JSON_UNESCAPED_UNICODE),
-                'code' => 'create-feedback',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Update Feedback', 'تحديث الملاحظة']), JSON_UNESCAPED_UNICODE),
-                'code' => 'update-feedback',
-            ],
-            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Delete Feedback', 'حذف الملاحظة']), JSON_UNESCAPED_UNICODE),
                 'code' => 'delete-feedback',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Any Support', 'عرض أي دعم']), JSON_UNESCAPED_UNICODE),
+                'code' => 'view-any-support',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['View Support', 'عرض تفاصيل الدعم']), JSON_UNESCAPED_UNICODE),
+                'code' => 'view-support',
+            ],
+            [
+                'title' => json_encode(Factory::translations(['en', 'ar'], ['Delete Support', 'حذف الدعم']), JSON_UNESCAPED_UNICODE),
+                'code' => 'delete-support',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['View Any Order', 'عرض أي طلب']), JSON_UNESCAPED_UNICODE),
@@ -270,14 +270,6 @@ class PermissionsSeeder extends Seeder
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['View Ticket', 'عرض تفاصيل التذكرة']), JSON_UNESCAPED_UNICODE),
                 'code' => 'view-ticket',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Create Ticket', 'إنشاء تذكرة']), JSON_UNESCAPED_UNICODE),
-                'code' => 'create-ticket',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Update Ticket', 'تحديث التذكرة']), JSON_UNESCAPED_UNICODE),
-                'code' => 'update-ticket',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Delete Ticket', 'حذف التذكرة']), JSON_UNESCAPED_UNICODE),

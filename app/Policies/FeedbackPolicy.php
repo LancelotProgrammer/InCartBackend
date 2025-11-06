@@ -19,12 +19,12 @@ class FeedbackPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasPermission('create-feedback');
+        return false;
     }
 
     public function update(User $user, Feedback $feedback): bool
     {
-        return $user->hasPermission('update-feedback') && $user->belongsToUserBranch($feedback);
+        return false;
     }
 
     public function delete(User $user, Feedback $feedback): bool

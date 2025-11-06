@@ -15,6 +15,8 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/privacy-policy', [LegalController::class, 'getPolicyPage']);
 Route::get('/terms-of-service', [LegalController::class, 'getTermsOfServicePage']);
+Route::get('/support', [LegalController::class, 'getSupportPage'])->name('support.page');
+Route::post('/support', [LegalController::class, 'createSupport'])->name('support.submit');
 
 Route::get('/', function () {
     return view('welcome');

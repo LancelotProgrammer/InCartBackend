@@ -19,12 +19,12 @@ class OrderArchivePolicy
 
     public function create(User $user): bool
     {
-        return $user->hasPermission('create-order-archive');
+        return false;
     }
 
     public function update(User $user, OrderArchive $orderArchive): bool
     {
-        return $user->hasPermission('update-order-archive');
+        return false;
     }
 
     public function delete(User $user, OrderArchive $orderArchive): bool

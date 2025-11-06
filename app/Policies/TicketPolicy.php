@@ -19,12 +19,12 @@ class TicketPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasPermission('create-ticket');
+        return false;
     }
 
     public function update(User $user, Ticket $ticket): bool
     {
-        return $user->hasPermission('update-ticket') && $user->belongsToUserBranch($ticket);
+        return false;
     }
 
     public function delete(User $user, Ticket $ticket): bool

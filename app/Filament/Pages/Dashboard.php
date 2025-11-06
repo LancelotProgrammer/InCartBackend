@@ -18,6 +18,8 @@ class Dashboard extends BaseDashboard
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::DocumentChartBar;
 
+    protected static string $routePath = 'statistics';
+
     protected function getHeaderActions(): array
     {
         return [

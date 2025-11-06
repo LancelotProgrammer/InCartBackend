@@ -25,33 +25,42 @@ class OrderStatsOverview extends StatsOverviewWidget
         $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
 
         // Cache key with date range
-        $cacheKey = CacheKeys::ORDER_STATS_OVERVIEW.'_'.
-            Carbon::parse($startDate)->format('Y-m-d').'_'.
+        $cacheKey = CacheKeys::ORDER_STATS_OVERVIEW . '_' .
+            Carbon::parse($startDate)->format('Y-m-d') . '_' .
             Carbon::parse($endDate)->format('Y-m-d');
 
         return Cache::remember($cacheKey, now()->addHour(), function () {
             $avgSubtotal = DB::table('orders')->avg('subtotal_price');
             $avgSubtotal = number_format($avgSubtotal, 2);
 
-            $mostPayment = get_translatable_attribute(DB::table('orders')
+            $mostPaymentResult = DB::table('orders')
                 ->join('payment_methods', 'orders.payment_method_id', '=', 'payment_methods.id')
                 ->select('payment_methods.title', DB::raw('COUNT(*) as total'))
                 ->groupBy('payment_methods.id', 'payment_methods.title')
                 ->orderByDesc('total')
-                ->value('payment_methods.title')) ?? 'N/A';
+                ->first();
+            $mostPayment = $mostPaymentResult
+                ? get_translatable_attribute($mostPaymentResult->title)
+                : 'N/A';
 
-            $mostDeliveryType = DeliveryScheduledType::tryFrom(DB::table('orders')
+            $mostDeliveryTypeResult = DB::table('orders')
                 ->select('delivery_scheduled_type', DB::raw('COUNT(*) as total'))
                 ->groupBy('delivery_scheduled_type')
                 ->orderByDesc('total')
-                ->value('delivery_scheduled_type'))->getLabel() ?? 'N/A';
+                ->value('delivery_scheduled_type');
+            $mostDeliveryType = $mostDeliveryTypeResult
+                ? DeliveryScheduledType::tryFrom($mostDeliveryTypeResult)->getLabel()
+                : 'N/A';
 
-            $mostCoupon = get_translatable_attribute(DB::table('orders')
-                ->join('coupons', 'orders.payment_method_id', '=', 'coupons.id')
+            $mostCouponResult = DB::table('orders')
+                ->join('coupons', 'orders.coupon_id', '=', 'coupons.id')
                 ->select('coupons.title', DB::raw('COUNT(*) as total'))
                 ->groupBy('coupons.id', 'coupons.title')
                 ->orderByDesc('total')
-                ->value('coupons.title')) ?? 'N/A';
+                ->first();
+            $mostCoupon = $mostCouponResult
+                ? get_translatable_attribute($mostCouponResult->title)
+                : 'N/A';
 
             $mostActiveDelivery = DB::table('users')
                 ->select('name', DB::raw('COUNT(*) as total'))
@@ -67,12 +76,15 @@ class OrderStatsOverview extends StatsOverviewWidget
                 ->orderByDesc('total')
                 ->value('name') ?? 'N/A';
 
-            $mostActiveBranch = get_translatable_attribute(DB::table('branches')
+            $mostActiveBranchResult = DB::table('branches')
                 ->select('title', DB::raw('COUNT(*) as total'))
                 ->join('orders', 'orders.branch_id', '=', 'branches.id')
                 ->groupBy('branches.id', 'branches.title')
                 ->orderByDesc('total')
-                ->value('title')) ?? 'N/A';
+                ->first();
+            $mostActiveBranch = $mostActiveBranchResult
+                ? get_translatable_attribute($mostActiveBranchResult->title)
+                : 'N/A';
 
             $mostActiveCustomer = DB::table('users')
                 ->select('name', DB::raw('COUNT(*) as total'))

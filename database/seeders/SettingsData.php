@@ -4,14 +4,10 @@ namespace Database\Seeders;
 
 use App\Enums\SettingType;
 use App\Models\Setting;
-use Illuminate\Database\Seeder;
 
-class SettingsSeeder extends Seeder
+class SettingsData
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public static function run(): void
     {
         Setting::insert([
             // Service
