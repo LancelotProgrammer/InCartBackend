@@ -68,7 +68,7 @@ class UserPolicy
             return false;
         }
 
-        if ($model->role->code !== Role::ROLE_CUSTOMER_CODE) {
+        if (! $this->isCustomer($model)) {
             return false;
         }
 
@@ -81,7 +81,7 @@ class UserPolicy
             return false;
         }
 
-        if ($model->role->code !== Role::ROLE_CUSTOMER_CODE) {
+        if (! $this->isCustomer($model)) {
             return false;
         }
 
