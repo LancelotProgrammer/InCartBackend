@@ -24,6 +24,10 @@ class UserPolicy
 
     public function update(User $user, User $model): bool
     {
+        if ($this->isCustomer($model)) {
+            return false;
+        }
+
         if ($this->isSuperAdminOrDeveloper($model)) {
             return false;
         }
@@ -92,5 +96,10 @@ class UserPolicy
     private function isSuperAdminOrDeveloper(User $model): bool
     {
         return $model->role->code === Role::ROLE_SUPER_ADMIN_CODE || $model->role->code === Role::ROLE_DEVELOPER_CODE;
+    }
+
+    private function isCustomer(User $model): bool
+    {
+        return $model->role->code === Role::ROLE_CUSTOMER_CODE;
     }
 }
