@@ -59,7 +59,6 @@ class InvoiceService
                 ->filter(fn ($cartProduct) => ($productToCategory[$cartProduct->id] ?? $uncategorized->id) === $category->id)
                 ->map(fn ($cartProduct) => [
                     'title_ar' => $cartProduct->getTranslation('title', 'ar') ?? 'منتج محذوف',
-                    'title_en' => $cartProduct->getTranslation('title', 'en') ?? 'Deleted Product',
                     'quantity' => $cartProduct->quantity,
                     'unit_price' => $cartProduct->price,
                     'total' => round($cartProduct->quantity * $cartProduct->price, 2),
@@ -67,7 +66,6 @@ class InvoiceService
 
             return [
                 'category_ar' => $category->getTranslation('title', 'ar'),
-                'category_en' => $category->getTranslation('title', 'en'),
                 'products' => $products,
             ];
         })->filter(fn ($group) => $group['products']->isNotEmpty());
@@ -80,6 +78,8 @@ class InvoiceService
                 'discount' => $order->discount_price,
                 'delivery' => $order->delivery_fee,
                 'service_fee' => $order->service_fee,
+                'payment_method_title_ar' => $order->paymentMethod->getTranslation('title', 'ar'),
+                'payment_method_title_en' => $order->paymentMethod->getTranslation('title', 'en'),
                 'tax' => $order->tax_amount,
                 'total' => $order->total_price,
             ],
@@ -88,9 +88,6 @@ class InvoiceService
                 'email' => $order->customer->email,
                 'phone' => $order->customer->phone,
                 'address' => $order->user_address_title,
-            ],
-            'app' => [
-                'name' => config('app.name'),
             ],
             'categories' => $groupedProducts->values(),
         ];
