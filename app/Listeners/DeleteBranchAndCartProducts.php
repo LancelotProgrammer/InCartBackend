@@ -21,6 +21,5 @@ class DeleteBranchAndCartProducts
     {
         $product = $event->product;
         $product->branches()->detach();
-        $product->carts()->detach();
     }
 }
