@@ -41,9 +41,7 @@ class GiftsTable
                     ->modalSubmitAction(false),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                //
             ]);
     }
 }

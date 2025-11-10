@@ -14,23 +14,25 @@ class OrderInfolist
             ->columns(1)
             ->components([
                 Section::make('Info')
-                    ->columns(11)
+                    ->columns(12)
                     ->schema([
                         TextEntry::make('order_number')->placeholder('No order number available'),
                         TextEntry::make('order_status')->badge()->placeholder('No status'),
                         TextEntry::make('payment_status')->badge()->placeholder('No payment info'),
                         TextEntry::make('delivery_status')->badge()->placeholder('No delivery status'),
                         TextEntry::make('subtotal_price')->money('SAR')->placeholder('—'),
-                        TextEntry::make('discount_price')->money('SAR')->placeholder('No discount applied'),
-                        TextEntry::make('delivery_fee')->money('SAR')->placeholder('No delivery fee'),
-                        TextEntry::make('service_fee')->money('SAR')->placeholder('No service fee'),
-                        TextEntry::make('tax_amount')->money('SAR')->placeholder('No tax applied'),
-                        TextEntry::make('total_price')->money('SAR')->placeholder('No total calculated'),
-                        TextEntry::make('payed_price')->money('SAR')->placeholder('No payed price'),
+                        TextEntry::make('discount_price')->money('SAR')->placeholder('—'),
+                        TextEntry::make('delivery_fee')->money('SAR')->placeholder('—'),
+                        TextEntry::make('service_fee')->money('SAR')->placeholder('—'),
+                        TextEntry::make('tax_amount')->money('SAR')->placeholder('—'),
+                        TextEntry::make('total_price')->money('SAR')->placeholder('—'),
+                        TextEntry::make('payed_price')->money('SAR')->placeholder('—'),
                         TextEntry::make('coupon.title')->label('Coupon')->placeholder('No coupon used'),
                         TextEntry::make('created_at')->dateTime()->placeholder('No creation date'),
                         TextEntry::make('customer.name')->label('Customer')->placeholder('No customer'),
                         TextEntry::make('customer.phone')->label('Customer Phone')->placeholder('No customer phone'),
+                        TextEntry::make('customer.approved_at')->label('Customer Approved')->placeholder('Customer is not marked as approved'),
+                        TextEntry::make('customer.loyalty.total_earned')->label('Loyalty Points')->placeholder('Customer has no loyalty points'),
                         TextEntry::make('delivery.name')->label('Delivery')->placeholder('No delivery assigned'),
                         TextEntry::make('delivery.phone')->label('Delivery Phone')->placeholder('No delivery phone'),
                         TextEntry::make('delivery.email')->label('Delivery Email')->placeholder('No delivery email'),

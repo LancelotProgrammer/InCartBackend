@@ -45,6 +45,10 @@ class UsersRelationManager extends RelationManager
                     ]),
                     Stack::make([
                         TextColumn::make('blocked_at')->icon(Heroicon::ExclamationCircle)->prefix('Blocked At: ')->date(),
+                        TextColumn::make('approved_at')->icon(Heroicon::Star)->prefix('Approved At: ')->date(),
+                        TextColumn::make('loyalty.total_earned')->icon(Heroicon::Gift)->prefix('Total loyalty point: '),
+                    ]),
+                    Stack::make([
                         TextColumn::make('city.name')->icon(Heroicon::OutlinedGlobeAlt),
                         TextColumn::make('role.title')->icon(Heroicon::UserGroup),
                     ]),

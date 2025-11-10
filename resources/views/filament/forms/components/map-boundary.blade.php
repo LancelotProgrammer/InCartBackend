@@ -20,6 +20,7 @@
 
 <style>
     .leaflet-container {
+        isolation: isolate;
         height: 400px;
         width: 100%;
         background: #fff !important;

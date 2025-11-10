@@ -80,7 +80,7 @@ class OrderActions
                 ->schema([
                     Select::make('delivery_id')->options(function ($record) {
                         return OrderService::getDeliveryUsers($record->branch_id);
-                    }),
+                    })->required(),
                 ])
                 ->action(function (Order $order, array $data) {
                     OrderService::managerSelectDelivery($order, $data);
