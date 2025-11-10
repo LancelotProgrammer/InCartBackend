@@ -5,6 +5,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
+use Filament\Support\Enums\IconSize;
 use Filament\Support\Icons\Heroicon;
 
 enum DeliveryStatus: int implements HasLabel, HasColor, HasIcon
@@ -37,10 +38,10 @@ enum DeliveryStatus: int implements HasLabel, HasColor, HasIcon
     public function getIcon(): string
     {
         return match ($this) {
-            self::SCHEDULED => Heroicon::Calendar->value,
-            self::NOT_DELIVERED => Heroicon::XCircle->value,
-            self::OUT_FOR_DELIVERY => Heroicon::Truck->value,
-            self::DELIVERED => Heroicon::CheckCircle->value,
+            self::SCHEDULED => Heroicon::Calendar->getIconForSize(IconSize::Medium),
+            self::NOT_DELIVERED => Heroicon::XCircle->getIconForSize(IconSize::Medium),
+            self::OUT_FOR_DELIVERY => Heroicon::Truck->getIconForSize(IconSize::Medium),
+            self::DELIVERED => Heroicon::CheckCircle->getIconForSize(IconSize::Medium),
         };
     }
 }

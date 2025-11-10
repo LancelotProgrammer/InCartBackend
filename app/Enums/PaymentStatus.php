@@ -5,6 +5,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
+use Filament\Support\Enums\IconSize;
 use Filament\Support\Icons\Heroicon;
 
 enum PaymentStatus: int implements HasLabel, HasColor, HasIcon
@@ -34,9 +35,9 @@ enum PaymentStatus: int implements HasLabel, HasColor, HasIcon
     public function getIcon(): string
     {
         return match ($this) {
-            self::UNPAID => Heroicon::XCircle->value,
-            self::PAID => Heroicon::CheckCircle->value,
-            self::REFUNDED => Heroicon::ArrowUturnDown->value,
+            self::UNPAID => Heroicon::XCircle->getIconForSize(IconSize::Medium),
+            self::PAID => Heroicon::CheckCircle->getIconForSize(IconSize::Medium),
+            self::REFUNDED => Heroicon::ArrowUturnDown->getIconForSize(IconSize::Medium),
         };
     }
 }
