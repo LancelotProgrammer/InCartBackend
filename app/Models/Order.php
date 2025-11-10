@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use InvalidArgumentException;
 use OwenIt\Auditing\Auditable;
@@ -152,6 +153,11 @@ class Order extends Model implements AuditableContract
         return $this->hasManyThrough(CartProduct::class, Cart::class);
     }
 
+    public function forceApproveOrder(): HasOne
+    {
+        return $this->hasOne(ForceApproveOrder::class);
+    }
+
     public function isPayOnDelivery(): bool
     {
         return $this->paymentMethod->code === PaymentMethod::PAY_ON_DELIVERY_CODE;
@@ -227,6 +233,16 @@ class Order extends Model implements AuditableContract
             'payment_method' => $this->paymentMethod->toArray(),
             'user_address' => $this->userAddress->toArray(),
             'cart' => $this->carts()->with('cartProducts.product')->get()->toArray(),
+        ]);
+    }
+
+    public function createForceApproveOrder(string $reason, int $userId, array $types): void
+    {
+        ForceApproveOrder::create([
+            'types' => $types,
+            'reason' => $reason,
+            'order_id' => $this->id,
+            'user_id' => $userId,
         ]);
     }
 

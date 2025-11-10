@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\DeliveryScheduledType;
 use App\Enums\DeliveryStatus;
+use App\Enums\ForceApproveOrderType;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Exceptions\LogicalException;
@@ -237,10 +238,7 @@ class OrderService
 
     public static function managerApprove(Order $order): void
     {
-        if (
-            ! $order->isPayOnDelivery() &&
-            $order->payment_status === PaymentStatus::UNPAID
-        ) {
+        if (! $order->isPayOnDelivery() && $order->payment_status === PaymentStatus::UNPAID) {
             Notification::make()
                 ->title("Order #{$order->order_number} cannot be approved.")
                 ->body('Order is not checked out')
@@ -283,13 +281,34 @@ class OrderService
             ->send();
     }
 
-    public static function managerForceApprove(Order $order): void
+    public static function managerForceApprove(Order $order, array $data): void
     {
-        $order->update([
-            'order_status' => OrderStatus::PROCESSING,
-            'manager_id' => auth()->user()->id,
-        ]);
-        $order->save();
+        if (! SettingsService::isSystemOnline()) {
+            Notification::make()
+                ->title("Order #{$order->order_number} cannot be approved.")
+                ->body('Order cannot be force approved because the system is offline.')
+                ->warning()
+                ->send();
+
+            return;
+        }
+
+        $types = [];
+        if (! $order->isPayOnDelivery() && $order->payment_status === PaymentStatus::UNPAID) {
+            $types[] = ForceApproveOrderType::PASSING_CHECKOUT->value;
+        }
+        if (! $order->delivery_date->inApplicationTimezone()->isSameDay(now()->inApplicationTimezone())) {
+            $types[] = ForceApproveOrderType::PASSING_DATE->value;
+        }
+
+        DB::transaction(function () use ($order, $data, $types) {
+            $order->createForceApproveOrder($data['reason'], auth()->user()->id, $types);
+            $order->update([
+                'order_status' => OrderStatus::PROCESSING,
+                'manager_id' => auth()->user()->id,
+            ]);
+            $order->save();
+        });
 
         FirebaseFCM::sendOrderStatusNotification($order);
         DatabaseUserNotification::sendOrderStatusNotification($order);
@@ -368,7 +387,7 @@ class OrderService
             ]);
             foreach ($order->carts->first()->cartProducts as $cartProduct) {
                 $branchId = $order->branch_id;
-                $productId = $cartProduct->product_id;
+                $productId = $cartProduct->product_id; // TODO: handle deleted products
                 BranchProduct::where('branch_id', $branchId)
                     ->where('product_id', $productId)
                     ->decrement('quantity', $cartProduct->quantity);

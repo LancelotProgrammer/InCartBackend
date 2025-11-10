@@ -59,13 +59,17 @@ class OrderActions
                 ->color('warning')
                 ->requiresConfirmation()
                 ->modalHeading('Force Approve order')
-                ->modalDescription('Are you sure you\'d like to force approve this order? This means you are approving an order which it\'s date is not today, it\'s not checked out or the system is offline.')
+                ->modalDescription('Are you sure you\'d like to force approve this order? This means you are approving an order which it\'s date is not today or it\'s not checked out.')
                 ->modalSubmitActionLabel('Yes, Approve it')
+                ->schema([
+                    Textarea::make('reason')->required(),
+                    TextInput::make('password')->currentPassword()->password()->required(),
+                ])
                 ->visible(function (Order $order) {
                     return $order->isForceApprovable();
                 })
-                ->action(function (Order $order) {
-                    OrderService::managerForceApprove($order);
+                ->action(function (Order $order, array $data) {
+                    OrderService::managerForceApprove($order, $data);
                 }),
 
             // Assign to delivery
