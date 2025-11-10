@@ -12,12 +12,14 @@ use App\ExternalServices\FirebaseFCM;
 use App\Models\Branch;
 use App\Models\BranchProduct;
 use App\Models\CartProduct;
+use App\Models\ForceApproveOrder;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\DeliveryOrderNotification;
+use App\Notifications\ForcedApprovedOrdersCountNotification;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Response;
@@ -61,7 +63,7 @@ class OrderService
     private static function processOrderCreation(OrderProcess $service, string $process): mixed
     {
         return DB::transaction(
-            fn () => $service
+            fn() => $service
                 ->generateOrderNumber()
                 ->setOrderDate()
                 ->calculateDestination()
@@ -293,6 +295,13 @@ class OrderService
             return;
         }
 
+        $forcedApprovedOrdersCountInThisWeek = ForceApproveOrder::where('created_at', '>=', now()->startOfWeek()->inApplicationTimezone())->count();
+        if (! $forcedApprovedOrdersCountInThisWeek > BranchSettingsService::getForceApproveOrdersLimit($order->branch_id)) {
+            User::where('role_id', '=', Role::where('code', '=', Role::ROLE_SUPER_ADMIN_CODE)->first()->id)
+                ->first()
+                ->notify(new ForcedApprovedOrdersCountNotification($forcedApprovedOrdersCountInThisWeek));
+        }
+
         $types = [];
         if (! $order->isPayOnDelivery() && $order->payment_status === PaymentStatus::UNPAID) {
             $types[] = ForceApproveOrderType::PASSING_CHECKOUT->value;
@@ -387,10 +396,12 @@ class OrderService
             ]);
             foreach ($order->carts->first()->cartProducts as $cartProduct) {
                 $branchId = $order->branch_id;
-                $productId = $cartProduct->product_id; // TODO: handle deleted products
-                BranchProduct::where('branch_id', $branchId)
-                    ->where('product_id', $productId)
-                    ->decrement('quantity', $cartProduct->quantity);
+                $productId = $cartProduct->product_id;
+                if ($productId) {
+                    BranchProduct::where('branch_id', $branchId)
+                        ->where('product_id', $productId)
+                        ->decrement('quantity', $cartProduct->quantity);
+                }
             }
             $order->save();
             if ((float) $order->discount_price == 0.0) {
@@ -446,7 +457,7 @@ class OrderService
             ->unblock()
             ->where('city_id', '=', $cityId)
             ->where('role_id', '=', Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->first()->id)
-            ->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($search).'%'])
+            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
             ->limit(50)
             ->pluck('name', 'id')
             ->all();
@@ -454,7 +465,7 @@ class OrderService
 
     public static function recalculateOrderTotals(Order $order): void
     {
-        $subtotal = $order->cartProducts->sum(fn ($item) => $item->price * $item->quantity);
+        $subtotal = $order->cartProducts->sum(fn($item) => $item->price * $item->quantity);
         $taxRate = BranchSettingsService::getTaxRate($order->branch_id);
 
         $taxAmount = PriceService::calculateTaxAmount(

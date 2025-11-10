@@ -113,6 +113,13 @@ class SettingsData
                 'group' => 'order',
                 'is_locked' => false,
             ],
+            [
+                'key' => 'force_approve_orders_limit',
+                'value' => '3',
+                'type' => SettingType::INT,
+                'group' => 'order',
+                'is_locked' => false,
+            ],
 
             // Legal
             [
