@@ -54,7 +54,7 @@ class CartProductsRelationManager extends RelationManager
                     TextColumn::make('title')->searchable()->prefix('Title: '),
                     TextColumn::make('quantity')->searchable()->prefix('Quantity: '),
                     TextColumn::make('price')->searchable()->prefix('Price: '),
-                    TextColumn::make('Total')->searchable()->state(fn ($record) => $record->price * $record->quantity)->prefix('Total: '),
+                    TextColumn::make('Total')->state(fn ($record) => $record->price * $record->quantity)->prefix('Total: '),
                 ]),
             ])
             ->filters([
