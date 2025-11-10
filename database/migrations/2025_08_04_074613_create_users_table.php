@@ -71,6 +71,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('password_reset_requests');
         Schema::dropIfExists('phone_verification_requests');
+        Schema::dropIfExists('delete_account_requests');
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('users');
     }
