@@ -24,6 +24,9 @@ class EditCity extends EditRecord
                 ->label('Force Save')
                 ->color('warning')
                 ->requiresConfirmation()
+                ->modalHeading('Force save city')
+                ->modalDescription('Are you sure you\'d like to force save the city? All user\'s addresses which are outside the new boundary will be rejected if you update the boundary.')
+                ->modalSubmitActionLabel('Yes, Save it')
                 ->action(function () {
                     $city = $this->getRecord();
                     $data = $this->form->getState();
