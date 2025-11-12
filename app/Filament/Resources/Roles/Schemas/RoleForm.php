@@ -37,7 +37,7 @@ class RoleForm
                             ->relationship(
                                 'permissions',
                                 'title',
-                                fn ($query) => PermissionPolicy::filterPermissions($query)
+                                fn ($query) => PermissionPolicy::filterPermissions($query)->orderBy('code')
                             )
                             ->required(),
                     ]),
