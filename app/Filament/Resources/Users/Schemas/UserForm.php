@@ -33,7 +33,7 @@ class UserForm
                             ->relationship(
                                 'role',
                                 'title',
-                                fn ($query) => RolePolicy::filterOwnerAndDeveloper($query)
+                                fn ($query) => RolePolicy::filterOwnerAndDeveloperAndCustomer($query)
                             ),
                     ]),
             ]);

@@ -53,10 +53,10 @@ class RolePolicy
         );
     }
 
-    public static function filterOwnerAndDeveloper(Builder $query): Builder
+    public static function filterOwnerAndDeveloperAndCustomer(Builder $query): Builder
     {
-        return $query->where('code', '!=', Role::ROLE_DEVELOPER_CODE)
-            ->where('code', '!=', Role::ROLE_SUPER_ADMIN_CODE)
+        return $query->where('code', '!=', Role::ROLE_SUPER_ADMIN_CODE)
+            ->where('code', '!=', Role::ROLE_DEVELOPER_CODE)
             ->where('code', '!=', Role::ROLE_CUSTOMER_CODE);
     }
 }
