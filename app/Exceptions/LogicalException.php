@@ -48,11 +48,9 @@ class LogicalException extends Exception
 
     public function report(): void
     {
-        if (App::environment('production')) {
-            Log::channel('debug')->warning("{$this->errorMessage}. {$this->details}.", [
-                'status' => $this->statusCode,
-                'location' => $this->context,
-            ]);
-        }
+        Log::channel('warning')->warning("{$this->errorMessage}. {$this->details}.", [
+            'status' => $this->statusCode,
+            'location' => $this->context,
+        ]);
     }
 }

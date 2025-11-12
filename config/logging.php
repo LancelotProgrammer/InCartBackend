@@ -73,6 +73,8 @@ return [
             'replace_placeholders' => true,
         ],
 
+
+
         'debug' => [
             'driver' => 'daily',
             'path' => storage_path('logs/debug.log'),
@@ -88,6 +90,24 @@ return [
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
         ],
+
+        'warning' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/warning.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'emergency' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/emergency.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+
 
         'slack' => [
             'driver' => 'slack',
@@ -105,7 +125,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
@@ -120,6 +140,8 @@ return [
             'formatter' => env('LOG_STDERR_FORMATTER'),
             'processors' => [PsrLogMessageProcessor::class],
         ],
+
+
 
         'syslog' => [
             'driver' => 'syslog',
@@ -137,10 +159,6 @@ return [
         'null' => [
             'driver' => 'monolog',
             'handler' => NullHandler::class,
-        ],
-
-        'emergency' => [
-            'path' => storage_path('logs/laravel.log'),
         ],
 
     ],

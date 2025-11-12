@@ -61,11 +61,9 @@ class SetupException extends Exception
 
     public function report(): void
     {
-        if (App::environment('production')) {
-            Log::channel('debug')->warning("{$this->errorMessage}. {$this->details}.", [
-                'status' => $this->statusCode,
-                'location' => $this->context,
-            ]);
-        }
+        Log::channel('emergency')->emergency("{$this->errorMessage}. {$this->details}.", [
+            'status' => $this->statusCode,
+            'location' => $this->context,
+        ]);
     }
 }

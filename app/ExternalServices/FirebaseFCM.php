@@ -27,7 +27,7 @@ class FirebaseFCM
             return;
         }
 
-        [$title, $body] = Order::getOrderNotificationMessage($order);
+        [$title, $body] = Order::getUserOrderNotificationMessage($order);
 
         foreach ($tokens as $token) {
             self::sendNotificationToToken(
@@ -192,7 +192,7 @@ class FirebaseFCM
                 'response' => $response,
             ]);
         } catch (Throwable $e) {
-            Log::channel(channel: 'error')->debug('FCM bulk message failed', [
+            Log::channel('error')->debug('FCM bulk message failed', [
                 'data' => [$topic, $title, $body, $imageUrl, $deepLink],
                 'error' => $e->getMessage(),
             ]);

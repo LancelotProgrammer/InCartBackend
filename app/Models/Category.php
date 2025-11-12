@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Enums\CategoryType;
+use App\Exceptions\LogicalException;
 use App\Traits\HasPublishAttribute;
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -68,7 +68,7 @@ class Category extends Model
             if ($category->parent_id) {
                 $parent = Category::find($category->parent_id);
                 if (! $parent) {
-                    throw new Exception('Parent category does not exist.');
+                    throw new LogicalException('Parent category does not exist.');
                 }
                 $depth = 1;
                 $currentParent = $parent;
@@ -76,7 +76,7 @@ class Category extends Model
                     $depth++;
                     if ($depth > self::$maxDepth) {
                         $depthCountMessage = self::$maxDepth;
-                        throw new Exception("Category hierarchy depth cannot exceed $depthCountMessage levels.");
+                        throw new LogicalException("Category hierarchy depth cannot exceed $depthCountMessage levels.");
                     }
                     $currentParent = $currentParent->parent;
                 }

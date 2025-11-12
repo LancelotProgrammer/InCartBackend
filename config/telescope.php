@@ -108,9 +108,7 @@ return [
     |
     */
 
-    'only_paths' => [
-        'api/*',
-    ],
+    'only_paths' => [],
 
     'ignore_paths' => [
         'livewire*',

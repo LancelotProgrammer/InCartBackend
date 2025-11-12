@@ -246,7 +246,7 @@ class Order extends Model implements AuditableContract
         ]);
     }
 
-    public static function getOrderNotificationMessage(Order $order): array
+    public static function getUserOrderNotificationMessage(Order $order): array
     {
         return match ($order->order_status->value) {
             OrderStatus::PROCESSING->value => ['Order Processing', 'Your order is being processed.'],

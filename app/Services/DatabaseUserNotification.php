@@ -12,7 +12,7 @@ class DatabaseUserNotification
 {
     public static function sendOrderStatusNotification(Order $order): void
     {
-        [$title, $body] = Order::getOrderNotificationMessage($order);
+        [$title, $body] = Order::getUserOrderNotificationMessage($order);
 
         UserNotification::create([
             'user_id' => $order->customer->id,
