@@ -7,6 +7,7 @@ use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Filament\Actions\OrderActions;
+use App\Filament\Filters\BranchSelectFilter;
 use App\Models\Order;
 use App\Models\Role;
 use Filament\Actions\Action;
@@ -101,6 +102,7 @@ class OrdersTable
                         'name',
                         fn ($query) => $query->whereHas('role', fn ($q) => $q->where('code', '=', Role::ROLE_DELIVERY_CODE))
                     ),
+                BranchSelectFilter::configure(),
             ], FiltersLayout::Modal)
             ->filtersFormColumns(3)
             ->filtersFormSchema(function (array $filters) {
@@ -122,11 +124,12 @@ class OrdersTable
                         ]),
                     Section::make('User')
                         ->columnSpanFull()
-                        ->columns(3)
+                        ->columns(4)
                         ->schema([
                             $filters['customer'],
                             $filters['delivery'],
                             $filters['manager'],
+                            $filters['branch'],
                         ]),
                 ];
             })
