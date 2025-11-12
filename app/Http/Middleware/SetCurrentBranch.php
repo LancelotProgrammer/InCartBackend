@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Exceptions\SetupException;
 use App\Models\Branch;
-use App\Models\City;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -30,52 +29,40 @@ class SetCurrentBranch
 
     protected function determineBranchId(?User $user, Request $request): int
     {
-        // 1- Priority: from header
+        // 1. Header
         if ($branchId = $request->header('X-BRANCH-ID')) {
             return $this->validateBranch((int) $branchId, 'The provided X-BRANCH-ID is not attached to any branch');
         }
 
-        // 2- Authenticated user -> use default branch in user's city
-        if ($user) {
-            return $this->getDefaultBranchForCity($user->city_id, 'The default branch for your city is not found');
-        }
-        if (auth('sanctum')->user()?->city_id !== null) {
-            return $this->getDefaultBranchForCity(auth('sanctum')->user()->city_id, 'The default branch for your city is not found');
+        // 2. Authenticated user
+        if ($user && $user->city_id) {
+            return $this->getDefaultBranchForCity($user->city_id, "Default branch for city ID {$user->city_id} not found");
         }
 
-        // future: uncomment this if you want to get the branch from ip location service
-        // // 3- No auth -> try location service
-        // if ($position = Location::get()) {
-        //     $cityId = City::where('name', $position->cityName)->value('id');
-        //     if (!$cityId) {
-        //         throw new InvalidArgumentException('The provided cityName from IP location service is not attached to any city');
-        //     }
-        //     return $this->getDefaultBranchForCity($cityId, 'The provided city_id is not attached to any branch');
-        // }
+        // 3. future: (Optional) IP-based location — disabled for now
+        // if ($position = Location::get()) { ... }
 
-        // 4-Absolute fallback -> use the global default branch
+        // 4. Fallback
         return $this->getFallbackBranch();
     }
 
     protected function validateBranch(int $branchId, string $errorMessage): int
     {
-        $exists = Branch::where('id', $branchId)->published()->first();
-        if (! $exists) {
+        if (! Branch::published()->where('id', $branchId)->exists()) {
             throw new InvalidArgumentException($errorMessage);
         }
-
         return $branchId;
     }
 
     protected function getDefaultBranchForCity(?int $cityId, string $errorMessage): int
     {
-        $query = Branch::query()->published()->where('is_default', true);
-        if ($cityId) {
-            $query->where('city_id', $cityId);
-        }
-        $branchId = $query->value('id');
+        $branchId = Branch::published()
+            ->where('is_default', true)
+            ->when($cityId, fn($query) => $query->where('city_id', $cityId))
+            ->value('id');
+
         if (! $branchId) {
-            throw new InvalidArgumentException($errorMessage);
+            throw new SetupException('Something went wrong', $errorMessage);
         }
 
         return $branchId;
@@ -83,9 +70,16 @@ class SetCurrentBranch
 
     protected function getFallbackBranch(): int
     {
-        $branchId = Branch::query()->published()->where('is_default', true)->value('id');
+        $branchId = Branch::published()
+            ->where('is_default', true)
+            ->orderByDesc('id')
+            ->value('id');
+
         if (! $branchId) {
-            throw new SetupException('Something went wrong', 'System setup error. Please setup a branch from the dashboard as default and publish it');
+            throw new SetupException(
+                'Something went wrong',
+                'System setup error: Please set one default published branch at least in the dashboard.'
+            );
         }
 
         return $branchId;

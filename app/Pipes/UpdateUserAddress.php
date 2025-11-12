@@ -27,7 +27,7 @@ class UpdateUserAddress
             'longitude' => 'required|numeric',
         ]);
 
-        $city = City::where('id', '=', $request->user()->city_id)->first();
+        $city = City::published()->where('id', '=', $request->user()->city_id)->first();
 
         $isPointInsideRectangle = DistanceService::isPointInsideRectangle(
             [

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Branch;
+use App\Models\City;
 use App\Models\PaymentMethod;
 
 class PublishService
@@ -11,6 +12,7 @@ class PublishService
     {
         return match ($model) {
             Branch::class => PublishService::validatePublishBranch($record),
+            City::class => PublishService::validatePublishCity($record),
             default => [true, ''],
         };
     }
@@ -57,6 +59,17 @@ class PublishService
 
         return [
             $condition1 && $condition2 && $condition3,
+            $reason,
+        ];
+    }
+
+    private static function validatePublishCity(City $record): array
+    {
+        $condition = $record->branches()->published()->exists();
+        $reason = 'This city cannot be published because it has no published branches.';
+
+        return [
+            $condition,
             $reason,
         ];
     }

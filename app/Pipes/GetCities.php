@@ -11,7 +11,7 @@ class GetCities
 {
     public function __invoke(Request $request, Closure $next): Collection
     {
-        return $next(City::all()->map(function (City $city) {
+        return $next(City::published()->get()->map(function (City $city) {
             return [
                 'id' => $city->id,
                 'name' => $city->name,

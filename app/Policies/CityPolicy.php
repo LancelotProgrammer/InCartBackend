@@ -31,4 +31,14 @@ class CityPolicy
     {
         return $user->hasPermission('delete-city');
     }
+
+    public function publish(User $user, City $city): bool
+    {
+        return $user->hasPermission('publish-city');
+    }
+
+    public function unpublish(User $user, City $city): bool
+    {
+        return $user->hasPermission('unpublish-city');
+    }
 }

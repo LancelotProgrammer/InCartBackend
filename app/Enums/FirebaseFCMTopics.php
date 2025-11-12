@@ -24,7 +24,7 @@ enum FirebaseFCMTopics: string implements HasLabel
             self::ALL_USERS->value => 'All Users',
         ];
 
-        foreach (City::all() as $city) {
+        foreach (City::published()->get() as $city) {
             $topics[self::CITY->value.'-'.$city->id] = 'All Users in '.$city->name;
         }
 
