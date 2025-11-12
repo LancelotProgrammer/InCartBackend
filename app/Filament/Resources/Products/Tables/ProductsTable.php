@@ -14,6 +14,7 @@ class ProductsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->defaultPaginationPageOption(25)
             ->contentGrid([
                 'sm' => 1,
