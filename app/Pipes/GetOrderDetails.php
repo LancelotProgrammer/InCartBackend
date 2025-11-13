@@ -4,7 +4,7 @@ namespace App\Pipes;
 
 use App\Exceptions\LogicalException;
 use App\Models\Order;
-use App\Models\Product;
+use App\Models\Scopes\BranchScope;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -14,7 +14,7 @@ class GetOrderDetails
     {
         $orderId = $request->route('id');
 
-        $order = Order::with([
+        $order = Order::withoutGlobalScope(BranchScope::class)->with([
             'userAddress',
             'paymentMethod',
             'carts.cartProducts.product.files',
@@ -50,19 +50,19 @@ class GetOrderDetails
                 $branchProduct = $product->branchProducts->first();
                 $image = $product->files->first()->url;
 
-                $products->filter(function (Product $product) {
-                    return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
-                })->values()->push([
-                    'id' => $product->id,
-                    'title' => $product->title,
-                    'image' => $image,
-                    'max_limit' => $branchProduct->maximum_order_quantity,
-                    'min_limit' => $branchProduct->minimum_order_quantity,
-                    'price' => $branchProduct->price,
-                    'discount' => $branchProduct->discount,
-                    'discount_price' => $branchProduct->discount_price,
-                    'expired_at' => $branchProduct->expires_at,
-                ]);
+                if ($product->branchProducts->whereNotNull('published_at')->isNotEmpty()) {
+                    $products->push([
+                        'id' => $product->id,
+                        'title' => $product->title,
+                        'image' => $image,
+                        'max_limit' => $branchProduct->maximum_order_quantity,
+                        'min_limit' => $branchProduct->minimum_order_quantity,
+                        'price' => $branchProduct->price,
+                        'discount' => $branchProduct->discount,
+                        'discount_price' => $branchProduct->discount_price,
+                        'expired_at' => $branchProduct->expires_at,
+                    ]);
+                }
             }
         }
 

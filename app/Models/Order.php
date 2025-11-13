@@ -7,7 +7,9 @@ use App\Enums\DeliveryStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Events\OrderDeleting;
+use App\Models\Scopes\BranchScope;
 use App\Services\SettingsService;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,6 +22,7 @@ use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Models\Audit;
 
+#[ScopedBy([BranchScope::class])]
 class Order extends Model implements AuditableContract
 {
     use Auditable, HasFactory;

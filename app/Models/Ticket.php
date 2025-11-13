@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\BranchScope;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Model;
 
+#[ScopedBy([BranchScope::class])]
 class Ticket extends Model
 {
     protected $fillable = ['user_id', 'question', 'reply', 'is_important', 'processed_at', 'processed_by', 'branch_id'];
