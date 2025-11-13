@@ -173,6 +173,13 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
             return false;
         }
 
+        if (!in_array(
+            $this->role->code,
+            [Role::ROLE_SUPER_ADMIN_CODE, Role::ROLE_DEVELOPER_CODE]
+        )) {
+            return $this->branches()->exists();
+        }
+
         return true;
     }
 
@@ -260,5 +267,18 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
     public function auditsLogs(): MorphMany
     {
         return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function canImpersonate()
+    {
+        return $this->hasPermission('impersonate-user');
+    }
+
+    public function canBeImpersonated()
+    {
+        return !in_array(
+            $this->role->code,
+            [Role::ROLE_SUPER_ADMIN_CODE, Role::ROLE_DEVELOPER_CODE, Role::ROLE_CUSTOMER_CODE]
+        );
     }
 }

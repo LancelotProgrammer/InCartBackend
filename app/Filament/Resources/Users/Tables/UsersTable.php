@@ -17,6 +17,7 @@ use Filament\Tables\Enums\PaginationMode;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use STS\FilamentImpersonate\Actions\Impersonate;
 
 class UsersTable
 {
@@ -75,6 +76,7 @@ class UsersTable
                     ->nullable(),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
+                Impersonate::make(),
                 EditAction::make(),
                 ViewAction::make(),
                 Action::make('Block')
