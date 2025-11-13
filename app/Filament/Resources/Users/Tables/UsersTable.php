@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Pages\Welcome;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -76,7 +77,7 @@ class UsersTable
                     ->nullable(),
             ], layout: FiltersLayout::Modal)
             ->recordActions([
-                Impersonate::make(),
+                Impersonate::make()->redirectTo(Welcome::getUrl()),
                 EditAction::make(),
                 ViewAction::make(),
                 Action::make('Block')
