@@ -35,9 +35,11 @@ class SetCurrentBranch
         }
 
         // 2. Authenticated user
+        // 2.a get user from auth method
         if ($user) {
             return $this->getDefaultBranchForCity($user->city_id, 'The default branch for your city is not found');
         }
+        // 2.b get user from optional auth method
         if (auth('sanctum')->user()?->city_id !== null) {
             return $this->getDefaultBranchForCity(auth('sanctum')->user()->city_id, 'The default branch for your city is not found');
         }
