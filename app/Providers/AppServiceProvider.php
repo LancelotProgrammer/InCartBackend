@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
@@ -91,14 +92,14 @@ class AppServiceProvider extends ServiceProvider
 
     private function configureDB(): void
     {
-        if ($this->app->isProduction()) {
+        if (App::environment(['production', 'staging'])) {
             DB::prohibitDestructiveCommands();
         }
     }
 
     private function configureURL(): void
     {
-        if ($this->app->isProduction()) {
+        if (App::environment(['production', 'staging'])) {
             URL::forceScheme('https');
         }
     }
