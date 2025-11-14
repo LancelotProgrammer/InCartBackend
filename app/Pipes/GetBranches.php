@@ -12,7 +12,7 @@ class GetBranches
     public function __invoke(Request $request, Closure $next): Collection
     {
         $request->validate([
-            'city_id' => 'required|int|exists:cities,id',
+            'city_id' => 'required|integer|exists:cities,id',
         ]);
 
         $cityId = $request->input('city_id');

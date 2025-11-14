@@ -56,7 +56,7 @@ class AuthenticationController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
-            'city_id' => 'required|int|exists:cities,id',
+            'city_id' => 'required|integer|exists:cities,id',
         ]);
 
         $roleId = Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->value('id');
@@ -138,7 +138,7 @@ class AuthenticationController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|phone:SA|unique:users,phone',
             'otp' => 'required|integer',
-            'city_id' => 'required|int|exists:cities,id',
+            'city_id' => 'required|integer|exists:cities,id',
         ]);
 
         $this->verifyOtp($request->input('phone'), $request->input('otp'), OtpType::REGISTER->value);
@@ -676,7 +676,7 @@ class AuthenticationController extends Controller
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
-            'code' => 'required|int',
+            'code' => 'required|integer',
         ]);
 
         $email = $request->input('email');
