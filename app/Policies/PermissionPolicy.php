@@ -39,8 +39,7 @@ class PermissionPolicy
             'code',
             [
                 'manage-developer-settings',
-
-                'can-view-audit',
+                'impersonate-user',
 
                 'view-any-branch',
                 'view-branch',
@@ -72,6 +71,8 @@ class PermissionPolicy
                 'create-payment-method',
                 'update-payment-method',
                 'delete-payment-method',
+                'publish-payment-method',
+                'unpublish-payment-method',
             ]
         );
     }

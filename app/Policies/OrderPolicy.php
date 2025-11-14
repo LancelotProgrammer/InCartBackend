@@ -64,7 +64,7 @@ class OrderPolicy
 
     public function finish(User $user, Order $order): bool
     {
-        return $user->hasPermission('finish-order') && $user->id === $order->manager_id || $user->id === $order->delivery_id && $user->belongsToUserBranch($order);
+        return $user->hasPermission('finish-order') && ($user->id === $order->manager_id || $user->id === $order->delivery_id) && $user->belongsToUserBranch($order);
     }
 
     public function close(User $user, Order $order): bool

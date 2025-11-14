@@ -33,6 +33,7 @@ class RoleForm
                             ])),
                         TextInput::make('code')->disabled()->dehydrated()->required(),
                         CheckboxList::make('permissions')
+                            ->searchable()
                             ->columns(6)
                             ->relationship(
                                 'permissions',

@@ -24,10 +24,6 @@ class PermissionsData
                 'code' => 'create-advertisement',
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Update Advertisement', 'تحديث الإعلان']), JSON_UNESCAPED_UNICODE),
-                'code' => 'update-advertisement',
-            ],
-            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Delete Advertisement', 'حذف الإعلان']), JSON_UNESCAPED_UNICODE),
                 'code' => 'delete-advertisement',
             ],
@@ -104,10 +100,6 @@ class PermissionsData
                 'code' => 'create-gift',
             ],
             [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Update Gift', 'تحديث الهديه']), JSON_UNESCAPED_UNICODE),
-                'code' => 'update-gift',
-            ],
-            [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Delete Gift', 'حذف الهديه']), JSON_UNESCAPED_UNICODE),
                 'code' => 'delete-gift',
             ],
@@ -122,10 +114,6 @@ class PermissionsData
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Create Coupon', 'إنشاء كوبون']), JSON_UNESCAPED_UNICODE),
                 'code' => 'create-coupon',
-            ],
-            [
-                'title' => json_encode(Factory::translations(['en', 'ar'], ['Update Coupon', 'تحديث الكوبون']), JSON_UNESCAPED_UNICODE),
-                'code' => 'update-coupon',
             ],
             [
                 'title' => json_encode(Factory::translations(['en', 'ar'], ['Delete Coupon', 'حذف الكوبون']), JSON_UNESCAPED_UNICODE),
