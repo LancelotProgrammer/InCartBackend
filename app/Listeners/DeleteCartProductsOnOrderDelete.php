@@ -23,5 +23,6 @@ class DeleteCartProductsOnOrderDelete
         foreach ($order->carts as $cart) {
             $cart->cartProducts->each->delete();
         }
+        $order->forceApproveOrder()->delete();
     }
 }
