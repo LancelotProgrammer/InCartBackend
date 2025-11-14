@@ -24,7 +24,7 @@ class GiftPolicy
 
     public function update(User $user, Gift $gift): bool
     {
-        return $user->hasPermission('update-gift') && $user->canManageDeveloperSettings();
+        return false;
     }
 
     public function delete(User $user, Gift $gift): bool

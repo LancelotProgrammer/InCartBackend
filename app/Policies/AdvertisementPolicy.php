@@ -24,7 +24,7 @@ class AdvertisementPolicy
 
     public function update(User $user, Advertisement $advertisement): bool
     {
-        return $user->hasPermission('update-advertisement') && $user->belongsToUserBranch($advertisement);
+        return false;
     }
 
     public function delete(User $user, Advertisement $advertisement): bool

@@ -24,7 +24,7 @@ class CouponPolicy
 
     public function update(User $user, Coupon $coupon): bool
     {
-        return $user->hasPermission('update-coupon') && $user->belongsToUserBranch($coupon);
+        return false;
     }
 
     public function delete(User $user, Coupon $coupon): bool
