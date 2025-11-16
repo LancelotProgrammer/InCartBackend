@@ -20,9 +20,9 @@ class BranchForm
                     ->schema([
                         TranslationComponent::configure('title'),
                         TranslationComponent::configure('description', false),
-                        Select::make('city_id')->relationship('city', 'name')->columnSpanFull(),
-                        TextInput::make('latitude')->numeric(),
-                        TextInput::make('longitude')->numeric(),
+                        Select::make('city_id')->relationship('city', 'name')->required()->columnSpanFull(),
+                        TextInput::make('latitude')->numeric()->required(),
+                        TextInput::make('longitude')->numeric()->required(),
                     ]),
             ]);
     }

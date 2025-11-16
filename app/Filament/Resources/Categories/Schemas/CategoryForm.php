@@ -22,7 +22,7 @@ class CategoryForm
                     ->columns(2)
                     ->schema([
                         TranslationComponent::configure('title'),
-                        TranslationComponent::configure('description'),
+                        TranslationComponent::configure('description', false),
                         Select::make('type')
                             ->required()
                             ->disabled(function ($operation) {

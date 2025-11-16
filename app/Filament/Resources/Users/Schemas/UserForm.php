@@ -19,14 +19,13 @@ class UserForm
                 Section::make('Information')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('name')->required(),
+                        TextInput::make('name')->required()->columnSpanFull(),
                         TextInput::make('email')->email()->unique(ignoreRecord: true),
                         TextInput::make('password')
                             ->password()
                             ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                             ->dehydrated(fn (?string $state): bool => filled($state))
                             ->required(fn (string $operation): bool => $operation === 'create'),
-                        TextInput::make('phone')->tel()->unique(ignoreRecord: true),
                         Select::make('city_id')
                             ->relationship('city', 'name'),
                         Select::make('role_id')
