@@ -119,7 +119,7 @@
                         ر.س / SAR </td>
                 </tr>
                 <tr>
-                    <td class="label"><strong>الإجمالي / Total (يشمل شريبة القيمة المضافة / Vat included)</strong></td>
+                    <td class="label"><strong>الإجمالي / Total (يشمل ضريبة القيمة المضافة / Vat included)</strong></td>
                     <td><strong>{{ number_format($order['total'], 2) }} ر.س / SAR </strong></td>
                 </tr>
             </tbody>
