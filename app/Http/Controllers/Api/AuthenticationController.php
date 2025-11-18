@@ -448,7 +448,7 @@ class AuthenticationController extends Controller
             $verifyCode = PhoneVerificationRequest::where('phone', '=', $phone)->latest()->first()->code;
             Otp::send($phone, $verifyCode);
         } catch (Exception $e) {
-            Log::channel('error')->error('OTP Error: '.$e->getMessage());
+            Log::error('OTP Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'OTP verification request failed. Check error logs for details.'
@@ -546,7 +546,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new VerifyEmail($link, $user->name));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error: '.$e->getMessage());
+            Log::error('Email Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'
@@ -659,7 +659,7 @@ class AuthenticationController extends Controller
         try {
             Mail::to($email)->send(new ForgotPassword($userName, $code));
         } catch (Exception $e) {
-            Log::channel('error')->error('Email Error: '.$e->getMessage());
+            Log::error('Email Error: '.$e->getMessage());
             throw new AuthenticationException(
                 trans('auth.something_went_wrong'),
                 'Email verification request failed. look for Email Error in error logs for more details'

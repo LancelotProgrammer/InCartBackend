@@ -83,44 +83,44 @@ class FirebaseFCM
 
         try {
             $response = $messaging->send($message);
-            Log::channel('debug')->info('FCM message sent successfully', [
+            Log::info('FCM message sent successfully', [
                 'token' => $token,
                 'title' => $title,
                 'body' => $body,
                 'response' => $response,
             ]);
         } catch (NotFound $e) {
-            Log::channel('error')->warning('FCM token not found, removing.', [
+            Log::warning('FCM token not found, removing.', [
                 'token' => $token,
                 'errors' => $e->errors(),
                 'firebase_token' => $e->token(),
             ]);
             UserFirebaseToken::where('firebase_token', $token)->delete();
         } catch (InvalidMessage $e) {
-            Log::channel('error')->error('Invalid FCM message.', [
+            Log::error('Invalid FCM message.', [
                 'token' => $token,
                 'errors' => $e->errors(),
             ]);
         } catch (ServerUnavailable $e) {
             $retryAfter = $e->retryAfter();
-            Log::channel('error')->error('FCM server unavailable.', [
+            Log::error('FCM server unavailable.', [
                 'token' => $token,
                 'retry_after' => $retryAfter?->format(\DATE_ATOM),
                 'errors' => $e->errors(),
             ]);
         } catch (ServerError $e) {
-            Log::channel('error')->error('FCM server error.', [
+            Log::error('FCM server error.', [
                 'token' => $token,
                 'errors' => $e->errors(),
             ]);
         } catch (MessagingException $e) {
-            Log::channel('error')->error('Generic FCM messaging exception.', [
+            Log::error('Generic FCM messaging exception.', [
                 'token' => $token,
                 'message' => $e->getMessage(),
                 'errors' => $e->errors(),
             ]);
         } catch (Throwable $e) {
-            Log::channel('error')->error('Unexpected FCM failure.', [
+            Log::error('Unexpected FCM failure.', [
                 'token' => $token,
                 'error' => $e->getMessage(),
             ]);
@@ -132,12 +132,12 @@ class FirebaseFCM
         try {
             $messaging = Firebase::messaging();
             $response = $messaging->subscribeToTopics($topics, $token);
-            Log::channel('debug')->info('FCM token added to topic successfully', [
+            Log::info('FCM token added to topic successfully', [
                 'data' => [$token, $topics],
                 'response' => $response,
             ]);
         } catch (Throwable $e) {
-            Log::channel('error')->debug('Failed to add token to topic', [
+            Log::error('Failed to add token to topic', [
                 'data' => [$token, $topics],
                 'error' => $e->getMessage(),
             ]);
@@ -150,12 +150,12 @@ class FirebaseFCM
         try {
             $messaging = Firebase::messaging();
             $response = $messaging->unsubscribeFromTopics($topics, $token);
-            Log::channel('debug')->info('FCM token removed from topic successfully', [
+            Log::info('FCM token removed from topic successfully', [
                 'data' => [$token, $topics],
                 'response' => $response,
             ]);
         } catch (Throwable $e) {
-            Log::channel('error')->debug('Failed to remove token from topic', [
+            Log::error('Failed to remove token from topic', [
                 'data' => [$token, $topics],
                 'error' => $e->getMessage(),
             ]);
@@ -187,12 +187,12 @@ class FirebaseFCM
 
         try {
             $response = $messaging->send($message);
-            Log::channel('debug')->info('FCM bulk message sent successfully', [
+            Log::info('FCM bulk message sent successfully', [
                 'data' => [$topic, $title, $body, $imageUrl, $deepLink],
                 'response' => $response,
             ]);
         } catch (Throwable $e) {
-            Log::channel('error')->debug('FCM bulk message failed', [
+            Log::error('FCM bulk message failed', [
                 'data' => [$topic, $title, $body, $imageUrl, $deepLink],
                 'error' => $e->getMessage(),
             ]);
