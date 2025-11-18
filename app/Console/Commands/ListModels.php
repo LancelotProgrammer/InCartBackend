@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 
 class ListModels extends Command
@@ -27,8 +28,10 @@ class ListModels extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
+        Log::debug('Commands: Listing models.');
+
         $path = app_path('Models');
         $files = File::allFiles($path);
 
@@ -38,6 +41,9 @@ class ListModels extends Command
             $class = 'App\\Models\\'.$file->getFilenameWithoutExtension();
 
             if (! class_exists($class)) {
+                Log::debug('Commands: Class does not exist.', [
+                    'class' => $class,
+                ]);
                 continue;
             }
 
@@ -53,9 +59,13 @@ class ListModels extends Command
         }
 
         if (empty($models)) {
-            $this->warn('No models found.');
+            Log::debug('Commands: No models found.', [
+                'models' => $models,
+            ]);
+            
+            $this->error('No models found.');
 
-            return 0;
+            return;
         }
 
         $this->info('Models found:');
@@ -63,6 +73,8 @@ class ListModels extends Command
             $this->line($model);
         }
 
-        return 0;
+        Log::debug('Commands: Models listed.');
+
+        return;
     }
 }

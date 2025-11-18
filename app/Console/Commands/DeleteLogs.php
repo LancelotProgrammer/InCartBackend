@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class DeleteLogs extends Command
 {
@@ -26,13 +27,19 @@ class DeleteLogs extends Command
      */
     public function handle(): void
     {
-        if (App::environment('production')) {
+        if (App::environment(['production', 'staging'])) {
             return;
         }
+
+        $this->info('Deleting all logs...');
+
+        Log::debug('Commands: Deleting all logs.');
 
         $logPath = storage_path('logs');
 
         if (! is_dir($logPath)) {
+            Log::debug('Commands: Logs directory does not exist.');
+            
             $this->error('Logs directory does not exist.');
 
             return;
@@ -41,7 +48,9 @@ class DeleteLogs extends Command
         $files = glob($logPath.'/*.log');
 
         if (empty($files)) {
-            $this->info('No log files found.');
+            Log::debug('Commands: No log files found.');
+            
+            $this->error('No log files found.');
 
             return;
         }
@@ -53,5 +62,9 @@ class DeleteLogs extends Command
         }
 
         $this->info('All log files have been deleted.');
+        
+        Log::debug('Commands: All log files have been deleted.');
+
+        return;
     }
 }

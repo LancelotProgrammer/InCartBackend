@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Kreait\Laravel\Firebase\Facades\Firebase;
@@ -29,8 +31,12 @@ class SendFirebaseNotification extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(): void
     {
+        if (App::environment(['production', 'staging'])) {
+            return;
+        }
+
         $token = $this->argument('token');
         $topic = $this->option('topic');
 
@@ -40,8 +46,13 @@ class SendFirebaseNotification extends Command
             $this->line('  php artisan firebase:send-token <token>');
             $this->line('  php artisan firebase:send-token --topic=all-users');
 
-            return self::FAILURE;
+            return;
         }
+
+        Log::debug('Commands: Sending Firebase notification.', [
+            'token' => $token,
+            'topic' => $topic,
+        ]);
 
         $messaging = Firebase::messaging();
 
@@ -69,11 +80,19 @@ class SendFirebaseNotification extends Command
             $response = $messaging->send($message);
 
             $this->info('✅ Notification sent successfully!');
-            $this->line('Response: '.json_encode($response));
+            $this->line('Response: ' . json_encode($response));
+            Log::debug('Commands: Notification sent successfully.', [
+                'response' => $response,
+            ]);
         } catch (Throwable $e) {
-            $this->error('❌ Failed to send notification: '.$e->getMessage());
+            $this->error('❌ Failed to send notification: ' . $e->getMessage());
+            Log::debug('Commands: Failed to send notification.', [
+                'error' => $e->getMessage(),
+            ]);
         }
 
-        return self::SUCCESS;
+        Log::debug('Commands: send firebase notification finished.');
+
+        return;
     }
 }

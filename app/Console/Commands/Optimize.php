@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class Optimize extends Command
@@ -27,9 +28,12 @@ class Optimize extends Command
      */
     public function handle(): void
     {
-        if (App::environment('production')) {
+        if (App::environment(['production', 'staging'])) {
             return;
         }
+
+        $this->info('Optimizing application...');
+        Log::debug('Commands: Optimizing application.');
 
         $this->commandFormat('scribe:generate', 'artisan');
         $this->commandFormat('app:delete:logs', 'artisan');
@@ -38,6 +42,11 @@ class Optimize extends Command
         $this->commandFormat('vendor\bin\phpstan analyse --memory-limit=2G', 'shell');
         $this->commandFormat('composer dump-autoload', 'shell');
         $this->commandFormat('optimize:clear', 'artisan');
+
+        $this->info('Application optimized successfully.');
+        Log::debug('Commands: Application optimized successfully.');
+
+        return;
     }
 
     private function commandFormat(string $command, string $type): void
