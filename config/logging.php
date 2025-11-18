@@ -73,18 +73,6 @@ return [
             'replace_placeholders' => true,
         ],
 
-
-
-        'app_log' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/app.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'days' => env('LOG_DAILY_DAYS', 14),
-            'replace_placeholders' => true,
-        ],
-
-
-
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
@@ -117,8 +105,6 @@ return [
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
-
-
         'syslog' => [
             'driver' => 'syslog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -137,6 +123,17 @@ return [
             'handler' => NullHandler::class,
         ],
 
+        'emergency' => [
+            'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'app_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/app.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
     ],
 
 ];
