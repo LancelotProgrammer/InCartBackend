@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\PaymentStatus;
 use App\ExternalServices\MoyasarPaymentGateway;
 use App\Models\Order;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
@@ -21,6 +22,7 @@ class BasePaymentGateway
     {
         $class = BasePaymentGateway::$map[$code] ?? null;
         if (! $class || ! in_array(PaymentGatewayInterface::class, class_implements($class))) {
+            Log::critical('Payment gateway not found for {code}', ['code' => $code]);
             throw new InvalidArgumentException("Payment gateway not found for {$code}");
         }
 

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Log;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Models\Audit;
@@ -39,7 +40,10 @@ class Role extends Model implements AuditableContract
 
     protected static function booted(): void
     {
-        static::deleting(fn (Role $role) => event(new RoleDeleting($role)));
+        static::deleting(function (Role $role) {
+            Log::info('Models: deleting role.', ['id' => $role->id]);
+            return event(new RoleDeleting($role));
+        });
     }
 
     public function audits(): MorphMany

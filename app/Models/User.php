@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Laravel\Sanctum\HasApiTokens;
 use OwenIt\Auditing\Auditable;
@@ -166,10 +167,18 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
     public function canAccessPanel(Panel $panel): bool
     {
         if ($this->isBlocked()) {
+            Log::warning('User ' . $this->name . ' is blocked and can\'t access panel', [
+                'user_id' => $this->id,
+                'email' => $this?->email,
+            ]);
             return false;
         }
 
         if ($this->role->code === Role::ROLE_CUSTOMER_CODE) {
+            Log::warning('User ' . $this->name . ' is customer and can\'t access panel', [
+                'user_id' => $this->id,
+                'email' => $this?->email,
+            ]);
             return false;
         }
 
@@ -177,6 +186,10 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
             $this->role->code,
             [Role::ROLE_SUPER_ADMIN_CODE, Role::ROLE_DEVELOPER_CODE]
         )) {
+            Log::warning('User ' . $this->name . ' is not a attached to branch and can\'t access panel', [
+                'user_id' => $this->id,
+                'email' => $this?->email,
+            ]);
             return $this->branches()->exists();
         }
 
@@ -186,6 +199,10 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
     protected function ensureHasBlockedAt(): void
     {
         if (! array_key_exists('blocked_at', $this->attributes)) {
+            Log::emergency(sprintf(
+                "The model %s does not have a 'blocked_at' attribute.",
+                static::class
+            ));
             throw new InvalidArgumentException(sprintf(
                 "The model %s does not have a 'blocked_at' attribute.",
                 static::class
@@ -198,9 +215,10 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
         $this->ensureHasBlockedAt();
         $this->blocked_at = now();
         $this->save();
-
         $this->tokens()->delete();
         SessionService::deleteUserSessions($this->id);
+
+        Log::info('Models: user blocked and it\'s sessions deleted.', ['id' => $this->id]);
     }
 
     public function unBlock(): void
@@ -228,6 +246,10 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
     protected function ensureHasApprovedAt(): void
     {
         if (! array_key_exists('approved_at', $this->attributes)) {
+            Log::emergency(sprintf(
+                "The model %s does not have a 'approved_at' attribute.",
+                static::class
+            ));
             throw new InvalidArgumentException(sprintf(
                 "The model %s does not have a 'approved_at' attribute.",
                 static::class

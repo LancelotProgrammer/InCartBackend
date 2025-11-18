@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Stevebauman\Location\Facades\Location;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,31 +30,54 @@ class SetCurrentBranch
 
     protected function determineBranchId(?User $user, Request $request): int
     {
+        Log::info('Middleware: determining current branch.');
+
         // 1. Header
         if ($branchId = $request->header('X-BRANCH-ID')) {
-            return $this->validateBranch((int) $branchId, 'The provided X-BRANCH-ID is not attached to any branch');
+            $xHeaderResult = $this->validateBranch((int) $branchId, 'The provided X-BRANCH-ID is not attached to any branch');
+            Log::info('Middleware: X-BRANCH-ID header found.',  [
+                'xHeaderResult' => $xHeaderResult
+            ]);
+            return $xHeaderResult;
         }
 
         // 2. Authenticated user
         // 2.a get user from auth method
         if ($user) {
-            return $this->getDefaultBranchForCity($user->city_id, 'The default branch for your city is not found');
+            $userResult = $this->getDefaultBranchForCity($user->city_id, 'The default branch for your city is not found');
+            Log::info('Middleware: Authenticated user found.', [
+                'userResult' => $userResult
+            ]);
+            return $userResult;
         }
         // 2.b get user from optional auth method
         if (auth('sanctum')->user()?->city_id !== null) {
-            return $this->getDefaultBranchForCity(auth('sanctum')->user()->city_id, 'The default branch for your city is not found');
+            $userSanctumResult = $this->getDefaultBranchForCity(auth('sanctum')->user()->city_id, 'The default branch for your city is not found');
+            Log::info('Middleware: Authenticated sanctum user found.', [
+                'userSanctumResult' => $userSanctumResult
+            ]);
+            return $userSanctumResult;
         }
 
         // 3. future: (Optional) IP-based location — disabled for now
         // if ($position = Location::get()) { ... }
 
         // 4. Fallback
-        return $this->getFallbackBranch();
+        $defaultResult = $this->getFallbackBranch();
+
+        Log::info('Middleware: Fallback branch found.', [
+            'defaultResult' => $defaultResult
+        ]);
+
+        return $defaultResult;
     }
 
     protected function validateBranch(int $branchId, string $errorMessage): int
     {
         if (! Branch::published()->where('id', $branchId)->exists()) {
+            Log::critical('Middleware: provided X-BRANCH-ID is not attached to any published branch.', [
+                'branchId' => $branchId
+            ]);
             throw new InvalidArgumentException($errorMessage);
         }
         return $branchId;

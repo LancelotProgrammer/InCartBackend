@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Spatie\Translatable\HasTranslations;
 use stdClass;
@@ -34,9 +35,18 @@ class Advertisement extends Model
 
     protected static function booted(): void
     {
-        static::created(fn (Advertisement $advertisement) => CacheService::deleteHomeCache());
-        static::updated(fn (Advertisement $advertisement) => CacheService::deleteHomeCache());
-        static::deleted(fn (Advertisement $advertisement) => CacheService::deleteHomeCache());
+        static::created(function (Advertisement $advertisement) {
+            Log::info('Models: created new advertisement and deleted home cache.', ['id' => $advertisement->id]);
+            return CacheService::deleteHomeCache();
+        });
+        static::updated(function (Advertisement $advertisement) {
+            Log::info('Models: updated advertisement and deleted home cache.', ['id' => $advertisement->id]);
+            return CacheService::deleteHomeCache();
+        });
+        static::deleted(function (Advertisement $advertisement) {
+            Log::info('Models: deleted advertisement and deleted home cache.', ['id' => $advertisement->id]);
+            return CacheService::deleteHomeCache();
+        });
     }
 
     public function files(): BelongsToMany
@@ -130,7 +140,16 @@ class Advertisement extends Model
             $advertisement->product_id && $advertisement->category_id => AdvertisementLink::PRODUCT,
             $advertisement->category_id && ! $advertisement->product_id => AdvertisementLink::CATEGORY,
             ! $advertisement->category_id && ! $advertisement->product_id => AdvertisementLink::EXTERNAL,
-            default => throw new InvalidArgumentException('Advertisement link is not supported'),
+            default => self::logUnknownAndThrow($advertisement),
         };
+    }
+
+    protected static function logUnknownAndThrow($advertisement)
+    {
+        Log::critical('Unsupported advertisement link', [
+            'advertisement' => $advertisement,
+        ]);
+
+        throw new InvalidArgumentException('Advertisement link is not supported');
     }
 }

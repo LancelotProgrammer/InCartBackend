@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Facades\Log;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Models\Audit;
@@ -64,9 +65,18 @@ class BranchProduct extends Pivot implements AuditableContract
 
     protected static function booted(): void
     {
-        static::created(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
-        static::updated(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
-        static::deleted(fn (BranchProduct $productBranch) => CacheService::deleteHomeCache());
+        static::created(function (BranchProduct $productBranch) {
+            Log::info('Models: created new branch product and deleted home cache.');
+            return CacheService::deleteHomeCache();
+        });
+        static::updated(function (BranchProduct $productBranch) {
+            Log::info('Models: updated branch product and deleted home cache.');
+            return CacheService::deleteHomeCache();
+        });
+        static::deleted(function (BranchProduct $productBranch) {
+            Log::info('Models: deleted branch product and deleted home cache.');
+            return CacheService::deleteHomeCache();
+        });
     }
 
     public function branch(): BelongsTo

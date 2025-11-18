@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 use Spatie\Translatable\HasTranslations;
 
 class Product extends Model
@@ -27,10 +28,22 @@ class Product extends Model
 
     protected static function booted(): void
     {
-        static::created(fn (Product $product) => CacheService::deleteHomeCache());
-        static::updated(fn (Product $product) => CacheService::deleteHomeCache());
-        static::deleting(fn (Product $product) => event(new ProductDeleting($product)));
-        static::deleted(fn (Product $product) => CacheService::deleteHomeCache());
+        static::created(function (Product $product) {
+            Log::info('Models: created new product and deleted home cache.', ['id' => $product->id]);
+            return  CacheService::deleteHomeCache();
+        });
+        static::updated(function (Product $product) {
+            Log::info('Models: updated product and deleted home cache.', ['id' => $product->id]);
+            return  CacheService::deleteHomeCache();
+        });
+        static::deleting(function (Product $product){
+            Log::info('Models: deleting product.', ['id' => $product->id]);
+            return event(new ProductDeleting($product));
+        });
+        static::deleted(function (Product $product) {
+            Log::info('Models: deleted product and deleted home cache.', ['id' => $product->id]);
+            return  CacheService::deleteHomeCache();
+        });
     }
 
     public function files(): BelongsToMany

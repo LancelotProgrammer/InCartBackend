@@ -17,10 +17,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Models\Audit;
+
 
 #[ScopedBy([BranchScope::class])]
 class Order extends Model implements AuditableContract
@@ -103,7 +105,10 @@ class Order extends Model implements AuditableContract
 
     protected static function booted(): void
     {
-        static::deleting(fn (Order $order) => event(new OrderDeleting($order)));
+        static::deleting(function (Order $order) {
+            Log::info('Models: deleting order.', ['id' => $order->id]);
+            return event(new OrderDeleting($order));
+        });
     }
 
     public function cancelledBy(): BelongsTo
@@ -163,6 +168,11 @@ class Order extends Model implements AuditableContract
 
     public function isPayOnDelivery(): bool
     {
+        Log::info('Models: checking if order is pay on delivery', [
+            'order' => $this->toArray(),
+            'user_id' => auth()?->id() ?? null,
+            'payment_method' => $this->paymentMethod
+        ]);
         return $this->paymentMethod->code === PaymentMethod::PAY_ON_DELIVERY_CODE;
     }
 
@@ -208,6 +218,8 @@ class Order extends Model implements AuditableContract
 
     public function archive(): void
     {
+        Log::info('Models: archiving order.', ['id' => $this->id]);
+
         OrderArchive::create([
             'archived_at' => now(),
             'order_number' => $this->order_number,
@@ -237,16 +249,22 @@ class Order extends Model implements AuditableContract
             'user_address' => $this->userAddress?->toArray(),
             'cart' => $this->carts()->with('cartProducts.product')->get()->toArray(),
         ]);
+
+        Log::info('Models: archiving order done.', ['id' => $this->id]);
     }
 
     public function createForceApproveOrder(string $reason, int $userId, array $types): void
     {
+        Log::info('Models: creating force approve order.', ['id' => $this->id]);
+
         ForceApproveOrder::create([
             'types' => $types,
             'reason' => $reason,
             'order_id' => $this->id,
             'user_id' => $userId,
         ]);
+
+        Log::info('Models: creating force approve order done.', ['id' => $this->id]);
     }
 
     public static function getUserOrderNotificationMessage(Order $order): array
@@ -256,8 +274,21 @@ class Order extends Model implements AuditableContract
             OrderStatus::DELIVERING->value => ['Order Delivering', 'Your order is on the way!'],
             OrderStatus::FINISHED->value => ['Order Finished', 'Your order has been delivered successfully.'],
             OrderStatus::CANCELLED->value => ['Order Cancelled', 'Your order has been cancelled.'],
-            default => throw new InvalidArgumentException('Can not create message for this order'),
+            default => self::logUnknownAndThrow($order),
         };
+    }
+
+    protected static function logUnknownAndThrow(Order $order)
+    {
+        Log::channel('orders')->error('Unknown order status for notification', [
+            'order_id' => $order->id,
+            'status_value' => $order->order_status->value ?? null,
+            'status' => $order->order_status->name ?? null,
+        ]);
+
+        throw new InvalidArgumentException(
+            'Cannot create message for this order - unknown status: ' . ($order->order_status->value ?? 'null')
+        );
     }
 
     public function auditsLogs(): MorphMany
