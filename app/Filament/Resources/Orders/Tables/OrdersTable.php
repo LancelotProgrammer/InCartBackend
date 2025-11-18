@@ -88,20 +88,17 @@ class OrdersTable
                     ->relationship(
                         'customer',
                         'name',
-                        fn ($query) => $query->whereHas('role', fn ($q) => $q->where('code', '=', Role::ROLE_CUSTOMER_CODE))
                     )->searchable(),
                 SelectFilter::make('manager')
                     ->relationship(
                         'manager',
                         'name',
-                        fn ($query) => $query->whereHas('role', fn ($q) => $q->where('code', '=', Role::ROLE_MANAGER_CODE))
-                    ),
+                    )->searchable(),
                 SelectFilter::make('delivery')
                     ->relationship(
                         'delivery',
                         'name',
-                        fn ($query) => $query->whereHas('role', fn ($q) => $q->where('code', '=', Role::ROLE_DELIVERY_CODE))
-                    ),
+                    )->searchable(),
                 BranchSelectFilter::configure(),
             ], FiltersLayout::Modal)
             ->filtersFormColumns(3)

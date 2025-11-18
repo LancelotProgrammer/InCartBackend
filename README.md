@@ -90,6 +90,9 @@ loyalties:
 - user delete:
     - if a user is blocked, it can not be deleted
     - if a user has an order which is not finished or cancelled, it can not be deleted
+- timezone:
+    - inApplicationTimezone() helper function is used to convert a date to the application timezone
+    - inApplicationTodayRange() helper function is used to get the start and end of today in the application timezone.
 - fcm bulk notification:
     - FirebaseFCMLinks enum is used to define which model can be deep linked to a bulk notification
     - FirebaseFCMTopics enum is used to define topics and resolve the options available for bulk actions
