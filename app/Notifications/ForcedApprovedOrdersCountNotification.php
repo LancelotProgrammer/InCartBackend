@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\User;
 use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class ForcedApprovedOrdersCountNotification extends Notification
 {
@@ -20,6 +21,8 @@ class ForcedApprovedOrdersCountNotification extends Notification
 
     public function toDatabase(User $notifiable): array
     {
+        Log::info('Notifications: ForcedApprovedOrdersCountNotification', ['count' => $this->count, 'notifiable' => $notifiable]);
+
         return FilamentNotification::make()
             ->title("Forced approved orders count exceeded the limit")
             ->body("The system detected {$this->count} orders that were force approved in the last week.")

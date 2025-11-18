@@ -13,6 +13,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Contracts\HasLabel;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\HtmlString;
 use InvalidArgumentException;
@@ -114,15 +115,36 @@ enum CouponType: int implements HasLabel
         $config = $coupon->config;
         $couponId = $coupon->id;
 
+        Log::info("Enums: Calculating discount for coupon with id: {$couponId}", [
+            'config' => $config
+        ]);
+
         $validator = Validator::make($config, $this->getValidationRulesForApply());
         if ($validator->fails()) {
+            Log::critical("Invalid config for coupon with id: {$couponId}", [
+                'validator' => $validator->errors()->first()
+            ]);
             throw new InvalidArgumentException("Invalid config for coupon with id: {$couponId}");
         }
 
         if (! empty($config['start_date']) && $context->time->inApplicationTimezone()->lt(Carbon::parse($config['start_date'])->inApplicationTimezone())) {
+            Log::error("Enums: Coupon with id: {$couponId} is not active yet.", [
+                'time' => $context->time->inApplicationTimezone()->format('Y-m-d H:i:s'),
+                'start_date_time' => Carbon::parse($config['start_date'])->inApplicationTimezone()->format('Y-m-d H:i:s'),
+                'end_date_time' => Carbon::parse($config['end_date'])->inApplicationTimezone()->format('Y-m-d H:i:s'),
+                'user_id' => $context->userId,
+                'condition' => ! empty($config['start_date']) && $context->time->inApplicationTimezone()->lt(Carbon::parse($config['start_date'])->inApplicationTimezone())
+            ]);
             throw new LogicalException('Coupon error', 'Coupon is not active yet.');
         }
         if (! empty($config['end_date']) && $context->time->inApplicationTimezone()->gt(Carbon::parse($config['end_date'])->inApplicationTimezone())) {
+            Log::error("Enums: Coupon with id: {$couponId} has expired.", [
+                'time' => $context->time->inApplicationTimezone()->format('Y-m-d H:i:s'),
+                'start_date_time' => Carbon::parse($config['start_date'])->inApplicationTimezone()->format('Y-m-d H:i:s'),
+                'end_date_time' => Carbon::parse($config['end_date'])->inApplicationTimezone()->format('Y-m-d H:i:s'),
+                'user_id' => $context->userId,
+                'condition' => ! empty($config['end_date']) && $context->time->inApplicationTimezone()->gt(Carbon::parse($config['end_date'])->inApplicationTimezone())
+            ]);
             throw new LogicalException('Coupon error', 'Coupon has expired.');
         }
 
@@ -131,14 +153,31 @@ enum CouponType: int implements HasLabel
 
         // Check user limit first
         if (! empty($config['user_limit']) && $userUses >= $config['user_limit']) {
+            Log::error("Enums: User with id: {$context->userId} has already used this coupon the maximum number of times for their account.", [
+                'user_limit' => $config['user_limit'],
+                'user_id' => $context->userId,
+                'condition' => $userUses >= $config['user_limit'],
+            ]);
             throw new LogicalException('Coupon error', 'You have already used this coupon the maximum number of times for your account.');
         }
         // Check total use limit
         if (! empty($config['use_limit']) && $totalUses >= $config['use_limit']) {
+            Log::error("Enums: This coupon has reached its maximum number of uses.", [
+                'use_limit' => $config['use_limit'],
+                'total_uses' => $totalUses,
+                'user_id' => $context->userId,
+                'condition' => $totalUses >= $config['use_limit'],
+            ]);
             throw new LogicalException('Coupon error', 'This coupon has reached its maximum number of uses.');
         }
         // Check if using the coupon now would exceed total limit
         if (! empty($config['use_limit']) && $totalUses + 1 > $config['use_limit']) {
+            Log::error("Enums: Using this coupon now would exceed the total allowed uses.", [
+                'use_limit' => $config['use_limit'],
+                'total_uses' => $totalUses,
+                'condition' => $totalUses + 1 > $config['use_limit'],
+                'user_id' => $context->userId
+            ]);
             throw new LogicalException('Coupon error', 'Using this coupon now would exceed the total allowed uses.');
         }
         // Optional: prevent user from “taking” another user’s slot if near limit
@@ -146,9 +185,18 @@ enum CouponType: int implements HasLabel
             $remainingUses = $config['use_limit'] - $totalUses;
             $remainingForUser = $config['user_limit'] - $userUses;
             if ($remainingUses <= 0 || $remainingForUser <= 0) {
+                Log::error("Enums: Coupon with id: {$couponId} cannot be used due to limit restrictions.", [
+                    'use_limit' => $config['use_limit'],
+                    'total_uses' => $totalUses,
+                    'user_limit' => $config['user_limit'],
+                    'user_uses' => $userUses,
+                    'user_id' => $context->userId 
+                ]);
                 throw new LogicalException('Coupon error', 'Coupon cannot be used due to limit restrictions.');
             }
         }
+
+        Log::info("Enums: Coupon with id: {$couponId} is valid.");
 
         return (float) $config['value'];
     }

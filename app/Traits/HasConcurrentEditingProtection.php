@@ -3,12 +3,18 @@
 namespace App\Traits;
 
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 trait HasConcurrentEditingProtection
 {
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $data['original_updated_at'] = $this->getRecordHash();
+        
+        Log::info('Traits: mutating form data before fill to create hash for concurrency check', [
+            'data' => $data,
+            'originalUpdatedAt' => $data['original_updated_at'],
+        ]);
 
         return $data;
     }
@@ -18,7 +24,18 @@ trait HasConcurrentEditingProtection
         $originalUpdatedAt = $this->data['original_updated_at'] ?? null;
         $recordUpdatedAt = $this->getRecordHash();
 
+        Log::info('Traits: checking concurrency', [
+            'originalUpdatedAt' => $originalUpdatedAt,
+            'recordUpdatedAt' => $recordUpdatedAt,
+        ]);
+
         if ($originalUpdatedAt && $originalUpdatedAt !== $recordUpdatedAt) {
+            Log::warning('Traits: concurrency detected', [
+                'originalUpdatedAt' => $originalUpdatedAt,
+                'recordUpdatedAt' => $recordUpdatedAt,
+                'condition' => $originalUpdatedAt && $originalUpdatedAt !== $recordUpdatedAt,
+            ]);
+
             Notification::make()
                 ->title('Record Conflict')
                 ->body('This record has been modified by another user. Please refresh and try again.')
@@ -27,6 +44,11 @@ trait HasConcurrentEditingProtection
 
             $this->halt();
         }
+
+        Log::info('Traits: concurrency check passed', [
+            'originalUpdatedAt' => $originalUpdatedAt,
+            'recordUpdatedAt' => $recordUpdatedAt,
+        ]);
 
         unset($this->data['original_updated_at']);
     }

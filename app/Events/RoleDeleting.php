@@ -5,6 +5,7 @@ namespace App\Events;
 use App\Models\Role;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class RoleDeleting
 {
@@ -15,6 +16,6 @@ class RoleDeleting
      */
     public function __construct(public Role $role)
     {
-        //
+        Log::info('Events: Role deleting', ['role' => $this->role]);
     }
 }

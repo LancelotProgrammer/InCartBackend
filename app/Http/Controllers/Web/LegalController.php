@@ -7,6 +7,7 @@ use App\Models\Support;
 use App\Services\SettingsService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Mews\Purifier\Facades\Purifier;
 
@@ -40,6 +41,7 @@ class LegalController extends Controller
         $key = 'support:' . $ip;
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
+            Log::warning('LegalController: Rate limit reached', ['ip' => $ip]);
             return back()->with('error', 'حدث خطأ أثناء إرسال الرسالة. حاول مرة أخرى لاحقاً.');
         }
 
@@ -50,14 +52,20 @@ class LegalController extends Controller
             'website' => 'nullable|string|max:0',
         ]);
 
+        Log::info('LegalController: New support request', ['ip' => $ip, 'email' => $validated['email']]);
+
         if (!empty($validated['website'])) {
             RateLimiter::hit($key, 3600);
+            Log::warning('LegalController: Validation website field error', ['ip' => $ip]);
             return back()->with('error', 'حدث خطأ أثناء إرسال الرسالة. حاول مرة أخرى لاحقاً.');
         }
         if (!$this->verifyEmailDomain($validated['email'])) {
+            Log::warning('LegalController: Email domain not found', ['ip' => $ip, 'email' => $validated['email']]);
             return back()->with('error', 'حدث خطأ أثناء إرسال الرسالة. حاول مرة أخرى لاحقاً.');
         }
-        //TODO spam proof using https://akismet.com and https://github.com/josiasmontag/laravel-recaptchav3
+
+        //TODO spam detection using https://akismet.com and https://github.com/josiasmontag/laravel-recaptchav3
+        Log::warning('LegalController: spam detection is not supported yet', ['ip' => $ip]);
 
         try {
             Support::create([
@@ -69,6 +77,7 @@ class LegalController extends Controller
             RateLimiter::hit($key, 3600);
             return back()->with('success', 'تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
         } catch (Exception $e) {
+            Log::warning('LegalController: error creating support', ['ip' => $ip, 'error' => $e->getMessage()]);
             return back()->with('error', 'حدث خطأ أثناء إرسال الرسالة. حاول مرة أخرى لاحقاً.');
         }
     }

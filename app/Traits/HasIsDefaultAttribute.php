@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 trait HasIsDefaultAttribute
@@ -9,6 +10,10 @@ trait HasIsDefaultAttribute
     protected function ensureHasIsDefault(): void
     {
         if (! array_key_exists('is_default', $this->attributes)) {
+            Log::emergency(sprintf(
+                "Traits: The model %s does not have a 'is_default' attribute.",
+                static::class
+            ));
             throw new InvalidArgumentException(sprintf(
                 "The model %s does not have a 'is_default' attribute.",
                 static::class

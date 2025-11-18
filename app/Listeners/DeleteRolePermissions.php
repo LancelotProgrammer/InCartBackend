@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\RoleDeleting;
+use Illuminate\Support\Facades\Log;
 
 class DeleteRolePermissions
 {
@@ -19,6 +20,8 @@ class DeleteRolePermissions
      */
     public function handle(RoleDeleting $event): void
     {
+        Log::info('Listeners: delete role permissions', ['role' => $event->role]);
+
         $role = $event->role;
         $role->permissions()->detach();
     }

@@ -7,6 +7,7 @@ use App\Models\Product;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Contracts\HasLabel;
+use Illuminate\Support\Facades\Log;
 
 enum FirebaseFCMLinks: string implements HasLabel
 {
@@ -42,9 +43,20 @@ enum FirebaseFCMLinks: string implements HasLabel
 
     public static function getModelDeepLink(array $data): ?string
     {
-        return isset($data['link']) ? match ($data['link']->value) {
+        Log::info('Enums: getting model deep link', [
+            'data' => $data,
+        ]);
+
+        $result = isset($data['link']) ? match ($data['link']->value) {
             self::PRODUCT->value => isset($data['product_id']) ? DeepLinks::PRODUCT_DEEP_LINK.'/'.$data['product_id'] : null,
             default => null,
         } : null;
+
+        Log::info('Enums: got model deep link', [
+            'data' => $data,
+            'result' => $result,
+        ]);
+
+        return $result ;
     }
 }

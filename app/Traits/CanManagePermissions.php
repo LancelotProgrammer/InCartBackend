@@ -8,6 +8,7 @@ use App\Models\Feedback;
 use App\Models\Order;
 use App\Models\Ticket;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 trait CanManagePermissions
@@ -15,6 +16,10 @@ trait CanManagePermissions
     protected function ensureHasRole(): void
     {
         if (! array_key_exists('role', $this->attributes)) {
+            Log::emergency(sprintf(
+                "Traits: The model %s does not have a 'role' relationship.",
+                static::class
+            ));
             throw new InvalidArgumentException(sprintf(
                 "The model %s does not have a 'role' relationship.",
                 static::class

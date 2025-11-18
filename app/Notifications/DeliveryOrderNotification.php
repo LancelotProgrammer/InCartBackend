@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\User;
 use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class DeliveryOrderNotification extends Notification
 {
@@ -21,6 +22,8 @@ class DeliveryOrderNotification extends Notification
 
     public function toDatabase(User $notifiable): array
     {
+        Log::info('Notifications: DeliveryOrderNotification', ['order' => $this->order, 'notifiable' => $notifiable]);
+
         return FilamentNotification::make()
             ->title("New Order #{$this->order->order_number}")
             ->getDatabaseMessage();

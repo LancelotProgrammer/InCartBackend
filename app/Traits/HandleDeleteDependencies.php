@@ -11,6 +11,7 @@ use App\Models\Permission;
 use App\Models\Role;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 trait HandleDeleteDependencies
 {
@@ -77,9 +78,16 @@ trait HandleDeleteDependencies
 
     protected function deleteWithDependencyCheck(): callable
     {
+        Log::info('Traits: checking delete dependencies');
+
         return function ($record, DeleteAction $action) {
             $dependencies = $this->getDeleteDependencies();
             $modelClass = get_class($record);
+
+            Log::info('Traits: checking delete dependencies data', [
+                'modelClass' => $modelClass,
+                'dependencies' => $dependencies,
+            ]);
 
             if (isset($dependencies[$modelClass])) {
                 $config = $dependencies[$modelClass];
@@ -87,12 +95,21 @@ trait HandleDeleteDependencies
 
                 foreach ($config['relations'] as $relation => $label) {
                     if ($record->$relation()->exists()) {
+                        Log::info('Traits: found relation', [
+                            'relation' => $relation,
+                            'label' => $label,
+                        ]);
                         $foundRelations[] = $label;
                     }
                 }
 
                 if (! empty($foundRelations)) {
                     $message = str_replace(':relations', implode(', ', $foundRelations), $config['message']);
+                    
+                    Log::info('Traits: found relations', [
+                        'foundRelations' => $foundRelations,
+                        'message' => $message,
+                    ]);
 
                     Notification::make()
                         ->title('Deletion Not Allowed')
@@ -105,7 +122,11 @@ trait HandleDeleteDependencies
                 }
             }
 
+            Log::info('Traits: finished checking delete dependencies and proceeding with deletion');
+
             $record->delete();
+
+            Log::info('Traits: record deleted');
 
             return redirect($action->getUrl('index'));
         };

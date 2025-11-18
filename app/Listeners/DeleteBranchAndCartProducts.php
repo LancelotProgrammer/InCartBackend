@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ProductDeleting;
+use Illuminate\Support\Facades\Log;
 
 class DeleteBranchAndCartProducts
 {
@@ -19,6 +20,8 @@ class DeleteBranchAndCartProducts
      */
     public function handle(ProductDeleting $event): void
     {
+        Log::info('Listeners: delete branch and cart products', ['product' => $event->product]);
+
         $product = $event->product;
         $product->branches()->detach();
     }

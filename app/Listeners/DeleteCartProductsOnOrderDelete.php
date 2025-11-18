@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\OrderDeleting;
+use Illuminate\Support\Facades\Log;
 
 class DeleteCartProductsOnOrderDelete
 {
@@ -19,6 +20,8 @@ class DeleteCartProductsOnOrderDelete
      */
     public function handle(OrderDeleting $event): void
     {
+        Log::info('Listeners: delete cart products on order delete', ['order' => $event->order]);
+
         $order = $event->order;
         foreach ($order->carts as $cart) {
             $cart->cartProducts->each->delete();

@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 trait HasPublishAttribute
@@ -10,6 +11,10 @@ trait HasPublishAttribute
     protected function ensureHasPublishedAt(): void
     {
         if (! array_key_exists('published_at', $this->attributes)) {
+            Log::emergency(sprintf(
+                "Traits: The model %s does not have a 'published_at' attribute.",
+                static::class
+            ));
             throw new InvalidArgumentException(sprintf(
                 "The model %s does not have a 'published_at' attribute.",
                 static::class
