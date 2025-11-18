@@ -30,8 +30,8 @@ class LegalController extends Controller
     public function getSupportPage(Request $request)
     {
         return view('pages.support', [
-            'supportEmail' => 'support@incart.com.sa', //TODO
-            'supportPhone' => '+966512345678' //TODO
+            'supportEmail' => 'support@incart.com.sa',
+            'supportPhone' => SettingsService::getPhone(),
         ]);
     }
 
