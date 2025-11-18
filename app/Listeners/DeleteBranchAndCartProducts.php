@@ -20,7 +20,7 @@ class DeleteBranchAndCartProducts
      */
     public function handle(ProductDeleting $event): void
     {
-        Log::info('Listeners: delete branch and cart products', ['product' => $event->product]);
+        Log::channel('app_log')->info('Listeners: delete branch and cart products', ['product' => $event->product]);
 
         $product = $event->product;
         $product->branches()->detach();

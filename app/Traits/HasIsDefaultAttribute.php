@@ -10,7 +10,7 @@ trait HasIsDefaultAttribute
     protected function ensureHasIsDefault(): void
     {
         if (! array_key_exists('is_default', $this->attributes)) {
-            Log::emergency(sprintf(
+            Log::channel('app_log')->emergency(sprintf(
                 "Traits: The model %s does not have a 'is_default' attribute.",
                 static::class
             ));

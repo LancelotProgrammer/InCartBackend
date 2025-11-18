@@ -16,6 +16,6 @@ class OrderDeleting
      */
     public function __construct(public Order $order)
     {
-        Log::info('Events: Order deleting', ['order' => $this->order]);
+        Log::channel('app_log')->info('Events: Order deleting', ['order' => $this->order]);
     }
 }

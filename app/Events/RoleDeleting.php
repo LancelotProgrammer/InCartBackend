@@ -16,6 +16,6 @@ class RoleDeleting
      */
     public function __construct(public Role $role)
     {
-        Log::info('Events: Role deleting', ['role' => $this->role]);
+        Log::channel('app_log')->info('Events: Role deleting', ['role' => $this->role]);
     }
 }

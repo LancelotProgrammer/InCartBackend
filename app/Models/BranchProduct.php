@@ -66,15 +66,15 @@ class BranchProduct extends Pivot implements AuditableContract
     protected static function booted(): void
     {
         static::created(function (BranchProduct $productBranch) {
-            Log::info('Models: created new branch product and deleted home cache.');
+            Log::channel('app_log')->info('Models: created new branch product and deleted home cache.');
             return CacheService::deleteHomeCache();
         });
         static::updated(function (BranchProduct $productBranch) {
-            Log::info('Models: updated branch product and deleted home cache.');
+            Log::channel('app_log')->info('Models: updated branch product and deleted home cache.');
             return CacheService::deleteHomeCache();
         });
         static::deleted(function (BranchProduct $productBranch) {
-            Log::info('Models: deleted branch product and deleted home cache.');
+            Log::channel('app_log')->info('Models: deleted branch product and deleted home cache.');
             return CacheService::deleteHomeCache();
         });
     }

@@ -49,7 +49,7 @@ class SendFirebaseNotification extends Command
             return;
         }
 
-        Log::debug('Commands: Sending Firebase notification.', [
+        Log::channel('app_log')->debug('Commands: Sending Firebase notification.', [
             'token' => $token,
             'topic' => $topic,
         ]);
@@ -81,17 +81,17 @@ class SendFirebaseNotification extends Command
 
             $this->info('✅ Notification sent successfully!');
             $this->line('Response: ' . json_encode($response));
-            Log::debug('Commands: Notification sent successfully.', [
+            Log::channel('app_log')->debug('Commands: Notification sent successfully.', [
                 'response' => $response,
             ]);
         } catch (Throwable $e) {
             $this->error('❌ Failed to send notification: ' . $e->getMessage());
-            Log::debug('Commands: Failed to send notification.', [
+            Log::channel('app_log')->debug('Commands: Failed to send notification.', [
                 'error' => $e->getMessage(),
             ]);
         }
 
-        Log::debug('Commands: send firebase notification finished.');
+        Log::channel('app_log')->debug('Commands: send firebase notification finished.');
 
         return;
     }

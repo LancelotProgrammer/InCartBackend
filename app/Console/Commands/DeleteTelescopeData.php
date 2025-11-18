@@ -34,7 +34,7 @@ class DeleteTelescopeData extends Command
 
         $this->info('Clearing Telescope data...');
         
-        Log::debug('Commands: Clearing Telescope data.');
+        Log::channel('app_log')->debug('Commands: Clearing Telescope data.');
 
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
@@ -46,7 +46,7 @@ class DeleteTelescopeData extends Command
 
         $this->info('Telescope data cleared successfully.');
         
-        Log::debug('Commands: Telescope data cleared successfully.');
+        Log::channel('app_log')->debug('Commands: Telescope data cleared successfully.');
 
         return;
     }

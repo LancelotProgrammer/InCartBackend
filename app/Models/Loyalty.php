@@ -23,7 +23,7 @@ class Loyalty extends Model
 
     public function addPoints(int $amount): void
     {
-        Log::info('Models: Start adding points', [
+        Log::channel('app_log')->info('Models: Start adding points', [
             'user_id' => $this->user_id,
             'amount' => $amount
         ]);
@@ -32,7 +32,7 @@ class Loyalty extends Model
         $this->increment('total_earned', $amount);
         $this->save();
 
-        Log::info('Models: Finish adding points', [
+        Log::channel('app_log')->info('Models: Finish adding points', [
             'user_id' => $this->user_id,
             'amount' => $amount,
             'points' => $this->points
@@ -41,7 +41,7 @@ class Loyalty extends Model
 
     public function redeemPoints(int $amount): void
     {
-        Log::info('Models: Start redeeming points', [
+        Log::channel('app_log')->info('Models: Start redeeming points', [
             'user_id' => $this->user_id,
             'amount' => $amount
         ]);
@@ -54,7 +54,7 @@ class Loyalty extends Model
         $this->increment('total_redeemed', $amount);
         $this->save();
 
-        Log::info('Models: Finish redeeming points', [
+        Log::channel('app_log')->info('Models: Finish redeeming points', [
             'user_id' => $this->user_id,
             'amount' => $amount,
             'points' => $this->points

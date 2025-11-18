@@ -75,33 +75,9 @@ return [
 
 
 
-        'debug' => [
+        'app_log' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/debug.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'days' => env('LOG_DAILY_DAYS', 14),
-            'replace_placeholders' => true,
-        ],
-
-        'error' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/error.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'days' => env('LOG_DAILY_DAYS', 14),
-            'replace_placeholders' => true,
-        ],
-
-        'warning' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/warning.log'),
-            'level' => env('LOG_LEVEL', 'debug'),
-            'days' => env('LOG_DAILY_DAYS', 14),
-            'replace_placeholders' => true,
-        ],
-
-        'emergency' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/emergency.log'),
+            'path' => storage_path('logs/app.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,

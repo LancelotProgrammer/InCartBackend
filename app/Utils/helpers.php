@@ -7,7 +7,7 @@ if (! function_exists('get_translatable_attribute')) {
     {
         $translations = json_decode($attribute, true);
         if (! is_array($translations)) {
-            Log::warning('Helpers: translations attribute is not array', ['attribute' => $attribute]);
+            Log::channel('app_log')->warning('Helpers: translations attribute is not array', ['attribute' => $attribute]);
             return null;
         }
         $locale = app()->getLocale();

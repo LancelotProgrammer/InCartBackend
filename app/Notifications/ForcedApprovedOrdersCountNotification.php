@@ -21,7 +21,7 @@ class ForcedApprovedOrdersCountNotification extends Notification
 
     public function toDatabase(User $notifiable): array
     {
-        Log::info('Notifications: ForcedApprovedOrdersCountNotification', ['count' => $this->count, 'notifiable' => $notifiable]);
+        Log::channel('app_log')->info('Notifications: ForcedApprovedOrdersCountNotification', ['count' => $this->count, 'notifiable' => $notifiable]);
 
         return FilamentNotification::make()
             ->title("Forced approved orders count exceeded the limit")

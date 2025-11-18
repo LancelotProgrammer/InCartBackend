@@ -21,14 +21,14 @@ class FirebaseFCM
 {
     public static function sendOrderStatusNotification(Order $order): void
     {
-        Log::info('ExternalServices: Sending order status notification', [
+        Log::channel('app_log')->info('ExternalServices: Sending order status notification', [
             'order_id' => $order->id
         ]);
 
         $tokens = $order->customer->firebaseTokens()->pluck('firebase_token')->toArray();
 
         if (empty($tokens)) {
-            Log::info('ExternalServices: No tokens found for user', [
+            Log::channel('app_log')->info('ExternalServices: No tokens found for user', [
                 'user_id' => $order->customer_id
             ]);
             return;
@@ -46,21 +46,21 @@ class FirebaseFCM
             );
         }
 
-        Log::info('ExternalServices: Order status notification sent', [
+        Log::channel('app_log')->info('ExternalServices: Order status notification sent', [
             'order_id' => $order->id
         ]);
     }
 
     public static function sendTicketNotification(Ticket $ticket, string $reply): void
     {
-        Log::info('ExternalServices: Sending ticket notification', [
+        Log::channel('app_log')->info('ExternalServices: Sending ticket notification', [
             'ticket_id' => $ticket->id
         ]);
 
         $tokens = $ticket->user->firebaseTokens()->pluck('firebase_token')->toArray();
 
         if (empty($tokens)) {
-            Log::info('ExternalServices: No tokens found for user', [
+            Log::channel('app_log')->info('ExternalServices: No tokens found for user', [
                 'user_id' => $ticket->user_id
             ]);
             return;
@@ -76,7 +76,7 @@ class FirebaseFCM
             );
         }
 
-        Log::info('ExternalServices: Ticket notification sent', [
+        Log::channel('app_log')->info('ExternalServices: Ticket notification sent', [
             'ticket_id' => $ticket->id
         ]);
     }
@@ -105,44 +105,44 @@ class FirebaseFCM
 
         try {
             $response = $messaging->send($message);
-            Log::info('ExternalServices: FCM message sent successfully', [
+            Log::channel('app_log')->info('ExternalServices: FCM message sent successfully', [
                 'token' => $token,
                 'title' => $title,
                 'body' => $body,
                 'response' => $response,
             ]);
         } catch (NotFound $e) {
-            Log::warning('ExternalServices:FCM token not found, removing.', [
+            Log::channel('app_log')->warning('ExternalServices:FCM token not found, removing.', [
                 'token' => $token,
                 'errors' => $e->errors(),
                 'firebase_token' => $e->token(),
             ]);
             UserFirebaseToken::where('firebase_token', $token)->delete();
         } catch (InvalidMessage $e) {
-            Log::error('ExternalServices: Invalid FCM message.', [
+            Log::channel('app_log')->error('ExternalServices: Invalid FCM message.', [
                 'token' => $token,
                 'errors' => $e->errors(),
             ]);
         } catch (ServerUnavailable $e) {
             $retryAfter = $e->retryAfter();
-            Log::error('ExternalServices: FCM server unavailable.', [
+            Log::channel('app_log')->error('ExternalServices: FCM server unavailable.', [
                 'token' => $token,
                 'retry_after' => $retryAfter?->format(\DATE_ATOM),
                 'errors' => $e->errors(),
             ]);
         } catch (ServerError $e) {
-            Log::error('ExternalServices: FCM server error.', [
+            Log::channel('app_log')->error('ExternalServices: FCM server error.', [
                 'token' => $token,
                 'errors' => $e->errors(),
             ]);
         } catch (MessagingException $e) {
-            Log::error('ExternalServices: Generic FCM messaging exception.', [
+            Log::channel('app_log')->error('ExternalServices: Generic FCM messaging exception.', [
                 'token' => $token,
                 'message' => $e->getMessage(),
                 'errors' => $e->errors(),
             ]);
         } catch (Throwable $e) {
-            Log::error('ExternalServices: Unexpected FCM failure.', [
+            Log::channel('app_log')->error('ExternalServices: Unexpected FCM failure.', [
                 'token' => $token,
                 'error' => $e->getMessage(),
             ]);
@@ -154,12 +154,12 @@ class FirebaseFCM
         try {
             $messaging = Firebase::messaging();
             $response = $messaging->subscribeToTopics($topics, $token);
-            Log::info('ExternalServices: FCM token added to topic successfully', [
+            Log::channel('app_log')->info('ExternalServices: FCM token added to topic successfully', [
                 'data' => [$token, $topics],
                 'response' => $response,
             ]);
         } catch (Throwable $e) {
-            Log::error('ExternalServices: Failed to add token to topic', [
+            Log::channel('app_log')->error('ExternalServices: Failed to add token to topic', [
                 'data' => [$token, $topics],
                 'error' => $e->getMessage(),
             ]);
@@ -172,12 +172,12 @@ class FirebaseFCM
         try {
             $messaging = Firebase::messaging();
             $response = $messaging->unsubscribeFromTopics($topics, $token);
-            Log::info('ExternalServices: FCM token removed from topic successfully', [
+            Log::channel('app_log')->info('ExternalServices: FCM token removed from topic successfully', [
                 'data' => [$token, $topics],
                 'response' => $response,
             ]);
         } catch (Throwable $e) {
-            Log::error('ExternalServices: Failed to remove token from topic', [
+            Log::channel('app_log')->error('ExternalServices: Failed to remove token from topic', [
                 'data' => [$token, $topics],
                 'error' => $e->getMessage(),
             ]);
@@ -209,12 +209,12 @@ class FirebaseFCM
 
         try {
             $response = $messaging->send($message);
-            Log::info('ExternalServices: FCM bulk message sent successfully', [
+            Log::channel('app_log')->info('ExternalServices: FCM bulk message sent successfully', [
                 'data' => [$topic, $title, $body, $imageUrl, $deepLink],
                 'response' => $response,
             ]);
         } catch (Throwable $e) {
-            Log::error('ExternalServices: FCM bulk message failed', [
+            Log::channel('app_log')->error('ExternalServices: FCM bulk message failed', [
                 'data' => [$topic, $title, $body, $imageUrl, $deepLink],
                 'error' => $e->getMessage(),
             ]);

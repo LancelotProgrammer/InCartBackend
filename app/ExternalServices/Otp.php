@@ -9,7 +9,7 @@ class Otp
 {
     public static function send(string $phone, string $code): void
     {
-        Log::debug("Sending OTP $code to phone: $phone");
+        Log::channel('app_log')->debug("Sending OTP $code to phone: $phone");
 
         // $sid = config('services.twilio.account_sid');
         // $token = config('services.twilio.auth_token');

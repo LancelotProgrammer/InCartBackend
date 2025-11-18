@@ -41,7 +41,7 @@ class Role extends Model implements AuditableContract
     protected static function booted(): void
     {
         static::deleting(function (Role $role) {
-            Log::info('Models: deleting role.', ['id' => $role->id]);
+            Log::channel('app_log')->info('Models: deleting role.', ['id' => $role->id]);
             return event(new RoleDeleting($role));
         });
     }

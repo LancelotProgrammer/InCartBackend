@@ -21,7 +21,7 @@ enum FirebaseFCMTopics: string implements HasLabel
 
     public static function getTopics(): array
     {
-        Log::info('Enums: getting topics');
+        Log::channel('app_log')->info('Enums: getting topics');
 
         $topics = [
             self::ALL_USERS->value => 'All Users',
@@ -31,7 +31,7 @@ enum FirebaseFCMTopics: string implements HasLabel
             $topics[self::CITY->value.'-'.$city->id] = 'All Users in '.$city->name;
         }
 
-        Log::info('Enums: topics', [
+        Log::channel('app_log')->info('Enums: topics', [
             'topics' => $topics,
         ]);
 

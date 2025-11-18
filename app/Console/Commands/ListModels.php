@@ -30,7 +30,7 @@ class ListModels extends Command
      */
     public function handle(): void
     {
-        Log::debug('Commands: Listing models.');
+        Log::channel('app_log')->debug('Commands: Listing models.');
 
         $path = app_path('Models');
         $files = File::allFiles($path);
@@ -41,7 +41,7 @@ class ListModels extends Command
             $class = 'App\\Models\\'.$file->getFilenameWithoutExtension();
 
             if (! class_exists($class)) {
-                Log::debug('Commands: Class does not exist.', [
+                Log::channel('app_log')->debug('Commands: Class does not exist.', [
                     'class' => $class,
                 ]);
                 continue;
@@ -59,7 +59,7 @@ class ListModels extends Command
         }
 
         if (empty($models)) {
-            Log::debug('Commands: No models found.', [
+            Log::channel('app_log')->debug('Commands: No models found.', [
                 'models' => $models,
             ]);
             
@@ -73,7 +73,7 @@ class ListModels extends Command
             $this->line($model);
         }
 
-        Log::debug('Commands: Models listed.');
+        Log::channel('app_log')->debug('Commands: Models listed.');
 
         return;
     }

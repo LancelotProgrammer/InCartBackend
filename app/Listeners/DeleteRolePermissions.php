@@ -20,7 +20,7 @@ class DeleteRolePermissions
      */
     public function handle(RoleDeleting $event): void
     {
-        Log::info('Listeners: delete role permissions', ['role' => $event->role]);
+        Log::channel('app_log')->info('Listeners: delete role permissions', ['role' => $event->role]);
 
         $role = $event->role;
         $role->permissions()->detach();

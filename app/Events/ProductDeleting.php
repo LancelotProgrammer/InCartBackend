@@ -16,6 +16,6 @@ class ProductDeleting
      */
     public function __construct(public Product $product)
     {
-        Log::info('Events: Product deleting', ['product' => $this->product]);
+        Log::channel('app_log')->info('Events: Product deleting', ['product' => $this->product]);
     }
 }

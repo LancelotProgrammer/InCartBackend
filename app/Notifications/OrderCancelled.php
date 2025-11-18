@@ -23,7 +23,7 @@ class OrderCancelled extends Notification
 
     public function toDatabase(User $notifiable): array
     {
-        Log::info('Notifications: OrderCancelled', ['order' => $this->order, 'notifiable' => $notifiable]);
+        Log::channel('app_log')->info('Notifications: OrderCancelled', ['order' => $this->order, 'notifiable' => $notifiable]);
 
         return FilamentNotification::make()
             ->title("Order #{$this->order->order_number} Cancelled")

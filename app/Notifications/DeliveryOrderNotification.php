@@ -22,7 +22,7 @@ class DeliveryOrderNotification extends Notification
 
     public function toDatabase(User $notifiable): array
     {
-        Log::info('Notifications: DeliveryOrderNotification', ['order' => $this->order, 'notifiable' => $notifiable]);
+        Log::channel('app_log')->info('Notifications: DeliveryOrderNotification', ['order' => $this->order, 'notifiable' => $notifiable]);
 
         return FilamentNotification::make()
             ->title("New Order #{$this->order->order_number}")

@@ -12,7 +12,7 @@ class OrderController extends Controller
     public function __invoke(Request $request)
     {
         if (! request()->user()->hasPermission('view-invoice-order')) {
-            Log::warning('OrderController: User is not allowed to view invoice', ['user_id' => request()->user()->id]);
+            Log::channel('app_log')->warning('OrderController: User is not allowed to view invoice', ['user_id' => request()->user()->id]);
             abort(403);
         }
 

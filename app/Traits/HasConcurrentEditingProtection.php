@@ -11,7 +11,7 @@ trait HasConcurrentEditingProtection
     {
         $data['original_updated_at'] = $this->getRecordHash();
         
-        Log::info('Traits: mutating form data before fill to create hash for concurrency check', [
+        Log::channel('app_log')->info('Traits: mutating form data before fill to create hash for concurrency check', [
             'data' => $data,
             'originalUpdatedAt' => $data['original_updated_at'],
         ]);
@@ -24,13 +24,13 @@ trait HasConcurrentEditingProtection
         $originalUpdatedAt = $this->data['original_updated_at'] ?? null;
         $recordUpdatedAt = $this->getRecordHash();
 
-        Log::info('Traits: checking concurrency', [
+        Log::channel('app_log')->info('Traits: checking concurrency', [
             'originalUpdatedAt' => $originalUpdatedAt,
             'recordUpdatedAt' => $recordUpdatedAt,
         ]);
 
         if ($originalUpdatedAt && $originalUpdatedAt !== $recordUpdatedAt) {
-            Log::warning('Traits: concurrency detected', [
+            Log::channel('app_log')->warning('Traits: concurrency detected', [
                 'originalUpdatedAt' => $originalUpdatedAt,
                 'recordUpdatedAt' => $recordUpdatedAt,
                 'condition' => $originalUpdatedAt && $originalUpdatedAt !== $recordUpdatedAt,
@@ -45,7 +45,7 @@ trait HasConcurrentEditingProtection
             $this->halt();
         }
 
-        Log::info('Traits: concurrency check passed', [
+        Log::channel('app_log')->info('Traits: concurrency check passed', [
             'originalUpdatedAt' => $originalUpdatedAt,
             'recordUpdatedAt' => $recordUpdatedAt,
         ]);

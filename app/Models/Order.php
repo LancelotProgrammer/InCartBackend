@@ -106,7 +106,7 @@ class Order extends Model implements AuditableContract
     protected static function booted(): void
     {
         static::deleting(function (Order $order) {
-            Log::info('Models: deleting order.', ['id' => $order->id]);
+            Log::channel('app_log')->info('Models: deleting order.', ['id' => $order->id]);
             return event(new OrderDeleting($order));
         });
     }
@@ -168,7 +168,7 @@ class Order extends Model implements AuditableContract
 
     public function isPayOnDelivery(): bool
     {
-        Log::info('Models: checking if order is pay on delivery', [
+        Log::channel('app_log')->info('Models: checking if order is pay on delivery', [
             'order' => $this->toArray(),
             'user_id' => auth()?->id() ?? null,
             'payment_method' => $this->paymentMethod
@@ -218,7 +218,7 @@ class Order extends Model implements AuditableContract
 
     public function archive(): void
     {
-        Log::info('Models: archiving order.', ['id' => $this->id]);
+        Log::channel('app_log')->info('Models: archiving order.', ['id' => $this->id]);
 
         OrderArchive::create([
             'archived_at' => now(),
@@ -250,12 +250,12 @@ class Order extends Model implements AuditableContract
             'cart' => $this->carts()->with('cartProducts.product')->get()->toArray(),
         ]);
 
-        Log::info('Models: archiving order done.', ['id' => $this->id]);
+        Log::channel('app_log')->info('Models: archiving order done.', ['id' => $this->id]);
     }
 
     public function createForceApproveOrder(string $reason, int $userId, array $types): void
     {
-        Log::info('Models: creating force approve order.', ['id' => $this->id]);
+        Log::channel('app_log')->info('Models: creating force approve order.', ['id' => $this->id]);
 
         ForceApproveOrder::create([
             'types' => $types,
@@ -264,7 +264,7 @@ class Order extends Model implements AuditableContract
             'user_id' => $userId,
         ]);
 
-        Log::info('Models: creating force approve order done.', ['id' => $this->id]);
+        Log::channel('app_log')->info('Models: creating force approve order done.', ['id' => $this->id]);
     }
 
     public static function getUserOrderNotificationMessage(Order $order): array
@@ -280,7 +280,7 @@ class Order extends Model implements AuditableContract
 
     protected static function logUnknownAndThrow(Order $order)
     {
-        Log::channel('orders')->error('Unknown order status for notification', [
+        Log::channel('app_log')->channel('orders')->error('Unknown order status for notification', [
             'order_id' => $order->id,
             'status_value' => $order->order_status->value ?? null,
             'status' => $order->order_status->name ?? null,

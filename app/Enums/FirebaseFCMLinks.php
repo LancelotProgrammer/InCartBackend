@@ -43,7 +43,7 @@ enum FirebaseFCMLinks: string implements HasLabel
 
     public static function getModelDeepLink(array $data): ?string
     {
-        Log::info('Enums: getting model deep link', [
+        Log::channel('app_log')->info('Enums: getting model deep link', [
             'data' => $data,
         ]);
 
@@ -52,7 +52,7 @@ enum FirebaseFCMLinks: string implements HasLabel
             default => null,
         } : null;
 
-        Log::info('Enums: got model deep link', [
+        Log::channel('app_log')->info('Enums: got model deep link', [
             'data' => $data,
             'result' => $result,
         ]);

@@ -36,15 +36,15 @@ class Advertisement extends Model
     protected static function booted(): void
     {
         static::created(function (Advertisement $advertisement) {
-            Log::info('Models: created new advertisement and deleted home cache.', ['id' => $advertisement->id]);
+            Log::channel('app_log')->info('Models: created new advertisement and deleted home cache.', ['id' => $advertisement->id]);
             return CacheService::deleteHomeCache();
         });
         static::updated(function (Advertisement $advertisement) {
-            Log::info('Models: updated advertisement and deleted home cache.', ['id' => $advertisement->id]);
+            Log::channel('app_log')->info('Models: updated advertisement and deleted home cache.', ['id' => $advertisement->id]);
             return CacheService::deleteHomeCache();
         });
         static::deleted(function (Advertisement $advertisement) {
-            Log::info('Models: deleted advertisement and deleted home cache.', ['id' => $advertisement->id]);
+            Log::channel('app_log')->info('Models: deleted advertisement and deleted home cache.', ['id' => $advertisement->id]);
             return CacheService::deleteHomeCache();
         });
     }
@@ -146,7 +146,7 @@ class Advertisement extends Model
 
     protected static function logUnknownAndThrow($advertisement)
     {
-        Log::critical('Unsupported advertisement link', [
+        Log::channel('app_log')->critical('Unsupported advertisement link', [
             'advertisement' => $advertisement,
         ]);
 

@@ -33,7 +33,7 @@ class Optimize extends Command
         }
 
         $this->info('Optimizing application...');
-        Log::debug('Commands: Optimizing application.');
+        Log::channel('app_log')->debug('Commands: Optimizing application.');
 
         $this->commandFormat('scribe:generate', 'artisan');
         $this->commandFormat('app:delete:logs', 'artisan');
@@ -44,7 +44,7 @@ class Optimize extends Command
         $this->commandFormat('optimize:clear', 'artisan');
 
         $this->info('Application optimized successfully.');
-        Log::debug('Commands: Application optimized successfully.');
+        Log::channel('app_log')->debug('Commands: Application optimized successfully.');
 
         return;
     }

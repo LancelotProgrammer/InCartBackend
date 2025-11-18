@@ -33,12 +33,12 @@ class DeleteLogs extends Command
 
         $this->info('Deleting all logs...');
 
-        Log::debug('Commands: Deleting all logs.');
+        Log::channel('app_log')->debug('Commands: Deleting all logs.');
 
         $logPath = storage_path('logs');
 
         if (! is_dir($logPath)) {
-            Log::debug('Commands: Logs directory does not exist.');
+            Log::channel('app_log')->debug('Commands: Logs directory does not exist.');
             
             $this->error('Logs directory does not exist.');
 
@@ -48,7 +48,7 @@ class DeleteLogs extends Command
         $files = glob($logPath.'/*.log');
 
         if (empty($files)) {
-            Log::debug('Commands: No log files found.');
+            Log::channel('app_log')->debug('Commands: No log files found.');
             
             $this->error('No log files found.');
 
@@ -63,7 +63,7 @@ class DeleteLogs extends Command
 
         $this->info('All log files have been deleted.');
         
-        Log::debug('Commands: All log files have been deleted.');
+        Log::channel('app_log')->debug('Commands: All log files have been deleted.');
 
         return;
     }

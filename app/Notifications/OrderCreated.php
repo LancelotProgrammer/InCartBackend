@@ -23,7 +23,7 @@ class OrderCreated extends Notification
 
     public function toDatabase(User $notifiable): array
     {
-        Log::info('Notifications: OrderCreated', ['order' => $this->order, 'notifiable' => $notifiable]);
+        Log::channel('app_log')->info('Notifications: OrderCreated', ['order' => $this->order, 'notifiable' => $notifiable]);
 
         return FilamentNotification::make()
             ->title("New Order #{$this->order->order_number}")

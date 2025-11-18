@@ -20,7 +20,7 @@ class DeleteCartProductsOnOrderDelete
      */
     public function handle(OrderDeleting $event): void
     {
-        Log::info('Listeners: delete cart products on order delete', ['order' => $event->order]);
+        Log::channel('app_log')->info('Listeners: delete cart products on order delete', ['order' => $event->order]);
 
         $order = $event->order;
         foreach ($order->carts as $cart) {

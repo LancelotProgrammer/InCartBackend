@@ -20,12 +20,12 @@ class BranchScope implements Scope
             return;
         }
 
-        Log::info('Scopes: filtering data by branch.', [
+        Log::channel('app_log')->info('Scopes: filtering data by branch.', [
             'model' => get_class($model),
         ]);
 
         if ($branchId = request()->attributes->get('currentBranchId')) {
-            Log::info('Scopes: filtering data by branch using request.', [
+            Log::channel('app_log')->info('Scopes: filtering data by branch using request.', [
                 'branchId' => $branchId,
                 'isAPI' => request()->is('api/*'),
             ]);
@@ -36,7 +36,7 @@ class BranchScope implements Scope
         if ($user) {
             $allow = $user->shouldFilterBranchContent();
             if ($allow) {
-                Log::info('Scopes: filtering data by branch using user permission.', [
+                Log::channel('app_log')->info('Scopes: filtering data by branch using user permission.', [
                     'userId' => $user->id,
                     'permissionResult' => $allow,
                     'branches' => $user->branches?->pluck('id')->toArray(),
@@ -46,7 +46,7 @@ class BranchScope implements Scope
             }
         }
 
-        Log::info('Scopes: filtered data by branch.');
+        Log::channel('app_log')->info('Scopes: filtered data by branch.');
     }
 
     public static function disable(): void
