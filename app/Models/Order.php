@@ -169,9 +169,9 @@ class Order extends Model implements AuditableContract
     public function isPayOnDelivery(): bool
     {
         Log::channel('app_log')->info('Models: checking if order is pay on delivery', [
-            'order' => $this->toArray(),
+            'order' => $this->id,
             'user_id' => auth()?->id() ?? null,
-            'payment_method' => $this->paymentMethod
+            'payment_method_id' => $this->paymentMethod?->id,
         ]);
         return $this->paymentMethod->code === PaymentMethod::PAY_ON_DELIVERY_CODE;
     }

@@ -21,13 +21,14 @@ class BranchScope implements Scope
         }
 
         Log::channel('app_log')->info('Scopes: filtering data by branch.', [
+            'url' => request()->url(),
             'model' => get_class($model),
         ]);
-
+        
         if ($branchId = request()->attributes->get('currentBranchId')) {
             Log::channel('app_log')->info('Scopes: filtering data by branch using request.', [
+                'userId' => auth('sanctum')->id(),
                 'branchId' => $branchId,
-                'isAPI' => request()->is('api/*'),
             ]);
             $builder->where($model->getTable().'.branch_id', $branchId);
         }
@@ -40,7 +41,6 @@ class BranchScope implements Scope
                     'userId' => $user->id,
                     'permissionResult' => $allow,
                     'branches' => $user->branches?->pluck('id')->toArray(),
-                    'isAPI' => request()->is('api/*'),
                 ]);
                 $builder->where($model->getTable().'.branch_id', $user->branches->first()->id);
             }

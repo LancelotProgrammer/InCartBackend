@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Filament\Responses\LoginResponse;
 use App\Policies\AuditPolicy;
+use Filament\Actions\Action;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
@@ -16,6 +17,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use OwenIt\Auditing\Models\Audit;
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDB();
         $this->configureURL();
         $this->configureFilamentTable();
+        $this->configureFilamentAction();
         $this->configureFilamentAsset();
     }
 
@@ -108,6 +111,33 @@ class AppServiceProvider extends ServiceProvider
     {
         Table::configureUsing(function (Table $table): void {
             $table->paginationPageOptions([10, 25]);
+        });
+    }
+
+    private function configureFilamentAction(): void
+    {
+        Action::macro('logged', function () {
+            /** @var Action $this */
+            $this->before(function (?Model $record, ?array $data = []) {
+                /** @var Action $this */
+                Log::channel('app_log')->info('Filament action executed:', [
+                    'user_id' => auth()->id(),
+                    'name' => $this->getName(),
+                    'url' => request()->url(),
+                    'data' => $this->getData(),
+                    'record' => $this->getRecord(),
+                    'model' => $this->getModel(),
+                ]);
+            });
+            $this->after(function (?Model $record, ?array $data = []) {
+                /** @var Action $this */
+                Log::channel('app_log')->info('Filament action executed: successfully');
+            });
+            return $this;
+        });
+
+        Action::configureUsing(function (Action $action) {
+            $action->logged();
         });
     }
 
