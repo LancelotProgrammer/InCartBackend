@@ -32,7 +32,7 @@ class AuthenticationException extends Exception
 
     public function render(Request $request): Response
     {
-        if (App::environment('production')) {
+        if (App::environment(['production', 'staging'])) {
             if (count($this->errors) > 0) {
                 return response([
                     'message' => $this->errorMessage,
@@ -61,9 +61,10 @@ class AuthenticationException extends Exception
 
     public function report(): void
     {
-        Log::warning("{$this->errorMessage}. {$this->details}.", [
+        Log::warning("Exception: {$this->errorMessage}. {$this->details}.", [
             'status' => $this->statusCode,
             'location' => $this->context,
+            'errors' => $this->errors ?? ['No error payload'],
         ]);
     }
 }

@@ -6,7 +6,6 @@ use App\Traits\DebugPosition;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 class LogicalException extends Exception
@@ -48,9 +47,10 @@ class LogicalException extends Exception
 
     public function report(): void
     {
-        Log::warning("{$this->errorMessage}. {$this->details}.", [
+        Log::warning("Exception: {$this->errorMessage}. {$this->details}.", [
             'status' => $this->statusCode,
             'location' => $this->context,
+            'errors' => $this->errors ?? ['No error payload'],
         ]);
     }
 }
