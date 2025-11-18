@@ -26,8 +26,10 @@ class UserInfolist
                         TextEntry::make('city.name'),
                         TextEntry::make('role.title'),
                     ]),
-                Section::make('Details Information')
-                    ->visible(auth()->user()->canManageDeveloperSettings())
+                Section::make('Customer Details Information')
+                    ->visible(function ($record) {
+                        return auth()->user()->canManageDeveloperSettings() && $record->role->code === Role::ROLE_CUSTOMER_CODE;
+                    })
                     ->columns(1)
                     ->schema([
                         KeyValueEntry::make('Loyalty')

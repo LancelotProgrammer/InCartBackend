@@ -234,7 +234,7 @@ class Order extends Model implements AuditableContract
             'branch' => $this->branch->toArray(),
             'coupon' => $this->coupon?->toArray(),
             'payment_method' => $this->paymentMethod->toArray(),
-            'user_address' => $this->userAddress->toArray(),
+            'user_address' => $this->userAddress?->toArray(),
             'cart' => $this->carts()->with('cartProducts.product')->get()->toArray(),
         ]);
     }
