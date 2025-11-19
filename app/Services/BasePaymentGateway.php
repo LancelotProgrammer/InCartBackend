@@ -22,7 +22,7 @@ class BasePaymentGateway
     {
         $class = BasePaymentGateway::$map[$code] ?? null;
         if (! $class || ! in_array(PaymentGatewayInterface::class, class_implements($class))) {
-            Log::channel('app_log')->critical('Payment gateway not found for {code}', ['code' => $code]);
+            Log::channel('app_log')->critical('Services(BasePaymentGateway): Payment gateway not found for {code}', ['code' => $code]);
             throw new InvalidArgumentException("Payment gateway not found for {$code}");
         }
 
