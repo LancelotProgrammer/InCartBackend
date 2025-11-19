@@ -40,7 +40,7 @@ class OrderService
         int $branchId,
         int $customerId,
     ): OrderProcess {
-        Log::channel('app_log')->debug('Creating order process', [
+        Log::channel('app_log')->info('Services(OrderService): Creating order process', [
             'address_id' => $addressId,
             'delivery_scheduled_type' => $deliveryScheduledType->value,
             'delivery_date' => $deliveryDate,
@@ -74,7 +74,7 @@ class OrderService
 
     private static function processOrderCreation(OrderProcess $service, string $process): mixed
     {
-        Log::channel('app_log')->debug('Processing order creation', ['process' => $process]);
+        Log::channel('app_log')->info('Services(OrderService): Processing order creation', ['process' => $process]);
 
         return DB::transaction(
             fn() => $service
@@ -104,7 +104,7 @@ class OrderService
         int $branchId,
         int $customerId,
     ): Order {
-        Log::channel('app_log')->info('User creating order', [
+        Log::channel('app_log')->info('Services(OrderService): User creating order', [
             'customer_id' => $customerId,
             'branch_id' => $branchId,
             'cart_items_count' => count($cart)
@@ -124,7 +124,7 @@ class OrderService
         
         DatabaseManagerNotification::sendCreatedOrderNotification($order);
 
-        Log::channel('app_log')->info('User order created successfully', [
+        Log::channel('app_log')->info('Services(OrderService): User order created successfully', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'customer_id' => $customerId
@@ -135,7 +135,7 @@ class OrderService
 
     public static function userPay(int $orderId, string $orderPaymentToken, ?array $payload): void
     {
-        Log::channel('app_log')->info('User processing payment', [
+        Log::channel('app_log')->info('Services(OrderService): User processing payment', [
             'order_id' => $orderId,
             'has_payload' => !empty($payload)
         ]);
@@ -145,7 +145,7 @@ class OrderService
             ->first();
 
         if (!$order) {
-            Log::channel('app_log')->warning('Order not found for payment', [
+            Log::channel('app_log')->warning('Services(OrderService): Order not found for payment', [
                 'order_id' => $orderId,
                 'payment_token' => $orderPaymentToken
             ]);
@@ -156,7 +156,7 @@ class OrderService
             BasePaymentGateway::make($order->paymentMethod->code)->pay($order, $payload);
         });
 
-        Log::channel('app_log')->info('User payment processed successfully', [
+        Log::channel('app_log')->info('Services(OrderService): User payment processed successfully', [
             'order_id' => $orderId,
             'payment_method' => $order->paymentMethod->code
         ]);
@@ -164,7 +164,7 @@ class OrderService
 
     public static function userInvoice(int $orderId, int $userId): Response
     {
-        Log::channel('app_log')->debug('Generating user invoice', [
+        Log::channel('app_log')->info('Services(OrderService): Generating user invoice', [
             'order_id' => $orderId,
             'user_id' => $userId
         ]);
@@ -172,7 +172,7 @@ class OrderService
         $order = Order::where('id', $orderId)->where('customer_id', '=', $userId)->first();
 
         if (!$order) {
-            Log::channel('app_log')->warning('Order not found for invoice generation', [
+            Log::channel('app_log')->warning('Services(OrderService): Order not found for invoice generation', [
                 'order_id' => $orderId,
                 'user_id' => $userId
             ]);
@@ -192,7 +192,7 @@ class OrderService
         int $branchId,
         int $customerId,
     ): array {
-        Log::channel('app_log')->debug('User creating order bill', [
+        Log::channel('app_log')->info('Services(OrderService): User creating order bill', [
             'customer_id' => $customerId,
             'branch_id' => $branchId
         ]);
@@ -209,7 +209,7 @@ class OrderService
             $customerId,
         ), 'createOrderBill');
 
-        Log::channel('app_log')->info('Order bill created successfully', [
+        Log::channel('app_log')->info('Services(OrderService): Order bill created successfully', [
             'customer_id' => $customerId,
             'bill_total' => $bill['total'] ?? null
         ]);
@@ -219,7 +219,7 @@ class OrderService
 
     public static function userCancel(int $orderId, int $userId, ?string $reason): void
     {
-        Log::channel('app_log')->info('User cancelling order', [
+        Log::channel('app_log')->info('Services(OrderService): User cancelling order', [
             'order_id' => $orderId,
             'user_id' => $userId,
             'has_reason' => !empty($reason)
@@ -253,7 +253,7 @@ class OrderService
         DatabaseManagerNotification::sendCancelledOrderNotification($order);
         CacheService::deletePendingOrderCount();
 
-        Log::channel('app_log')->info('User order cancelled successfully', [
+        Log::channel('app_log')->info('Services(OrderService): User order cancelled successfully', [
             'order_id' => $orderId,
             'user_id' => $userId
         ]);
@@ -270,7 +270,7 @@ class OrderService
         int $branchId,
         int $customerId,
     ): void {
-        Log::channel('app_log')->info('Manager creating order', [
+        Log::channel('app_log')->info('Services(OrderService): Manager creating order', [
             'manager_id' => auth()->user()->id,
             'branch_id' => $branchId,
             'customer_id' => $customerId
@@ -288,7 +288,7 @@ class OrderService
             $customerId,
         ), 'createOrder');
 
-        Log::channel('app_log')->info('Manager order created successfully', [
+        Log::channel('app_log')->info('Services(OrderService): Manager order created successfully', [
             'manager_id' => auth()->user()->id,
             'branch_id' => $branchId
         ]);
@@ -296,12 +296,12 @@ class OrderService
 
     public static function managerInvoice(int $orderId): Response
     {
-        Log::channel('app_log')->debug('Generating manager invoice', ['order_id' => $orderId]);
+        Log::channel('app_log')->info('Services(OrderService): Generating manager invoice', ['order_id' => $orderId]);
 
         $order = Order::where('id', $orderId)->first();
 
         if (!$order) {
-            Log::channel('app_log')->warning('Order not found for manager invoice', ['order_id' => $orderId]);
+            Log::channel('app_log')->warning('Services(OrderService): Order not found for manager invoice', ['order_id' => $orderId]);
         }
 
         return InvoiceService::generateInvoice($order);
@@ -309,7 +309,7 @@ class OrderService
 
     public static function managerCancel(Order $order, array $data): void
     {
-        Log::channel('app_log')->info('Manager cancelling order', [
+        Log::channel('app_log')->info('Services(OrderService): Manager cancelling order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'manager_id' => auth()->user()->id,
@@ -340,7 +340,7 @@ class OrderService
             ->success()
             ->send();
 
-        Log::channel('app_log')->info('Manager order cancellation completed', [
+        Log::channel('app_log')->info('Services(OrderService): Manager order cancellation completed', [
             'order_id' => $order->id,
             'manager_id' => auth()->user()->id
         ]);
@@ -348,14 +348,14 @@ class OrderService
 
     public static function managerApprove(Order $order): void
     {
-        Log::channel('app_log')->info('Manager approving order', [
+        Log::channel('app_log')->info('Services(OrderService): Manager approving order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'manager_id' => auth()->user()->id
         ]);
 
         if (! $order->isPayOnDelivery() && $order->payment_status === PaymentStatus::UNPAID) {
-            Log::channel('app_log')->warning('Order cannot be approved - not checked out', [
+            Log::channel('app_log')->warning('Services(OrderService): Order cannot be approved - not checked out', [
                 'order_id' => $order->id,
                 'payment_status' => $order->payment_status
             ]);
@@ -368,7 +368,7 @@ class OrderService
             return;
         }
         if (! $order->delivery_date->inApplicationTimezone()->isSameDay(now()->inApplicationTimezone())) {
-            Log::channel('app_log')->warning('Order cannot be approved - wrong date', [
+            Log::channel('app_log')->warning('Services(OrderService): Order cannot be approved - wrong date', [
                 'order_id' => $order->id,
                 'delivery_date' => $order->delivery_date
             ]);
@@ -381,7 +381,7 @@ class OrderService
             return;
         }
         if (! SettingsService::isSystemOnline()) {
-            Log::channel('app_log')->warning('Order cannot be approved - system offline', ['order_id' => $order->id]);
+            Log::channel('app_log')->warning('Services(OrderService): Order cannot be approved - system offline', ['order_id' => $order->id]);
             Notification::make()
                 ->title("Order #{$order->order_number} cannot be approved.")
                 ->body('Order cannot be approved because the system is offline.')
@@ -405,7 +405,7 @@ class OrderService
             ->success()
             ->send();
 
-        Log::channel('app_log')->info('Manager order approval completed', [
+        Log::channel('app_log')->info('Services(OrderService): Manager order approval completed', [
             'order_id' => $order->id,
             'manager_id' => auth()->user()->id
         ]);
@@ -413,7 +413,7 @@ class OrderService
 
     public static function managerForceApprove(Order $order, array $data): void
     {
-        Log::channel('app_log')->info('Manager force approving order', [
+        Log::channel('app_log')->info('Services(OrderService): Manager force approving order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'manager_id' => auth()->user()->id,
@@ -421,7 +421,7 @@ class OrderService
         ]);
 
         if (! SettingsService::isSystemOnline()) {
-            Log::channel('app_log')->warning('Order cannot be force approved - system offline', ['order_id' => $order->id]);
+            Log::channel('app_log')->warning('Services(OrderService): Order cannot be force approved - system offline', ['order_id' => $order->id]);
             Notification::make()
                 ->title("Order #{$order->order_number} cannot be approved.")
                 ->body('Order cannot be force approved because the system is offline.')
@@ -433,7 +433,7 @@ class OrderService
 
         $forcedApprovedOrdersCountInThisWeek = ForceApproveOrder::where('created_at', '>=', now()->startOfWeek()->inApplicationTimezone())->count();
         if (! $forcedApprovedOrdersCountInThisWeek > BranchSettingsService::getForceApproveOrdersLimit($order->branch_id)) {
-            Log::channel('app_log')->warning('Force approve limit exceeded', [
+            Log::channel('app_log')->warning('Services(OrderService): Force approve limit exceeded', [
                 'current_count' => $forcedApprovedOrdersCountInThisWeek,
                 'limit' => BranchSettingsService::getForceApproveOrdersLimit($order->branch_id)
             ]);
@@ -467,7 +467,7 @@ class OrderService
             ->success()
             ->send();
 
-        Log::channel('app_log')->info('Manager force approval completed', [
+        Log::channel('app_log')->info('Services(OrderService): Manager force approval completed', [
             'order_id' => $order->id,
             'force_approve_types' => $types
         ]);
@@ -475,7 +475,7 @@ class OrderService
 
     public static function managerSelectDelivery(Order $order, array $data): void
     {
-        Log::channel('app_log')->info('Manager selecting delivery for order', [
+        Log::channel('app_log')->info('Services(OrderService): Manager selecting delivery for order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'delivery_id' => $data['delivery_id'],
@@ -498,7 +498,7 @@ class OrderService
             ->info()
             ->send();
 
-        Log::channel('app_log')->info('Delivery selection completed', [
+        Log::channel('app_log')->info('Services(OrderService): Delivery selection completed', [
             'order_id' => $order->id,
             'delivery_id' => $data['delivery_id']
         ]);
@@ -506,7 +506,7 @@ class OrderService
 
     public static function deliveryFinish(Order $order): void
     {
-        Log::channel('app_log')->info('Delivery finishing order', [
+        Log::channel('app_log')->info('Services(OrderService): Delivery finishing order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'delivery_id' => auth()->user()->id
@@ -527,12 +527,12 @@ class OrderService
             ->success()
             ->send();
 
-        Log::channel('app_log')->info('Delivery finish completed', ['order_id' => $order->id]);
+        Log::channel('app_log')->info('Services(OrderService): Delivery finish completed', ['order_id' => $order->id]);
     }
 
     public static function managerFinish(Order $order): void
     {
-        Log::channel('app_log')->info('Manager finishing order', [
+        Log::channel('app_log')->info('Services(OrderService): Manager finishing order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'manager_id' => auth()->user()->id
@@ -553,12 +553,12 @@ class OrderService
             ->success()
             ->send();
 
-        Log::channel('app_log')->info('Manager finish completed', ['order_id' => $order->id]);
+        Log::channel('app_log')->info('Services(OrderService): Manager finish completed', ['order_id' => $order->id]);
     }
 
     public static function managerClose(Order $order, array $data): void
     {
-        Log::channel('app_log')->info('Manager closing order', [
+        Log::channel('app_log')->info('Services(OrderService): Manager closing order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'manager_id' => auth()->user()->id,
@@ -596,7 +596,7 @@ class OrderService
             ->success()
             ->send();
 
-        Log::channel('app_log')->info('Manager close order completed', [
+        Log::channel('app_log')->info('Services(OrderService): Manager close order completed', [
             'order_id' => $order->id,
             'total_price' => $order->total_price,
             'payed_price' => $order->payed_price
@@ -605,7 +605,7 @@ class OrderService
 
     public static function managerArchive(Order $order): void
     {
-        Log::channel('app_log')->info('Manager archiving order', [
+        Log::channel('app_log')->info('Services(OrderService): Manager archiving order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'manager_id' => auth()->user()->id
@@ -621,12 +621,12 @@ class OrderService
             ->warning()
             ->send();
 
-        Log::channel('app_log')->info('Manager archive completed', ['order_id' => $order->id]);
+        Log::channel('app_log')->info('Services(OrderService): Manager archive completed', ['order_id' => $order->id]);
     }
 
     public static function getPaymentMethods(?int $branchId = null): Collection
     {
-        Log::channel('app_log')->debug('Getting payment methods', ['branch_id' => $branchId]);
+        Log::channel('app_log')->info('Services(OrderService): Getting payment methods', ['branch_id' => $branchId]);
 
         $paymentMethod = PaymentMethod::published();
         if ($branchId) {
@@ -635,7 +635,7 @@ class OrderService
 
         $result = $paymentMethod->get();
 
-        Log::channel('app_log')->debug('Payment methods retrieved', [
+        Log::channel('app_log')->info('Services(OrderService): Payment methods retrieved', [
             'branch_id' => $branchId,
             'count' => $result->count()
         ]);
@@ -645,7 +645,7 @@ class OrderService
 
     public static function getDeliveryUsers(int $branchId): Collection
     {
-        Log::channel('app_log')->debug('Getting delivery users', ['branch_id' => $branchId]);
+        Log::channel('app_log')->info('Services(OrderService): Getting delivery users', ['branch_id' => $branchId]);
 
         $result = User::getUsersWhoCanBeAssignedToTakeOrders()->unblock()->where(function (Builder $query) use ($branchId) {
             $branch = Branch::find($branchId);
@@ -654,7 +654,7 @@ class OrderService
             });
         })->pluck('name', 'id');
 
-        Log::channel('app_log')->debug('Delivery users retrieved', [
+        Log::channel('app_log')->info('Services(OrderService): Delivery users retrieved', [
             'branch_id' => $branchId,
             'count' => $result->count()
         ]);
@@ -664,7 +664,7 @@ class OrderService
 
     public static function getUsers(string $search, int $branchId): array
     {
-        Log::channel('app_log')->debug('Searching users', [
+        Log::channel('app_log')->info('Services(OrderService): Searching users', [
             'search_term' => $search,
             'branch_id' => $branchId
         ]);
@@ -680,7 +680,7 @@ class OrderService
             ->pluck('name', 'id')
             ->all();
 
-        Log::channel('app_log')->debug('Users search completed', [
+        Log::channel('app_log')->info('Services(OrderService): Users search completed', [
             'search_term' => $search,
             'result_count' => count($result)
         ]);
@@ -690,7 +690,7 @@ class OrderService
 
     public static function recalculateOrderTotals(Order $order): void
     {
-        Log::channel('app_log')->debug('Recalculating order totals', [
+        Log::channel('app_log')->info('Services(OrderService): Recalculating order totals', [
             'order_id' => $order->id,
             'order_number' => $order->order_number
         ]);
@@ -718,7 +718,7 @@ class OrderService
             'total_price' => $totalPrice,
         ]);
 
-        Log::channel('app_log')->info('Order totals recalculated', [
+        Log::channel('app_log')->info('Services(OrderService): Order totals recalculated', [
             'order_id' => $order->id,
             'new_subtotal' => $subtotal,
             'new_total' => $totalPrice
@@ -727,7 +727,7 @@ class OrderService
 
     private static function ensureValidPayment(Order $order, bool $forRefund = false): void
     {
-        Log::channel('app_log')->debug('Validating payment', [
+        Log::channel('app_log')->info('Services(OrderService): Validating payment', [
             'order_id' => $order->id,
             'for_refund' => $forRefund,
             'payment_method_id' => $order->paymentMethod->id ?? null
@@ -762,12 +762,12 @@ class OrderService
             }
         }
 
-        Log::channel('app_log')->debug('Payment validation successful', ['order_id' => $order->id]);
+        Log::channel('app_log')->info('Services(OrderService): Payment validation successful', ['order_id' => $order->id]);
     }
 
     public static function addProduct(array $data, Order $order): void
     {
-        Log::channel('app_log')->info('Adding product to order', [
+        Log::channel('app_log')->info('Services(OrderService): Adding product to order', [
             'order_id' => $order->id,
             'order_number' => $order->order_number,
             'product_id' => $data['product_id'],
@@ -779,7 +779,7 @@ class OrderService
             ->first();
 
         if (! $branchProduct) {
-            Log::channel('app_log')->warning('Product not available for branch', [
+            Log::channel('app_log')->warning('Services(OrderService): Product not available for branch', [
                 'product_id' => $data['product_id'],
                 'branch_id' => $order->branch_id
             ]);
@@ -796,7 +796,7 @@ class OrderService
             ->first();
 
         if ($cartProduct) {
-            Log::channel('app_log')->warning('Product already in cart', [
+            Log::channel('app_log')->warning('Services(OrderService): Product already in cart', [
                 'product_id' => $data['product_id'],
                 'cart_id' => $data['cart_id']
             ]);
@@ -827,7 +827,7 @@ class OrderService
             ->success()
             ->send();
 
-        Log::channel('app_log')->info('Product added to order successfully', [
+        Log::channel('app_log')->info('Services(OrderService): Product added to order successfully', [
             'order_id' => $order->id,
             'product_id' => $data['product_id']
         ]);
@@ -835,7 +835,7 @@ class OrderService
 
     public static function editProduct(array $data, CartProduct $record, Order $order): void
     {
-        Log::channel('app_log')->info('Editing product in order', [
+        Log::channel('app_log')->info('Services(OrderService): Editing product in order', [
             'order_id' => $order->id,
             'cart_product_id' => $record->id,
             'product_id' => $data['product_id'],
@@ -847,7 +847,7 @@ class OrderService
             ->first();
 
         if (! $branchProduct) {
-            Log::channel('app_log')->warning('Product not available for branch during edit', [
+            Log::channel('app_log')->warning('Services(OrderService): Product not available for branch during edit', [
                 'product_id' => $data['product_id'],
                 'branch_id' => $order->branch_id
             ]);
@@ -871,7 +871,7 @@ class OrderService
             ->success()
             ->send();
 
-        Log::channel('app_log')->info('Product edited successfully', [
+        Log::channel('app_log')->info('Services(OrderService): Product edited successfully', [
             'order_id' => $order->id,
             'cart_product_id' => $record->id
         ]);
@@ -879,7 +879,7 @@ class OrderService
 
     public static function removeProduct(CartProduct $record, Order $order): void
     {
-        Log::channel('app_log')->info('Removing product from order', [
+        Log::channel('app_log')->info('Services(OrderService): Removing product from order', [
             'order_id' => $order->id,
             'cart_product_id' => $record->id,
             'product_id' => $record->product_id
@@ -888,7 +888,7 @@ class OrderService
         $cart = $record->cart;
 
         if ($cart->cartProducts()->count() <= 1) {
-            Log::channel('app_log')->warning('Cannot remove last product from cart', [
+            Log::channel('app_log')->warning('Services(OrderService): Cannot remove last product from cart', [
                 'cart_id' => $cart->id,
                 'remaining_products' => $cart->cartProducts()->count()
             ]);
@@ -910,7 +910,7 @@ class OrderService
             ->success()
             ->send();
 
-        Log::channel('app_log')->info('Product removed successfully', [
+        Log::channel('app_log')->info('Services(OrderService): Product removed successfully', [
             'order_id' => $order->id,
             'cart_product_id' => $record->id
         ]);
