@@ -42,6 +42,10 @@ class OrderPayload
 
     private ?Gift $gift = null;
 
+    private bool $isDiscountFromCoupon = false;
+    
+    private bool $isDiscountFromGift = false;
+
     private Cart $cart;
 
     private PaymentMethod $paymentMethod;
@@ -224,6 +228,26 @@ class OrderPayload
     public function setGift(?Gift $gift): void
     {
         $this->gift = $gift;
+    }
+
+    public function getIsDiscountFromCoupon(): bool
+    {
+        return $this->isDiscountFromCoupon;
+    }
+
+    public function setIsDiscountFromCoupon(bool $isDiscountFromCoupon): void
+    {
+        $this->isDiscountFromCoupon = $isDiscountFromCoupon;
+    }
+
+    public function getIsDiscountFromGift(): bool
+    {
+        return $this->isDiscountFromGift;
+    }
+
+    public function setIsDiscountFromGift(bool $isDiscountFromGift): void
+    {
+        $this->isDiscountFromGift = $isDiscountFromGift;
     }
 
     public function getCart(): Cart

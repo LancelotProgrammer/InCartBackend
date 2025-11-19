@@ -19,6 +19,7 @@ use App\Models\UserAddress;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class OrderProcess
 {
@@ -27,10 +28,16 @@ class OrderProcess
     public function __construct(OrderPayload $payload)
     {
         $this->payload = $payload;
+        Log::channel('app_log')->info('OrderProcess initialized', [
+            'user_id' => $this->payload->getUser()->id ?? null,
+            'branch_id' => $this->payload->getBranchId(),
+        ]);
     }
 
     public function generateOrderNumber(): self
     {
+        Log::channel('app_log')->debug('Starting order number generation');
+
         do {
             $orderNumber = sprintf(
                 'ORD-%s-%s',
@@ -41,16 +48,23 @@ class OrderProcess
 
         $this->payload->setOrderNumber($orderNumber);
 
+        Log::channel('app_log')->info('Order number generated successfully', [
+            'order_number' => $orderNumber
+        ]);
+
         return $this;
     }
 
     public function setOrderDate(): self
     {
+        Log::channel('app_log')->debug('Setting order date', [
+            'delivery_scheduled_type' => $this->payload->getDeliveryScheduledType()->value
+        ]);
+
         if ($this->payload->getDeliveryScheduledType() === DeliveryScheduledType::SCHEDULED) {
             $maxScheduledDays = $this->payload->getMaxScheduledDays();
             $maxDate = Carbon::now(config('app.timezone_display'))->addDays($maxScheduledDays);
-            if (Carbon::parse($this->payload->getDeliveryDate(), config('app.timezone_display'))->greaterThan($maxDate)
-            ) {
+            if (Carbon::parse($this->payload->getDeliveryDate(), config('app.timezone_display'))->greaterThan($maxDate)) {
                 throw new LogicalException("The delivery date cannot be more than $maxScheduledDays days from now.");
             }
         }
@@ -61,11 +75,20 @@ class OrderProcess
 
         $this->payload->setDate($date);
 
+        Log::channel('app_log')->debug('Order date set successfully', [
+            'order_date' => $date->toISOString()
+        ]);
+
         return $this;
     }
 
     public function calculateDestination(): self
     {
+        Log::channel('app_log')->debug('Calculating destination distance', [
+            'branch_id' => $this->payload->getBranchId(),
+            'address_id' => $this->payload->getAddressId()
+        ]);
+
         $distance = DistanceService::validate(
             $this->payload->getBranchId(),
             $this->payload->getAddressId(),
@@ -73,11 +96,20 @@ class OrderProcess
 
         $this->payload->setDistance($distance);
 
+        Log::channel('app_log')->info('Destination distance calculated', [
+            'distance' => $distance
+        ]);
+
         return $this;
     }
 
     public function calculateCartPrice(): self
     {
+        Log::channel('app_log')->debug('Starting cart price calculation', [
+            'cart_items_count' => count($this->payload->getCartItems()),
+            'branch_id' => $this->payload->getBranchId()
+        ]);
+
         $subtotal = 0;
 
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
@@ -91,9 +123,17 @@ class OrderProcess
             ])])
             ->get();
 
+        Log::channel('app_log')->debug('Products fetched for cart calculation', [
+            'products_count' => $products->count()
+        ]);
+
         foreach ($this->payload->getCartItems() as $item) {
             $product = $products->firstWhere('id', $item['id']);
             if (! $product || $product->branches->isEmpty()) {
+                Log::channel('app_log')->warning('Product not found or not available in branch', [
+                    'product_id' => $item['id'],
+                    'branch_id' => $this->payload->getBranchId()
+                ]);
                 continue;
             }
 
@@ -127,11 +167,19 @@ class OrderProcess
 
         $this->payload->setSubtotal($subtotal);
 
+        Log::channel('app_log')->info('Cart price calculated successfully', [
+            'subtotal' => $subtotal
+        ]);
+
         return $this;
     }
 
     public function createCart(): self
     {
+        Log::channel('app_log')->debug('Creating cart', [
+            'order_number' => $this->payload->getOrderNumber()
+        ]);
+
         $cart = Cart::create([
             'order_number' => $this->payload->getOrderNumber(),
         ]);
@@ -164,6 +212,11 @@ class OrderProcess
 
         $this->payload->setCart($cart);
 
+        Log::channel('app_log')->info('Cart created successfully', [
+            'cart_id' => $cart->id,
+            'cart_products_count' => count($cartProducts)
+        ]);
+
         return $this;
     }
 
@@ -174,6 +227,7 @@ class OrderProcess
             weight_per_unit: should be added to products table. The idea is to have the weight of one unit of the product in grams
             setTotalWeight / getTotalWeight / getAllowedWeight:  should be added to OrderPayload
         */
+        Log::channel('app_log')->critical('Cart weight calculation not implemented');
         throw new Exception('Not implemented yet');
         // $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))->get();
         // $totalWeight = 0;
@@ -190,6 +244,11 @@ class OrderProcess
 
     public function calculateDeliveryPrice(): self
     {
+        Log::channel('app_log')->debug('Calculating delivery price', [
+            'distance' => $this->payload->getDistance(),
+            'price_per_kilometer' => $this->payload->getPricePerKilometer()
+        ]);
+
         /*
             future: use this code to calculate the deliveryFee based on distance, weight or branch
             getCartWeight / getPricePerKilogram / getBranchDeliveryPrice : should be added to OrderPayload
@@ -201,11 +260,72 @@ class OrderProcess
         $fee = $this->payload->getDistance() * $this->payload->getPricePerKilometer();
         $this->payload->setDeliveryFee($fee);
 
+        Log::channel('app_log')->info('Delivery price calculated', [
+            'delivery_fee' => $fee
+        ]);
+
+        return $this;
+    }
+
+    public function handleDiscountCode(): self
+    {
+        $code = $this->payload->getCode();
+
+        if (empty($code)) {
+            Log::channel('app_log')->debug('No coupon code provided, skipping coupon/gift application');
+            return $this;
+        }
+
+        Log::channel('app_log')->debug("Checking discount code: {$code}");
+
+        $coupon = Coupon::published()
+            ->where('code', $code)
+            ->first();
+
+        $gift = Gift::published()
+            ->where('code', $code)
+            ->first();
+
+        // none found → throw exception
+        if (! $coupon && ! $gift) {
+            throw new LogicalException('Code error', 'unavailable code.');
+        }
+
+        // If coupon exists
+        if ($coupon) {
+            Log::channel('app_log')->info("Coupon founded successfully", [
+                'code' => $code,
+                'coupon_id' => $coupon->id,
+            ]);
+            $this->payload->setIsDiscountFromCoupon(true);
+            $this->payload->setCoupon($coupon);
+            return $this;
+        }
+
+        // If gift exists
+        if ($gift) {
+            Log::channel('app_log')->info("Gift founded successfully", [
+                'code' => $code,
+                'gift_id' => $gift->id,
+            ]);
+            $this->payload->setIsDiscountFromGift(true);
+            $this->payload->setGift($gift);
+            return $this;
+        }
+
         return $this;
     }
 
     public function handleCouponService(): self
     {
+        if (! $this->payload->getIsDiscountFromCoupon()) {
+            return $this;
+        }
+
+        Log::channel('app_log')->debug('Handling coupon service', [
+            'has_coupon_code' => !empty($this->payload->getCode())
+        ]);
+
         // prepare coupon service dependencies
         $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))
             ->with('categories')
@@ -224,44 +344,55 @@ class OrderProcess
             $products->flatMap(fn ($product) => $product->categories)->unique('id')->pluck('id')->toArray(),
         );
 
-        // apply coupon if exists
-        if (empty($this->payload->getCode())) {
-            return $this;
-        }
-        $coupon = Coupon::published()->where('code', $this->payload->getCode())->first();
-        if (! $coupon) {
-            throw new LogicalException('Code error', 'Coupon is not available.');
-        }
-
         // calculate discount
+        $coupon = $this->payload->getCoupon();
         $discount = $couponService->calculateDiscount($coupon);
         $this->payload->setCoupon($coupon);
         $this->payload->setDiscount($discount);
+
+        Log::channel('app_log')->info('Coupon applied successfully', [
+            'coupon_id' => $coupon->id,
+            'coupon_code' => $coupon->code,
+            'discount_amount' => $discount
+        ]);
 
         return $this;
     }
 
     public function handleGiftRedemption(): self
     {
-        // apply gift if exists
-        if (empty($this->payload->getCode())) {
+        if (! $this->payload->getIsDiscountFromGift()) {
             return $this;
         }
-        $gift = Gift::published()->where('code', $this->payload->getCode())->first();
-        if (! $gift) {
-            throw new LogicalException('Code error', 'Gift is not available.');
-        }
+
+        Log::channel('app_log')->debug('Handling gift redemption', [
+            'has_gift_code' => !empty($this->payload->getCode())
+        ]);
 
         // calculate discount
         $gift = LoyaltyService::validateCode($this->payload->getUser(), $this->payload->getCode(), $this->payload->getSubtotal());
         $this->payload->setGift($gift);
         $this->payload->setDiscount($gift->discount);
 
+        Log::channel('app_log')->info('Gift applied successfully', [
+            'gift_id' => $gift->id,
+            'gift_code' => $gift->code,
+            'discount_amount' => $gift->discount
+        ]);
+
         return $this;
     }
 
     public function calculateFeesAndTotals(): self
     {
+        Log::channel('app_log')->debug('Calculating fees and totals', [
+            'subtotal' => $this->payload->getSubtotal(),
+            'service_fee' => $this->payload->getServiceFee(),
+            'tax_rate' => $this->payload->getTaxRate(),
+            'discount' => $this->payload->getDiscount(),
+            'delivery_fee' => $this->payload->getDeliveryFee()
+        ]);
+
         $subtotal = $this->payload->getSubtotal();
         $serviceFee = $this->payload->getServiceFee();
         $taxRate = $this->payload->getTaxRate();
@@ -278,11 +409,20 @@ class OrderProcess
         $this->payload->setTaxAmount($taxAmount);
         $this->payload->setTotalPrice($totalPrice);
 
+        Log::channel('app_log')->info('Fees and totals calculated', [
+            'tax_amount' => $taxAmount,
+            'total_price' => $totalPrice
+        ]);
+
         return $this;
     }
 
     public function handlePaymentMethod(): self
     {
+        Log::channel('app_log')->debug('Handling payment method', [
+            'payment_method_id' => $this->payload->getPaymentMethodId()
+        ]);
+
         $paymentMethod = PaymentMethod::find($this->payload->getPaymentMethodId());
 
         if (! $paymentMethod) {
@@ -292,14 +432,29 @@ class OrderProcess
         $this->payload->setPaymentMethod($paymentMethod);
 
         if ($paymentMethod->code !== PaymentMethod::PAY_ON_DELIVERY_CODE) {
+            Log::channel('app_log')->debug('Generating payment token for non-COD method', [
+                'payment_method_code' => $paymentMethod->code
+            ]);
             $this->payload->setPaymentToken(BasePaymentGateway::make($paymentMethod->code)->generateToken());
+        } else {
+            Log::channel('app_log')->debug('COD payment method, no token required');
         }
+
+        Log::channel('app_log')->info('Payment method handled successfully', [
+            'payment_method_id' => $paymentMethod->id,
+            'payment_method_code' => $paymentMethod->code
+        ]);
 
         return $this;
     }
 
     public function createOrder(): Order
     {
+        Log::channel('app_log')->info('Creating order in database', [
+            'order_number' => $this->payload->getOrderNumber(),
+            'user_id' => $this->payload->getUser()->id
+        ]);
+
         $order = Order::create([
             'order_number' => $this->payload->getOrderNumber(),
             'notes' => $this->payload->getNotes(),
@@ -334,21 +489,36 @@ class OrderProcess
 
         $this->createOrderAfterHook();
 
+        Log::channel('app_log')->info('Order created successfully', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'total_price' => $order->total_price
+        ]);
+
         return $order;
     }
 
     private function createOrderAfterHook(): void
     {
+        Log::channel('app_log')->debug('Running post-order creation hooks');
+
         if ($this->payload->getGift() !== null) {
+            Log::channel('app_log')->info('Applying gift to user loyalty', [
+                'user_id' => $this->payload->getUser()->id,
+                'gift_id' => $this->payload->getGift()->id
+            ]);
             LoyaltyService::applyGift($this->payload->getUser()->id, $this->payload->getGift()->id);
         }
 
         CacheService::deletePendingOrderCount();
+        Log::channel('app_log')->debug('Pending order count cache cleared');
     }
 
     public function createOrderBill(): array
     {
-        return [
+        Log::channel('app_log')->debug('Generating order bill');
+
+        $bill = [
             'subtotal' => round($this->payload->getSubtotal(), 2),
             'discount' => round($this->payload->getDiscount(), 2),
             'delivery_fee' => round(
@@ -359,5 +529,9 @@ class OrderProcess
             'total' => round($this->payload->getTotalPrice(), 2),
             'coupon' => $this->payload->getCode(),
         ];
+
+        Log::channel('app_log')->info('Order bill generated', $bill);
+
+        return $bill;
     }
 }

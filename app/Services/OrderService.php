@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderService
 {
@@ -39,6 +40,17 @@ class OrderService
         int $branchId,
         int $customerId,
     ): OrderProcess {
+        Log::channel('app_log')->debug('Creating order process', [
+            'address_id' => $addressId,
+            'delivery_scheduled_type' => $deliveryScheduledType->value,
+            'delivery_date' => $deliveryDate,
+            'payment_method_id' => $paymentMethodId,
+            'has_coupon' => !empty($coupon),
+            'cart_items_count' => count($cart),
+            'branch_id' => $branchId,
+            'customer_id' => $customerId
+        ]);
+
         return new OrderProcess((new OrderPayload)->fromRequest(
             now(),
             $addressId,
@@ -62,6 +74,8 @@ class OrderService
 
     private static function processOrderCreation(OrderProcess $service, string $process): mixed
     {
+        Log::channel('app_log')->debug('Processing order creation', ['process' => $process]);
+
         return DB::transaction(
             fn() => $service
                 ->generateOrderNumber()
@@ -90,6 +104,12 @@ class OrderService
         int $branchId,
         int $customerId,
     ): Order {
+        Log::channel('app_log')->info('User creating order', [
+            'customer_id' => $customerId,
+            'branch_id' => $branchId,
+            'cart_items_count' => count($cart)
+        ]);
+
         $order = self::processOrderCreation(self::makeOrderProcess(
             $addressId,
             DeliveryScheduledType::from($deliveryScheduledType),
@@ -101,26 +121,62 @@ class OrderService
             $branchId,
             $customerId,
         ), 'createOrder');
+        
         DatabaseManagerNotification::sendCreatedOrderNotification($order);
+
+        Log::channel('app_log')->info('User order created successfully', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'customer_id' => $customerId
+        ]);
 
         return $order;
     }
 
     public static function userPay(int $orderId, string $orderPaymentToken, ?array $payload): void
     {
+        Log::channel('app_log')->info('User processing payment', [
+            'order_id' => $orderId,
+            'has_payload' => !empty($payload)
+        ]);
+
         $order = Order::where('id', '=', $orderId)
             ->where('payment_token', '=', $orderPaymentToken)
             ->first();
+
+        if (!$order) {
+            Log::channel('app_log')->warning('Order not found for payment', [
+                'order_id' => $orderId,
+                'payment_token' => $orderPaymentToken
+            ]);
+        }
 
         DB::transaction(function () use ($order, $payload) {
             self::ensureValidPayment($order);
             BasePaymentGateway::make($order->paymentMethod->code)->pay($order, $payload);
         });
+
+        Log::channel('app_log')->info('User payment processed successfully', [
+            'order_id' => $orderId,
+            'payment_method' => $order->paymentMethod->code
+        ]);
     }
 
     public static function userInvoice(int $orderId, int $userId): Response
     {
+        Log::channel('app_log')->debug('Generating user invoice', [
+            'order_id' => $orderId,
+            'user_id' => $userId
+        ]);
+
         $order = Order::where('id', $orderId)->where('customer_id', '=', $userId)->first();
+
+        if (!$order) {
+            Log::channel('app_log')->warning('Order not found for invoice generation', [
+                'order_id' => $orderId,
+                'user_id' => $userId
+            ]);
+        }
 
         return InvoiceService::generateInvoice($order);
     }
@@ -136,7 +192,12 @@ class OrderService
         int $branchId,
         int $customerId,
     ): array {
-        return self::processOrderCreation(self::makeOrderProcess(
+        Log::channel('app_log')->debug('User creating order bill', [
+            'customer_id' => $customerId,
+            'branch_id' => $branchId
+        ]);
+
+        $bill = self::processOrderCreation(self::makeOrderProcess(
             $addressId,
             DeliveryScheduledType::from($deliveryScheduledType),
             $deliveryDate,
@@ -147,10 +208,23 @@ class OrderService
             $branchId,
             $customerId,
         ), 'createOrderBill');
+
+        Log::channel('app_log')->info('Order bill created successfully', [
+            'customer_id' => $customerId,
+            'bill_total' => $bill['total'] ?? null
+        ]);
+
+        return $bill;
     }
 
     public static function userCancel(int $orderId, int $userId, ?string $reason): void
     {
+        Log::channel('app_log')->info('User cancelling order', [
+            'order_id' => $orderId,
+            'user_id' => $userId,
+            'has_reason' => !empty($reason)
+        ]);
+
         $order = Order::where('id', $orderId)
             ->where('customer_id', $userId)
             ->first();
@@ -178,6 +252,11 @@ class OrderService
 
         DatabaseManagerNotification::sendCancelledOrderNotification($order);
         CacheService::deletePendingOrderCount();
+
+        Log::channel('app_log')->info('User order cancelled successfully', [
+            'order_id' => $orderId,
+            'user_id' => $userId
+        ]);
     }
 
     public static function managerCreate(
@@ -191,6 +270,12 @@ class OrderService
         int $branchId,
         int $customerId,
     ): void {
+        Log::channel('app_log')->info('Manager creating order', [
+            'manager_id' => auth()->user()->id,
+            'branch_id' => $branchId,
+            'customer_id' => $customerId
+        ]);
+
         self::processOrderCreation(self::makeOrderProcess(
             $addressId,
             $deliveryScheduledType,
@@ -202,17 +287,35 @@ class OrderService
             $branchId,
             $customerId,
         ), 'createOrder');
+
+        Log::channel('app_log')->info('Manager order created successfully', [
+            'manager_id' => auth()->user()->id,
+            'branch_id' => $branchId
+        ]);
     }
 
     public static function managerInvoice(int $orderId): Response
     {
+        Log::channel('app_log')->debug('Generating manager invoice', ['order_id' => $orderId]);
+
         $order = Order::where('id', $orderId)->first();
+
+        if (!$order) {
+            Log::channel('app_log')->warning('Order not found for manager invoice', ['order_id' => $orderId]);
+        }
 
         return InvoiceService::generateInvoice($order);
     }
 
     public static function managerCancel(Order $order, array $data): void
     {
+        Log::channel('app_log')->info('Manager cancelling order', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'manager_id' => auth()->user()->id,
+            'has_reason' => !empty($data['cancel_reason'])
+        ]);
+
         DB::transaction(function () use ($order, $data) {
             $userId = auth()->user()->id;
             $order->update([
@@ -236,11 +339,26 @@ class OrderService
             ->title("Order #{$order->order_number} has been cancelled.")
             ->success()
             ->send();
+
+        Log::channel('app_log')->info('Manager order cancellation completed', [
+            'order_id' => $order->id,
+            'manager_id' => auth()->user()->id
+        ]);
     }
 
     public static function managerApprove(Order $order): void
     {
+        Log::channel('app_log')->info('Manager approving order', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'manager_id' => auth()->user()->id
+        ]);
+
         if (! $order->isPayOnDelivery() && $order->payment_status === PaymentStatus::UNPAID) {
+            Log::channel('app_log')->warning('Order cannot be approved - not checked out', [
+                'order_id' => $order->id,
+                'payment_status' => $order->payment_status
+            ]);
             Notification::make()
                 ->title("Order #{$order->order_number} cannot be approved.")
                 ->body('Order is not checked out')
@@ -250,6 +368,10 @@ class OrderService
             return;
         }
         if (! $order->delivery_date->inApplicationTimezone()->isSameDay(now()->inApplicationTimezone())) {
+            Log::channel('app_log')->warning('Order cannot be approved - wrong date', [
+                'order_id' => $order->id,
+                'delivery_date' => $order->delivery_date
+            ]);
             Notification::make()
                 ->title("Order #{$order->order_number} cannot be approved.")
                 ->body('Order cannot be approved because it was not created today.')
@@ -259,6 +381,7 @@ class OrderService
             return;
         }
         if (! SettingsService::isSystemOnline()) {
+            Log::channel('app_log')->warning('Order cannot be approved - system offline', ['order_id' => $order->id]);
             Notification::make()
                 ->title("Order #{$order->order_number} cannot be approved.")
                 ->body('Order cannot be approved because the system is offline.')
@@ -281,11 +404,24 @@ class OrderService
             ->title("Order #{$order->order_number} is approved and currently processing.")
             ->success()
             ->send();
+
+        Log::channel('app_log')->info('Manager order approval completed', [
+            'order_id' => $order->id,
+            'manager_id' => auth()->user()->id
+        ]);
     }
 
     public static function managerForceApprove(Order $order, array $data): void
     {
+        Log::channel('app_log')->info('Manager force approving order', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'manager_id' => auth()->user()->id,
+            'has_reason' => !empty($data['reason'])
+        ]);
+
         if (! SettingsService::isSystemOnline()) {
+            Log::channel('app_log')->warning('Order cannot be force approved - system offline', ['order_id' => $order->id]);
             Notification::make()
                 ->title("Order #{$order->order_number} cannot be approved.")
                 ->body('Order cannot be force approved because the system is offline.')
@@ -297,6 +433,10 @@ class OrderService
 
         $forcedApprovedOrdersCountInThisWeek = ForceApproveOrder::where('created_at', '>=', now()->startOfWeek()->inApplicationTimezone())->count();
         if (! $forcedApprovedOrdersCountInThisWeek > BranchSettingsService::getForceApproveOrdersLimit($order->branch_id)) {
+            Log::channel('app_log')->warning('Force approve limit exceeded', [
+                'current_count' => $forcedApprovedOrdersCountInThisWeek,
+                'limit' => BranchSettingsService::getForceApproveOrdersLimit($order->branch_id)
+            ]);
             User::where('role_id', '=', Role::where('code', '=', Role::ROLE_SUPER_ADMIN_CODE)->first()->id)
                 ->first()
                 ->notify(new ForcedApprovedOrdersCountNotification($forcedApprovedOrdersCountInThisWeek));
@@ -326,10 +466,22 @@ class OrderService
             ->title("Order #{$order->order_number} is approved and currently processing.")
             ->success()
             ->send();
+
+        Log::channel('app_log')->info('Manager force approval completed', [
+            'order_id' => $order->id,
+            'force_approve_types' => $types
+        ]);
     }
 
     public static function managerSelectDelivery(Order $order, array $data): void
     {
+        Log::channel('app_log')->info('Manager selecting delivery for order', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'delivery_id' => $data['delivery_id'],
+            'manager_id' => auth()->user()->id
+        ]);
+
         $order->update([
             'order_status' => OrderStatus::DELIVERING,
             'delivery_status' => DeliveryStatus::OUT_FOR_DELIVERY,
@@ -345,10 +497,21 @@ class OrderService
             ->title("Order #{$order->order_number} is out for delivery.")
             ->info()
             ->send();
+
+        Log::channel('app_log')->info('Delivery selection completed', [
+            'order_id' => $order->id,
+            'delivery_id' => $data['delivery_id']
+        ]);
     }
 
     public static function deliveryFinish(Order $order): void
     {
+        Log::channel('app_log')->info('Delivery finishing order', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'delivery_id' => auth()->user()->id
+        ]);
+
         DB::transaction(function () use ($order) {
             $order->update([
                 'order_status' => OrderStatus::FINISHED,
@@ -363,10 +526,18 @@ class OrderService
             ->title("Order #{$order->order_number} has been completed.")
             ->success()
             ->send();
+
+        Log::channel('app_log')->info('Delivery finish completed', ['order_id' => $order->id]);
     }
 
     public static function managerFinish(Order $order): void
     {
+        Log::channel('app_log')->info('Manager finishing order', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'manager_id' => auth()->user()->id
+        ]);
+
         DB::transaction(function () use ($order) {
             $order->update([
                 'order_status' => OrderStatus::FINISHED,
@@ -381,10 +552,20 @@ class OrderService
             ->title("Order #{$order->order_number} has been completed.")
             ->success()
             ->send();
+
+        Log::channel('app_log')->info('Manager finish completed', ['order_id' => $order->id]);
     }
 
     public static function managerClose(Order $order, array $data): void
     {
+        Log::channel('app_log')->info('Manager closing order', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'manager_id' => auth()->user()->id,
+            'is_pay_on_delivery' => $order->isPayOnDelivery(),
+            'has_payed_price' => isset($data['payed_price'])
+        ]);
+
         DB::transaction(function () use ($order, $data) {
             $payedPrice = $order->isPayOnDelivery() ?
                 $data['payed_price'] :
@@ -414,10 +595,22 @@ class OrderService
             ->title("Order #{$order->order_number} has been closed.")
             ->success()
             ->send();
+
+        Log::channel('app_log')->info('Manager close order completed', [
+            'order_id' => $order->id,
+            'total_price' => $order->total_price,
+            'payed_price' => $order->payed_price
+        ]);
     }
 
     public static function managerArchive(Order $order): void
     {
+        Log::channel('app_log')->info('Manager archiving order', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'manager_id' => auth()->user()->id
+        ]);
+
         DB::transaction(function () use ($order) {
             $order->archive();
             $order->delete();
@@ -427,33 +620,58 @@ class OrderService
             ->title("Order #{$order->order_number} has been archived.")
             ->warning()
             ->send();
+
+        Log::channel('app_log')->info('Manager archive completed', ['order_id' => $order->id]);
     }
 
     public static function getPaymentMethods(?int $branchId = null): Collection
     {
+        Log::channel('app_log')->debug('Getting payment methods', ['branch_id' => $branchId]);
+
         $paymentMethod = PaymentMethod::published();
         if ($branchId) {
             $paymentMethod->where('branch_id', '=', $branchId);
         }
 
-        return $paymentMethod->get();
+        $result = $paymentMethod->get();
+
+        Log::channel('app_log')->debug('Payment methods retrieved', [
+            'branch_id' => $branchId,
+            'count' => $result->count()
+        ]);
+
+        return $result;
     }
 
     public static function getDeliveryUsers(int $branchId): Collection
     {
-        return User::getUsersWhoCanBeAssignedToTakeOrders()->unblock()->where(function (Builder $query) use ($branchId) {
+        Log::channel('app_log')->debug('Getting delivery users', ['branch_id' => $branchId]);
+
+        $result = User::getUsersWhoCanBeAssignedToTakeOrders()->unblock()->where(function (Builder $query) use ($branchId) {
             $branch = Branch::find($branchId);
             $query->whereHas('branches', function (Builder $q) use ($branch) {
                 $q->where('branch_id', '=', $branch->id);
             });
         })->pluck('name', 'id');
+
+        Log::channel('app_log')->debug('Delivery users retrieved', [
+            'branch_id' => $branchId,
+            'count' => $result->count()
+        ]);
+
+        return $result;
     }
 
     public static function getUsers(string $search, int $branchId): array
     {
+        Log::channel('app_log')->debug('Searching users', [
+            'search_term' => $search,
+            'branch_id' => $branchId
+        ]);
+
         $cityId = Branch::find($branchId)->city_id;
 
-        return User::query()
+        $result = User::query()
             ->unblock()
             ->where('city_id', '=', $cityId)
             ->where('role_id', '=', Role::where('code', '=', Role::ROLE_CUSTOMER_CODE)->first()->id)
@@ -461,10 +679,22 @@ class OrderService
             ->limit(50)
             ->pluck('name', 'id')
             ->all();
+
+        Log::channel('app_log')->debug('Users search completed', [
+            'search_term' => $search,
+            'result_count' => count($result)
+        ]);
+
+        return $result;
     }
 
     public static function recalculateOrderTotals(Order $order): void
     {
+        Log::channel('app_log')->debug('Recalculating order totals', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number
+        ]);
+
         $subtotal = $order->cartProducts->sum(fn($item) => $item->price * $item->quantity);
         $taxRate = BranchSettingsService::getTaxRate($order->branch_id);
 
@@ -487,10 +717,22 @@ class OrderService
             'tax_amount' => $taxAmount,
             'total_price' => $totalPrice,
         ]);
+
+        Log::channel('app_log')->info('Order totals recalculated', [
+            'order_id' => $order->id,
+            'new_subtotal' => $subtotal,
+            'new_total' => $totalPrice
+        ]);
     }
 
     private static function ensureValidPayment(Order $order, bool $forRefund = false): void
     {
+        Log::channel('app_log')->debug('Validating payment', [
+            'order_id' => $order->id,
+            'for_refund' => $forRefund,
+            'payment_method_id' => $order->paymentMethod->id ?? null
+        ]);
+
         if (! $order->paymentMethod) {
             throw new LogicalException('Payment method not found');
         }
@@ -519,15 +761,28 @@ class OrderService
                 throw new LogicalException('Checkout error', 'Order is refunded and cannot be paid');
             }
         }
+
+        Log::channel('app_log')->debug('Payment validation successful', ['order_id' => $order->id]);
     }
 
     public static function addProduct(array $data, Order $order): void
     {
+        Log::channel('app_log')->info('Adding product to order', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'product_id' => $data['product_id'],
+            'quantity' => $data['quantity']
+        ]);
+
         $branchProduct = BranchProduct::where('branch_id', $order->branch_id)
             ->where('product_id', $data['product_id'])
             ->first();
 
         if (! $branchProduct) {
+            Log::channel('app_log')->warning('Product not available for branch', [
+                'product_id' => $data['product_id'],
+                'branch_id' => $order->branch_id
+            ]);
             Notification::make()
                 ->title('Product is not available for branch.')
                 ->warning()
@@ -541,6 +796,10 @@ class OrderService
             ->first();
 
         if ($cartProduct) {
+            Log::channel('app_log')->warning('Product already in cart', [
+                'product_id' => $data['product_id'],
+                'cart_id' => $data['cart_id']
+            ]);
             Notification::make()
                 ->title('Product is already in the cart.')
                 ->warning()
@@ -567,15 +826,31 @@ class OrderService
             ->title('Cart updated successfully.')
             ->success()
             ->send();
+
+        Log::channel('app_log')->info('Product added to order successfully', [
+            'order_id' => $order->id,
+            'product_id' => $data['product_id']
+        ]);
     }
 
     public static function editProduct(array $data, CartProduct $record, Order $order): void
     {
+        Log::channel('app_log')->info('Editing product in order', [
+            'order_id' => $order->id,
+            'cart_product_id' => $record->id,
+            'product_id' => $data['product_id'],
+            'new_quantity' => $data['quantity']
+        ]);
+
         $branchProduct = BranchProduct::where('branch_id', $order->branch_id)
             ->where('product_id', $data['product_id'])
             ->first();
 
         if (! $branchProduct) {
+            Log::channel('app_log')->warning('Product not available for branch during edit', [
+                'product_id' => $data['product_id'],
+                'branch_id' => $order->branch_id
+            ]);
             Notification::make()
                 ->title('Product is not available for branch.')
                 ->warning()
@@ -595,13 +870,28 @@ class OrderService
             ->title('Cart updated successfully.')
             ->success()
             ->send();
+
+        Log::channel('app_log')->info('Product edited successfully', [
+            'order_id' => $order->id,
+            'cart_product_id' => $record->id
+        ]);
     }
 
     public static function removeProduct(CartProduct $record, Order $order): void
     {
+        Log::channel('app_log')->info('Removing product from order', [
+            'order_id' => $order->id,
+            'cart_product_id' => $record->id,
+            'product_id' => $record->product_id
+        ]);
+
         $cart = $record->cart;
 
         if ($cart->cartProducts()->count() <= 1) {
+            Log::channel('app_log')->warning('Cannot remove last product from cart', [
+                'cart_id' => $cart->id,
+                'remaining_products' => $cart->cartProducts()->count()
+            ]);
             Notification::make()
                 ->title('Warning')
                 ->body('You cannot delete the last product in the cart.')
@@ -619,5 +909,10 @@ class OrderService
             ->title('Cart updated successfully.')
             ->success()
             ->send();
+
+        Log::channel('app_log')->info('Product removed successfully', [
+            'order_id' => $order->id,
+            'cart_product_id' => $record->id
+        ]);
     }
 }

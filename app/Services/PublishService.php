@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Branch;
 use App\Models\City;
 use App\Models\PaymentMethod;
+use Illuminate\Support\Facades\Log;
 
 class PublishService
 {
@@ -27,6 +28,8 @@ class PublishService
 
     private static function validatePublishBranch(Branch $record): array
     {
+        Log::channel('app_log')->info('PublishService: validatePublishBranch');
+
         $condition1 = $record->deliveryUsers()->exists();
         $condition2 = $record->notificationUsers()->exists();
         $condition3 = PaymentMethod::where('code', '=', PaymentMethod::PAY_ON_DELIVERY_CODE)
@@ -36,20 +39,18 @@ class PublishService
 
         $reasons = [];
 
-        if (! $record->deliveryUsers()->exists()) {
+        if (! $condition1) {
+            Log::channel('app_log')->warning("Services(PublishService): No delivery users for branch {$record->id}");
             $reasons[] = 'No delivery users are assigned to this branch.';
         }
 
-        if (! $record->notificationUsers()->exists()) {
+        if (! $condition2) {
+            Log::channel('app_log')->warning("Services(PublishService): No notification users for branch {$record->id}");
             $reasons[] = 'No users are assigned to receive order notifications.';
         }
 
-        $hasPayOnDelivery = PaymentMethod::where('code', PaymentMethod::PAY_ON_DELIVERY_CODE)
-            ->where('branch_id', $record->id)
-            ->whereNotNull('published_at')
-            ->exists();
-
-        if (! $hasPayOnDelivery) {
+        if (! $condition3) {
+            Log::channel('app_log')->warning("Services(PublishService): No pay on delivery payment method for branch {$record->id}");
             $reasons[] = 'The "Pay on Delivery" payment method must be active for this branch.';
         }
 
@@ -67,6 +68,10 @@ class PublishService
     {
         $condition = $record->branches()->published()->exists();
         $reason = 'This city cannot be published because it has no published branches.';
+        
+        if (! $condition) {
+            Log::channel('app_log')->warning("Services(PublishService): No published branches for city {$record->id}");
+        }
 
         return [
             $condition,
@@ -78,6 +83,10 @@ class PublishService
     {
         $condition = ! ($record->code === PaymentMethod::PAY_ON_DELIVERY_CODE);
         $reason = 'This payment method cannot be unpublished because it is required by other components.';
+
+        if (! $condition) {
+            Log::channel('app_log')->warning("Services(PublishService): Payment method {$record->id} is required by other components");
+        }
 
         return [
             $condition,

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Notifications\OrderCancelled;
 use App\Notifications\OrderCreated;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class DatabaseManagerNotification
 {
@@ -30,6 +31,8 @@ class DatabaseManagerNotification
 
     public static function sendCreatedOrderNotification(Order $order): void
     {
+        Log::channel('app_log')->info('Services(DatabaseManagerNotification): sending create order notification to managers', ['orderId' => $order->id]);
+
         foreach (self::getManagers($order) as $manager) {
             $manager->notify(new OrderCreated($order));
         }
@@ -37,6 +40,8 @@ class DatabaseManagerNotification
 
     public static function sendCancelledOrderNotification(Order $order): void
     {
+        Log::channel('app_log')->info('Services(DatabaseManagerNotification): sending cancel order notification to managers', ['orderId' => $order->id]);
+
         foreach (self::getManagers($order) as $manager) {
             $manager->notify(new OrderCancelled($order));
         }
