@@ -30,13 +30,12 @@ class SetCurrentBranch
 
     protected function determineBranchId(?User $user, Request $request): int
     {
-        Log::channel('app_log')->info('Middleware: determining current branch.');
-
         // 1. Header
         if ($branchId = $request->header('X-BRANCH-ID')) {
             $xHeaderResult = $this->validateBranch((int) $branchId, 'The provided X-BRANCH-ID is not attached to any branch');
-            Log::channel('app_log')->info('Middleware: X-BRANCH-ID header found.',  [
-                'xHeaderResult' => $xHeaderResult
+            Log::channel('app_log')->info('Middleware(SetCurrentBranch): X-BRANCH-ID header found.',  [
+                'xHeaderBranchId' => $branchId,
+                'resultBranchId' => $xHeaderResult
             ]);
             return $xHeaderResult;
         }
@@ -45,16 +44,18 @@ class SetCurrentBranch
         // 2.a get user from auth method
         if ($user) {
             $userResult = $this->getDefaultBranchForCity($user->city_id, 'The default branch for your city is not found');
-            Log::channel('app_log')->info('Middleware: Authenticated user found.', [
-                'userResult' => $userResult
+            Log::channel('app_log')->info('Middleware(SetCurrentBranch): Authenticated user found.', [
+                'userId' => $user?->id,
+                'branchId' => $userResult
             ]);
             return $userResult;
         }
         // 2.b get user from optional auth method
         if (auth('sanctum')->user()?->city_id !== null) {
             $userSanctumResult = $this->getDefaultBranchForCity(auth('sanctum')->user()->city_id, 'The default branch for your city is not found');
-            Log::channel('app_log')->info('Middleware: Authenticated sanctum user found.', [
-                'userSanctumResult' => $userSanctumResult
+            Log::channel('app_log')->info('Middleware(SetCurrentBranch): Authenticated sanctum user found.', [
+                'userId' => $user?->id,
+                'branchId' => $userSanctumResult
             ]);
             return $userSanctumResult;
         }
@@ -65,8 +66,8 @@ class SetCurrentBranch
         // 4. Fallback
         $defaultResult = $this->getFallbackBranch();
 
-        Log::channel('app_log')->info('Middleware: Fallback branch found.', [
-            'defaultResult' => $defaultResult
+        Log::channel('app_log')->info('Middleware(SetCurrentBranch): Fallback branch found.', [
+            'branchId' => $defaultResult
         ]);
 
         return $defaultResult;
@@ -75,7 +76,7 @@ class SetCurrentBranch
     protected function validateBranch(int $branchId, string $errorMessage): int
     {
         if (! Branch::published()->where('id', $branchId)->exists()) {
-            Log::channel('app_log')->critical('Middleware: provided X-BRANCH-ID is not attached to any published branch.', [
+            Log::channel('app_log')->critical('Middleware(SetCurrentBranch): provided X-BRANCH-ID is not attached to any published branch.', [
                 'branchId' => $branchId
             ]);
             throw new InvalidArgumentException($errorMessage);

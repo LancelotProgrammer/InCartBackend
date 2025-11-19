@@ -78,13 +78,13 @@ trait HandleDeleteDependencies
 
     protected function deleteWithDependencyCheck(): callable
     {
-        Log::channel('app_log')->info('Traits: checking delete dependencies');
+        Log::channel('app_log')->info('Traits(HandleDeleteDependencies): checking delete dependencies');
 
         return function ($record, DeleteAction $action) {
             $dependencies = $this->getDeleteDependencies();
             $modelClass = get_class($record);
 
-            Log::channel('app_log')->info('Traits: checking delete dependencies data', [
+            Log::channel('app_log')->info('Traits(HandleDeleteDependencies): checking delete dependencies data', [
                 'modelClass' => $modelClass,
                 'dependencies' => $dependencies,
             ]);
@@ -95,7 +95,7 @@ trait HandleDeleteDependencies
 
                 foreach ($config['relations'] as $relation => $label) {
                     if ($record->$relation()->exists()) {
-                        Log::channel('app_log')->info('Traits: found relation', [
+                        Log::channel('app_log')->info('Traits(HandleDeleteDependencies): found relation', [
                             'relation' => $relation,
                             'label' => $label,
                         ]);
@@ -106,7 +106,7 @@ trait HandleDeleteDependencies
                 if (! empty($foundRelations)) {
                     $message = str_replace(':relations', implode(', ', $foundRelations), $config['message']);
                     
-                    Log::channel('app_log')->info('Traits: found relations', [
+                    Log::channel('app_log')->info('Traits(HandleDeleteDependencies): found relations', [
                         'foundRelations' => $foundRelations,
                         'message' => $message,
                     ]);
@@ -122,11 +122,11 @@ trait HandleDeleteDependencies
                 }
             }
 
-            Log::channel('app_log')->info('Traits: finished checking delete dependencies and proceeding with deletion');
+            Log::channel('app_log')->info('Traits(HandleDeleteDependencies): finished checking delete dependencies and proceeding with deletion');
 
             $record->delete();
 
-            Log::channel('app_log')->info('Traits: record deleted');
+            Log::channel('app_log')->info('Traits(HandleDeleteDependencies): record deleted');
 
             return redirect($action->getUrl('index'));
         };

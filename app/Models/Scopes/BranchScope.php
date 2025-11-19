@@ -20,24 +20,23 @@ class BranchScope implements Scope
             return;
         }
 
-        Log::channel('app_log')->info('Scopes: filtering data by branch.', [
-            'url' => request()->url(),
-            'model' => get_class($model),
-        ]);
-        
         if ($branchId = request()->attributes->get('currentBranchId')) {
-            Log::channel('app_log')->info('Scopes: filtering data by branch using request.', [
+            Log::channel('app_log')->info('Scopes(BranchScope): filtering data by branch using request.', [
+                'url' => request()->url(),
+                'model' => get_class($model),
                 'userId' => auth('sanctum')->id(),
                 'branchId' => $branchId,
             ]);
-            $builder->where($model->getTable().'.branch_id', $branchId);
+            $builder->where($model->getTable() . '.branch_id', $branchId);
         }
 
         $user = auth('web')->user();
         if ($user) {
             $userBranch = $user->branches->first();
             if (! $userBranch) {
-                Log::channel('app_log')->warning('Scopes: filtering data by branch using user permission but user has no branch.', [
+                Log::channel('app_log')->warning('Scopes(BranchScope): filtering data by branch using user permission but user has no branch.', [
+                    'url' => request()->url(),
+                    'model' => get_class($model),
                     'userId' => $user->id,
                     'email' => $user->email,
                 ]);
@@ -45,16 +44,18 @@ class BranchScope implements Scope
             }
             $allow = $user->shouldFilterBranchContent();
             if ($allow) {
-                Log::channel('app_log')->info('Scopes: filtering data by branch using user permission.', [
+                Log::channel('app_log')->info('Scopes(BranchScope): filtering data by branch using user permission.', [
+                    'url' => request()->url(),
+                    'model' => get_class($model),
                     'userId' => $user->id,
                     'permissionResult' => $allow,
                     'branches' => $user->branches?->pluck('id')->toArray(),
                 ]);
-                $builder->where($model->getTable().'.branch_id', $userBranch->id);
+                $builder->where($model->getTable() . '.branch_id', $userBranch->id);
             }
         }
 
-        Log::channel('app_log')->info('Scopes: filtered data by branch.');
+        Log::channel('app_log')->info('Scopes(BranchScope): skipping filtering data by branch.');
     }
 
     public static function disable(): void

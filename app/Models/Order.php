@@ -168,11 +168,6 @@ class Order extends Model implements AuditableContract
 
     public function isPayOnDelivery(): bool
     {
-        Log::channel('app_log')->info('Models: checking if order is pay on delivery', [
-            'order' => $this->id,
-            'user_id' => auth()?->id() ?? null,
-            'payment_method_id' => $this->paymentMethod?->id,
-        ]);
         return $this->paymentMethod->code === PaymentMethod::PAY_ON_DELIVERY_CODE;
     }
 
@@ -280,7 +275,7 @@ class Order extends Model implements AuditableContract
 
     protected static function logUnknownAndThrow(Order $order)
     {
-        Log::channel('app_log')->channel('orders')->error('Unknown order status for notification', [
+        Log::channel('app_log')->emergency('Unknown order status for notification', [
             'order_id' => $order->id,
             'status_value' => $order->order_status->value ?? null,
             'status' => $order->order_status->name ?? null,

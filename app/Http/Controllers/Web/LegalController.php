@@ -65,7 +65,7 @@ class LegalController extends Controller
         }
 
         //TODO spam detection using https://akismet.com and https://github.com/josiasmontag/laravel-recaptchav3
-        Log::channel('app_log')->warning('LegalController: spam detection is not supported yet', ['ip' => $ip]);
+        Log::channel('app_log')->warning('LegalController: spam detection is not supported yet');
 
         try {
             Support::create([
