@@ -23,6 +23,7 @@ class GetSettings
             'loyalty_policy' => SettingsService::getLoyaltyPolicy(),
             'about_us' => SettingsService::getAboutUs(),
             'return_policy' => SettingsService::getReturnPolicy(),
+            'max_scheduled_days' => SettingsService::getMaxScheduledDays(),
         ]);
     }
 }

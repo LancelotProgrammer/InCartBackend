@@ -32,18 +32,18 @@ class BranchScope implements Scope
 
         $user = auth('web')->user();
         if ($user) {
-            $userBranch = $user->branches->first();
-            if (! $userBranch) {
-                Log::channel('app_log')->warning('Scopes(BranchScope): filtering data by branch using user permission but user has no branch.', [
-                    'url' => request()->url(),
-                    'model' => get_class($model),
-                    'userId' => $user->id,
-                    'email' => $user->email,
-                ]);
-                return;
-            }
             $allow = $user->shouldFilterBranchContent();
             if ($allow) {
+                $userBranch = $user->branches->first();
+                if (! $userBranch) {
+                    Log::channel('app_log')->warning('Scopes(BranchScope): filtering data by branch using user permission but user has no branch.', [
+                        'url' => request()->url(),
+                        'model' => get_class($model),
+                        'userId' => $user->id,
+                        'email' => $user->email,
+                    ]);
+                    return;
+                }
                 Log::channel('app_log')->info('Scopes(BranchScope): filtering data by branch using user permission.', [
                     'url' => request()->url(),
                     'model' => get_class($model),
