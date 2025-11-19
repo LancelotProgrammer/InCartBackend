@@ -35,6 +35,14 @@ class BranchScope implements Scope
 
         $user = auth('web')->user();
         if ($user) {
+            $userBranch = $user->branches->first();
+            if (! $userBranch) {
+                Log::channel('app_log')->warning('Scopes: filtering data by branch using user permission but user has no branch.', [
+                    'userId' => $user->id,
+                    'email' => $user->email,
+                ]);
+                return;
+            }
             $allow = $user->shouldFilterBranchContent();
             if ($allow) {
                 Log::channel('app_log')->info('Scopes: filtering data by branch using user permission.', [
@@ -42,7 +50,7 @@ class BranchScope implements Scope
                     'permissionResult' => $allow,
                     'branches' => $user->branches?->pluck('id')->toArray(),
                 ]);
-                $builder->where($model->getTable().'.branch_id', $user->branches->first()->id);
+                $builder->where($model->getTable().'.branch_id', $userBranch->id);
             }
         }
 
