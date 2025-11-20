@@ -20,7 +20,7 @@ docs:
     - tr: top right
     - c: center
 - coupon model has one type which is TIMED other types can be added and configured in the CouponType enum
-- multiPaymentMethods can be added and configured using a class that follows this declaration {class ThePaymentGateway extends BasePaymentGateway implements PaymentGatewayInterface}
+- multi payment methods gateways can be added and configured using a class that follows this declaration {class ThePaymentGateway extends BasePaymentGateway implements PaymentGatewayInterface}
 - translation fields are handled by laravel spatie translation spatie/laravel-translatable
     - there is a custom component called TranslationComponent that handles translation 
     - there is a custom helper function get_translatable_attribute() which is used when the db builder is used instead of eloquent
@@ -37,15 +37,16 @@ docs:
 - publish logic
     - payment methods can be created and published per branch | unpublished is denied for pay-on-delivery payment method
     - coupons can be created and published per branch | unpublished is ok
+    - gifts can be created and published per branch | unpublished is ok
     - advertisement can be created and published per branch | unpublished is ok
-    - for advertisement which are connected to unpublished will not be appear in the api
-    - categories can be created and published per branch | unpublished will not be cascaded to products
+    - for advertisement which are connected to unpublished models, will not be appear in the api
+    - categories can be created and published per branch | unpublished will not be cascaded to products and chid categories
     - branches products can be published | unpublished is ok
     - branches can be published only if:
         1- at least one delivery user attached
         2- at least one user to receive notification order
         3- pay-on-delivery payment method is published
-        - unpublished will be cascaded to products
+        4- unpublished will not be cascaded to products
     - effected api:
         - GetPaymentMethods
         - GetCategories
@@ -66,14 +67,15 @@ docs:
         - when an order is created the system send in-app (dashboard) notification
         - when an order is cancelled the system send in-app (dashboard) notification
 - policy
-    - app policy is handled by policies classes
+    - dashboard policy is handled by policies classes
     - role permissions are handled by trait called CanManagePermissions
+    - some permissions have dependence's and they are defined in this class PermissionDependencyService
 - settings 
     - SettingsService is responsible to define the getter of each setting, the form component of each setting, the cast of each setting and to cache them all
 - resource lock is using HasConcurrentEditingProtection trait and a custom lock logic is added to
     - BaseFilesRelationManager
     - UsersRelationManager
-loyalties:
+- loyalties:
     - the LoyaltyService is responsible for handling loyalty points and gifts
     - loyalty points are added to the user only if the order is closed and it does not have a discount
     - customer can not redeem the gift twice
