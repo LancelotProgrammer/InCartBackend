@@ -102,7 +102,7 @@ class SetCurrentBranch
     {
         $branchId = Branch::published()
             ->where('is_default', true)
-            ->orderByDesc('id')
+            ->orderBy('id')
             ->value('id');
 
         if (! $branchId) {

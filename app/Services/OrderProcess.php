@@ -423,7 +423,7 @@ class OrderProcess
             'payment_method_id' => $this->payload->getPaymentMethodId()
         ]);
 
-        $paymentMethod = PaymentMethod::find($this->payload->getPaymentMethodId());
+        $paymentMethod = PaymentMethod::published()->find($this->payload->getPaymentMethodId());
 
         if (! $paymentMethod) {
             throw new LogicalException('Payment method not found', 'The selected payment method does not exist.');

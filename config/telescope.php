@@ -108,12 +108,12 @@ return [
     |
     */
 
-    'only_paths' => [],
+    'only_paths' => [
+        //
+    ],
 
     'ignore_paths' => [
-        'livewire*',
-        'nova-api*',
-        'pulse*',
+        //
     ],
 
     'ignore_commands' => [
