@@ -1,8 +1,12 @@
 <?php
 
+use App\Models\Role;
+use App\Models\User;
+use App\Notifications\ExceptionNotification;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Log;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,5 +20,17 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo('/admin/login');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->report(function (Throwable $e) {
+            try {
+                $developer = User::whereHas('role', function ($query) {
+                    $query->where('code', '=', Role::ROLE_DEVELOPER_CODE);
+                })->first();
+                $title = "Exception Occurred: ".class_basename($e);
+                $body = $e->getMessage();
+                $developer->notify(new ExceptionNotification($title, $body));
+                Log::channel('app_log')->critical('EXCEPTION: EXCEPTION REPORT NOTIFICATION CREATED !!!');
+            } catch (Throwable $e) {
+                Log::channel('app_log')->emergency('EXCEPTION: AN ERROR OCCURRED WHEN REPORTING AN EXCEPTION !!!');
+            }
+        });
     })->create();
