@@ -199,7 +199,7 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
     protected function ensureHasBlockedAt(): void
     {
         if (! array_key_exists('blocked_at', $this->attributes)) {
-            Log::channel('app_log')->emergency(sprintf(
+            Log::channel('app_log')->critical(sprintf(
                 "The model %s does not have a 'blocked_at' attribute.",
                 static::class
             ));
@@ -246,7 +246,7 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
     protected function ensureHasApprovedAt(): void
     {
         if (! array_key_exists('approved_at', $this->attributes)) {
-            Log::channel('app_log')->emergency(sprintf(
+            Log::channel('app_log')->critical(sprintf(
                 "The model %s does not have a 'approved_at' attribute.",
                 static::class
             ));

@@ -16,7 +16,7 @@ trait CanManagePermissions
     protected function ensureHasRole(): void
     {
         if (! array_key_exists('role', $this->attributes)) {
-            Log::channel('app_log')->emergency(sprintf(
+            Log::channel('app_log')->critical(sprintf(
                 "Traits: The model %s does not have a 'role' relationship.",
                 static::class
             ));

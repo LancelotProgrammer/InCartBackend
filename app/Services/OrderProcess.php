@@ -227,7 +227,7 @@ class OrderProcess
             weight_per_unit: should be added to products table. The idea is to have the weight of one unit of the product in grams
             setTotalWeight / getTotalWeight / getAllowedWeight:  should be added to OrderPayload
         */
-        Log::channel('app_log')->critical('Services(OrderProcess): Cart weight calculation not implemented');
+        Log::channel('app_log')->debug('Services(OrderProcess): Cart weight calculation not implemented');
         throw new Exception('Not implemented yet');
         // $products = Product::whereIn('id', collect($this->payload->getCartItems())->pluck('id'))->get();
         // $totalWeight = 0;

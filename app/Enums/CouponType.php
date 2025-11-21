@@ -128,7 +128,7 @@ enum CouponType: int implements HasLabel
         }
 
         if (! empty($config['start_date']) && $context->time->inApplicationTimezone()->lt(Carbon::parse($config['start_date'])->inApplicationTimezone())) {
-            Log::channel('app_log')->error("Enums: Coupon with id: {$couponId} is not active yet.", [
+            Log::channel('app_log')->warning("Enums: Coupon with id: {$couponId} is not active yet.", [
                 'time' => $context->time->inApplicationTimezone()->format('Y-m-d H:i:s'),
                 'start_date_time' => Carbon::parse($config['start_date'])->inApplicationTimezone()->format('Y-m-d H:i:s'),
                 'end_date_time' => Carbon::parse($config['end_date'])->inApplicationTimezone()->format('Y-m-d H:i:s'),
@@ -138,7 +138,7 @@ enum CouponType: int implements HasLabel
             throw new LogicalException('Coupon error', 'Coupon is not active yet.');
         }
         if (! empty($config['end_date']) && $context->time->inApplicationTimezone()->gt(Carbon::parse($config['end_date'])->inApplicationTimezone())) {
-            Log::channel('app_log')->error("Enums: Coupon with id: {$couponId} has expired.", [
+            Log::channel('app_log')->warning("Enums: Coupon with id: {$couponId} has expired.", [
                 'time' => $context->time->inApplicationTimezone()->format('Y-m-d H:i:s'),
                 'start_date_time' => Carbon::parse($config['start_date'])->inApplicationTimezone()->format('Y-m-d H:i:s'),
                 'end_date_time' => Carbon::parse($config['end_date'])->inApplicationTimezone()->format('Y-m-d H:i:s'),
@@ -153,7 +153,7 @@ enum CouponType: int implements HasLabel
 
         // Check user limit first
         if (! empty($config['user_limit']) && $userUses >= $config['user_limit']) {
-            Log::channel('app_log')->error("Enums: User with id: {$context->userId} has already used this coupon the maximum number of times for their account.", [
+            Log::channel('app_log')->warning("Enums: User with id: {$context->userId} has already used this coupon the maximum number of times for their account.", [
                 'user_limit' => $config['user_limit'],
                 'user_id' => $context->userId,
                 'condition' => $userUses >= $config['user_limit'],
@@ -162,7 +162,7 @@ enum CouponType: int implements HasLabel
         }
         // Check total use limit
         if (! empty($config['use_limit']) && $totalUses >= $config['use_limit']) {
-            Log::channel('app_log')->error("Enums: This coupon has reached its maximum number of uses.", [
+            Log::channel('app_log')->warning("Enums: This coupon has reached its maximum number of uses.", [
                 'use_limit' => $config['use_limit'],
                 'total_uses' => $totalUses,
                 'user_id' => $context->userId,
@@ -172,7 +172,7 @@ enum CouponType: int implements HasLabel
         }
         // Check if using the coupon now would exceed total limit
         if (! empty($config['use_limit']) && $totalUses + 1 > $config['use_limit']) {
-            Log::channel('app_log')->error("Enums: Using this coupon now would exceed the total allowed uses.", [
+            Log::channel('app_log')->warning("Enums: Using this coupon now would exceed the total allowed uses.", [
                 'use_limit' => $config['use_limit'],
                 'total_uses' => $totalUses,
                 'condition' => $totalUses + 1 > $config['use_limit'],
@@ -185,7 +185,7 @@ enum CouponType: int implements HasLabel
             $remainingUses = $config['use_limit'] - $totalUses;
             $remainingForUser = $config['user_limit'] - $userUses;
             if ($remainingUses <= 0 || $remainingForUser <= 0) {
-                Log::channel('app_log')->error("Enums: Coupon with id: {$couponId} cannot be used due to limit restrictions.", [
+                Log::channel('app_log')->warning("Enums: Coupon with id: {$couponId} cannot be used due to limit restrictions.", [
                     'use_limit' => $config['use_limit'],
                     'total_uses' => $totalUses,
                     'user_limit' => $config['user_limit'],

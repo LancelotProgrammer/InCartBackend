@@ -28,7 +28,7 @@ class FirebaseFCM
         $tokens = $order->customer->firebaseTokens()->pluck('firebase_token')->toArray();
 
         if (empty($tokens)) {
-            Log::channel('app_log')->info('ExternalServices: No tokens found for user', [
+            Log::channel('app_log')->notice('ExternalServices: No tokens found for user', [
                 'user_id' => $order->customer_id
             ]);
             return;
@@ -60,7 +60,7 @@ class FirebaseFCM
         $tokens = $ticket->user->firebaseTokens()->pluck('firebase_token')->toArray();
 
         if (empty($tokens)) {
-            Log::channel('app_log')->info('ExternalServices: No tokens found for user', [
+            Log::channel('app_log')->notice('ExternalServices: No tokens found for user', [
                 'user_id' => $ticket->user_id
             ]);
             return;

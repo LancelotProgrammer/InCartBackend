@@ -11,7 +11,7 @@ trait HasPublishAttribute
     protected function ensureHasPublishedAt(): void
     {
         if (! array_key_exists('published_at', $this->attributes)) {
-            Log::channel('app_log')->emergency(sprintf(
+            Log::channel('app_log')->critical(sprintf(
                 "Traits: The model %s does not have a 'published_at' attribute.",
                 static::class
             ));
