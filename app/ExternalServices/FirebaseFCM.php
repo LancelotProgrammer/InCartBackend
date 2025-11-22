@@ -5,6 +5,7 @@ namespace App\ExternalServices;
 use App\Constants\DeepLinks;
 use App\Models\Order;
 use App\Models\Ticket;
+use App\Models\User;
 use App\Models\UserFirebaseToken;
 use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Exception\Messaging\InvalidMessage;
@@ -25,30 +26,15 @@ class FirebaseFCM
             'order_id' => $order->id
         ]);
 
-        $tokens = $order->customer->firebaseTokens()->pluck('firebase_token')->toArray();
-
-        if (empty($tokens)) {
-            Log::channel('app_log')->notice('ExternalServices: No tokens found for user', [
-                'user_id' => $order->customer_id
-            ]);
-            return;
-        }
-
         [$title, $body] = Order::getUserOrderNotificationMessage($order);
 
-        foreach ($tokens as $token) {
-            self::sendNotificationToToken(
-                $token,
-                $title,
-                $body,
-                null,
-                DeepLinks::ORDER_DEEP_LINK."/$order->id"
-            );
-        }
-
-        Log::channel('app_log')->info('ExternalServices: Order status notification sent', [
-            'order_id' => $order->id
-        ]);
+        self::sendTicketNotificationToUser(
+            $order->customer,
+            $title,
+            $body,
+            null,
+            DeepLinks::ORDER_DEEP_LINK . "/$order->id"
+        );
     }
 
     public static function sendTicketNotification(Ticket $ticket, string $reply): void
@@ -57,11 +43,27 @@ class FirebaseFCM
             'ticket_id' => $ticket->id
         ]);
 
-        $tokens = $ticket->user->firebaseTokens()->pluck('firebase_token')->toArray();
+        self::sendTicketNotificationToUser(
+            $ticket->user,
+            'We’ve replied to your support request',
+            Ticket::trimTicketNotificationReply($reply),
+            null,
+            DeepLinks::TICKET_DEEP_LINK
+        );
+    }
+
+    private static function sendTicketNotificationToUser(
+        User $user,
+        string $title,
+        string $body,
+        ?string $imageUrl = null,
+        ?string $deepLink = null,
+    ): void {
+        $tokens = $user->firebaseTokens()->pluck('firebase_token')->toArray();
 
         if (empty($tokens)) {
             Log::channel('app_log')->notice('ExternalServices: No tokens found for user', [
-                'user_id' => $ticket->user_id
+                'user_id' => $user->id
             ]);
             return;
         }
@@ -69,16 +71,12 @@ class FirebaseFCM
         foreach ($tokens as $token) {
             self::sendNotificationToToken(
                 $token,
-                'We’ve replied to your support request',
-                Ticket::trimTicketNotificationReply($reply),
-                null,
-                DeepLinks::TICKET_DEEP_LINK
+                $title,
+                $body,
+                $imageUrl,
+                $deepLink
             );
         }
-
-        Log::channel('app_log')->info('ExternalServices: Ticket notification sent', [
-            'ticket_id' => $ticket->id
-        ]);
     }
 
     private static function sendNotificationToToken(
