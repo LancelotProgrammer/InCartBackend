@@ -28,10 +28,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 $title = "Exception Occurred: ".class_basename($e);
                 $body = $e->getMessage();
                 $developer->notify(new ExceptionNotification($title, $body));
-                Log::channel('app_log')->emergency('EXCEPTION: EXCEPTION REPORT NOTIFICATION CREATED');
+                Log::channel('app_log')->emergency('EXCEPTION: EXCEPTION REPORT NOTIFICATION CREATED',[
+                    'exception_message' => $e->getMessage(),
+                ]);
             } catch (Throwable $e) {
                 Log::channel('app_log')->emergency('EXCEPTION: AN ERROR OCCURRED WHEN REPORTING AN EXCEPTION !!!!!', [
-                    'error' => $e->getMessage(),
+                    'exception_message' => $e->getMessage(),
                 ]);
             }
         });
