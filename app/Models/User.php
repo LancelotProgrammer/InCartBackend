@@ -182,15 +182,16 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
             return false;
         }
 
-        if (!in_array(
-            $this->role->code,
-            [Role::ROLE_SUPER_ADMIN_CODE, Role::ROLE_DEVELOPER_CODE]
-        )) {
-            Log::channel('app_log')->warning('User ' . $this->name . ' is not a attached to branch and can\'t access panel', [
-                'user_id' => $this->id,
-                'email' => $this?->email,
-            ]);
-            return $this->branches()->exists();
+        if (!in_array($this->role->code, [Role::ROLE_SUPER_ADMIN_CODE, Role::ROLE_DEVELOPER_CODE])) {
+            if ($this->branches()->exists()) {                
+                return true;
+            } else {
+                Log::channel('app_log')->warning('User ' . $this->name . ' is not a attached to branch and can\'t access panel', [
+                    'user_id' => $this->id,
+                    'email' => $this?->email,
+                ]);
+                return false;
+            }
         }
 
         return true;
