@@ -21,7 +21,7 @@ class BranchScope implements Scope
         }
 
         if ($branchId = request()->attributes->get('currentBranchId')) {
-            Log::channel('app_log')->info('Scopes(BranchScope): filtering data by branch using request.', [
+            Log::channel('app_log')->debug('Scopes(BranchScope): filtering data by branch using request.', [
                 'url' => request()->url(),
                 'model' => get_class($model),
                 'userId' => auth('sanctum')->id(),
@@ -36,7 +36,7 @@ class BranchScope implements Scope
             if ($allow) {
                 $userBranch = $user->branches->first();
                 if (! $userBranch) {
-                    Log::channel('app_log')->warning('Scopes(BranchScope): filtering data by branch using user permission but user has no branch.', [
+                    Log::channel('app_log')->error('Scopes(BranchScope): filtering data by branch using user permission but user has no branch.', [
                         'url' => request()->url(),
                         'model' => get_class($model),
                         'userId' => $user->id,
@@ -44,7 +44,7 @@ class BranchScope implements Scope
                     ]);
                     return;
                 }
-                Log::channel('app_log')->info('Scopes(BranchScope): filtering data by branch using user permission.', [
+                Log::channel('app_log')->debug('Scopes(BranchScope): filtering data by branch using user permission.', [
                     'url' => request()->url(),
                     'model' => get_class($model),
                     'userId' => $user->id,
@@ -55,7 +55,7 @@ class BranchScope implements Scope
             }
         }
 
-        Log::channel('app_log')->info('Scopes(BranchScope): skipping filtering data by branch.');
+        Log::channel('app_log')->debug('Scopes(BranchScope): skipping filtering data by branch.');
     }
 
     public static function disable(): void

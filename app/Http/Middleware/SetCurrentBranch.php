@@ -33,7 +33,7 @@ class SetCurrentBranch
         // 1. Header
         if ($branchId = $request->header('X-BRANCH-ID')) {
             $xHeaderResult = $this->validateBranch((int) $branchId, 'The provided X-BRANCH-ID is not attached to any branch');
-            Log::channel('app_log')->info('Middleware(SetCurrentBranch): X-BRANCH-ID header found.',  [
+            Log::channel('app_log')->debug('Middleware(SetCurrentBranch): X-BRANCH-ID header found.',  [
                 'xHeaderBranchId' => $branchId,
                 'resultBranchId' => $xHeaderResult
             ]);
@@ -44,7 +44,7 @@ class SetCurrentBranch
         // 2.a get user from auth method
         if ($user) {
             $userResult = $this->getDefaultBranchForCity($user->city_id, 'The default branch for your city is not found');
-            Log::channel('app_log')->info('Middleware(SetCurrentBranch): Authenticated user found.', [
+            Log::channel('app_log')->debug('Middleware(SetCurrentBranch): Authenticated user found.', [
                 'userId' => $user?->id,
                 'branchId' => $userResult
             ]);
@@ -53,7 +53,7 @@ class SetCurrentBranch
         // 2.b get user from optional auth method
         if (auth('sanctum')->user()?->city_id !== null) {
             $userSanctumResult = $this->getDefaultBranchForCity(auth('sanctum')->user()->city_id, 'The default branch for your city is not found');
-            Log::channel('app_log')->info('Middleware(SetCurrentBranch): Authenticated sanctum user found.', [
+            Log::channel('app_log')->debug('Middleware(SetCurrentBranch): Authenticated sanctum user found.', [
                 'userId' => $user?->id,
                 'branchId' => $userSanctumResult
             ]);
@@ -66,7 +66,7 @@ class SetCurrentBranch
         // 4. Fallback
         $defaultResult = $this->getFallbackBranch();
 
-        Log::channel('app_log')->notice('Middleware(SetCurrentBranch): Fallback branch found.', [
+        Log::channel('app_log')->debug('Middleware(SetCurrentBranch): Fallback branch found.', [
             'branchId' => $defaultResult
         ]);
 
