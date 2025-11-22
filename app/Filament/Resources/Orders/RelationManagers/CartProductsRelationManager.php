@@ -97,7 +97,7 @@ class CartProductsRelationManager extends RelationManager
                                         ->first();
 
                                     if ($branchProduct) {
-                                        return $branchProduct->maximum;
+                                        return $branchProduct->maximum_order_quantity;
                                     } else {
                                         return 0;
                                     }
