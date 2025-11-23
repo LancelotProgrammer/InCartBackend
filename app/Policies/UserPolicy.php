@@ -32,12 +32,20 @@ class UserPolicy
             return false;
         }
 
+        if ($this->canNotInteractWithUser($user, $model)) {
+            return false;
+        }
+
         return $user->hasPermission('update-user');
     }
 
     public function delete(User $user, User $model): bool
     {
         if ($this->isSuperAdminOrDeveloper($model)) {
+            return false;
+        }
+
+        if ($this->canNotInteractWithUser($user, $model)) {
             return false;
         }
 
@@ -50,12 +58,20 @@ class UserPolicy
             return false;
         }
 
+        if ($this->canNotInteractWithUser($user, $model)) {
+            return false;
+        }
+
         return $user->hasPermission('block-user');
     }
 
     public function unblock(User $user, User $model): bool
     {
         if ($this->isSuperAdminOrDeveloper($model)) {
+            return false;
+        }
+
+        if ($this->canNotInteractWithUser($user, $model)) {
             return false;
         }
 
@@ -72,6 +88,10 @@ class UserPolicy
             return false;
         }
 
+        if ($this->canNotInteractWithUser($user, $model)) {
+            return false;
+        }
+
         return $user->hasPermission('approve-user');
     }
 
@@ -85,12 +105,25 @@ class UserPolicy
             return false;
         }
 
+        if ($this->canNotInteractWithUser($user, $model)) {
+            return false;
+        }
+
         return $user->hasPermission('disapprove-user');
     }
 
     public function sendNotification(User $user): bool
     {
         return $user->hasPermission('send-notification');
+    }
+
+    private function canNotInteractWithUser(User $user, User $model): bool
+    {
+        if ($this->isSuperAdminOrDeveloper($user)) {
+            return false;
+        }
+
+        return $user->city_id !== $model->city_id;
     }
 
     private function isSuperAdminOrDeveloper(User $model): bool
