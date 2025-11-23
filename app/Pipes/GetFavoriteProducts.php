@@ -17,6 +17,7 @@ class GetFavoriteProducts
             ->filter(function (Favorite $favorite) {
                 return $favorite->product->branchProducts->whereNotNull('published_at')->isNotEmpty();
             })
+            ->values()
             ->map(function (Favorite $favorite) {
                 $product = $favorite->product;
                 $branchProduct = $product->branchProducts->first();

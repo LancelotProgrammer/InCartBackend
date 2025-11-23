@@ -107,7 +107,10 @@ class Order extends Model implements AuditableContract
     {
         static::deleting(function (Order $order) {
             Log::channel('app_log')->info('Models: deleting order.', ['id' => $order->id]);
-            return event(new OrderDeleting($order));
+            foreach ($order->carts as $cart) {
+                $cart->cartProducts->each->delete();
+            }
+            $order->forceApproveOrder()->delete();
         });
     }
 

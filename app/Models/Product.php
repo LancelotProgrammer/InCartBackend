@@ -36,9 +36,9 @@ class Product extends Model
             Log::channel('app_log')->info('Models: updated product and deleted home cache.', ['id' => $product->id]);
             return  CacheService::deleteHomeCache();
         });
-        static::deleting(function (Product $product){
+        static::deleting(function (Product $product) {
             Log::channel('app_log')->info('Models: deleting product.', ['id' => $product->id]);
-            return event(new ProductDeleting($product));
+            $product->branches()->detach();
         });
         static::deleted(function (Product $product) {
             Log::channel('app_log')->info('Models: deleted product and deleted home cache.', ['id' => $product->id]);
