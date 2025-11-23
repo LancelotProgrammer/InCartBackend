@@ -19,48 +19,25 @@ class GetProductDetails
             'id' => 'required|integer|exists:products,id',
         ]);
 
-        $product = Product::where('id', '=', $request->route('id'))
-            ->first();
+        $product = Product::where('id', '=', $request->route('id'))->first();
         $branchProduct = $product->branchProducts->first();
+        $imagesResult = [];
+        foreach ($product->files()->get() as $image) {
+            $imagesResult[] = $image->url;
+        }
 
         if ($branchProduct->published_at === null) {
             throw new LogicalException('product is not active', 'You are trying to get a product which is not active for the selected branch');
         }
 
-        $images = $product->files()->get();
-        $imagesResult = [];
-        foreach ($images as $image) {
-            $imagesResult[] = $image->url;
-        }
-
-        $categoryIds = $product->categories->pluck('id')->toArray();
-        $relatedProducts = Product::whereHas('categories', function (Builder $query) use ($categoryIds): void {
-            $query->whereIn('categories.id', $categoryIds);
-        })
+        $relatedProducts = Product::whereHas('categories', fn($q) => $q->whereIn('categories.id', $product->categories->pluck('id')->toArray()))
             ->where('id', '!=', $product->id)
             ->inRandomOrder()
             ->limit(10)
             ->get()
-            ->filter(function (Product $product) {
-                return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
-            })
-            ->values()
-            ->map(function (Product $related): array {
-                $branchProduct = $related->branchProducts->first();
-                $image = $related->files->first();
-
-                return [
-                    'id' => $related->id,
-                    'title' => $related->title,
-                    'image' => $image->url,
-                    'max_limit' => $branchProduct->maximum_order_quantity,
-                    'min_limit' => $branchProduct->minimum_order_quantity,
-                    'price' => $branchProduct->price,
-                    'discount' => $branchProduct->discount,
-                    'discount_price' => $branchProduct->discount_price,
-                    'expired_at' => $branchProduct->expires_at,
-                ];
-            });
+            ->filter->isPublishedInBranches()
+            ->map->toApiArray()
+            ->values();
 
         return $next([
             'id' => $product->id,

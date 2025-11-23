@@ -43,28 +43,9 @@ class GetProducts
             });
         }
 
-        $products = $query->simplePaginate();
-
-        return $next(collect($products->items())
-            ->filter(function (Product $product) {
-                return $product->branchProducts->whereNotNull('published_at')->isNotEmpty();
-            })
-            ->values()
-            ->map(function (Product $product): array {
-                $branchProduct = $product->branchProducts->first();
-                $image = $product->files->first()->url;
-
-                return [
-                    'id' => $product->id,
-                    'title' => $product->title,
-                    'image' => $image,
-                    'max_limit' => $branchProduct->maximum_order_quantity,
-                    'min_limit' => $branchProduct->minimum_order_quantity,
-                    'price' => $branchProduct->price,
-                    'discount' => $branchProduct->discount,
-                    'discount_price' => $branchProduct->discount_price,
-                    'expired_at' => $branchProduct->expires_at,
-                ];
-            }));
+        return $next(collect($query->simplePaginate()->items())
+            ->filter->isPublishedInBranches()
+            ->map->toApiArray()
+            ->values());
     }
 }

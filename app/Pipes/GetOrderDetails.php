@@ -12,15 +12,14 @@ class GetOrderDetails
 {
     public function __invoke(Request $request, Closure $next): array
     {
-        $orderId = $request->route('id');
-
-        $order = Order::withoutGlobalScope(BranchScope::class)->with([
-            'userAddress',
-            'paymentMethod',
-            'carts.cartProducts.product.files',
-            'carts.cartProducts.product.branchProducts',
-        ])
-            ->where('id', $orderId)
+        $order = Order::withoutGlobalScope(BranchScope::class)
+            ->with([
+                'userAddress',
+                'paymentMethod',
+                'carts.cartProducts.product.files',
+                'carts.cartProducts.product.branchProducts',
+            ])
+            ->where('id', $request->route('id'))
             ->where('customer_id', $request->user()->id)
             ->first();
 
@@ -36,32 +35,13 @@ class GetOrderDetails
 
         foreach ($order->carts as $cart) {
             foreach ($cart->cartProducts as $cartProduct) {
-                $product = $cartProduct->product;
-
                 $cartList->push([
                     'title' => $cartProduct->title,
                     'quantity' => $cartProduct->quantity,
                 ]);
-
-                if (! $product) {
-                    continue;
-                }
-
-                $branchProduct = $product->branchProducts->first();
-                $image = $product->files->first()->url;
-
-                if ($product->branchProducts->whereNotNull('published_at')->isNotEmpty()) {
-                    $products->push([
-                        'id' => $product->id,
-                        'title' => $product->title,
-                        'image' => $image,
-                        'max_limit' => $branchProduct->maximum_order_quantity,
-                        'min_limit' => $branchProduct->minimum_order_quantity,
-                        'price' => $branchProduct->price,
-                        'discount' => $branchProduct->discount,
-                        'discount_price' => $branchProduct->discount_price,
-                        'expired_at' => $branchProduct->expires_at,
-                    ]);
+                $product = $cartProduct->product;
+                if ($product && $product->isPublishedInBranches()) {
+                    $products->push($product->toApiArray());
                 }
             }
         }
@@ -71,7 +51,7 @@ class GetOrderDetails
             'status' => $order->order_status,
             'cancelable' => $order->isCancelable(),
             'delivery_date' => $order->delivery_date->toDateTimeString(),
-            'address_phone_number' => $order?->userAddress->phone ?? null,
+            'address_phone_number' => $order?->userAddress->phone,
             'cart_list' => $cartList->values(),
             'products' => $products->values(),
             'address_title' => $order->user_address_title,

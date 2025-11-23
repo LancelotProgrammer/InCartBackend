@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\UnitType;
 use App\Events\ProductDeleting;
 use App\Services\CacheService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -74,5 +75,33 @@ class Product extends Model
     public function branchProducts(): HasMany
     {
         return $this->hasMany(BranchProduct::class);
+    }
+
+    public function isPublishedInBranches(): bool
+    {
+        return $this->branchProducts->whereNotNull('published_at')->isNotEmpty();
+    }
+
+    public function firstBranchProduct(): ?BranchProduct
+    {
+        return $this->branchProducts->whereNotNull('published_at')->first();
+    }
+
+    public function toApiArray(): array
+    {
+        $branchProduct = $this->firstBranchProduct();
+        $image = $this->files->first()?->url;
+
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'image' => $image,
+            'max_limit' => $branchProduct?->maximum_order_quantity,
+            'min_limit' => $branchProduct?->minimum_order_quantity,
+            'price' => $branchProduct?->price,
+            'discount' => $branchProduct?->discount,
+            'discount_price' => $branchProduct?->discount_price,
+            'expired_at' => $branchProduct?->expires_at,
+        ];
     }
 }
