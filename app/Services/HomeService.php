@@ -7,6 +7,7 @@ use App\Enums\AdvertisementLink;
 use App\Enums\AdvertisementType;
 use App\Models\Advertisement;
 use App\Models\BranchProduct;
+use App\Services\TranslationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
@@ -152,12 +153,12 @@ class HomeService
         return [
             'id' => $advertisement->id,
             'image' => $advertisementImage?->url,
-            'title' => get_translatable_attribute($advertisement->title),
+            'title' => TranslationService::getTranslatableAttribute($advertisement->title),
             'type' => AdvertisementLink::PRODUCT->value,
             'created_at' => $advertisement->created_at,
             'product' => [
                 'id' => $product->id,
-                'title' => get_translatable_attribute($product->title),
+                'title' => TranslationService::getTranslatableAttribute($product->title),
                 'image' => $productImage?->url,
                 'max_limit' => BranchProduct::getMaximumOrderQuantityValue($branchProduct),
                 'min_limit' => $branchProduct->minimum_order_quantity,
@@ -167,7 +168,7 @@ class HomeService
                 'expired_at' => $branchProduct->expires_at,
                 'category' => [
                     'id' => $productCategory->id,
-                    'title' => get_translatable_attribute($productCategory->title),
+                    'title' => TranslationService::getTranslatableAttribute($productCategory->title),
                 ],
             ],
         ];
@@ -196,12 +197,12 @@ class HomeService
         return [
             'id' => $advertisement->id,
             'image' => $advertisementImage?->url,
-            'title' => get_translatable_attribute($advertisement->title),
+            'title' => TranslationService::getTranslatableAttribute($advertisement->title),
             'type' => AdvertisementLink::CATEGORY->value,
             'created_at' => $advertisement->created_at,
             'category' => [
                 'id' => $category->id,
-                'title' => get_translatable_attribute($category->title),
+                'title' => TranslationService::getTranslatableAttribute($category->title),
                 'image' => $categoryImage?->url,
             ],
         ];
@@ -218,7 +219,7 @@ class HomeService
         return [
             'id' => $advertisement->id,
             'image' => $advertisementImage?->url,
-            'title' => get_translatable_attribute($advertisement->title),
+            'title' => TranslationService::getTranslatableAttribute($advertisement->title),
             'type' => AdvertisementLink::EXTERNAL->value,
             'created_at' => $advertisement->created_at,
             'external' => [
@@ -238,7 +239,7 @@ class HomeService
         return [
             'id' => $advertisement->id,
             'image' => $advertisementImage?->url,
-            'title' => get_translatable_attribute($advertisement->title),
+            'title' => TranslationService::getTranslatableAttribute($advertisement->title),
             'type' => AdvertisementLink::EXTERNAL->value,
             'created_at' => $advertisement->created_at,
             'external' => [
@@ -278,7 +279,7 @@ class HomeService
 
         return [
             'id' => $product->id,
-            'title' => get_translatable_attribute($product->title),
+            'title' => TranslationService::getTranslatableAttribute($product->title),
             'image' => $productImage?->url,
             'max_limit' => BranchProduct::getMaximumOrderQuantityValue($branchProduct),
             'min_limit' => $branchProduct->minimum_order_quantity,
@@ -288,7 +289,7 @@ class HomeService
             'expired_at' => $branchProduct->expires_at,
             'category' => [
                 'id' => $productCategory->id,
-                'title' => get_translatable_attribute($productCategory->title),
+                'title' => TranslationService::getTranslatableAttribute($productCategory->title),
             ],
         ];
     }
@@ -320,7 +321,7 @@ class HomeService
 
         return [
             'id' => $product->id,
-            'title' => get_translatable_attribute($product->title),
+            'title' => TranslationService::getTranslatableAttribute($product->title),
             'image' => $productImage?->url,
             'max_limit' => BranchProduct::getMaximumOrderQuantityValue($branchProduct),
             'min_limit' => $branchProduct->minimum_order_quantity,
@@ -330,7 +331,7 @@ class HomeService
             'expired_at' => $branchProduct->expires_at,
             'category' => [
                 'id' => $productCategory->id,
-                'title' => get_translatable_attribute($productCategory->title),
+                'title' => TranslationService::getTranslatableAttribute($productCategory->title),
             ],
         ];
     }

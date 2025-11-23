@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Constants\CacheKeys;
 use App\Enums\DeliveryScheduledType;
+use App\Services\TranslationService;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -40,7 +41,7 @@ class OrderStatsOverview extends StatsOverviewWidget
                 ->orderByDesc('total')
                 ->first();
             $mostPayment = $mostPaymentResult
-                ? get_translatable_attribute($mostPaymentResult->title)
+                ? TranslationService::getTranslatableAttribute($mostPaymentResult->title)
                 : 'N/A';
 
             $mostDeliveryTypeResult = DB::table('orders')
@@ -59,7 +60,7 @@ class OrderStatsOverview extends StatsOverviewWidget
                 ->orderByDesc('total')
                 ->first();
             $mostCoupon = $mostCouponResult
-                ? get_translatable_attribute($mostCouponResult->title)
+                ? TranslationService::getTranslatableAttribute($mostCouponResult->title)
                 : 'N/A';
 
             $mostActiveDelivery = DB::table('users')
@@ -83,7 +84,7 @@ class OrderStatsOverview extends StatsOverviewWidget
                 ->orderByDesc('total')
                 ->first();
             $mostActiveBranch = $mostActiveBranchResult
-                ? get_translatable_attribute($mostActiveBranchResult->title)
+                ? TranslationService::getTranslatableAttribute($mostActiveBranchResult->title)
                 : 'N/A';
 
             $mostActiveCustomer = DB::table('users')

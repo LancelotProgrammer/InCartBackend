@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Constants\CacheKeys;
+use App\Services\TranslationService;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Carbon;
@@ -44,7 +45,7 @@ class MostSellingProductsCart extends ChartWidget
 
             foreach ($products as $product) {
                 $productName = DB::table('products')->where('id', $product->product_id)->value('title') ?? 'N/A';
-                $labels[] = get_translatable_attribute($productName);
+                $labels[] = TranslationService::getTranslatableAttribute($productName);
                 $data[] = $product->total_sold;
             }
 

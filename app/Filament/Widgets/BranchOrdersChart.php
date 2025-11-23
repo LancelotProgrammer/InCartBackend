@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Constants\CacheKeys;
+use App\Services\TranslationService;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -46,7 +47,7 @@ class BranchOrdersChart extends ChartWidget
                     ->where('id', $order->branch_id)
                     ->value('title');
 
-                $labels[] = get_translatable_attribute($branchTitle);
+                $labels[] = TranslationService::getTranslatableAttribute($branchTitle);
                 $data[] = $order->total;
             }
 
