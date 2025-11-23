@@ -19,13 +19,13 @@ class UserInfolist
             ->columns(1)
             ->components([
                 Section::make('Information')
-                    ->columns(3)
+                    ->columns(5)
                     ->schema([
                         TextEntry::make('name'),
-                        TextEntry::make('email'),
-                        TextEntry::make('phone'),
-                        TextEntry::make('city.name'),
-                        TextEntry::make('role.title'),
+                        TextEntry::make('email')->placeholder('No email'),
+                        TextEntry::make('phone')->placeholder('No phone'),
+                        TextEntry::make('city.name')->label('City'),
+                        TextEntry::make('role.title')->label('Role'),
                     ]),
                 Section::make('Customer Details Information')
                     ->visible(function ($record) {

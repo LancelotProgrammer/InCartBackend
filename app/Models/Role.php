@@ -65,4 +65,16 @@ class Role extends Model implements AuditableContract
     {
         return $this->permissions()->pluck('name')->toArray();
     }
+
+    public function isSuperAdminOrDeveloperOrCustomer(): bool
+    {
+        return in_array(
+            $this->code,
+            [
+                self::ROLE_SUPER_ADMIN_CODE,
+                self::ROLE_DEVELOPER_CODE,
+                self::ROLE_CUSTOMER_CODE,
+            ]
+        );
+    }
 }

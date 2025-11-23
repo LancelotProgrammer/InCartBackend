@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\City;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 
 class CityPolicy
 {
@@ -40,5 +41,14 @@ class CityPolicy
     public function unpublish(User $user, City $city): bool
     {
         return $user->hasPermission('unpublish-city');
+    }
+
+    public static function filterCities(Builder $query, User $user): Builder
+    {
+        if ($user->isSuperAdmin() || $user->isDeveloper()) {
+            return $query;
+        }
+
+        return $query->where('id', '=', $user->city_id);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\Role;
 use App\Models\User;
 
 class UserPolicy
@@ -24,11 +23,11 @@ class UserPolicy
 
     public function update(User $user, User $model): bool
     {
-        if ($this->isCustomer($model)) {
+        if ($model->isCustomer()) {
             return false;
         }
 
-        if ($this->isSuperAdminOrDeveloper($model)) {
+        if ($model->isSuperAdmin() || $model->isDeveloper()) {
             return false;
         }
 
@@ -41,7 +40,7 @@ class UserPolicy
 
     public function delete(User $user, User $model): bool
     {
-        if ($this->isSuperAdminOrDeveloper($model)) {
+        if ($model->isSuperAdmin() || $model->isDeveloper()) {
             return false;
         }
 
@@ -54,7 +53,7 @@ class UserPolicy
 
     public function block(User $user, User $model): bool
     {
-        if ($this->isSuperAdminOrDeveloper($model)) {
+        if ($model->isSuperAdmin() || $model->isDeveloper()) {
             return false;
         }
 
@@ -67,7 +66,7 @@ class UserPolicy
 
     public function unblock(User $user, User $model): bool
     {
-        if ($this->isSuperAdminOrDeveloper($model)) {
+        if ($model->isSuperAdmin() || $model->isDeveloper()) {
             return false;
         }
 
@@ -80,11 +79,11 @@ class UserPolicy
 
     public function approve(User $user, User $model): bool
     {
-        if ($this->isSuperAdminOrDeveloper($model)) {
+        if ($model->isSuperAdmin() || $model->isDeveloper()) {
             return false;
         }
 
-        if (! $this->isCustomer($model)) {
+        if (! $model->isCustomer()) {
             return false;
         }
 
@@ -97,11 +96,11 @@ class UserPolicy
 
     public function disapprove(User $user, User $model): bool
     {
-        if ($this->isSuperAdminOrDeveloper($model)) {
+        if ($model->isSuperAdmin() || $model->isDeveloper()) {
             return false;
         }
 
-        if (! $this->isCustomer($model)) {
+        if (! $model->isCustomer()) {
             return false;
         }
 
@@ -119,20 +118,10 @@ class UserPolicy
 
     private function canNotInteractWithUser(User $user, User $model): bool
     {
-        if ($this->isSuperAdminOrDeveloper($user)) {
+        if ($user->isSuperAdmin() || $user->isDeveloper()) {
             return false;
         }
 
         return $user->city_id !== $model->city_id;
-    }
-
-    private function isSuperAdminOrDeveloper(User $model): bool
-    {
-        return $model->role->code === Role::ROLE_SUPER_ADMIN_CODE || $model->role->code === Role::ROLE_DEVELOPER_CODE;
-    }
-
-    private function isCustomer(User $model): bool
-    {
-        return $model->role->code === Role::ROLE_CUSTOMER_CODE;
     }
 }

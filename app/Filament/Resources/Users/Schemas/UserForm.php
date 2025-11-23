@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Policies\CityPolicy;
 use App\Policies\RolePolicy;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,16 +24,20 @@ class UserForm
                         TextInput::make('email')->email()->unique(ignoreRecord: true),
                         TextInput::make('password')
                             ->password()
-                            ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
-                            ->dehydrated(fn (?string $state): bool => filled($state))
-                            ->required(fn (string $operation): bool => $operation === 'create'),
+                            ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
+                            ->dehydrated(fn(?string $state): bool => filled($state))
+                            ->required(fn(string $operation): bool => $operation === 'create'),
                         Select::make('city_id')
-                            ->relationship('city', 'name'),
+                            ->relationship(
+                                'city',
+                                'name',
+                                fn($query) => CityPolicy::filterCities($query, auth()->user())
+                            ),
                         Select::make('role_id')
                             ->relationship(
                                 'role',
                                 'title',
-                                fn ($query) => RolePolicy::filterOwnerAndDeveloperAndCustomer($query)
+                                fn($query) => RolePolicy::filterOwnerAndDeveloperAndCustomer($query)
                             ),
                     ]),
             ]);

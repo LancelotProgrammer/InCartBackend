@@ -299,9 +299,21 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
 
     public function canBeImpersonated()
     {
-        return !in_array(
-            $this->role->code,
-            [Role::ROLE_SUPER_ADMIN_CODE, Role::ROLE_DEVELOPER_CODE, Role::ROLE_CUSTOMER_CODE]
-        );
+        return !$this->role->isSuperAdminOrDeveloperOrCustomer();
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role->code === Role::ROLE_SUPER_ADMIN_CODE;
+    }
+
+    public function isDeveloper(): bool
+    {
+        return $this->role->code === Role::ROLE_DEVELOPER_CODE;
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->role->code === Role::ROLE_CUSTOMER_CODE;
     }
 }

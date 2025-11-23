@@ -25,7 +25,7 @@ class RolePolicy
 
     public function update(User $user, Role $role): bool
     {
-        if ($this->isSuperAdminOrDeveloperOrCustomer($role)) {
+        if ($role->isSuperAdminOrDeveloperOrCustomer()) {
             return false;
         }
 
@@ -34,23 +34,11 @@ class RolePolicy
 
     public function delete(User $user, Role $role): bool
     {
-        if ($this->isSuperAdminOrDeveloperOrCustomer($role)) {
+        if ($role->isSuperAdminOrDeveloperOrCustomer()) {
             return false;
         }
 
         return $user->hasPermission('delete-role');
-    }
-
-    private function isSuperAdminOrDeveloperOrCustomer(Role $role): bool
-    {
-        return in_array(
-            $role->code,
-            [
-                Role::ROLE_SUPER_ADMIN_CODE,
-                Role::ROLE_DEVELOPER_CODE,
-                Role::ROLE_CUSTOMER_CODE,
-            ]
-        );
     }
 
     public static function filterOwnerAndDeveloperAndCustomer(Builder $query): Builder

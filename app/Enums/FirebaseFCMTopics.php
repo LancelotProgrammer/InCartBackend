@@ -3,6 +3,7 @@
 namespace App\Enums;
 
 use App\Models\City;
+use App\Policies\CityPolicy;
 use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Facades\Log;
 
@@ -23,16 +24,22 @@ enum FirebaseFCMTopics: string implements HasLabel
     {
         Log::channel('app_log')->info('Enums: getting topics');
 
-        $topics = [
-            self::ALL_USERS->value => 'All Users',
-        ];
+        $user = auth()->user();
+        $topics = [];
 
-        foreach (City::published()->get() as $city) {
+        if ($user->isSuperAdmin() || $user->isDeveloper()) {
+            $topics = [
+                self::ALL_USERS->value => 'All Users',
+            ];
+        }
+
+        foreach (CityPolicy::filterCities(City::query()->published(), $user)->get() as $city) {
             $topics[self::CITY->value.'-'.$city->id] = 'All Users in '.$city->name;
         }
 
         Log::channel('app_log')->info('Enums: topics', [
             'topics' => $topics,
+            'user' => $user->name
         ]);
 
         return $topics;
