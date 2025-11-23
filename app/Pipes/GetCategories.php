@@ -10,6 +10,17 @@ use Illuminate\Support\Collection;
 
 class GetCategories
 {
+    /**
+     * Validate request (level, id).
+     * Determine level (default: 1).
+     * Build base query using Category::published().
+     * If level > 1 and id is provided then filter by ID and return result.
+     * Apply level-specific parent relationship filters.
+     * Fetch categories.
+     * @param Request $request
+     * @param Closure $next
+     * @return Collection
+     */
     public function __invoke(Request $request, Closure $next): Collection
     {
         $request->validate([
