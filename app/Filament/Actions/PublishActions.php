@@ -20,11 +20,11 @@ class PublishActions
                 ->requiresConfirmation()
                 ->visible(fn ($record) => ! $record->isPublished())
                 ->action(function ($record) use ($model) {
-                    [$condition, $reason] = PublishService::canPublish($model, $record);
+                    [$condition, $statement] = PublishService::canPublish($model, $record);
                     if (! $condition) {
                         Notification::make()
                             ->title('Cannot Publish')
-                            ->body($reason)
+                            ->body($statement)
                             ->danger()
                             ->persistent()
                             ->send();
@@ -34,8 +34,9 @@ class PublishActions
                     $record->publish();
                     Notification::make()
                         ->title('Published Successfully')
-                        ->body('This record has been published successfully.')
+                        ->body($statement)
                         ->success()
+                        ->persistent()
                         ->send();
                 }),
 
@@ -47,11 +48,11 @@ class PublishActions
                 ->requiresConfirmation()
                 ->visible(fn ($record) => $record->isPublished())
                 ->action(function ($record) use ($model) {
-                    [$condition, $reason] = PublishService::canUnpublish($model, $record);
+                    [$condition, $statement] = PublishService::canUnpublish($model, $record);
                     if (! $condition) {
                         Notification::make()
                             ->title('Cannot Unpublish')
-                            ->body($reason)
+                            ->body($statement)
                             ->danger()
                             ->persistent()
                             ->send();
@@ -61,8 +62,9 @@ class PublishActions
                     $record->unpublish();
                     Notification::make()
                         ->title('Unpublished Successfully')
-                        ->body('This record has been unpublished successfully.')
+                        ->body($statement)
                         ->success()
+                        ->persistent()
                         ->send();
                 }),
         ];

@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\OrderStatus;
 use App\Models\Branch;
 use App\Models\City;
 use App\Models\PaymentMethod;
+use App\Models\Product;
 use Illuminate\Support\Facades\Log;
 
 class PublishService
@@ -14,7 +16,7 @@ class PublishService
         return match ($model) {
             Branch::class => PublishService::validatePublishBranch($record),
             City::class => PublishService::validatePublishCity($record),
-            default => [true, ''],
+            default => [true, 'Record is published successfully.'],
         };
     }
 
@@ -22,75 +24,159 @@ class PublishService
     {
         return match ($model) {
             PaymentMethod::class => PublishService::validateUnpublishPayOnDeliveryPaymentMethod($record),
-            default => [true, ''],
+            Branch::class => PublishService::validateUnpublishBranch($record),
+            default => [true, 'Record is unpublished successfully.'],
         };
     }
 
     private static function validatePublishBranch(Branch $record): array
     {
-        Log::channel('app_log')->info('PublishService: validatePublishBranch');
+        Log::channel('app_log')->info('Services(PublishService): validatePublishBranch', ['branch_id' => $record->id]);
 
+        // Critical conditions
         $condition1 = $record->deliveryUsers()->exists();
         $condition2 = $record->notificationUsers()->exists();
-        $condition3 = PaymentMethod::where('code', '=', PaymentMethod::PAY_ON_DELIVERY_CODE)
-            ->where('branch_id', '=', $record->id)
+        $condition3 = PaymentMethod::where('code', PaymentMethod::PAY_ON_DELIVERY_CODE)
+            ->where('branch_id', $record->id)
             ->whereNotNull('published_at')
             ->exists();
+        $condition4 = $record->products()->count() === Product::count();
+        $condition5 = $record->products()
+            ->wherePivotNotNull('published_at')
+            ->count() === Product::count();
+        $condition6 = $record->advertisements()->count() !== 0;
 
-        $reasons = [];
+        $criticalFails = [];
+        $warningFails = [];
 
         if (! $condition1) {
-            Log::channel('app_log')->warning("Services(PublishService): No delivery users for branch {$record->id}");
-            $reasons[] = 'No delivery users are assigned to this branch.';
+            $criticalFails[] = 'There are no delivery users for this branch.';
+            Log::warning('Services(PublishService): No delivery users for branch');
         }
-
         if (! $condition2) {
-            Log::channel('app_log')->warning("Services(PublishService): No notification users for branch {$record->id}");
-            $reasons[] = 'No users are assigned to receive order notifications.';
+            $criticalFails[] = 'No users are assigned to receive order notifications.';
+            Log::warning('Services(PublishService): No notification users for branch');
         }
-
         if (! $condition3) {
-            Log::channel('app_log')->warning("Services(PublishService): No pay on delivery payment method for branch {$record->id}");
-            $reasons[] = 'The "Pay on Delivery" payment method must be active for this branch.';
+            $criticalFails[] = 'The (Pay on Delivery) method must be active for this branch.';
+            Log::warning('Services(PublishService): No pay on delivery method for branch');
+        }
+        if (! $condition4) {
+            $criticalFails[] = 'Some products are not configured for this branch.';
+            Log::warning('Services(PublishService): Products not fully configured for branch');
         }
 
-        $reason = $reasons
-            ? 'This branch cannot be published because: '.implode(' ', $reasons)
-            : 'This branch cannot be published due to unknown validation failure.';
+        if ($criticalFails) {
+            return [
+                false,
+                'This branch cannot be published because: ' . implode(' ', $criticalFails),
+            ];
+        }
+
+        if (! $condition5) {
+            $warningFails[] = 'Some products are not published for this branch.';
+            Log::notice('Services(PublishService): Some products not published for branch');
+        }
+        if (! $condition6) {
+            $warningFails[] = 'This branch has not advertisements.';
+            Log::notice('Services(PublishService): Branch has no advertisements');
+        }
+
+        if ($warningFails) {
+            return [
+                true,
+                'Branch can be published, but there are some warnings: ' . implode(' ', $warningFails),
+            ];
+        }
 
         return [
-            $condition1 && $condition2 && $condition3,
-            $reason,
+            true,
+            'Branch is published successfully.',
         ];
     }
 
     private static function validatePublishCity(City $record): array
     {
+        Log::channel('app_log')->info('Services(PublishService): validatePublishCity', ['city_id' => $record->id]);
+
         $condition = $record->branches()->published()->exists();
-        $reason = 'This city cannot be published because it has no published branches.';
-        
+
+        $criticalFails = [];
+
         if (! $condition) {
-            Log::channel('app_log')->warning("Services(PublishService): No published branches for city {$record->id}");
+            $criticalFails[] = 'This city cannot be published because it has no published branches.';
+            Log::channel('app_log')->warning('Services(PublishService): This city cannot be published because it has no published branches');
+        }
+
+        if ($criticalFails) {
+            return [
+                false,
+                'This city cannot be published because: ' . implode(' ', $criticalFails),
+            ];
         }
 
         return [
-            $condition,
-            $reason,
+            true,
+            'City is published successfully.',
         ];
     }
 
     private static function validateUnpublishPayOnDeliveryPaymentMethod(PaymentMethod $record): array
     {
+        Log::channel('app_log')->info('Services(PublishService): validateUnpublishPayOnDeliveryPaymentMethod', ['payment_method_id' => $record->id]);
+
         $condition = ! ($record->code === PaymentMethod::PAY_ON_DELIVERY_CODE);
-        $reason = 'This payment method cannot be unpublished because it is required by other components.';
+        
+        $criticalFails = [];
 
         if (! $condition) {
-            Log::channel('app_log')->warning("Services(PublishService): Payment method {$record->id} is required by other components");
+            $criticalFails[] = 'This payment method cannot be unpublished because it is required by other components.';
+            Log::channel('app_log')->warning('Services(PublishService): This payment method cannot be unpublished because it is required by other components');
+        }
+
+        if ($criticalFails) {
+            return [
+                false,
+                'This payment method cannot be unpublished because: ' . implode(' ', $criticalFails),
+            ];
         }
 
         return [
-            $condition,
-            $reason,
+            true,
+            'Payment method is unpublished successfully.',
+        ];
+    }
+
+    private static function validateUnpublishBranch(Branch $record): array
+    {
+        Log::channel('app_log')->info('Services(PublishService): validateUnpublishBranch', ['branch_id' => $record->id]);
+
+        $condition1 = Branch::whereNotNull('published_at')->count() !== 1 && $record->published_at !== null;
+        $condition2 = $record->orders()
+            ->whereIn('order_status', [OrderStatus::PROCESSING->value, OrderStatus::DELIVERING->value, OrderStatus::FINISHED->value])
+            ->exists();
+
+        $criticalFails = [];
+
+        if (! $condition1) {
+            $criticalFails[] = 'This is the only branch and cannot be unpublished';
+            Log::channel('app_log')->warning('Services(PublishService): This is the only branch and cannot be unpublished');
+        }
+        if (! $condition2) {
+            $criticalFails[] = 'This branch has uncompleted orders';
+            Log::channel('app_log')->warning('Services(PublishService): This branch has uncompleted orders');
+        }
+
+        if ($criticalFails) {
+            return [
+                false,
+                'This branch cannot be unpublished because: ' . implode(' ', $criticalFails),
+            ];
+        }
+
+        return [
+            true,
+            'Branch is unpublished successfully.',
         ];
     }
 }
