@@ -67,6 +67,7 @@ class SetCurrentBranch
         $defaultResult = $this->getFallbackBranch();
 
         Log::channel('app_log')->debug('Middleware(SetCurrentBranch): Fallback branch found.', [
+            'ip' => $request->ip(),
             'branchId' => $defaultResult
         ]);
 
