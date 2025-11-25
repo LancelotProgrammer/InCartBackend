@@ -74,6 +74,8 @@ class OrderPayload
 
     private float $maxSubtotalPrice;
 
+    private float $minSubtotalPrice;
+
     private int $maxScheduledDays;
 
     // -------------------------------
@@ -390,6 +392,16 @@ class OrderPayload
         $this->maxSubtotalPrice = $price;
     }
 
+    public function getMinSubtotalPrice(): float
+    {
+        return $this->minSubtotalPrice;
+    }
+
+    public function setMinSubtotalPrice(float $price): void
+    {
+        $this->minSubtotalPrice = $price;
+    }
+
     public function getMaxScheduledDays(): int
     {
         return $this->maxScheduledDays;
@@ -417,6 +429,7 @@ class OrderPayload
         float $maxDistance,
         float $pricePerKilometer,
         float $maxSubtotalPrice,
+        float $minSubtotalPrice,
         int $maxScheduledDays,
     ): self {
         $this->setTime($time);
@@ -435,6 +448,7 @@ class OrderPayload
         $this->setMaxDistance($maxDistance);
         $this->setPricePerKilometer($pricePerKilometer);
         $this->setMaxSubtotalPrice($maxSubtotalPrice);
+        $this->setMinSubtotalPrice($minSubtotalPrice);
         $this->setMaxScheduledDays($maxScheduledDays);
 
         return $this;

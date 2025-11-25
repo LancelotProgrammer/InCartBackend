@@ -68,6 +68,7 @@ class OrderService
             BranchSettingsService::getMaxDistance($branchId),
             BranchSettingsService::getPricePerKilometer($branchId),
             BranchSettingsService::getMaxSubtotalPrice($branchId),
+            BranchSettingsService::getMinSubtotalPrice($branchId),
             BranchSettingsService::getMaxScheduledDays($branchId),
         ));
     }

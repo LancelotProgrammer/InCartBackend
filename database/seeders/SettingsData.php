@@ -120,6 +120,13 @@ class SettingsData
                 'group' => 'order',
                 'is_locked' => false,
             ],
+            [
+                'key' => 'min_subtotal_price',
+                'value' => '1',
+                'type' => SettingType::FLOAT,
+                'group' => 'order',
+                'is_locked' => false,
+            ],
 
             // Legal
             [

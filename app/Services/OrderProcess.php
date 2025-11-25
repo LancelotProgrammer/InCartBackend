@@ -160,9 +160,14 @@ class OrderProcess
             $subtotal += $price * $item['quantity'];
         }
 
-        $allowedSubtotal = $this->payload->getMaxSubtotalPrice();
-        if ($subtotal >= $allowedSubtotal) {
-            throw new LogicalException('Cart price is too high.', "Your cart price is {$subtotal} and the allowed amount is {$allowedSubtotal}");
+        $maxSubtotal = $this->payload->getMaxSubtotalPrice();
+        if ($subtotal >= $maxSubtotal) {
+            throw new LogicalException('Cart price is too high.', "Your cart price is {$subtotal} and the allowed amount is {$maxSubtotal}");
+        }
+
+        $minSubtotal = $this->payload->getMinSubtotalPrice();
+        if ($subtotal < $minSubtotal) {
+            throw new LogicalException('Cart price is too low.', "Your cart price is {$subtotal} and the allowed amount is {$minSubtotal}");
         }
 
         $this->payload->setSubtotal($subtotal);

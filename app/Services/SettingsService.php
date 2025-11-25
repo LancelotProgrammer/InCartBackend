@@ -70,15 +70,16 @@ class SettingsService
             Section::make('Order Config')
                 ->columnSpanFull()
                 ->description('General order configs for the system')
-                ->columns(4)
+                ->columns(3)
                 ->components([
                     TextInput::make('service_fee')->required()->numeric()->rule('min:0'),
                     TextInput::make('tax_rate')->required()->numeric()->rule('min:0'),
+                    TextInput::make('price_per_kilometer')->required()->numeric()->rule('min:0'),
                     TextInput::make('min_distance')->required()->numeric()->rule('min:0'),
                     TextInput::make('max_distance')->required()->numeric()->rule('min:0'),
-                    TextInput::make('price_per_kilometer')->required()->numeric()->rule('min:0'),
-                    TextInput::make('max_subtotal_price')->required()->numeric()->rule('min:0'),
                     TextInput::make('max_scheduled_days')->required()->integer()->rule('min:0'),
+                    TextInput::make('max_subtotal_price')->required()->numeric()->rule('min:0'),
+                    TextInput::make('min_subtotal_price')->required()->numeric()->rule('min:0'),
                     TextInput::make('force_approve_orders_limit')->required()->integer()->rule('min:0'),
                 ]),
             Section::make('Legal')
@@ -158,6 +159,11 @@ class SettingsService
     public static function getMaxSubtotalPrice(): float
     {
         return (float) self::getValue('max_subtotal_price');
+    }
+
+    public static function getMinSubtotalPrice(): float
+    {
+        return (float) self::getValue('min_subtotal_price');
     }
 
     public static function getMaxScheduledDays(): int
