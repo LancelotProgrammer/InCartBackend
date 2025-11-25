@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Order;
-use App\Models\Role;
 use App\Models\User;
 
 class OrderPolicy
@@ -17,11 +16,7 @@ class OrderPolicy
 
     public function view(User $user, Order $order): bool
     {
-        return $user->hasPermission('view-order')
-            || (
-                $user->role->code = Role::ROLE_DELIVERY_CODE &&
-                $order->delivery_id === $user->id
-            );
+        return $user->hasPermission('view-order') || ($user->isDelivery() && $order->delivery_id === $user->id);
     }
 
     public function create(User $user): bool
@@ -64,7 +59,9 @@ class OrderPolicy
 
     public function finish(User $user, Order $order): bool
     {
-        return $user->hasPermission('finish-order') && ($user->id === $order->manager_id || $user->id === $order->delivery_id) && $user->belongsToUserBranch($order);
+        return $user->hasPermission('finish-order') &&
+            ($user->id === $order->manager_id || $user->id === $order->delivery_id) &&
+            $user->belongsToUserBranch($order);
     }
 
     public function close(User $user, Order $order): bool

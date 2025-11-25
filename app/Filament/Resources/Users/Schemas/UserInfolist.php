@@ -2,9 +2,13 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Filament\Resources\Audits\AuditResource;
+use App\Filament\Resources\Roles\RoleResource;
+use App\Models\Branch;
 use App\Models\Order;
-use App\Models\Role;
 use App\Models\User;
+use Filament\Actions\Action;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -27,9 +31,93 @@ class UserInfolist
                         TextEntry::make('city.name')->label('City'),
                         TextEntry::make('role.title')->label('Role'),
                     ]),
+                Section::make('Employee Details Information')
+                    ->visible(function ($record) {
+                        return $record->isEmployee();
+                    })
+                    ->afterHeader([
+                        Action::make('view_permissions')
+                            ->authorize(fn (User $record) => auth()->user()->canViewUserPermissions())
+                            ->url(fn (User $record) => RoleResource::getUrl('edit', ['record' => $record->role->id])),
+                            Action::make('view_audits')
+                            ->authorize(fn (User $record) => auth()->user()->canViewUserAudits())
+                            ->url(fn (User $record) => AuditResource::getUrl('index', ['search' => $record->name])),
+                    ])
+                    ->columns(2)
+                    ->schema([
+                        RepeatableEntry::make('Branches')
+                            ->columnSpanFull()
+                            ->label('Branch')
+                            ->columns(3)
+                            ->grid(1)
+                            ->schema([
+                                TextEntry::make('title')->label('Title'),
+                                IconEntry::make('is_default')->boolean(),
+                                TextEntry::make('published_at')->label('Activated At'),
+                            ])
+                            ->state(fn (User $record) => $record->branches->map(fn (Branch $branch) => [
+                                'title' => $branch->title,
+                                'is_default' => $branch->is_default,
+                                'published_at' => $branch->published_at,
+                            ])),
+
+                        RepeatableEntry::make('Orders Delivery')
+                            ->columnSpanFull()
+                            ->columns(3)
+                            ->grid(3)
+                            ->schema([
+                                TextEntry::make('order_number')->label('Order number'),
+                                TextEntry::make('total_price')->label('Total price'),
+                                TextEntry::make('order_status')->label('Order status')->badge(),
+                            ])
+                            ->state(fn (User $record) => $record->deliveryOrders->map(fn (Order $order) => [
+                                'order_number' => $order->order_number,
+                                'total_price' => $order->total_price,
+                                'order_status' => $order->order_status,
+                            ])),
+
+                        RepeatableEntry::make('Orders Managing')
+                            ->columnSpanFull()
+                            ->columns(3)
+                            ->grid(3)
+                            ->schema([
+                                TextEntry::make('order_number')->label('Order number'),
+                                TextEntry::make('total_price')->label('Total price'),
+                                TextEntry::make('order_status')->label('Order status')->badge(),
+                            ])
+                            ->state(fn (User $record) => $record->managerOrders->map(fn (Order $order) => [
+                                'order_number' => $order->order_number,
+                                'total_price' => $order->total_price,
+                                'order_status' => $order->order_status,
+                            ])),
+
+                        RepeatableEntry::make('tickets')
+                            ->columnSpanFull()
+                            ->grid(5)
+                            ->columns(2)
+                            ->schema([
+                                TextEntry::make('question')->label('Question'),
+                                TextEntry::make('reply')->label('Reply'),
+                            ])
+                            ->state(fn (User $record) => $record->processedTickets->map(fn ($ticket) => [
+                                'question' => $ticket->question,
+                                'reply' => $ticket->reply ?? 'No reply',
+                            ])),
+
+                        RepeatableEntry::make('feedback')
+                            ->columnSpanFull()
+                            ->grid(5)
+                            ->columns(1)
+                            ->schema([
+                                TextEntry::make('feedback')->label('feedback'),
+                            ])
+                            ->state(fn (User $record) => $record->processedFeedback->map(fn ($feedback) => [
+                                'feedback' => $feedback->feedback,
+                            ])),
+                    ]),
                 Section::make('Customer Details Information')
                     ->visible(function ($record) {
-                        return auth()->user()->canManageDeveloperSettings() && $record->role->code === Role::ROLE_CUSTOMER_CODE;
+                        return auth()->user()->canManageDeveloperSettings() && $record->isCustomer();
                     })
                     ->columns(1)
                     ->schema([
@@ -58,8 +146,8 @@ class UserInfolist
                             ->schema([
                                 TextEntry::make('feedback')->label('feedback'),
                             ])
-                            ->state(fn (User $record) => $record->feedback->map(fn ($ticket) => [
-                                'feedback' => $ticket->feedback,
+                            ->state(fn (User $record) => $record->feedback->map(fn ($feedback) => [
+                                'feedback' => $feedback->feedback,
                             ])),
 
                         TextEntry::make('gifts')
@@ -97,30 +185,24 @@ class UserInfolist
                                 TextEntry::make('order_number')->label('Order number'),
                                 TextEntry::make('total_price')->label('Total price'),
                                 TextEntry::make('payment_method')->label('Payment method'),
-
                                 TextEntry::make('order_status')->label('Order status')->badge(),
                                 TextEntry::make('delivery_status')->label('Delivery status')->badge(),
                                 TextEntry::make('payment_status')->label('Payment status')->badge(),
-
                                 TextEntry::make('user_address')->label('User address'),
                                 TextEntry::make('coupon')->label('Coupon'),
                                 TextEntry::make('delivery_date')->label('Delivery date')->date(),
-
                                 TextEntry::make('cart')->label('Cart')->columnSpanFull(),
                             ])
                             ->state(fn (User $record) => $record->customerOrders->map(fn (Order $order) => [
                                 'order_number' => $order->order_number,
                                 'total_price' => $order->total_price,
                                 'payment_method' => $order->paymentMethod->title,
-
                                 'order_status' => $order->order_status,
                                 'delivery_status' => $order->delivery_status,
                                 'payment_status' => $order->payment_status,
-
                                 'user_address' => $order->user_address_title,
                                 'coupon' => $order->coupon?->title ?? 'no coupon',
                                 'delivery_date' => $order->delivery_date,
-
                                 'cart' => $order->carts
                                     ->first()?->cartProducts
                                     ->map(fn ($cartProducts) => "{$cartProducts->title} (x{$cartProducts->quantity})")

@@ -67,9 +67,14 @@ trait CanManagePermissions
         return $this->role->permissions->contains('code', 'publish-product');
     }
 
-    public function canAuditOrder(): bool
+    public function canViewUserPermissions(): bool
     {
-        return $this->role->permissions->contains('code', 'audit-order');
+        return $this->role->permissions->contains('code', 'update-role');
+    }
+
+    public function canViewUserAudits(): bool
+    {
+        return $this->role->permissions->contains('code', 'can-view-audit');
     }
 
     public function canReceiveOrderNotifications(): bool

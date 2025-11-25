@@ -159,6 +159,16 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
         return $this->hasMany(Ticket::class);
     }
 
+    public function processedFeedback(): HasMany
+    {
+        return $this->hasMany(Feedback::class, 'processed_by');
+    }
+
+    public function processedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'processed_by');
+    }
+
     public function avatar(): HasOne
     {
         return $this->hasOne(File::class);
@@ -174,7 +184,7 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
             return false;
         }
 
-        if ($this->role->code === Role::ROLE_CUSTOMER_CODE) {
+        if ($this->isCustomer()) {
             Log::channel('app_log')->warning('User ' . $this->name . ' is customer and can\'t access panel', [
                 'user_id' => $this->id,
                 'email' => $this?->email,
@@ -182,8 +192,8 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
             return false;
         }
 
-        if (!in_array($this->role->code, [Role::ROLE_SUPER_ADMIN_CODE, Role::ROLE_DEVELOPER_CODE])) {
-            if ($this->branches()->exists()) {                
+        if ($this->isEmployee()) {
+            if ($this->branches()->exists()) {
                 return true;
             } else {
                 Log::channel('app_log')->warning('User ' . $this->name . ' is not a attached to branch and can\'t access panel', [
@@ -299,7 +309,7 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
 
     public function canBeImpersonated()
     {
-        return !$this->role->isSuperAdminOrDeveloperOrCustomer();
+        return $this->isEmployee();
     }
 
     public function isSuperAdmin(): bool
@@ -315,5 +325,15 @@ class User extends Authenticatable implements AuditableContract, FilamentUser, M
     public function isCustomer(): bool
     {
         return $this->role->code === Role::ROLE_CUSTOMER_CODE;
+    }
+
+    public function isDelivery(): bool
+    {
+        return $this->role->code === Role::ROLE_DELIVERY_CODE;
+    }
+
+    public function isEmployee(): bool
+    {
+        return !$this->role->isSuperAdminOrDeveloperOrCustomer();
     }
 }

@@ -21,7 +21,7 @@ class ExceptionNotification extends Notification
 
     public function toDatabase(User $notifiable): array
     {
-        if ($notifiable->role->code !== Role::ROLE_DEVELOPER_CODE) {
+        if (!$notifiable->isDeveloper()) {
             return [];
         }
 
