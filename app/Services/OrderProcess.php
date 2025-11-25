@@ -515,7 +515,6 @@ class OrderProcess
             LoyaltyService::applyGift($this->payload->getUser()->id, $this->payload->getGift()->id);
         }
 
-        CacheService::deletePendingOrderCount();
         Log::channel('app_log')->info('Services(OrderProcess): Pending order count cache cleared');
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Pages;
 
-use App\Constants\CacheKeys;
 use App\ExternalServices\FirebaseFCM;
 use App\Filament\Actions\MarkImportantActions;
 use App\Models\Ticket;
@@ -24,7 +23,6 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Enums\PaginationMode;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Cache;
 
 class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
 {
@@ -95,13 +93,22 @@ class TodaysTickets extends Page implements HasActions, HasSchemas, HasTable
 
     public static function getNavigationBadge(): ?string
     {
-        return Cache::remember(
-            CacheKeys::TODAY_SUPPORT_COUNT,
-            now()->addDay(),
-            fn () => Ticket::query()
-                ->whereBetween('created_at', now()->inApplicationTodayRange())
-                ->whereNull('processed_at')->count()
-        );
+        $user = auth()->user();
+
+        $query = Ticket::query()
+            ->whereBetween('created_at', now()->inApplicationTodayRange())
+            ->whereNull('processed_at');
+
+        if ($user->shouldFilterBranchContent()) {
+            $branchId = $user->branches->first()->id ?? null;
+            if ($branchId) {
+                $query->where('branch_id', $branchId);
+            } else {
+                return null;
+            }
+        }
+
+        return $query->count();
     }
 
     public static function getNavigationBadgeTooltip(): ?string

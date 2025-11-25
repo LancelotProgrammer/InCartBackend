@@ -37,8 +37,6 @@ class CreateTicket
             'question' => $data['question'],
         ]);
 
-        CacheService::deleteTodaySupportCount();
-
         return $next([]);
     }
 }

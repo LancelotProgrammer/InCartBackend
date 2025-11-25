@@ -17,16 +17,6 @@ class CacheService
         DB::table('cache')->whereLike('key', '%'.CacheKeys::SETTINGS.'%')->delete();
     }
 
-    public static function deleteTodaySupportCount(): void
-    {
-        DB::table('cache')->whereLike('key', '%'.CacheKeys::TODAY_SUPPORT_COUNT.'%')->delete();
-    }
-
-    public static function deletePendingOrderCount(): void
-    {
-        DB::table('cache')->whereLike('key', '%'.CacheKeys::PENDING_ORDER_COUNT.'%')->delete();
-    }
-
     public static function deleteDashboardCache(): void
     {
         DB::table('cache')->whereLike('key', '%'.CacheKeys::MOST_CLICKED_ADVERTISEMENTS.'%')->delete();

@@ -253,7 +253,6 @@ class OrderService
         });
 
         DatabaseManagerNotification::sendCancelledOrderNotification($order);
-        CacheService::deletePendingOrderCount();
 
         Log::channel('app_log')->info('Services(OrderService): User order cancelled successfully', [
             'order_id' => $orderId,
@@ -336,7 +335,6 @@ class OrderService
 
         FirebaseFCM::sendOrderStatusNotification($order);
         DatabaseUserNotification::sendOrderStatusNotification($order);
-        CacheService::deletePendingOrderCount();
         Notification::make()
             ->title("Order #{$order->order_number} has been cancelled.")
             ->success()
@@ -401,7 +399,6 @@ class OrderService
 
         FirebaseFCM::sendOrderStatusNotification($order);
         DatabaseUserNotification::sendOrderStatusNotification($order);
-        CacheService::deletePendingOrderCount();
         Notification::make()
             ->title("Order #{$order->order_number} is approved and currently processing.")
             ->success()
@@ -463,7 +460,6 @@ class OrderService
 
         FirebaseFCM::sendOrderStatusNotification($order);
         DatabaseUserNotification::sendOrderStatusNotification($order);
-        CacheService::deletePendingOrderCount();
         Notification::make()
             ->title("Order #{$order->order_number} is approved and currently processing.")
             ->success()
@@ -494,7 +490,6 @@ class OrderService
         FirebaseFCM::sendOrderStatusNotification($order);
         DatabaseUserNotification::sendOrderStatusNotification($order);
         User::where('id', '=', $data['delivery_id'])->first()->notify(new DeliveryOrderNotification($order));
-        CacheService::deletePendingOrderCount();
         Notification::make()
             ->title("Order #{$order->order_number} is out for delivery.")
             ->info()
@@ -523,7 +518,6 @@ class OrderService
 
         FirebaseFCM::sendOrderStatusNotification($order);
         DatabaseUserNotification::sendOrderStatusNotification($order);
-        CacheService::deletePendingOrderCount();
         Notification::make()
             ->title("Order #{$order->order_number} has been completed.")
             ->success()
@@ -549,7 +543,6 @@ class OrderService
 
         FirebaseFCM::sendOrderStatusNotification($order);
         DatabaseUserNotification::sendOrderStatusNotification($order);
-        CacheService::deletePendingOrderCount();
         Notification::make()
             ->title("Order #{$order->order_number} has been completed.")
             ->success()
@@ -592,7 +585,6 @@ class OrderService
             }
         });
 
-        CacheService::deletePendingOrderCount();
         Notification::make()
             ->title("Order #{$order->order_number} has been closed.")
             ->success()

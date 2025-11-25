@@ -2,7 +2,6 @@
 
 namespace App\Filament\Pages;
 
-use App\Constants\CacheKeys;
 use App\Enums\OrderStatus;
 use App\Filament\Actions\OrderActions;
 use App\Models\Order;
@@ -20,7 +19,6 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Enums\PaginationMode;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Cache;
 
 class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
 {
@@ -101,13 +99,25 @@ class TodaysOrders extends Page implements HasActions, HasSchemas, HasTable
 
     public static function getNavigationBadge(): ?string
     {
-        return Cache::remember(
-            CacheKeys::PENDING_ORDER_COUNT,
-            now()->addDay(),
-            fn () => Order::query()
-                ->whereBetween('delivery_date', now()->inApplicationTodayRange())
-                ->whereNotIn('order_status', [OrderStatus::CLOSED->value, OrderStatus::CANCELLED->value])->count()
-        );
+        $user = auth()->user();
+
+        $query = Order::query()
+            ->whereBetween('delivery_date', now()->inApplicationTodayRange())
+            ->whereNotIn('order_status', [
+                OrderStatus::CLOSED->value,
+                OrderStatus::CANCELLED->value
+            ]);
+
+        if ($user->shouldFilterBranchContent()) {
+            $branchId = $user->branches->first()->id ?? null;
+            if ($branchId) {
+                $query->where('branch_id', $branchId);
+            } else {
+                return null;
+            }
+        }
+
+        return $query->count();
     }
 
     public static function getNavigationBadgeTooltip(): ?string
