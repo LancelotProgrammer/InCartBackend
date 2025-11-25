@@ -40,7 +40,7 @@ class PublishService
             ->where('branch_id', $record->id)
             ->whereNotNull('published_at')
             ->exists();
-        $condition4 = $record->products()->count() === Product::count();
+        $condition4 = $record->products()->count() === 30;
         $condition5 = $record->products()
             ->wherePivotNotNull('published_at')
             ->count() === Product::count();
