@@ -51,7 +51,7 @@ class GetOrderDetails
             'status' => $order->order_status,
             'cancelable' => $order->isCancelable(),
             'delivery_date' => $order->delivery_date->toDateTimeString(),
-            'address_phone_number' => $order?->userAddress->phone,
+            'address_phone_number' => $order?->userAddress?->phone,
             'cart_list' => $cartList->values(),
             'products' => $products->values(),
             'address_title' => $order->user_address_title,
