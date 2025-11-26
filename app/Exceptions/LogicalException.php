@@ -47,7 +47,7 @@ class LogicalException extends Exception
 
     public function report(): void
     {
-        Log::channel('app_log')->warning("Exception: {$this->errorMessage}. {$this->details}.", [
+        Log::channel('app_log')->warning("Exception(LogicalException): {$this->errorMessage}. {$this->details}.", [
             'status' => $this->statusCode,
             'location' => $this->context,
             'errors' => $this->errors ?? ['No error payload'],
