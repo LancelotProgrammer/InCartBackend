@@ -38,7 +38,7 @@ class CreateOrder
 
         return $next([
             'id' => $order->id,
-            'payment_token' => $order->payment_token ?? null,
+            'payment_method_code' => $order->paymentMethod->code
         ]);
     }
 }

@@ -104,8 +104,8 @@ class OrderController extends Controller
      * @bodyParam order_id integer The city ID. Example: 1
      * @bodyParam token string The city ID. Example: 1
      * @bodyParam payload object[] payload key-value. Example: [{"key": 1, "value": 1}, {"key": 2, "value": 2}]
-     * @bodyParam payload[].key string The city ID. Example: 1
-     * @bodyParam payload[].value string The city ID. Example: 1
+     * @bodyParam payload[].key string The key. Example: key
+     * @bodyParam payload[].value string The value. Example: value
      *
      * @group Order Actions
      */

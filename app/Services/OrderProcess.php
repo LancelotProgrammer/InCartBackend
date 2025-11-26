@@ -436,15 +436,6 @@ class OrderProcess
 
         $this->payload->setPaymentMethod($paymentMethod);
 
-        if ($paymentMethod->code !== PaymentMethod::PAY_ON_DELIVERY_CODE) {
-            Log::channel('app_log')->info('Services(OrderProcess): Generating payment token for non-COD method', [
-                'payment_method_code' => $paymentMethod->code
-            ]);
-            $this->payload->setPaymentToken(BasePaymentGateway::make($paymentMethod->code)->generateToken());
-        } else {
-            Log::channel('app_log')->info('Services(OrderProcess): COD payment method, no token required');
-        }
-
         Log::channel('app_log')->info('Services(OrderProcess): Payment method handled successfully', [
             'payment_method_id' => $paymentMethod->id,
             'payment_method_code' => $paymentMethod->code
@@ -463,7 +454,6 @@ class OrderProcess
         $order = Order::create([
             'order_number' => $this->payload->getOrderNumber(),
             'notes' => $this->payload->getNotes(),
-            'payment_token' => $this->payload->getPaymentToken(),
 
             'delivery_scheduled_type' => $this->payload->getDeliveryScheduledType()->value,
             'delivery_date' => $this->payload->getDate(),

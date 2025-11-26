@@ -50,8 +50,6 @@ class OrderPayload
 
     private PaymentMethod $paymentMethod;
 
-    private ?string $paymentToken = null;
-
     private float $deliveryFee = 0;
 
     private float $subtotal = 0;
@@ -270,16 +268,6 @@ class OrderPayload
     public function setPaymentMethod(PaymentMethod $method): void
     {
         $this->paymentMethod = $method;
-    }
-
-    public function getPaymentToken(): ?string
-    {
-        return $this->paymentToken;
-    }
-
-    public function setPaymentToken(?string $token): void
-    {
-        $this->paymentToken = $token;
     }
 
     public function getDeliveryFee(): float
