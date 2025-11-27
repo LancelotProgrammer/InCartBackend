@@ -123,7 +123,7 @@ class OrderService
             $branchId,
             $customerId,
         ), 'createOrder');
-        
+
         DatabaseManagerNotification::sendCreatedOrderNotification($order);
 
         Log::channel('app_log')->info('Services(OrderService): User order created successfully', [
@@ -135,33 +135,32 @@ class OrderService
         return $order;
     }
 
-    public static function userPay(int $orderId, string $orderPaymentToken, ?array $payload): void
+    public static function userPay(int $orderId, ?array $payload): ?array
     {
         Log::channel('app_log')->info('Services(OrderService): User processing payment', [
             'order_id' => $orderId,
             'has_payload' => !empty($payload)
         ]);
 
-        $order = Order::where('id', '=', $orderId)
-            ->where('payment_token', '=', $orderPaymentToken)
-            ->first();
+        $order = Order::where('id', '=', $orderId)->first();
 
         if (!$order) {
             Log::channel('app_log')->warning('Services(OrderService): Order not found for payment', [
-                'order_id' => $orderId,
-                'payment_token' => $orderPaymentToken
+                'order_id' => $orderId
             ]);
+            throw new LogicalException('Order not found', 'The order ID does not exist.');
         }
 
-        DB::transaction(function () use ($order, $payload) {
+        $result = DB::transaction(function () use ($order, $payload) {
             self::ensureValidPayment($order);
-            BasePaymentGateway::make($order->paymentMethod->code)->pay($order, $payload);
+            return BasePaymentGateway::make($order->paymentMethod->code)->pay($order, $payload);
         });
 
-        Log::channel('app_log')->info('Services(OrderService): User payment processed successfully', [
-            'order_id' => $orderId,
-            'payment_method' => $order->paymentMethod->code
-        ]);
+        if ($result->isSuccessful()) {
+            return $result->getData();
+        } else {
+            throw new LogicalException($result->getMessage());
+        }
     }
 
     public static function userInvoice(int $orderId, int $userId): Response
@@ -248,7 +247,10 @@ class OrderService
             $order->save();
             if (! $order->isPayOnDelivery()) {
                 self::ensureValidPayment($order, forRefund: true);
-                BasePaymentGateway::make($order->paymentMethod->code)->refund($order);
+                $result = BasePaymentGateway::make($order->paymentMethod->code)->refund($order, $order->payment_token);
+                if (! $result->isSuccessful()) {
+                    throw new LogicalException($result->getMessage());
+                }
             }
         });
 
@@ -317,33 +319,51 @@ class OrderService
             'has_reason' => !empty($data['cancel_reason'])
         ]);
 
-        DB::transaction(function () use ($order, $data) {
-            $userId = auth()->user()->id;
-            $order->update([
-                'order_status' => OrderStatus::CANCELLED,
-                'delivery_status' => DeliveryStatus::NOT_DELIVERED,
-                'manager_id' => $userId,
-                'cancel_reason' => $data['cancel_reason'],
-                'cancelled_by_id' => $userId,
+        try {
+            DB::transaction(function () use ($order, $data) {
+                $userId = auth()->user()->id;
+                $order->update([
+                    'order_status' => OrderStatus::CANCELLED,
+                    'delivery_status' => DeliveryStatus::NOT_DELIVERED,
+                    'manager_id' => $userId,
+                    'cancel_reason' => $data['cancel_reason'],
+                    'cancelled_by_id' => $userId,
+                ]);
+                $order->save();
+                if (! $order->isPayOnDelivery()) {
+                    self::ensureValidPayment($order, forRefund: true);
+                    $result = BasePaymentGateway::make($order->paymentMethod->code)->refund($order, $order->payment_token);
+                    if (! $result->isSuccessful()) {
+                        if (! $result->isSuccessful()) {
+                            throw new LogicalException($result->getMessage());
+                        }
+                    }
+                }
+            });
+
+            FirebaseFCM::sendOrderStatusNotification($order);
+            DatabaseUserNotification::sendOrderStatusNotification($order);
+            Notification::make()
+                ->title("Order #{$order->order_number} has been cancelled.")
+                ->success()
+                ->send();
+
+            Log::channel('app_log')->info('Services(OrderService): Manager order cancellation completed', [
+                'order_id' => $order->id,
+                'manager_id' => auth()->user()->id
             ]);
-            $order->save();
-            if (! $order->isPayOnDelivery()) {
-                self::ensureValidPayment($order, forRefund: true);
-                BasePaymentGateway::make($order->paymentMethod->code)->refund($order);
-            }
-        });
-
-        FirebaseFCM::sendOrderStatusNotification($order);
-        DatabaseUserNotification::sendOrderStatusNotification($order);
-        Notification::make()
-            ->title("Order #{$order->order_number} has been cancelled.")
-            ->success()
-            ->send();
-
-        Log::channel('app_log')->info('Services(OrderService): Manager order cancellation completed', [
-            'order_id' => $order->id,
-            'manager_id' => auth()->user()->id
-        ]);
+        } catch (LogicalException $e) {
+            Notification::make()
+                ->title("Order #{$order->order_number} has been cancelled.")
+                ->body($e->getMessage())
+                ->warning()
+                ->send();
+            Log::channel('app_log')->info('Services(OrderService): Manager order cancellation halted', [
+                'order_id' => $order->id,
+                'manager_id' => auth()->user()->id,
+                'reason' => $e->getMessage()
+            ]);
+        }
     }
 
     public static function managerApprove(Order $order): void

@@ -57,7 +57,7 @@ Route::middleware([
 
         Route::post('/order/bill', [OrderController::class, 'createOrderBill']);
         Route::post('/order', [OrderController::class, 'createOrder'])->middleware(IsServiceOnline::class);
-        Route::post('/order/checkout', [OrderController::class, 'createOrderCheckout'])->middleware(IsServiceOnline::class);
+        // Route::post('/order/checkout', [OrderController::class, 'createOrderCheckout'])->middleware(IsServiceOnline::class);
         Route::post('/order/{id}/cancel', [OrderController::class, 'cancelOrder'])->middleware(IsServiceOnline::class);
         Route::get('/order/{id}', [OrderController::class, 'getOrderDetails']);
         Route::get('/users/orders', [OrderController::class, 'getUserPreviousOrders']);

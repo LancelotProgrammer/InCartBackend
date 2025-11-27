@@ -6,7 +6,6 @@ use App\Enums\PaymentStatus;
 use App\ExternalServices\MoyasarPaymentGateway;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class BasePaymentGateway
@@ -29,19 +28,28 @@ class BasePaymentGateway
         return app($class);
     }
 
-    public function generateToken(): string
+    protected function createOrderPaymentToken(Order $order, string $paymentToken): void
     {
-        do {
-            $token = Str::random(32);
-        } while (Order::where('payment_token', '=', $token)->exists());
+        $order->update([
+            'payment_token' => $paymentToken
+        ]);
 
-        return $token;
+        $order->save();
     }
 
     protected function payOrder(Order $order): void
     {
         $order->update([
             'payment_status' => PaymentStatus::PAID->value,
+        ]);
+
+        $order->save();
+    }
+
+    protected function revokeOrderPaymentToken(Order $order): void
+    {
+        $order->update([
+            'payment_token' => null
         ]);
 
         $order->save();

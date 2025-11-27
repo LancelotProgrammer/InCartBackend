@@ -8,20 +8,18 @@ use Illuminate\Http\Request;
 
 class CreateOrderCheckout
 {
-    public function __invoke(Request $request, Closure $next): array
+    public function __invoke(Request $request, Closure $next): ?array
     {
         $request->validate([
             'order_id' => 'required|integer|exists:orders,id',
-            'order_payment_token' => 'required|string|exists:orders,payment_token',
-            'payload' => 'nullable|array',
+            'payload' => 'required|array',
         ]);
 
-        OrderService::userPay(
+        $response = OrderService::userPay(
             $request->input('order_id'),
-            $request->input('order_payment_token'),
             $request->input('payload')
         );
 
-        return $next([]);
+        return $next($response);
     }
 }

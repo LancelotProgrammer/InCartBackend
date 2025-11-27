@@ -8,10 +8,10 @@ use Illuminate\Http\Request;
 
 class MoyasarPaymentGatewayPayCallback
 {
-    public function __invoke(Request $request, Closure $next): array
+    public function __invoke(Request $request, Closure $next): mixed
     {
         app(MoyasarPaymentGateway::class)->payCallback($request);
 
-        return $next([]);
+        return $next();
     }
 }
