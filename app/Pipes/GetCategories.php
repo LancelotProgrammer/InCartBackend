@@ -50,7 +50,7 @@ class GetCategories
                 'id' => $category->id,
                 'title' => $category->title,
                 'image' => optional($category->files->first())->url,
-                'categories' => $category->children()->map(fn (Category $child): array => [
+                'categories' => $category->children->map(fn (Category $child): array => [
                     'id' => $child->id,
                     'title' => $child->title,
                     'image' => optional($child->files->first())->url,
