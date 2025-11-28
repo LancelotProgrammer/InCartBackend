@@ -51,19 +51,19 @@ class PublishService
 
         if (! $condition1) {
             $criticalFails[] = 'There are no delivery users for this branch.';
-            Log::warning('Services(PublishService): No delivery users for branch');
+            Log::channel('app_log')->warning('Services(PublishService): No delivery users for branch');
         }
         if (! $condition2) {
             $criticalFails[] = 'No users are assigned to receive order notifications.';
-            Log::warning('Services(PublishService): No notification users for branch');
+            Log::channel('app_log')->warning('Services(PublishService): No notification users for branch');
         }
         if (! $condition3) {
             $criticalFails[] = 'The (Pay on Delivery) method must be active for this branch.';
-            Log::warning('Services(PublishService): No pay on delivery method for branch');
+            Log::channel('app_log')->warning('Services(PublishService): No pay on delivery method for branch');
         }
         if (! $condition4) {
             $criticalFails[] = 'Some products are not configured for this branch.';
-            Log::warning('Services(PublishService): Products not fully configured for branch');
+            Log::channel('app_log')->warning('Services(PublishService): Products not fully configured for branch');
         }
 
         if ($criticalFails) {
@@ -75,11 +75,11 @@ class PublishService
 
         if (! $condition5) {
             $warningFails[] = 'Some products are not published for this branch.';
-            Log::notice('Services(PublishService): Some products not published for branch');
+            Log::channel('app_log')->notice('Services(PublishService): Some products not published for branch');
         }
         if (! $condition6) {
             $warningFails[] = 'This branch has not advertisements.';
-            Log::notice('Services(PublishService): Branch has no advertisements');
+            Log::channel('app_log')->notice('Services(PublishService): Branch has no advertisements');
         }
 
         if ($warningFails) {
