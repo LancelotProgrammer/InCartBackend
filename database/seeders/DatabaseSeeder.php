@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Support\Facades\App;
+
 class DatabaseSeeder extends BaseSeeder
 {
     /**
@@ -9,6 +11,10 @@ class DatabaseSeeder extends BaseSeeder
      */
     public function run(): void
     {
+        if (App::environment(['production'])) {
+            return;
+        }
+
         $this->generateData(
             rootCategoryCount: 3,
             productCount: 200,
