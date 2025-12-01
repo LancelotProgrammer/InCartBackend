@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Metadata\MetadataResource;
+use function PHPUnit\Framework\isInstanceOf;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,7 +33,7 @@ class SuccessfulResponseResourceWithMetadata extends JsonResource
         return [
             'message' => $this->message,
             'data' => $this->resource,
-            'metadata' => $this->metadata->toArray($request),
+            'metadata' => $this->metadata instanceOf MetadataResource ? $this->metadata->toArray($request) : $this->metadata,
         ];
     }
 
