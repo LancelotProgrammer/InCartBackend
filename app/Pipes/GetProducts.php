@@ -2,15 +2,15 @@
 
 namespace App\Pipes;
 
+use App\Http\Resources\Metadata\MetadataResource;
 use App\Models\Product;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 class GetProducts
 {
-    public function __invoke(Request $request, Closure $next): Collection
+    public function __invoke(Request $request, Closure $next): array
     {
         $request->validate([
             'category_id' => 'nullable|integer|exists:categories,id',
@@ -43,9 +43,18 @@ class GetProducts
             });
         }
 
-        return $next(collect($query->simplePaginate()->items())
-            ->filter->isPublishedInBranches()
-            ->map->toApiArray()
-            ->values());
+        $result = $query->simplePaginate();
+
+        return $next([
+            collect($result->items())
+                ->filter->isPublishedInBranches()
+                ->map->toApiArray()
+                ->values(),
+            new MetadataResource(
+                $result->perPage(),
+                $result->currentPage(),
+                $result->hasMorePages()
+            ),
+        ]);
     }
 }

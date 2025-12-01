@@ -31,7 +31,7 @@ class SuccessfulResponseResourceWithMetadata extends JsonResource
         return [
             'message' => $this->message,
             'data' => $this->resource,
-            'metadata' => $this->metadata,
+            'metadata' => $this->metadata->toArray($request),
         ];
     }
 

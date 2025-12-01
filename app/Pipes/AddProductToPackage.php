@@ -26,6 +26,10 @@ class AddProductToPackage
             throw new LogicalException('Product already exists in this package.');
         }
 
+        if ($package->products()->count() >= 50) {
+            throw new LogicalException('A package cannot contain more than 50 products.');
+        }
+
         $package->products()->attach($productId);
 
         return $next([]);

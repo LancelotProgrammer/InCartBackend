@@ -2,6 +2,7 @@
 
 namespace App\Pipes;
 
+use App\Http\Resources\Metadata\MetadataResource;
 use App\Models\Scopes\BranchScope;
 use Closure;
 use Illuminate\Http\Request;
@@ -18,6 +19,13 @@ class GetUserPreviousOrders
             'order_status',
         ])->latest()->simplePaginate();
 
-        return $next($orders->items());
+        return $next([
+            $orders->items(),
+            new MetadataResource(
+                $orders->perPage(),
+                $orders->currentPage(),
+                $orders->hasMorePages()
+            ),
+        ]);
     }
 }

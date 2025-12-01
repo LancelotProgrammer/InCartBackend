@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EmptySuccessfulResponseResource;
-use App\Http\Resources\SuccessfulResponseResource;
+use App\Http\Resources\SuccessfulResponseResourceWithMetadata;
 use App\Pipes\CreateFeedback;
 use App\Pipes\CreateTicket;
 use App\Pipes\GetTickets;
@@ -18,9 +18,9 @@ class TicketAndFeedbackController extends Controller
      *
      * @group Ticket And Feedback Actions
      */
-    public function getTickets(Request $request): SuccessfulResponseResource
+    public function getTickets(Request $request): SuccessfulResponseResourceWithMetadata
     {
-        return new SuccessfulResponseResource(Pipeline::send($request)
+        return new SuccessfulResponseResourceWithMetadata(...Pipeline::send($request)
             ->through([
                 GetTickets::class,
             ])

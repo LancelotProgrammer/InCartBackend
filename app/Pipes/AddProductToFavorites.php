@@ -25,6 +25,10 @@ class AddProductToFavorites
             throw new LogicalException('Product is already in user favorites.');
         }
 
+        if (Favorite::where('user_id', $userId)->count() >= 50) {
+            throw new LogicalException('You cannot add more than 50 favorite products.');
+        }
+
         Favorite::create([
             'user_id' => $userId,
             'product_id' => $productId,

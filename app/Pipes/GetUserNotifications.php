@@ -2,6 +2,7 @@
 
 namespace App\Pipes;
 
+use App\Http\Resources\Metadata\MetadataResource;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -11,6 +12,13 @@ class GetUserNotifications
     {
         $notifications = $request->user()->userNotifications()->where('mark_as_read', '=', false)->latest()->simplePaginate();
 
-        return $next($notifications->items());
+        return $next([
+            $notifications->items(),
+            new MetadataResource(
+                $notifications->perPage(),
+                $notifications->currentPage(),
+                $notifications->hasMorePages()
+            ),
+        ]);
     }
 }

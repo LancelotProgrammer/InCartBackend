@@ -2,6 +2,7 @@
 
 namespace App\Pipes;
 
+use App\Http\Resources\Metadata\MetadataResource;
 use App\Models\Scopes\BranchScope;
 use Closure;
 use Illuminate\Http\Request;
@@ -17,6 +18,13 @@ class GetTickets
             'created_at'
         ])->latest()->simplePaginate();
 
-        return $next($tickets->items());
+        return $next([
+            $tickets->items(),
+            new MetadataResource(
+                $tickets->perPage(),
+                $tickets->currentPage(),
+                $tickets->hasMorePages()
+            ),
+        ]);
     }
 }
