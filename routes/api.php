@@ -19,12 +19,12 @@ use App\Http\Controllers\Api\UserNotificationController;
 use App\Http\Middleware\EnsureHeaderValidation;
 use App\Http\Middleware\IsServiceOnline;
 use App\Http\Middleware\SetCurrentBranch;
-use App\Http\Middleware\SetLocal;
+use App\Http\Middleware\SetApiLocale;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware([
     // EnsureHeaderValidation::class,
-    SetLocal::class,
+    SetApiLocale::class,
     SetCurrentBranch::class,
 ])->group(function () {
 
