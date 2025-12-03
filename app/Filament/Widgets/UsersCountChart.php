@@ -14,7 +14,7 @@ class UsersCountChart extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 2;
 

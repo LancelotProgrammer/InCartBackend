@@ -22,6 +22,7 @@ class CacheService
         DB::table('cache')->whereLike('key', '%'.CacheKeys::MOST_CLICKED_ADVERTISEMENTS.'%')->delete();
         DB::table('cache')->whereLike('key', '%'.CacheKeys::BRANCH_ORDERS_CHART.'%')->delete();
         DB::table('cache')->whereLike('key', '%'.CacheKeys::GENERAL_STATS_OVERVIEW.'%')->delete();
+        DB::table('cache')->whereLike('key', '%'.CacheKeys::BRANCH_GENERAL_STATS_OVERVIEW.'%')->delete();
         DB::table('cache')->whereLike('key', '%'.CacheKeys::ORDER_STATS_OVERVIEW.'%')->delete();
         DB::table('cache')->whereLike('key', '%'.CacheKeys::ORDER_STATUS_CHART.'%')->delete();
         DB::table('cache')->whereLike('key', '%'.CacheKeys::ORDER_TREND_CHART.'%')->delete();

@@ -14,7 +14,7 @@ class MostSellingProductsCart extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?int $sort = 9;
+    protected static ?int $sort = 10;
 
     protected int|string|array $columnSpan = 2;
 
@@ -26,16 +26,25 @@ class MostSellingProductsCart extends ChartWidget
     {
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfYear();
         $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
+        $branchId = $this->pageFilters['branch'] ?? null;
 
         $cacheKey = CacheKeys::MOST_SELLING_PRODUCTS_CHART.'_'.
             Carbon::parse($startDate)->format('Y-m-d').'_'.
-            Carbon::parse($endDate)->format('Y-m-d');
+            Carbon::parse($endDate)->format('Y-m-d').'_'.
+            ($branchId ?? 'all');
 
-        return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
-            $products = DB::table('cart_product')
-                ->select('product_id', DB::raw('SUM(quantity) as total_sold'))
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->groupBy('product_id')
+        return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate, $branchId) {
+            $query = DB::table('cart_product')
+                ->select('product_id', 'title', DB::raw('SUM(quantity) as total_sold'))
+                ->whereBetween('cart_product.created_at', [$startDate, $endDate]);
+            
+            if ($branchId) {
+                $query->join('carts', 'cart_product.cart_id', '=', 'carts.id')
+                    ->join('orders', 'carts.order_id', '=', 'orders.id')
+                    ->where('orders.branch_id', $branchId);
+            }
+            
+            $products = $query->groupBy('product_id', 'title')
                 ->orderByDesc('total_sold')
                 ->limit(10)
                 ->get();
@@ -44,7 +53,7 @@ class MostSellingProductsCart extends ChartWidget
             $data = [];
 
             foreach ($products as $product) {
-                $productName = DB::table('products')->where('id', $product->product_id)->value('title') ?? 'N/A';
+                $productName = $product->title ?? 'N/A';
                 $labels[] = TranslationService::getTranslatableAttribute($productName);
                 $data[] = $product->total_sold;
             }

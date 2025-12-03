@@ -14,7 +14,7 @@ class BranchOrdersChart extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?int $sort = 7;
+    protected static ?int $sort = 3;
 
     protected int|string|array $columnSpan = 2;
 

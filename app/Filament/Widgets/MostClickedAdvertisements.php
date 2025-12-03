@@ -26,17 +26,24 @@ class MostClickedAdvertisements extends ChartWidget
     {
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfYear();
         $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
+        $branchId = $this->pageFilters['branch'] ?? null;
 
         $cacheKey = CacheKeys::MOST_CLICKED_ADVERTISEMENTS.'_'.
             Carbon::parse($startDate)->format('Y-m-d').'_'.
-            Carbon::parse($endDate)->format('Y-m-d');
+            Carbon::parse($endDate)->format('Y-m-d').'_'.
+            ($branchId ?? 'all');
 
-        return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
-            $ads = DB::table('advertisement_user')
+        return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate, $branchId) {
+            $query = DB::table('advertisement_user')
                 ->join('advertisements', 'advertisement_user.advertisement_id', '=', 'advertisements.id')
                 ->select('advertisements.title as title', DB::raw('COUNT(advertisement_user.id) as total_clicks'))
-                ->whereBetween('advertisement_user.created_at', [$startDate, $endDate])
-                ->groupBy('advertisements.id', 'advertisements.title')
+                ->whereBetween('advertisement_user.created_at', [$startDate, $endDate]);
+            
+            if ($branchId) {
+                $query->where('advertisements.branch_id', $branchId);
+            }
+            
+            $ads = $query->groupBy('advertisements.id', 'advertisements.title')
                 ->orderByDesc('total_clicks')
                 ->limit(10)
                 ->pluck('total_clicks', 'title')

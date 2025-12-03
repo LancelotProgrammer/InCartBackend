@@ -14,7 +14,7 @@ class OrderStatusChart extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?int $sort = 8;
+    protected static ?int $sort = 9;
 
     protected ?string $heading = 'Order Status Chart';
 
@@ -26,16 +26,23 @@ class OrderStatusChart extends ChartWidget
     {
         $startDate = $this->pageFilters['startDate'] ?? Carbon::now()->startOfYear();
         $endDate = $this->pageFilters['endDate'] ?? Carbon::now()->endOfYear();
+        $branchId = $this->pageFilters['branch'] ?? null;
 
         $cacheKey = CacheKeys::ORDER_STATUS_CHART.'_'.
             Carbon::parse($startDate)->format('Y-m-d').'_'.
-            Carbon::parse($endDate)->format('Y-m-d');
+            Carbon::parse($endDate)->format('Y-m-d').'_'.
+            ($branchId ?? 'all');
 
-        return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate) {
-            $statusCounts = DB::table('orders')
+        return Cache::remember($cacheKey, now()->addHour(), function () use ($startDate, $endDate, $branchId) {
+            $query = DB::table('orders')
                 ->select('order_status', DB::raw('COUNT(*) as total'))
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->groupBy('order_status')
+                ->whereBetween('created_at', [$startDate, $endDate]);
+            
+            if ($branchId) {
+                $query->where('branch_id', $branchId);
+            }
+            
+            $statusCounts = $query->groupBy('order_status')
                 ->pluck('total', 'order_status')
                 ->toArray();
 

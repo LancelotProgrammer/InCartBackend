@@ -14,6 +14,8 @@ class CacheKeys
 
     public const GENERAL_STATS_OVERVIEW = 'general_stats_overview';
 
+    public const BRANCH_GENERAL_STATS_OVERVIEW = 'branch_general_stats_overview';
+
     public const ORDER_STATS_OVERVIEW = 'order_stats_overview';
 
     public const ORDER_STATUS_CHART = 'order_status_chart';

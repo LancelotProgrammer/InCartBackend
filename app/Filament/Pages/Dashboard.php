@@ -2,10 +2,12 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Branch;
 use App\Services\CacheService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
@@ -31,6 +33,7 @@ class Dashboard extends BaseDashboard
                 ->schema([
                     DatePicker::make('startDate'),
                     DatePicker::make('endDate')->after('startDate'),
+                    Select::make('branch')->options(Branch::all()->pluck('title', 'id')),
                 ]),
         ];
     }
