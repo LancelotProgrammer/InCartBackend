@@ -21,7 +21,7 @@ class CreateOrderBill
             'cart' => 'required|array',
             'cart.*.id' => 'required|exists:products,id|distinct',
             'cart.*.quantity' => 'required|numeric',
-            'notes' => 'nullable|string',
+            'notes' => 'nullable|string|max:4096',
         ]);
 
         $orderBill = OrderService::userCreateBill(

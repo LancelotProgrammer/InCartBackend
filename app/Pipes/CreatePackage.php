@@ -12,7 +12,7 @@ class CreatePackage
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:4096',
         ]);
 
         $package = Package::create([

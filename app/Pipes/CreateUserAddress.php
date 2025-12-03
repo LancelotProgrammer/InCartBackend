@@ -17,11 +17,11 @@ class CreateUserAddress
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'phone' => 'required|string|max:20',
+            'description' => 'nullable|string|max:4096',
+            'phone' => 'required|phone:SA|unique:users,phone',
             'type' => ['required', new Enum(UserAddressType::class)],
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         $city = City::published()->where('id', '=', $request->user()->city_id)->first();

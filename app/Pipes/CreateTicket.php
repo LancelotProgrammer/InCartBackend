@@ -23,7 +23,7 @@ class CreateTicket
         RateLimiter::hit($key, 86400);
 
         $data = $request->validate([
-            'question' => 'required|string|min:5',
+            'question' => 'required|string|min:5|max:4096',
         ]);
 
         $branchId = Branch::query()

@@ -13,7 +13,7 @@ class UpdatePackage
     {
         $data = $request->validate([
             'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:4096',
         ]);
 
         $package = Package::where('id', $request->route('id'))
